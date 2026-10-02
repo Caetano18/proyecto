@@ -1,0 +1,764 @@
+\chapter{Electrónica, software de vuelo y estimación de estado en detalle}\label{cap:electronica}
+
+Este capítulo baja a nivel de circuito y de código lo que el capítulo~\ref{cap:elec} planteó
+en bloques. La electrónica propuesta cumple el anexo~\cite{anexo} con margen y la decisión
+crítica, liberar el rotor al 80\,\% de la altitud máxima, resulta robusta frente a ruido,
+valores atípicos y al pico de presión de la expulsión.
+
+\begin{resultado}[Resultados principales]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Energía}: una 18650 de \SI{3000}{mAh} cubre \SI{2}{h} en la plataforma,
+        el vuelo y \SI{1}{h} de recuperación con un factor de margen de 3,9.
+  \item \textbf{Liberación}: con el filtro de Kalman y la lógica de votación, la liberación
+        ocurre a \SI{-0.3}{m} (mediana) del 80\,\% real, sin disparos prematuros en
+        \num{4000} vuelos simulados. Las lógicas ingenuas liberan antes de tiempo en el
+        29--60\,\% de los vuelos si la expulsión produce un pico de presión.
+  \item \textbf{Firmware}: se probó en la PC con los mismos datos de sensores (software en el
+        lazo) y se recupera de un reinicio en cualquier estado sin cambiar el instante de
+        liberación en más de \SI{0.16}{s}.
+  \item \textbf{Radio}: a \SI{915}{MHz} el enlace cierra a \SI{2}{km} con unos
+        \SI{31}{dB} de margen (\SI{21}{dB} a \SI{2.4}{GHz}); tras el aterrizaje el enlace
+        se pierde más allá de \SIrange{0.6}{1.1}{km}.
+\end{itemize}
+\end{resultado}
+
+\begin{nota}[Alcance]
+Todo lo que sigue es análisis y simulación; no hay ensayos. Los componentes marcados como
+«verificado» tienen sus datos tomados de la hoja de datos citada; el resto son
+«representativos» de su clase y deben medirse con el prototipo.
+\end{nota}
+
+%=====================================================================
+\section{Arquitectura eléctrica}\label{sec:electronica-arq}
+
+La arquitectura usa una sola celda 18650 y dos convertidores separados: un buck-boost de
+\SI{3.3}{V} para la lógica y un elevador de \SI{5}{V} para el servo y las cámaras. Así,
+los picos del servo no llegan al microcontrolador y la lógica funciona durante toda la
+descarga de la celda (figura~\ref{fig:electronica-esq}).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{\textwidth}\centering
+\begin{circuitikz}[font=\scriptsize, line width=0.5pt]
+  \ctikzset{bipoles/length=0.85cm}
+  % --- camino de potencia
+  \draw (0,-2.6) to[battery1, l_={B1 18650}] (0,0)
+        to[fuse, l={F1 \SI{3}{A}}] (1.5,0);
+  \node[draw, fill=ffijo, minimum width=13mm, minimum height=8mm, align=center] (prot) at (2.3,0)
+        {Protec.\\[-1pt]OV/UV/OC};
+  \draw (1.5,0) -- (prot.west);
+  \draw (prot.east) to[nos, l={S1 (\Req{E4})}] (4.3,0)
+        to[R, l_={$R_s$ \SI{20}{m\ohm}}] (5.6,0) -- (9.0,0);
+  \node[draw, fill=white, minimum width=14mm, minimum height=5mm] (ina) at (4.95,1.05) {INA219};
+  \draw (4.3,0) |- ([yshift=-1mm]ina.west);
+  \draw (5.6,0) |- ([yshift=-1mm]ina.east);
+  \node[anchor=west, cgris] at (ina.north east) {I$^2$C};
+  \node[above, font=\scriptsize\bfseries] at (6.1,0) {VBAT};
+  \draw (6.5,0) to[R, l_={\SI{1}{k\ohm}}, *-] (6.5,-1.3) to[leDo, l_={\Req{E6}}] (6.5,-2.6);
+  \draw (7.7,0) to[R, l_={\SI{100}{k\ohm}}, *-] (7.7,-1.3) to[R, l_={\SI{100}{k\ohm}}] (7.7,-2.6);
+  \draw (7.7,-1.3) to[short, *-] (8.2,-1.3) node[right] {ADC\_VBAT};
+  \draw (0,-2.6) -- (9.0,-2.6);
+  \draw (prot.south) -- (2.3,-2.6);
+  % --- convertidores
+  \node[draw, fill=ffijo, minimum width=20mm, minimum height=9mm, align=center] (u1) at (10.5,-1.0)
+        {Buck-boost 3,3\,V\\[-1pt]TPS63020};
+  \node[draw, fill=cfreno!10, minimum width=20mm, minimum height=9mm, align=center] (u2) at (10.5,1.0)
+        {Elevador 5\,V\\[-1pt]2\,A (repr.)};
+  \draw (9.0,0) to[short, *-] (9.0,1.0) -- (u2.west);
+  \draw (9.0,0) -- (9.0,-1.0) -- (u1.west);
+  \draw (u1.south) -- (10.5,-2.6) -- (9.0,-2.6);
+  \draw (u2.south) -- ++(0,-0.35) node[ground]{};
+  % --- riel de 3,3 V
+  \draw (u1.east) -- (12.4,-1.0) node[right, align=left] {\textbf{+3V3}\\[-1pt]a (b)};
+  \draw (11.95,-1.0) to[C, l_={\SI{2x22}{\micro F}}, *-] (11.95,-2.4) node[ground]{};
+  % --- riel de 5 V
+  \draw (u2.east) -- (16.2,1.0);
+  \node[above, font=\scriptsize\bfseries] at (12.0,1.0) {+5V};
+  \draw (12.6,1.0) to[eC, l_={\SI{470}{\micro F}}, *-] (12.6,-0.3) node[ground]{};
+  \draw (13.6,1.0) to[D, l_={TVS}, *-] (13.6,-0.3) node[ground]{};
+  \node[draw, fill=cfreno!10, minimum width=13mm, minimum height=6mm, align=center] (sv) at (14.75,-0.15)
+        {Servo};
+  \node[draw, fill=white, minimum width=11mm, minimum height=6mm, align=center] (cam) at (15.85,-0.15)
+        {Cámaras};
+  \draw (14.75,1.0) to[nos, l_={Q1}, *-] (sv.north);
+  \draw (15.85,1.0) to[nos, l={Q2}] (cam.north);
+  \node[cgris, align=center, font=\tiny] at (15.3,-0.9) {P-MOS: SERVO\_EN, CAM\_EN};
+  % --- baliza independiente
+  \begin{scope}[shift={(12.0,-2.0)}]
+    \draw[dashed, ccuerda] (-0.25,-1.15) rectangle (4.35,0.55);
+    \node[ccuerda, anchor=north west, font=\tiny] at (-0.2,0.52) {Baliza (\Req{C8}, \Req{E8}, \Req{E9}): sin conexión};
+    \draw (0.3,-0.95) to[battery1, l_={B2}] (0.3,0.05) to[nos, l={S2}] (2.0,0.05)
+          to[buzzer] (3.7,0.05) -- (3.7,-0.95) -- (0.3,-0.95);
+  \end{scope}
+\end{circuitikz}
+\caption{Potencia: celda, protección, interruptor, medición y rieles.}
+\end{subfigure}
+
+\vspace{4mm}
+\begin{subfigure}{\textwidth}\centering
+\begin{circuitikz}[font=\scriptsize, line width=0.5pt]
+  \ctikzset{bipoles/length=0.75cm}
+  \node[draw, fill=ffijo, minimum width=34mm, minimum height=52mm, align=center] (mcu) at (8,0)
+        {\small\bfseries MCU\\ \small Cortex-M, 3,3\,V\\[2pt] \footnotesize lazo 50\,Hz\\ \footnotesize perro guardián};
+  \tikzset{per/.style={draw, fill=white, minimum width=30mm, minimum height=6mm, align=center}}
+  % izquierda: bus I2C y SPI
+  \node[per] (baro) at (1.9,2.1) {Barómetro MS5611};
+  \node[per] (imu)  at (1.9,1.25) {IMU $\pm16\,g$ (repr.)};
+  \node[per] (ina2) at (1.9,0.4) {INA219 (V, I)};
+  \node[per] (fram) at (1.9,-0.45) {FRAM MB85RC256V};
+  \node[per] (sd)   at (1.9,-1.45) {Tarjeta SD};
+  \draw[line width=1.2pt, cfijo] (4.3,2.1) -- (4.3,-0.45);
+  \foreach \n in {baro,imu,ina2,fram} \draw[cfijo] (\n.east) -- (4.3,0 |- \n.east) node[circ]{};
+  \draw[cfijo, line width=1.2pt] (4.3,0.8) -- (mcu.west |- 0,0.8) node[right, black] {I2C};
+  \draw[cfijo] (sd.east) -- (mcu.west |- sd.east) node[right, black] {SPI};
+  \draw (mcu.west |- 0,-2.2) node[right] {VBAT\textsubscript{RTC}} to[battery1, l_={CR1220 (\Req{F2})}] (3.4,-2.2) -- (3.4,-2.45) node[ground]{};
+  % derecha: UART, PWM, hall, cámaras, panel
+  \node[per] (gps)  at (14.1,2.1) {GPS (repr.)};
+  \node[per] (xb)   at (14.1,1.25) {Radio XBee (\Req{X1})};
+  \draw (gps.west) -- (mcu.east |- gps.west) node[left] {UART1};
+  \draw (xb.west) -- (mcu.east |- xb.west) node[left] {UART2};
+  \draw (xb.east) -- ++(0.35,0) node[antenna, anchor=south]{};
+  \node[per, fill=cfreno!10] (srv) at (14.1,0.35) {Servo de traba};
+  \draw (mcu.east |- srv.west) node[left] {PWM} to[R, l={\SI{1}{k\ohm}}] (11.4,0.35) -- (srv.west);
+  \draw (11.65,0.35) to[R, l_={\SI{10}{k\ohm}}, *-] (11.65,-0.55) node[ground]{};
+  \node[per, fill=frot] (hall) at (14.1,-1.05) {Hall + 2 imanes};
+  \draw (hall.west) -- (12.6,-1.05) to[R, l_={\SI{1}{k\ohm}}] (11.0,-1.05) -- (mcu.east |- 0,-1.05) node[left] {EXTI};
+  \draw (12.6,-1.05) to[R, l={\SI{10}{k\ohm}}, *-] (12.6,-0.25) node[above, font=\tiny] {+3V3};
+  \draw (11.25,-1.05) to[C, l_={\SI{10}{nF}}, *-] (11.25,-1.85) node[ground]{};
+  \node[per] (cmr) at (14.1,-2.05) {Cámaras cenit y nadir};
+  \draw (cmr.west) -- (mcu.east |- cmr.west) node[left] {CAM\_EN, SERVO\_EN};
+  \node[per] (sol) at (14.1,-2.85) {Paneles solares (\Req{E3})};
+  \draw (sol.west) -- (mcu.east |- sol.west) node[left] {ADC (\Req{X7})};
+\end{circuitikz}
+\caption{Señales: buses, entradas con acondicionamiento y salidas.}
+\end{subfigure}
+\caption{Esquemático propuesto. «repr.»: componente representativo de su clase. La baliza
+no comparte energía ni masa con el resto (\Req{C8}). Las resistencias de \SI{10}{k\ohm} en
+el PWM y en el hall evitan movimientos del servo al arrancar y fijan el nivel del sensor de
+salida a colector abierto.}
+\label{fig:electronica-esq}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Componentes y su función. V: datos verificados en la hoja de datos; R:
+representativo.}\label{tab:electronica-comp}
+\begin{tabularx}{\textwidth}{@{}llYc@{}}
+\toprule
+\textbf{Función} & \textbf{Componente} & \textbf{Dato clave} & \\\midrule
+Medición de V e I (\Req{SN3}, \Req{SN8}) & INA219~\cite{electronica-ina219} & 0--\SI{26}{V}, \num{12} bits, $\pm\SI{320}{mV}$; con \SI{20}{m\ohm}: paso de \SI{0.5}{mA} (pide \SI{0.01}{A}) & V\\
+Riel de \SI{3.3}{V} & TPS63020~\cite{electronica-tps63020} & entrada \SIrange{1.8}{5.5}{V}, hasta 96\,\%, \SI{25}{\micro A} en reposo & V\\
+Altitud (\Req{SN1}) & MS5611~\cite{electronica-ms5611} & \SI{0.012}{mbar} RMS a OSR\,4096 ($\approx\SI{0.10}{m}$); conversión \SI{8.22}{ms} típ., \SI{9.04}{ms} máx. & V\\
+Persistencia (\Req{F1}, \Req{F5}) & MB85RC256V~\cite{electronica-mb85rc256v} & \SI{32}{KB}, $10^{12}$ escrituras por byte, I$^2$C a \SI{1}{MHz} & V\\
+Radio \SI{915}{MHz} (\Req{X1}) & XBee-PRO 900HP~\cite{electronica-xbee900} & \SI{24}{dBm}; \SI{-101}{dBm} a \SI{200}{kbit/s}; TX \SI{215}{mA}, RX \SI{29}{mA} & V\\
+Radio \SI{2.4}{GHz} (\Req{X1}) & XBee 3 PRO~\cite{electronica-xbee3} & \SI{19}{dBm}; \SI{-103}{dBm}; TX \SI{135}{mA}, RX \SI{17}{mA} & V\\
+Aceleración y giro (\Req{SN5}) & IMU de $\pm\SI{16}{g}$ & sesgo residual $\sim\SI{0.1}{m/s^2}$ tras calibrar & R\\
+Posición (\Req{SN4}) & GPS de 1--\SI{10}{Hz} & $\approx\SI{30}{mA}$ en seguimiento & R\\
+Traba & Servo MG90S & reposo \SI{10}{mA}, movimiento \SI{200}{mA}, bloqueo $\approx\SI{0.7}{A}$ (sin hoja de datos formal) & R\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Decisiones de diseño.}
+\begin{itemize}
+  \item \textbf{Celda}: 18650 de envase metálico (\Req{E1}, \Req{E2}) con lengüetas
+        soldadas y cuna impresa con precinto. \Req{M4} prohíbe los contactos de resorte,
+        así que el «portapila» de la tabla~\ref{tab:masa} no puede ser uno de resorte.
+  \item \textbf{Buck-boost para la lógica}: con el servo bloqueado la tensión de la celda cae
+        hasta \SI{2.8}{V} (sección~\ref{sec:electronica-pot}). Un regulador lineal de
+        \SI{3.3}{V}, que necesita $\gtrsim\SI{3.5}{V}$ de entrada, provocaría un reinicio por
+        baja tensión justo en el momento de la liberación.
+  \item \textbf{Barómetro a \SI{50}{Hz}}: el MS5611 necesita dos conversiones (presión y
+        temperatura) de hasta \SI{9.04}{ms} cada una, es decir \SI{18.1}{ms}, por debajo de
+        los \SI{20}{ms} del ciclo.
+  \item \textbf{Sensor hall}: va en la tapa superior fija, frente a dos imanes opuestos en
+        el cubo (dos imanes mantienen el balance). No hace falta un anillo rozante. A
+        \SI{1150}{rpm} da \SI{38}{Hz}; el filtro RC de \SI{10}{\micro s} no deforma el pulso.
+  \item \textbf{Hora de misión}: un RTC con pila de botón (permitida por \Req{E2}) sigue
+        contando durante reinicios y cortes breves, como exige \Req{F2}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1mm, y=0.34mm, font=\scriptsize]
+  % cuerpo (escala vertical 0,34 mm/mm)
+  \fill[ffijo] (0,0) rectangle (30,205);
+  \draw[cfijo, line width=0.7pt] (0,0) rectangle (30,205);
+  \foreach \ya/\yb/\txt/\col in {0/40/{Baliza, lastre, cámara nadir}/ccuerda,
+      40/70/{Anillo de traba y servo}/cfreno, 70/140/{Batería 18650}/cgris,
+      140/195/{Pila de PCB (MCU, sensores, radio)}/cfijo, 195/205/{Tapa sup., cámara cenit, hall}/cfijo}{
+    \draw[cfijo!60] (0,\ya) -- (30,\ya);
+    \node[anchor=east, align=right, text width=36mm] at (-2,{(\ya+\yb)/2}) {\txt\\[-1pt]\textcolor{cgris}{\ya--\yb\,mm}};
+  }
+  \draw[rot] (8,205) rectangle (22,222);
+  \node[anchor=east, align=right] at (-2,213.5) {Cubo del rotor};
+  \draw[cont] (8,222) rectangle (22,250);
+  \node[anchor=east, align=right] at (-2,236) {Copa del drogue};
+  % palas plegadas (etapa 1)
+  \fill[crot, opacity=0.35] (30,57) rectangle (32.5,213);
+  \node[anchor=west, crot, font=\tiny, align=left] at (33,236) {palas plegadas\\[-1pt]57--213\,mm (etapa 1)};
+  \draw[crot, -{Latex[length=1.2mm]}] (34,229) -- (32,210);
+  % batería y PCB
+  \draw[draw=cgris, fill=cgris!25] (11,72) rectangle (19,138);
+  \foreach \y in {145,160,175,190} \draw[cfijo, line width=1pt] (2,\y) -- (28,\y);
+  % antena en la zona libre inferior
+  \draw[ccont, line width=1.2pt, decorate, decoration={coil, aspect=0.5, segment length=1.6mm, amplitude=1.2mm}] (25,8) -- (25,38);
+  \node[ccont, anchor=west, font=\tiny] at (33,22) {antena (zona libre $<57$\,mm)};
+  \draw[ccont] (32.5,22) -- (26.5,22);
+  % arnés
+  \draw[ccuerda, line width=0.9pt] (25,40) -- (25,145);
+  \draw[cfreno, line width=0.9pt] (5,55) -- (5,145);
+  \draw[cgris, line width=0.9pt] (15,140) -- (15,145);
+  \draw[crot, line width=0.9pt] (20,190) -- (20,203);
+  % conectores
+  \foreach \x/\y/\n in {25/145/J7, 5/145/J2, 15/141/J1, 20/195/J3, 10/198/J4, 9/30/J5}
+    \node[marca, minimum size=3.6mm] at (\x,\y) {};
+  \foreach \x/\y/\n in {25/145/7, 5/145/2, 15/141/1, 20/195/3, 10/198/4, 9/30/5}
+    \node[font=\tiny\bfseries, text=white] at (\x,\y) {\n};
+  % leyenda
+  \node[anchor=north west, align=left, font=\scriptsize, text width=62mm] at (55,250) {%
+    \textbf{Conectores con traba} (vibración \Req{S4}, choque \Req{S5}):\\[2pt]
+    \textbf{1} batería: lengüetas soldadas + conector de 2 vías con traba (\Req{M4})\\
+    \textbf{2} servo: 3 vías (5\,V, GND, PWM), cable trenzado\\
+    \textbf{3} hall: 3 vías (3,3\,V, GND, señal), cable corto\\
+    \textbf{4} cámara cenit: 5\,V, GND, control\\
+    \textbf{5} cámara nadir: ídem; baliza con su propio cableado\\
+    \textbf{7} antena: coaxial fino con conector a rosca o pegado\\[3pt]
+    Interruptores S1 y S2 en orificios $\le\SI{10}{mm}$ (\Req{E5}) ubicados en los huecos
+    entre palas plegadas. Todo cable con alivio de tensión y adhesivo en la ficha.};
+\end{tikzpicture}
+\caption{Arnés y conectores sobre la distribución de alturas de la
+tabla~\ref{tab:largo} (escala vertical comprimida). En la etapa~1 las palas de carbono,
+conductoras, cubren el cuerpo entre 57 y \SI{213}{mm}; la antena debe quedar debajo.}
+\label{fig:electronica-arnes}
+\end{figure}
+
+%=====================================================================
+\section{Presupuesto de potencia y caída de tensión}\label{sec:electronica-pot}
+
+La energía no es crítica: la misión completa consume \SI{2.2}{Wh} de los \SI{8.6}{Wh}
+utilizables. Lo crítico es la caída de tensión cuando arranca el servo, que define la
+arquitectura de reguladores. La tabla~\ref{tab:electronica-pot} refina la
+tabla~\ref{tab:energia} por estado; las potencias están medidas a la entrada de los
+convertidores (rendimientos de 0,90 y 0,88).
+
+\begin{table}[H]
+\centering\small
+\caption{Potencia y energía por estado (\texttt{analysis/electronica\_potencia.py}). Riel de
+\SI{3.3}{V}: \SI{173}{mA}, de los cuales la radio aporta \SI{32.7}{mA} en promedio (RX
+continuo y \SI{20}{ms} de TX por paquete).}\label{tab:electronica-pot}
+\begin{tabular}{@{}lcccr@{}}
+\toprule
+\textbf{Estado} & \textbf{Cámaras} & \textbf{Duración} & \textbf{Potencia} [W] & \textbf{Energía} [mWh]\\\midrule
+\texttt{LAUNCH\_PAD} (\Req{E7}) & no & \SI{2}{h} & 0,69 & \num{1385}\\
+\texttt{ASCENT} y \texttt{APOGEE} & sí & \SI{13}{s} & 2,74 & 10\\
+\texttt{DESCENT} & sí & \SI{11}{s} & 2,74 & 8\\
+\texttt{PROBE\_RELEASE} (servo \SI{0.3}{s}) & sí & \SI{3}{s} & 2,85 & 2\\
+\texttt{PAYLOAD\_RELEASE} & sí & \SI{90}{s} & 2,74 & 68\\
+\texttt{LANDED} (recuperación) & \SI{60}{s} & \SI{1}{h} & 0,73 & 726\\\midrule
+\textbf{Total} & & & & \textbf{\num{2200}}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con \SI{3000}{mAh} a \SI{3.6}{V} y una reserva del 20\,\% por frío, envejecimiento y corte
+a \SI{3.3}{V}, quedan \SI{8.64}{Wh}: un factor de margen de 3,9. La autonomía es de
+\SI{12.5}{h} en el modo de plataforma y de \SI{3.2}{h} con todo encendido. Encender las
+cámaras al detectar el despegue es lo que permite cumplir \Req{E7} con holgura.
+
+\paragraph{Caída de tensión.} La carga de los convertidores es de potencia constante $P$,
+así que la tensión en bornes $V$ de una celda con tensión en vacío $V_{oc}$ y resistencia
+total $R$ (celda, protección, fusible, interruptor, shunt y cables) cumple $V = V_{oc} -
+RP/V$:
+\begin{equation}
+  V = \frac{V_{oc} + \sqrt{V_{oc}^2 - 4RP}}{2}.
+  \label{eq:electronica-caida}
+\end{equation}
+Con el servo bloqueado ($\approx\SI{0.7}{A}$ a \SI{5}{V}) y las cámaras encendidas,
+$P=\SI{6.66}{W}$. Para $R=\SI{0.17}{\ohm}$ (celda nueva) y $V_{oc}=\SI{3.4}{V}$ (final de la
+descarga) resulta $V=\SI{3.03}{V}$ con \SI{2.2}{A}; para $R=\SI{0.25}{\ohm}$ (celda fría o
+envejecida), $V=\SI{2.81}{V}$. El buck-boost sigue regulando hasta \SI{1.8}{V}; un regulador
+lineal no.
+
+\paragraph{Condensador del riel de 5 V.} Mientras el lazo del elevador reacciona
+(tiempo $\Delta t$), el condensador entrega el escalón de corriente $I$ del servo:
+\begin{equation}
+  \Delta V \approx \frac{I\,\Delta t}{C} + I\,R_{\mathrm{ESR}}.
+  \label{eq:electronica-cap}
+\end{equation}
+Con $I=\SI{0.7}{A}$, $R_{\mathrm{ESR}}=\SI{30}{m\ohm}$ y $C=\SI{470}{\micro F}$, la caída
+es de \SIrange{95}{170}{mV} para $\Delta t=\SIrange{50}{100}{\micro s}$, un 2--3\,\% del
+riel. Con \SI{220}{\micro F} llegaría a \SI{340}{mV}. El diodo TVS absorbe la fuerza
+contraelectromotriz del motor al frenar.
+
+%=====================================================================
+\section{Estimación de altura y velocidad}\label{sec:electronica-kf}
+
+Un filtro de Kalman~\cite{electronica-kalman1960} de dos estados fusiona la IMU y el
+barómetro. Entrega la altura con \SI{0.06}{m} y la velocidad con \SI{0.07}{m/s} de desvío
+teórico, sin el retardo de un promedio móvil.
+
+\subsection{Modelo}
+El estado es $\mathbf{x}=[h\;\;v]^{\mathsf T}$ (altura sobre el punto de \texttt{CAL} y
+velocidad vertical, positivas hacia arriba). La IMU es la \emph{entrada}: con el eje $+Z$
+hacia el nadir del anexo, la fuerza específica hacia arriba es $f=-a_Z$ y la aceleración
+vertical es $u=f-g$. Con paso $\Delta t=\SI{0.02}{s}$:
+\begin{equation}
+  \mathbf{x}_k = \underbrace{\begin{bmatrix}1&\Delta t\\0&1\end{bmatrix}}_{F}\mathbf{x}_{k-1}
+  + \underbrace{\begin{bmatrix}\Delta t^2/2\\ \Delta t\end{bmatrix}}_{G}(u_k + w_k),
+  \qquad z_k = \underbrace{[1\;\;0]}_{H}\,\mathbf{x}_k + n_k,
+  \label{eq:electronica-modelo}
+\end{equation}
+donde $z_k$ es la altura barométrica (atmósfera ISA referida a $p_0$),
+$w_k\sim\mathcal N(0,\sigma_a^2)$ agrupa el error de la aceleración y
+$n_k\sim\mathcal N(0,\sigma_b^2)$ el del barómetro. Las ecuaciones del filtro son las
+habituales~\cite{electronica-simon2006}:
+\begin{equation}
+\begin{aligned}
+  \hat{\mathbf x}^- &= F\hat{\mathbf x} + G u, & P^- &= FPF^{\mathsf T} + GG^{\mathsf T}\sigma_a^2,\\
+  \nu &= z - H\hat{\mathbf x}^-, & S &= HP^-H^{\mathsf T} + \sigma_b^2,\\
+  K &= P^-H^{\mathsf T}S^{-1}, & \hat{\mathbf x} &= \hat{\mathbf x}^- + K\nu,\quad P=(I-KH)P^-.
+\end{aligned}
+\label{eq:electronica-kf}
+\end{equation}
+
+\paragraph{Compuerta de innovación.} Una medición se rechaza si $\nu^2/S>25$ (5 desvíos).
+Si se rechazan 50 seguidas (\SI{1}{s}), el filtro se «re-ancla»: suma $\nu^2$ a $P_{00}$ y
+acepta la medición. La compuerta elimina los valores atípicos y el pico de presión de la
+expulsión; el re-anclaje evita que un filtro divergido quede ciego.
+
+\paragraph{Choque.} Si después del despegue $|f|>6\,g$, la muestra de la IMU se descarta
+(se mantiene la anterior y se aumenta $\sigma_a$). El choque de la expulsión no se integra
+como velocidad falsa, y queda registrado como un voto de apogeo
+(sección~\ref{sec:electronica-logica}).
+
+\subsection{Régimen permanente y sintonía}
+En régimen permanente el filtro es un sistema de segundo orden con frecuencia propia y
+amortiguamiento que dependen solo del cociente de ruidos. Con las densidades espectrales
+$q=\sigma_a^2\Delta t$ y $r=\sigma_b^2\Delta t$, la solución de la ecuación de Riccati del
+filtro continuo~\cite{electronica-kalmanbucy1961} es
+\begin{equation}
+  P_{hh}=\sqrt2\,q^{1/4}r^{3/4},\quad P_{hv}=\sqrt{qr},\quad P_{vv}=\sqrt2\,q^{3/4}r^{1/4},
+  \qquad
+  \omega_n=\Bigl(\frac qr\Bigr)^{1/4}=\sqrt{\frac{\sigma_a}{\sigma_b}},\quad \zeta=\frac{1}{\sqrt2}.
+  \label{eq:electronica-riccati}
+\end{equation}
+La tabla~\ref{tab:electronica-sintonia} da los valores elegidos. El ruido del MS5611 en
+la hoja de datos es de \SI{0.10}{m}; en vuelo se supone el triple por el flujo alrededor
+de los orificios, los cambios de temperatura y la turbulencia. Con
+$\sigma_a=\SI{0.5}{m/s^2}$ y $\sigma_b=\SI{0.3}{m}$ resulta $\omega_n=\SI{1.29}{rad/s}$
+($\SI{0.21}{Hz}$), $\sigma_h=\SI{0.057}{m}$ y $\sigma_v=\SI{0.074}{m/s}$. La ecuación de
+Riccati discreta da los mismos valores, con ganancias $K=[\num{0.0359};\
+\SI{0.0327}{s^{-1}}]$. Subir $\sigma_a$ hace al filtro más rápido y más ruidoso; bajarlo lo
+vuelve sensible al sesgo del acelerómetro.
+
+\begin{table}[H]
+\centering\small
+\caption{Sintonía del filtro.}\label{tab:electronica-sintonia}
+\begin{tabularx}{\textwidth}{@{}lcY@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Origen}\\\midrule
+$\sigma_b$ (barómetro) & \SI{0.3}{m} & 3 veces el RMS del MS5611 a OSR\,4096 (\SI{0.10}{m}); supuesto\\
+$\sigma_a$ (planeo y descenso) & \SI{0.5}{m/s^2} & sesgo residual $\sim\SI{0.1}{m/s^2}$ más inclinación de \ang{10}: $g(1-\cos\theta)=\SI{0.15}{m/s^2}$\\
+$\sigma_a$ (motor) & \SI{5}{m/s^2} & vibración y saturación de la IMU durante $\approx\SI{2.6}{s}$\\
+$\sigma_a$ (modo simulación) & \SI{3}{m/s^2} & sin IMU: el filtro solo usa la presión de \texttt{SIMP}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Errores de escala y de cero.} El criterio del 80\,\% es un cociente, y eso lo
+protege. Si la altura medida es $h_m=s\,h+\delta$ (error de escala $s$ por la temperatura
+real del aire y deriva $\delta$ de la presión desde el \texttt{CAL}), la condición
+$h_m=0{,}8\,h_{m,\max}$ se cumple en
+\begin{equation}
+  h = 0{,}8\,h_{\max} - 0{,}2\,\delta/s.
+  \label{eq:electronica-cociente}
+\end{equation}
+El error de escala se cancela y solo el 20\,\% de la deriva pasa a la liberación: una deriva
+de \SI{0.5}{hPa} en \SI{2}{h} de espera ($\approx\SI{4}{m}$) la corre menos de \SI{1}{m}.
+
+%=====================================================================
+\section{Simulación del vuelo y comparación de lógicas}\label{sec:electronica-sim}
+
+El script \texttt{analysis/electronica\_kalman.py} simula el vuelo, los sensores y tres
+lógicas de decisión. La lógica propuesta (C) libera al 80\,\% con un error mediano de
+\SI{-0.3}{m}; las lógicas ingenuas fallan por los valores atípicos o por el pico de la
+expulsión.
+
+\paragraph{Perfil sintético.} Plataforma \SI{5}{s}; motor de \SI{1.6}{s} a
+\SI{80}{m/s^2} netos; planeo balístico con arrastre $k=\SI{5.26e-4}{m^{-1}}$, que lleva al
+apogeo nominal de \SI{700}{m} a los \SI{12.1}{s}; expulsión cerca del apogeo; \SI{0.5}{s}
+de caída del cuerpo solo; drogue con $\Vd=\SI{13.4}{m/s}$; tras la liberación, transición a
+$\Vr=\SI{6.4}{m/s}$ con constante de tiempo de \SI{1.5}{s}. Sensores: barómetro con ruido
+blanco $\sigma_b$ y valores atípicos de \SIrange{5}{30}{m} en el 0,2\,\% de las muestras;
+IMU con sesgo, ruido de \SI{0.05}{m/s^2}, vibración del motor de \SI{3}{m/s^2},
+oscilación de hasta \ang{15} bajo el drogue, choque de expulsión y saturación a $16\,g$.
+
+\paragraph{Escenarios.} En el escenario~1 solo hay ruido y valores atípicos. El
+escenario~2 agrega dos efectos supuestos (no medidos): un pulso de sobrepresión de la carga
+de expulsión de \SIrange{1}{4}{kPa} durante \SIrange{0.05}{0.3}{s} (lectura \SIrange{83}{333}{m}
+más baja) y un error de presión dinámica $k_q v^2/2g$ con $k_q\le0{,}02$ durante el ascenso.
+En el Monte Carlo (\num{2000} vuelos por escenario) varían el empuje, el arrastre (apogeos de
+\SIrange{520}{890}{m} entre los percentiles 5 y 95), $\Vd\sim\mathcal N(13{,}4;\,0{,}7)$,
+$\sigma_b\in[0{,}1;\,0{,}5]$\,m, el sesgo, el momento de la expulsión ($-1$ a $+2$\,s respecto
+del apogeo) y el choque (3 a $30\,g$).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[name=ah, width=\textwidth, height=5.0cm, xmin=0, xmax=125, ymin=-20, ymax=760,
+    ylabel={Altura [m]}, xticklabels={}, legend style={font=\scriptsize, at={(0.99,0.97)}, anchor=north east},
+    legend cell align=left]
+  \addplot[cgris!60, line width=0.4pt] table[x=t, y=zb] {analysis/data/electronica_kalman_vuelo.dat};
+  \addplot[black, line width=1.2pt] table[x=t, y=h] {analysis/data/electronica_kalman_vuelo.dat};
+  \addplot[cfijo, line width=0.7pt, dashed] table[x=t, y=hk] {analysis/data/electronica_kalman_vuelo.dat};
+  \legend{barómetro, real, Kalman}
+  \draw[cfreno, dashed] (17.58,-20) -- (17.58,760) node[pos=0.06, right, font=\scriptsize] {apogeo};
+  \draw[cfreno, dashed] (28.40,-20) -- (28.40,760) node[pos=0.06, right, font=\scriptsize] {liberación};
+  \draw[ccuerda, dashed] (113.7,-20) -- (113.7,760) node[pos=0.94, left, font=\scriptsize] {suelo};
+  \draw[cgris, densely dotted] (0,561) -- (125,561) node[pos=0.55, above, font=\scriptsize] {$0{,}8\,h_{\max}=\SI{561}{m}$};
+\end{axis}
+\begin{axis}[at={(ah.south west)}, anchor=north west, yshift=-2mm, width=\textwidth, height=3.6cm,
+    xmin=0, xmax=125, ymin=-0.6, ymax=0.6, xlabel={Tiempo [s]}, ylabel={Error},
+    legend style={font=\scriptsize, at={(0.99,0.97)}, anchor=north east}, legend columns=2]
+  \addplot[cfijo, line width=0.5pt] table[x=t, y=eh] {analysis/data/electronica_kalman_vuelo.dat};
+  \addplot[crot, line width=0.5pt] table[x=t, y=ev] {analysis/data/electronica_kalman_vuelo.dat};
+  \legend{$\hat h-h$ [m], $\hat v-v$ [m/s]}
+\end{axis}
+\end{tikzpicture}
+\caption{Vuelo nominal en lazo cerrado (escenario 2). La lógica C detecta el apogeo
+\SI{0.52}{s} después del real y libera a \SI{560.5}{m} (79,9\,\% de \SI{701.4}{m}), a
+\SI{0.04}{s} del cruce real del 80\,\%. Los errores durante el motor (fuera de escala, hasta
+$\approx\SI{3}{m}$ por el error de presión dinámica) se anulan antes del apogeo.}
+\label{fig:electronica-vuelo}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.52\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=640, ymax=712,
+    xlabel={$t-t_{\mathrm{apogeo}}$ [s]}, ylabel={Altura [m]},
+    legend style={font=\scriptsize, at={(0.02,0.03)}, anchor=south west}, legend cell align=left]
+  \addplot[cgris!60, line width=0.4pt] table[x=tr, y=zb] {analysis/data/electronica_kalman_apogeo.dat};
+  \addplot[black, line width=1.1pt] table[x=tr, y=h] {analysis/data/electronica_kalman_apogeo.dat};
+  \addplot[ccuerda, line width=0.8pt] table[x=tr, y=he] {analysis/data/electronica_kalman_apogeo.dat};
+  \addplot[cfijo, line width=0.8pt, dashed] table[x=tr, y=hk] {analysis/data/electronica_kalman_apogeo.dat};
+  \legend{barómetro, real, EMA (B), Kalman (C)}
+  \node[font=\scriptsize, align=center, cfreno] at (axis cs:2.4,700) {pico de expulsión:\\lectura en \SI{491}{m}};
+  \draw[cfreno, -{Latex[length=1.6mm]}] (axis cs:1.5,697) -- (axis cs:0.62,688);
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.52\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=-30, ymax=30,
+    xlabel={$t-t_{\mathrm{apogeo}}$ [s]}, ylabel={Velocidad [m/s]},
+    legend style={font=\scriptsize, at={(0.98,0.97)}, anchor=north east}, legend cell align=left]
+  \addplot[black, line width=1.1pt] table[x=tr, y=v] {analysis/data/electronica_kalman_apogeo.dat};
+  \addplot[ccuerda, line width=0.8pt] table[x=tr, y=ve] {analysis/data/electronica_kalman_apogeo.dat};
+  \addplot[cfijo, line width=0.8pt, dashed] table[x=tr, y=vk] {analysis/data/electronica_kalman_apogeo.dat};
+  \legend{real, EMA (B), Kalman (C)}
+\end{axis}
+\end{tikzpicture}
+\caption{Detalle del apogeo y de la expulsión (a $+\SI{0.52}{s}$) del vuelo nominal. El pico
+de \SI{2.5}{kPa} lleva la lectura cruda a \SI{491}{m}, por debajo del umbral de
+\SI{561}{m}: la lógica A libera en ese instante a \SI{700}{m}. La EMA baja hasta
+\SI{599}{m} y su velocidad hasta \SI{-299}{m/s}. El filtro C rechaza las muestras del pico
+y no se aparta de la altura real.}
+\label{fig:electronica-apogeo}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Monte Carlo de \num{2000} vuelos por escenario. Retardo: tiempo entre el apogeo real
+y su detección. Error de liberación: altura real al liberar menos $0{,}8\,h_{\max}$.
+Prematura: por encima del 85\,\% de $h_{\max}$; tardía: por debajo del 75\,\% o sin
+liberar.}\label{tab:electronica-mc}
+\begin{tabular}{@{}clcccccc@{}}
+\toprule
+& & \multicolumn{2}{c}{\textbf{Retardo de apogeo} [s]} & \textbf{Apogeo} & \multicolumn{3}{c}{\textbf{Liberación}}\\
+\cmidrule(lr){3-4}\cmidrule(lr){6-8}
+\textbf{Esc.} & \textbf{Lógica} & mediana & p95 & \textbf{falso} [\%] & error mediano [m] & prematura [\%] & tardía [\%]\\\midrule
+1 & A: crudo, umbrales     & 0,34 & 0,52 & 37,5 & $+0{,}2$ & 0,2 & 28,4\\
+1 & B: EMA y derivada      & 0,54 & 0,58 & 0,8  & $-3{,}4$ & 0,0 & 0,8\\
+1 & C: Kalman y votación   & 0,70 & 0,78 & 0,0  & $-0{,}3$ & 0,0 & 0,0\\\midrule
+2 & A: crudo, umbrales     & $-0{,}30$ & 0,50 & 45,6 & $+107$ & 60,3 & 24,1\\
+2 & B: EMA y derivada      & 0,50 & 0,56 & 13,4 & $-3{,}4$ & 28,8 & 0,9\\
+2 & C: Kalman y votación   & 0,70 & 0,80 & 0,1  & $-0{,}3$ & 0,0 & 0,0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Lectura de la tabla.}
+\begin{itemize}
+  \item \textbf{A} toma el máximo de las lecturas crudas: un valor atípico positivo en el
+        ascenso infla $h_{\max}$, las muestras siguientes quedan por debajo y declara un
+        apogeo falso (37,5\,\%). Con $h_{\max}$ congelado bajo, libera tarde (28,4\,\%).
+  \item \textbf{B} filtra los atípicos, pero su retardo de $\approx\SI{0.23}{s}$ hace que
+        libere \SI{3.4}{m} tarde, y el pulso de expulsión la hace liberar casi en el apogeo
+        en el 28,8\,\% de los vuelos.
+  \item \textbf{C} detecta el apogeo algo más tarde (exige dos votos), pero estima
+        $h_{\max}$ con \SI{0.05}{m} de error mediano. Su error de liberación tiene un p95 de
+        \SI{0.5}{m} (escenario 1) y \SI{0.6}{m} (escenario 2). Los 2 apogeos «falsos» del
+        escenario 2 se adelantan \SI{0.5}{s} con el CanSat expulsado aún subiendo a
+        \SI{5}{m/s}; liberan igual al 80,3 y al 80,7\,\%.
+  \item En la etapa 1 los errores RMS de C son \SI{0.09}{m} y \SI{0.14}{m/s}, mayores que
+        los teóricos (\SI{0.06}{m}, \SI{0.07}{m/s}) porque el sesgo y la oscilación no son
+        ruido blanco.
+\end{itemize}
+
+\begin{nota}[Límites del modelo]
+El barómetro simulado es ruido blanco más pulsos. No incluye el retardo de los orificios de
+ventilación, el transitorio térmico al salir del cohete ni el cambio del flujo alrededor del
+cuerpo cuando arranca el rotor. Este último puede dar un escalón de pocos metros justo
+después de liberar; no afecta la decisión, que ya se tomó, pero sí la velocidad medida en
+esos segundos. El pulso de expulsión es una hipótesis de estrés: debe medirse con un ensayo
+de expulsión en tierra con el CanSat dentro del cohete.
+\end{nota}
+
+%=====================================================================
+\section{Lógica robusta y recuperación tras reinicios}\label{sec:electronica-logica}
+
+Cada decisión irreversible combina varias evidencias, una ventana de tiempo plausible y un
+respaldo independiente del barómetro. El estado se guarda de forma que un reinicio no la
+repita ni la pierda.
+
+\paragraph{Apogeo (2 de 3 votos).} V1: $\hat v<\SI{-1}{m/s}$ durante \SI{0.2}{s}; V2:
+$\hat h_{\max}-\hat h>\SI{3}{m}$; V3: choque de expulsión ($|f|>6\,g$). El apogeo se
+acepta si hay dos votos, han pasado \SI{4}{s} desde el despegue (bloqueo) y el filtro
+convergió ($\sigma_v<\SI{2}{m/s}$). Si a los \SI{40}{s} del despegue no se detectó, se
+declara igual. La guarda de
+convergencia apareció en la prueba del firmware: sin ella, un reinicio a mitad del ascenso
+dejaba $\hat v=0$, la IMU llevaba $\hat v$ a valores negativos y se declaraba un apogeo
+falso.
+
+\paragraph{Liberación.} Se ordena cuando se cumplen tres condiciones durante
+$T_p=\SI{0.2}{s}$: el estado es \texttt{DESCENT}, $\hat h+\hat v\,T_p\le0{,}8\,h_{\max}$ (el
+término $\hat vT_p$ compensa la espera) y
+$t-t_{\mathrm{apo}}\ge0{,}2\,h_{\max}/V_{\lim}$ con $V_{\lim}=\SI{40}{m/s}$ (ningún descenso
+real recorre el 20\,\% más rápido). El \textbf{respaldo por tiempo} sale de la caída desde
+el reposo con arrastre cuadrático, $\Delta h=(V^2/g)\ln\cosh(gt/V)\approx Vt-(V^2/g)\ln2$:
+\begin{equation}
+  t_{\mathrm{res}} = t_{\mathrm{apo}} + \frac{0{,}2\,h_{\max}}{V_{\min}} + \frac{V_{\min}}{g}\ln2,
+  \qquad V_{\min}=\SI{10}{m/s}.
+  \label{eq:electronica-timer}
+\end{equation}
+Para \SI{700}{m} da \SI{14.7}{s}, más tarde que la liberación barométrica nominal
+(\SI{10.8}{s} después de detectar el apogeo); en el Monte Carlo nunca actuó. Si el
+barómetro falla, el temporizador libera a $\approx$76, 74 o 71\,\% de $h_{\max}$ para
+$\Vd=12$, 13,4 o \SI{15}{m/s}: tarde, pero dentro de lo que \Req{C4} tolera.
+
+\paragraph{Salud del barómetro y GPS.} El barómetro se declara en falla tras \SI{0.5}{s} sin
+lecturas válidas, o si en el descenso difiere en más de \SI{50}{m} de la altura GPS durante
+\SI{3}{s}. En ese caso $h_{\max}$ se toma del GPS y solo actúa el temporizador.
+
+\paragraph{Persistencia (\Req{F1}, \Req{F5}).} Un registro de \SI{40}{bytes} (estado,
+traba, modo, $p_0$, $h_{\max}$, última altura, hora del apogeo y contador de paquetes) se
+escribe en la FRAM en dos copias alternadas con número de secuencia y CRC-32. Si un corte
+interrumpe una escritura, la otra copia sigue siendo válida. Se escribe en cada cambio de
+estado, en cada comando y en cada paquete, y a \SI{5}{Hz} durante el ascenso. Con unas 10
+escrituras por segundo, las $10^{12}$ escrituras de la FRAM no son una limitación.
+
+\paragraph{Perro guardián.} El temporizador de \SI{1}{s} solo se reinicia si el lazo de
+control corrió en los últimos \SI{100}{ms}. Un bloqueo del bus I$^2$C o de la SD termina en
+un reinicio limpio, y la tabla~\ref{tab:electronica-recup} define qué pasa después. Al
+arrancar, el PWM del servo se fija según la traba guardada \emph{antes} de encender su riel:
+un reinicio en vuelo no vuelve a trabar ni mueve el anillo.
+
+\begin{table}[H]
+\centering\small
+\caption{Recuperación tras un reinicio, según el estado guardado. Última columna: prueba del
+firmware en la PC con un corte de \SI{0.3}{s} (liberación nominal a \SI{28.38}{s}).}
+\label{tab:electronica-recup}
+\begin{tabularx}{\textwidth}{@{}lYc@{}}
+\toprule
+\textbf{Estado guardado} & \textbf{Acción al arrancar} & \textbf{Prueba (corte en $t$)}\\\midrule
+\texttt{LAUNCH\_PAD} & Conserva $p_0$, contador y traba; espera el despegue & ---\\
+\texttt{ASCENT} & Filtro con $h$ del barómetro y $v$ libre ($\sigma_v=\SI{100}{m/s}$); bloqueo de \SI{2}{s}; $h_{\max}$ guardado & 5,5 a \SI{17.3}{s}: libera a 28,36--\SI{28.38}{s}\\
+\texttt{APOGEE}, \texttt{DESCENT} & Pasa a \texttt{DESCENT}; recupera $h_{\max}$ y la hora del apogeo (RTC) para el temporizador & 17,7 a \SI{28.0}{s}: libera a 28,38--\SI{28.54}{s}\\
+\texttt{PROBE\_RELEASE} & Reafirma «liberado» y vuelve a esperar el giro & \SI{29}{s}: giro confirmado a \SI{30.30}{s}\\
+\texttt{PAYLOAD\_RELEASE} & Mantiene; solo espera el aterrizaje & 60 y \SI{120}{s}: sin cambios\\
+\texttt{LANDED} & Mantiene; apaga cámaras a los \SI{60}{s} & ---\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Software de vuelo}\label{sec:electronica-fw}
+
+El archivo \texttt{analysis/electronica\_firmware.cpp} (\num{410} líneas) contiene la
+lógica completa en C++ para Arduino/PlatformIO. El acceso al hardware queda en funciones
+\texttt{hal\_*} que se implementan con las bibliotecas de cada componente. El lazo principal
+corre el control a \SI{50}{Hz}, la telemetría a \SI{1}{Hz} y lee comandos en cada vuelta.
+
+\begin{table}[H]
+\centering\small
+\caption{Comandos (\texttt{CMD,<TEAM\_ID>,\ldots}). Los opcionales están permitidos por el
+anexo; \texttt{SIM} y \texttt{SIMP} siguen la guía de la competencia~\cite{cansat2025}.}
+\label{tab:electronica-cmd}
+\begin{tabularx}{\textwidth}{@{}lYl@{}}
+\toprule
+\textbf{Comando} & \textbf{Acción y protecciones} & \textbf{Eco}\\\midrule
+\texttt{CX,ON|OFF} & Activa la telemetría; también se activa sola en \texttt{APOGEE} (\Req{X4}) & \texttt{CXON}\\
+\texttt{ST,hh:mm:ss|GPS} & Ajusta el RTC (\Req{F3}) & \texttt{ST13:35:59}\\
+\texttt{CAL} & $p_0$ = media de \SI{1}{s}, $h_{\max}=0$, contador a cero; \textbf{solo en tierra} & \texttt{CAL}\\
+\texttt{MEC,LATCH,ON|OFF} & \texttt{ON} libera (siempre); \texttt{OFF} traba (solo en \texttt{LAUNCH\_PAD}) & \texttt{MECLATCHON}\\
+\texttt{MEC,CAM,ON|OFF} & Cámaras (prueba en tierra) & \texttt{MECCAMON}\\
+\texttt{PWR,ON|OFF} (opc.) & Agrega la tensión del panel solar (\Req{X7}) & \texttt{PWRON}\\
+\texttt{SIM,ENABLE|ACTIVATE|DISABLE} (opc.) & Modo simulación, solo en plataforma; \texttt{MODE}=\texttt{S} & \texttt{SIMACTIVATE}\\
+\texttt{SIMP,<Pa>} (opc.) & Presión simulada; reemplaza al barómetro & \texttt{SIMP101325}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Un comando con otro número de equipo o con argumentos inválidos se descarta sin eco. El
+paquete agrega, después de las dos comas del anexo, \texttt{ROTOR\_RPM}, \texttt{LATCH} y la
+tensión del panel. Este es un paquete real que generó el firmware en la prueba, un segundo
+después de liberar:
+\begin{lstlisting}[numbers=none, basicstyle=\ttfamily\scriptsize, breaklines=true]
+1000,13:36:26,26,F,PROBE_RELEASE,552.6,21.5,94.9,3.9,0.74,0.0,0.0,4.0,0.12,-0.05,-12.07,13:36:27,672.6,-31.4201,-64.1888,9,PWRON,,158,1,2.35
+\end{lstlisting}
+El anexo pide \texttt{ACCEL} en «grados por segundo al cuadrado»; se transmite en
+\si{m/s^2} y conviene confirmar la unidad con la organización.
+
+\paragraph{rpm por interrupción.} La interrupción guarda el período entre pulsos y descarta
+los menores de \SI{4}{ms} (rebotes). El lazo toma la mediana de los tres últimos períodos,
+que elimina un pulso perdido o uno espurio, y la suaviza. El rotor se declara detenido si no
+llega un pulso en $\max(\SI{0.5}{s},\,3T)$, con tope de \SI{1.5}{s}. Con
+\texttt{micros()} la resolución es de \SI{1}{\micro s} sobre \SI{26}{ms}.
+
+\lstinputlisting[language=C++, firstline=133, lastline=156, firstnumber=133,
+  caption={Medición de rpm (extracto de \texttt{electronica\_firmware.cpp}).},
+  label={lst:electronica-rpm}]{analysis/electronica_firmware.cpp}
+
+\lstinputlisting[language=C++, firstline=237, lastline=268, firstnumber=237,
+  caption={Apogeo por votación y liberación (extracto).},
+  label={lst:electronica-estados}]{analysis/electronica_firmware.cpp}
+
+\paragraph{Prueba en la PC (software en el lazo).} El banco
+\texttt{analysis/electronica\_sil.cpp} compila el firmware sin cambios. Reproduce a
+\SI{1}{kHz} los sensores del vuelo nominal de la figura~\ref{fig:electronica-vuelo}, envía
+comandos, genera los pulsos del hall con un rotor que arranca con $\tau=\SI{1.5}{s}$ e
+inyecta reinicios. Los resultados:
+\begin{itemize}
+  \item Las transiciones coinciden con el modelo en Python: \texttt{ASCENT} a
+        \SI{5.08}{s}, \texttt{APOGEE} a \SI{17.58}{s} y liberación a \SI{28.38}{s}
+        (\SI{28.40}{s} en Python).
+  \item \texttt{PAYLOAD\_RELEASE} llega \SI{1.92}{s} después de liberar. Como el arranque
+        real puede tardar \SIrange{3}{6}{s} (capítulo~\ref{cap:dim}), la espera antes del
+        reintento es de \SI{8}{s}, no de \SI{5}{s}.
+  \item El rotor detenido en el suelo se informa \SI{0.5}{s} después; un \texttt{CAL} en
+        vuelo y un comando con otro número de equipo se rechazan.
+  \item El intervalo máximo entre reinicios del perro guardián fue de \SI{1}{ms}, y
+        \texttt{PACKET\_COUNT} sigue la cuenta a través de los reinicios.
+\end{itemize}
+
+%=====================================================================
+\section{Enlace de radio}\label{sec:electronica-rf}
+
+Las dos bandas de \Req{X1} cierran el enlace a \SI{2}{km} con margen amplio, pero
+\SI{915}{MHz} da unos \SI{10}{dB} más. El punto débil no es la distancia: es la antena del
+CanSat, la sombra de las palas de carbono y la pérdida del enlace tras el aterrizaje.
+
+El margen se calcula con la fórmula de Friis~\cite{electronica-friis1946}:
+\begin{equation}
+  M = P_t + G_{\mathrm{CanSat}}(\theta) + G_{\mathrm{tierra}} - L - 20\log_{10}\frac{4\pi d f}{c} - S,
+  \label{eq:electronica-friis}
+\end{equation}
+con $S$ la sensibilidad del receptor y $\theta$ el ángulo entre el eje del CanSat y la
+dirección a la estación. La antena del CanSat se modela como un dipolo vertical,
+$G(\theta)=1{,}64\,[\cos(\tfrac\pi2\cos\theta)/\sin\theta]^2$, con un piso de
+\SI{-20}{dBi} en el nulo.
+
+\begin{table}[H]
+\centering\small
+\caption{Presupuesto de enlace a \SI{2}{km} de distancia oblicua, con el CanSat a
+\SI{560}{m} ($\theta=\ang{74}$). Antenas de tierra y pérdidas: valores
+representativos.}\label{tab:electronica-enlace}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Término} & \textbf{\SI{915}{MHz}} (900HP) & \textbf{\SI{2.44}{GHz}} (XBee 3 PRO)\\\midrule
+Potencia transmitida $P_t$ & \SI{24.0}{dBm} & \SI{19.0}{dBm}\\
+Antena del CanSat a $\theta=\ang{74}$ & \SI{1.6}{dBi} & \SI{1.6}{dBi}\\
+Antena directiva de tierra, apuntada & \SI{8.0}{dBi} & \SI{10.0}{dBi}\\
+Cables (a bordo y en tierra) & \SI{-1.5}{dB} & \SI{-2.0}{dB}\\
+Polarización (oscilación de $\pm\ang{20}$) & \SI{-1.0}{dB} & \SI{-1.0}{dB}\\
+Cuerpo, cables y palas (supuesto) & \SI{-3.0}{dB} & \SI{-3.0}{dB}\\
+Pérdida en espacio libre & \SI{-97.7}{dB} & \SI{-106.2}{dB}\\
+Sensibilidad $S$ & \SI{-101}{dBm} (\SI{200}{kbit/s}) & \SI{-103}{dBm}\\\midrule
+\textbf{Margen} & \textbf{\SI{31.4}{dB}} & \textbf{\SI{21.4}{dB}}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.9\textwidth, height=5.6cm, xmin=0, xmax=2.5, ymin=-15, ymax=60,
+    xlabel={Distancia horizontal a la estación [km]}, ylabel={Margen [dB]},
+    legend style={font=\scriptsize, at={(0.99,0.97)}, anchor=north east}, legend cell align=left]
+  \addplot[cfijo, line width=1.0pt] table[x=x, y=m915a] {analysis/data/electronica_enlace.dat};
+  \addplot[crot, line width=1.0pt] table[x=x, y=m2400a] {analysis/data/electronica_enlace.dat};
+  \addplot[cfijo, line width=0.7pt, dashed] table[x=x, y=m915b] {analysis/data/electronica_enlace.dat};
+  \addplot[crot, line width=0.7pt, dashed] table[x=x, y=m2400b] {analysis/data/electronica_enlace.dat};
+  \addplot[cfreno, densely dotted, line width=0.8pt, domain=0:2.5] {10};
+  \legend{\SI{915}{MHz}, \SI{2.4}{GHz}, \SI{915}{MHz} en el suelo, \SI{2.4}{GHz} en el suelo, margen de desvanecimiento}
+\end{axis}
+\end{tikzpicture}
+\caption{Margen del enlace con el CanSat a \SI{560}{m} (Friis y diagrama del dipolo) y ya
+aterrizado, con la antena a \SI{0.3}{m} del suelo (dos rayos con reflexión $-1$,
+antena de tierra a \SI{1.5}{m}). La caída cerca de 0 es el nulo del dipolo sobre la
+estación.}
+\label{fig:electronica-enlace}
+\end{figure}
+
+\paragraph{Conclusiones del enlace.}
+\begin{itemize}
+  \item \textbf{En vuelo} el margen mínimo es de \SI{20.8}{dB} (\SI{915}{MHz}) y
+        \SI{10.8}{dB} (\SI{2.4}{GHz}), cuando el CanSat pasa sobre la estación y esta queda en
+        el nulo del dipolo. El alcance en espacio libre con \SI{10}{dB} de reserva es de
+        \SI{25}{km} y \SI{7.9}{km}.
+  \item \textbf{En el suelo}, la reflexión hace que la pérdida crezca con $d^4$ a partir del
+        punto de quiebre~\cite{electronica-rappaport2002}. El margen de \SI{10}{dB} se pierde a
+        \SIrange{0.60}{0.66}{km} y el enlace se corta a \SIrange{1.07}{1.17}{km}, casi igual
+        en las dos bandas. Por eso el último paquete con GPS antes del contacto y la baliza son los que
+        permiten recuperar el CanSat.
+  \item \textbf{Zona de Fresnel}: su radio en el punto medio de \SI{2}{km} es de \SI{12.8}{m}
+        (\SI{915}{MHz}) y \SI{7.8}{m} (\SI{2.4}{GHz}). Con el CanSat bajo, la estación debe
+        estar en un lugar alto o sobre un mástil.
+  \item \textbf{Antena del CanSat}: debe ir en la zona inferior libre ($<\SI{57}{mm}$,
+        figura~\ref{fig:electronica-arnes}). En la etapa 1 las palas de carbono plegadas
+        rodean el cuerpo entre 57 y \SI{213}{mm} y la sombrearían. A \SI{2.4}{GHz} un
+        monopolo de $\lambda/4$ (\SI{3.1}{cm}) entra en esa zona. A \SI{915}{MHz} no entra
+        (\SI{8.2}{cm}): hace falta una hélice compacta, con algunos dB menos de eficiencia,
+        que el margen de \SI{10}{dB} extra absorbe. No puede sobresalir, porque \Req{S3}
+        limita el largo total.
+  \item \textbf{Antena de tierra}: Yagi con polarización vertical, apuntada a mano. Una
+        circular perdería \SI{3}{dB} frente a la lineal del CanSat sin ganar nada mientras
+        este baje vertical.
+  \item \textbf{Configuración}: el 900HP trabaja en \SIrange{902}{928}{MHz}; hay que
+        limitar sus canales a \SIrange{915}{928}{MHz} (\Req{X1}) y verificar que el salto de
+        frecuencia lo admita. NetID o PAN ID igual al número de equipo (\Req{X2}) y envío
+        unicast a la dirección de la estación (\Req{X3}). La telemetría ocupa
+        $\approx\SI{2}{kbit/s}$, así que sobra velocidad.
+\end{itemize}
+
+%=====================================================================
+\section{Síntesis y trabajo pendiente}\label{sec:electronica-sintesis}
+
+\begin{resultado}[Recomendaciones]
+\begin{enumerate}[leftmargin=*]
+  \item Buck-boost para la lógica y elevador separado con \SI{470}{\micro F} y TVS para el
+        servo; servo energizado solo después de fijar su PWM.
+  \item Filtro de Kalman con la IMU como entrada, compuerta de innovación, votación 2 de 3,
+        anticipación $\hat vT_p$ y respaldo por tiempo (ecuación~\ref{eq:electronica-timer}).
+  \item FRAM con doble copia y CRC, RTC con pila y perro guardián condicionado al lazo de
+        control. \texttt{CAL} solo en tierra.
+  \item Radio de \SI{915}{MHz} con canales limitados a \SIrange{915}{928}{MHz}, antena en la
+        zona inferior y Yagi vertical en tierra.
+\end{enumerate}
+\end{resultado}
+
+\paragraph{Ensayos pendientes.} (1) Caída de tensión real con el servo bloqueado y la celda
+fría. (2) Ruido del barómetro dentro del cuerpo, con flujo, y pulso de presión de una carga
+de expulsión real. (3) Reinicios forzados en banco durante una reproducción del perfil.
+(4) Prueba de alcance a \SI{2}{km}, con la antena montada y las palas plegadas. (5) Ajuste
+de la espera de giro con las rpm reales del ensayo E2 (capítulo~\ref{cap:riesgos}).

@@ -9,13 +9,15 @@ ataque -> intradós -> borde de fuga. Escribe:
   <raw>/<perfil>.dat                        (formato XFOIL con nombre en la 1.a línea)
 
 Perfiles:
-  placa7   placa curvada en arco circular, flecha 7 %, espesor modelado 1,5 %
+  placa7   placa curvada en arco circular, flecha 7 %, espesor modelado 1,5 %,
+           nariz semicircular (r_BA = t/2) y bisel de fuga desde x = 0,85
   placa4   ídem, flecha 4 %
-  plana3   placa plana de 3 % de espesor
+  plana3   placa plana de 3 % de espesor, misma ley de nariz y de bisel
   clarky   fondo plano tipo Clark Y (ordenadas clásicas tabuladas, 11,7 %)
   naca6412, naca0012
   placa7_t11, placa7_t20   variantes de espesor (1,1 % = placa real de 0,5 mm; 2,0 %)
-  placa7_le2               variante con borde de ataque más romo (r_LE doble)
+  placa7_ba4               variante con nariz más aguda (r_BA = t/4), solo geometría:
+                           XFOIL casi no converge con ella (ver capítulo)
 
 Uso:  python3 analysis/polares_geom.py [directorio_raw]
 """
@@ -48,7 +50,8 @@ def espesor_placa(x, t, a_le, x_te=0.85):
     """Semiespesor de una placa de espesor t con nariz redondeada y bisel de fuga.
 
     Nariz: y = (t/2) sqrt(1 - exp(-x/a)); cerca de x=0 es una parábola y^2 = 2 r x
-    con radio r_LE = (t/2)^2 / (2 a). Bisel: factor 1 - xi^2 desde x_te hasta 1,
+    con radio r_LE = (t/2)^2 / (2 a). Con a = t/4 (valor por defecto) r_LE = t/2,
+    es decir, una nariz semicircular como la de una placa lijada a radio completo. Bisel: factor 1 - xi^2 desde x_te hasta 1,
     que deja un borde de fuga afilado con un ángulo de cuña finito.
     """
     f_le = np.sqrt(1.0 - np.exp(-x / a_le))
@@ -57,7 +60,7 @@ def espesor_placa(x, t, a_le, x_te=0.85):
     return 0.5 * t * f_le * f_te
 
 
-def placa(h, t, a_rel=0.5, x_te=0.85, n=NSIDE):
+def placa(h, t, a_rel=0.25, x_te=0.85, n=NSIDE):
     x = xcos(n)
     yc, dy = arco(x, h)
     yt = espesor_placa(x, t, a_rel * t, x_te)
@@ -153,7 +156,7 @@ PERFILES = {
     "naca0012": ("NACA 0012", lambda: naca4("0012")),
     "placa7_t11": ("Placa curvada 7 % (t 1,1 %)", lambda: placa(0.07, 0.011)),
     "placa7_t20": ("Placa curvada 7 % (t 2,0 %)", lambda: placa(0.07, 0.020)),
-    "placa7_le2": ("Placa curvada 7 % (t 1,5 %, nariz roma)", lambda: placa(0.07, 0.015, a_rel=0.25)),
+    "placa7_ba4": ("Placa curvada 7 % (t 1,5 %, nariz aguda)", lambda: placa(0.07, 0.015, a_rel=0.5)),
 }
 
 
