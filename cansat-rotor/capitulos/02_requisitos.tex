@@ -1,0 +1,59 @@
+\chapter{Requisitos que condicionan el descenso}\label{cap:req}
+
+El anexo de requisitos técnicos~\cite{anexo} contiene más de 60 requisitos. La
+tabla~\ref{tab:req} reúne los que fijan el diseño del sistema de descenso y lo que cada uno
+implica. El texto de cada requisito está resumido; la fuente es el anexo.
+
+\begin{longtable}{@{}p{1.25cm}p{6.3cm}p{6.9cm}@{}}
+\caption{Requisitos del anexo que condicionan el sistema de descenso.}\label{tab:req}\\
+\toprule
+\textbf{Req.} & \textbf{Qué pide} & \textbf{Consecuencia para el diseño}\\\midrule
+\endfirsthead
+\toprule
+\textbf{Req.} & \textbf{Qué pide} & \textbf{Consecuencia para el diseño}\\\midrule
+\endhead
+\bottomrule
+\endfoot
+\Req{C2} & CanSat y contenedor se despliegan del cohete con la carga de expulsión. & El drogue debe abrirse solo, sin orden del software.\\
+\Req{C3} & Tras el despliegue, descenso a \SI{15 \pm 3}{m/s} con paracaídas automático. & Drogue entre \SIlist{12;18}{m/s} con la masa completa (\S\ref{sec:dim-drogue}).\\
+\Req{C4} & Al 80\,\% de la altitud máxima se libera otro sistema; descenso promedio \SI{5 \pm 3}{m/s}. & El rotor debe dejar la caída bajo \SI{8}{m/s} en el peor caso (\S\ref{sec:dim-rotor}).\\
+\Req{C5} & Telemetría a \SI{1}{Hz}. & La liberación no puede depender de la telemetría: el control lee el barómetro a 20--50\,Hz.\\
+\Req{C6}, \Req{C7} & Video de todo el descenso, hacia el cenit y hacia el nadir, que muestre la activación de los sistemas de descenso. & Cámara cenit fuera del eje, que vea palas y drogue; cámara nadir en el fondo.\\
+\Req{C8} & Baliza audible con alimentación independiente. & Pila propia en el fondo de la carga útil.\\
+\Req{S1} & Masa de CanSat y contenedor: \SI{500 \pm 10}{g}. & Presupuesto de masa (\S\ref{sec:masa}); rotor completo $\le\SI{65}{g}$.\\
+\Req{S2} & Diámetro del CanSat: \SI{95}{mm}. & Palas plegadas dentro de Ø\,95 (\S\ref{sec:plegado}).\\
+\Req{S3} & Largo total, incluidos los sistemas de descenso: \SIrange{200}{250}{mm}. & Palas de \SI{156}{mm} plegadas a lo largo del cuerpo.\\
+\Req{S4}, \Req{S5} & Soportar vibración de 15\,G y choque de 30\,G. & Traba positiva de las palas; pasadores de acero (\S\ref{sec:cargas}).\\
+\Req{S6} & Pared exterior impresa $\ge\SI{2}{mm}$, sin flexión ni deformación. & Sin rebajes en la pared; verificación de pandeo (\S\ref{sec:estructura}).\\
+\Req{S7} & El cilindro puede sostener piezas desplegables, pero debe salir libre del cohete. & Palas al ras de Ø\,95; sin salientes.\\
+\Req{S8} & Todo fijado con soportes, tornillos o adhesivos. & Electrónica atornillada a anillos internos.\\
+\Req{M1} & Sin actuadores pirotécnicos ni químicos. & Liberación con servo.\\
+\Req{M2} & Mecanismos con calor (nicrom) no expuestos al exterior. & Se descarta el hilo que se quema en las puntas.\\
+\Req{M3} & Los mecanismos mantienen su estado bajo todas las fuerzas. & Traba mecánica que el choque no puede abrir.\\
+\Req{E1}, \Req{E2} & Sin LiPo; litio solo en carcasa metálica (18650). & Batería 18650 Li-ion.\\
+\Req{E3} & Paneles solares que emiten señal al recibir radiación. & Paneles en las zonas libres del cuerpo, visibles tras desplegar.\\
+\Req{E4}, \Req{E5}, \Req{E9} & Interruptores accesibles a través del contenedor, orificios $\le\SI{10}{mm}$. & Orificios de \SI{8}{mm} entre palas.\\
+\Req{SN5} & Medir aceleración y velocidad angular. & La IMU también registra el giro del cuerpo.\\
+\Req{SN6}, \Req{SN7} & Video del despliegue en color, $\ge 640\times480$. & Cámaras mini con tarjeta propia.\\
+\Req{F5} & Estados de configuración persistentes ante reinicios. & La altitud máxima y el estado de la traba se guardan en memoria no volátil.\\
+\end{longtable}
+
+\section{Estados del software de vuelo}
+El campo \texttt{STATE} de la telemetría admite los valores \texttt{LAUNCH\_PAD},
+\texttt{ASCENT}, \texttt{APOGEE}, \texttt{DESCENT}, \texttt{PROBE\_RELEASE},
+\texttt{PAYLOAD\_RELEASE} y \texttt{LANDED}~\cite{anexo}. En la sección~\ref{sec:estados}
+se propone cómo asignarlos al rotor.
+
+\section{Restricciones del equipo}
+\begin{itemize}
+  \item Radio del rotor $R\le\SI{0.20}{m}$.
+  \item Drogue atado al CanSat durante todo el vuelo.
+  \item Rotor de pocas rpm (del orden de \SI{1000}{rpm}).
+\end{itemize}
+
+\begin{nota}[Interpretación de C4]
+El anexo pide un \emph{promedio} de \SI{5}{m/s} durante el descenso de la segunda etapa,
+con margen de $\pm\SI{3}{m/s}$. Este documento toma como criterio de cumplimiento que la
+velocidad estabilizada de la segunda etapa quede entre \SIlist{2;8}{m/s} y como objetivo
+acercarla a \SI{5}{m/s} tanto como permitan $R\le\SI{0.20}{m}$ y la masa de \SI{500}{g}.
+\end{nota}

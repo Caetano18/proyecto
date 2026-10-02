@@ -1,0 +1,32 @@
+\chapter{Matriz de cumplimiento}\label{cap:cumpl}
+
+\begin{longtable}{@{}p{1.6cm}p{8.6cm}p{3.6cm}@{}}
+\caption{Cumplimiento de los requisitos que afectan al descenso.}\label{tab:cumpl}\\
+\toprule
+\textbf{Req.} & \textbf{Cómo se cumple} & \textbf{Estado}\\\midrule
+\endfirsthead
+\toprule
+\textbf{Req.} & \textbf{Cómo se cumple} & \textbf{Estado}\\\midrule
+\endhead
+\bottomrule
+\endfoot
+\Req{C3} & Drogue Ø\,\SI{25}{cm}: \SIrange{12.7}{13.7}{m/s} para $C_D$ entre 0,9 y 0,75 & Cumple (cálculo)\\
+\Req{C4} & Rotor $R=\SI{0.20}{m}$ + drogue: \SI{6.4}{m/s}; peor caso \SI{7.8}{m/s} & A validar (E2--E4)\\
+\Req{C5}, \Req{X5} & Telemetría a \SI{1}{Hz}; el control usa 50\,Hz internamente & Cumple\\
+\Req{C6}, \Req{C7} & Cámara cenit fuera del eje (palas y drogue), cámara nadir abajo & Cumple\\
+\Req{C8} & Baliza con pila propia & Cumple\\
+\Req{S1} & Configuración A: \SI{417}{g} + \SI{83}{g} de lastre & A cerrar en CAD\\
+\Req{S2} & Envolvente Ø\,95; bordes de palas a \SI{47.5}{mm} del eje & Cumple\\
+\Req{S3} & Largo total \SI{250}{mm} con drogue y rotor plegados & Cumple\\
+\Req{S4}, \Req{S5} & Traba positiva; tensiones muy por debajo de las admisibles & A validar (E5)\\
+\Req{S6} & Pared de \SI{2}{mm} sin rebajes; $\sigma_{cr}/\sigma\approx64$ & Cumple\\
+\Req{S7} & Palas al ras de Ø\,95, sin salientes & Cumple\\
+\Req{S8} & Electrónica atornillada; batería con brida & Cumple\\
+\Req{M1}, \Req{M2} & Servo y anillo; sin nicrom ni pirotecnia & Cumple\\
+\Req{M3} & El choque no puede girar el anillo; la pestaña no sale sin girarlo & Cumple\\
+\Req{E1}, \Req{E2} & Celda 18650 Li-ion & Cumple\\
+\Req{E4}, \Req{E5}, \Req{E9} & Orificios de \SI{8}{mm} en los huecos entre palas & Cumple\\
+\Req{SN5}, \Req{SN6} & IMU; video del despliegue & Cumple\\
+\Req{F5} & $h_{\max}$ y estado de la traba en FRAM & Cumple\\
+Contenedor (\Req{C2}, \Req{S1}, \Req{S9}) & Configuración A: copa del drogue como contenedor mínimo; B: camisa completa & Confirmar con la organización\\
+\end{longtable}

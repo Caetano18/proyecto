@@ -1,0 +1,61 @@
+\chapter{Introducción}\label{cap:intro}
+
+\section{Objetivo}
+Diseñar la segunda etapa de descenso del CanSat como un \textbf{rotor libre}: un conjunto
+de palas que gira solo, impulsado por el aire que lo atraviesa al caer, y que frena el
+descenso por sustentación en lugar de hacerlo por arrastre de tela. El documento cubre:
+\begin{enumerate}
+  \item los requisitos del anexo que condicionan el descenso (capítulo~\ref{cap:req});
+  \item el estado del arte, las alternativas y una matriz de decisión (capítulo~\ref{cap:arte});
+  \item la teoría necesaria: descenso axial de rotores, autorrotación, elemento de pala,
+        aerodinámica de bajo número de Reynolds y dinámica de batimiento
+        (capítulo~\ref{cap:teoria});
+  \item el dimensionamiento completo con los números del proyecto
+        (capítulo~\ref{cap:dim});
+  \item los planos de anteproyecto (capítulo~\ref{cap:planos});
+  \item la electrónica y la lógica de vuelo asociadas al sistema (capítulo~\ref{cap:elec});
+  \item riesgos, ensayos y la matriz de cumplimiento (capítulos~\ref{cap:riesgos}
+        y~\ref{cap:cumpl}).
+\end{enumerate}
+
+\section{Por qué un rotor}
+Un paracaídas cumple \Req{C4} con menos riesgo, y queda como plan~B. El rotor se elige
+porque:
+\begin{itemize}
+  \item es un sistema de ingeniería con más contenido técnico que evaluar y defender
+        (aerodinámica, dinámica, mecanismos);
+  \item tiene antecedentes directos: la CanSat Competition internacional exigió descenso
+        por autogiro en sus misiones 2019 y 2025~\cite{cansat2019,cansat2025};
+  \item se apoya en un fenómeno muy estudiado, tanto en helicópteros~\cite{glauert1926,
+        leishman2006,johnson1980} como en semillas autorrotantes~\cite{norberg1973,
+        azuma1989,lentink2009};
+  \item no usa tela, así que no se enreda con la cuerda del drogue si se mantiene el eje
+        libre.
+\end{itemize}
+
+\section{Restricciones del equipo}
+Además del anexo, el equipo fijó:
+\begin{description}[style=nextline]
+  \item[Radio máximo del rotor: \SI{0.20}{m}.] Condiciona todo el dimensionamiento: con
+        ese radio la caída queda en \SIrange{6.2}{6.9}{m/s} y no en \SI{5}{m/s} exactos.
+  \item[Drogue atado al CanSat todo el vuelo.] La cuerda pasa por el centro del eje del
+        rotor, que por eso es hueco y fijo.
+  \item[Pocas rpm.] Se busca que el rotor gire lento (en torno a \SI{1000}{rpm}) para
+        reducir cargas, vibración y riesgos en ensayos; esto lleva a un perfil fino de
+        alta sustentación.
+\end{description}
+
+\section{Convenciones}
+Se usa el Sistema Internacional. Aire estándar al nivel del mar:
+$\rho=\SI{1.225}{kg/m^3}$, $\nu=\SI{1.5e-5}{m^2/s}$, $g=\SI{9.81}{m/s^2}$. La masa de
+diseño es $m=\SI{0.500}{kg}$ ($W=\SI{4.905}{N}$). Las velocidades de descenso se dan en
+módulo. Los colores de los planos tienen significado fijo:
+\textcolor{cfijo}{\textbf{azul}} partes fijas al CanSat,
+\textcolor{crot}{\textbf{naranja}} partes que giran,
+\textcolor{cfreno}{\textbf{rojo}} actuadores,
+\textcolor{ccuerda}{\textbf{verde}} drogue y cuerda,
+\textcolor{ccont}{\textbf{violeta}} contenedor.
+
+Todos los valores numéricos salen del script \texttt{calculos.py}
+(apéndice~\ref{ap:script}), que acompaña a este documento y puede volver a ejecutarse si
+cambia algún dato.

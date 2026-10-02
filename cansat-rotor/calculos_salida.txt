@@ -1,0 +1,86 @@
+== Geometría ==
+largo de pala L                                         = 156 mm
+área del disco A_R                                      = 0.1257 m2
+área drogue A_d                                         = 0.04909 m2
+área cuerpo A_c                                         = 0.007088 m2
+solidez sigma                                           = 0.2865 
+
+== Etapa 1: drogue ==
+V drogue D=24 cm (con cuerpo)                           = 13.83 m/s
+V drogue D=25 cm (con cuerpo)                           = 13.35 m/s
+V drogue D=27 cm (con cuerpo)                           = 12.47 m/s
+V drogue D=30 cm (con cuerpo)                           = 11.34 m/s
+choque de apertura a 15 m/s (Cx=1.5)                    = 8.118 N
+choque de apertura a 25 m/s (Cx=1.5)                    = 22.55 N
+choque de apertura a 35 m/s (Cx=1.5)                    = 44.2 N
+
+== Etapa 2: rotor (cantidad de movimiento) ==
+k drogue                                                = 0.02405 N/(m/s)^2
+k cuerpo                                                = 0.003473 N/(m/s)^2
+V rotor+drogue+cuerpo C_R=1.0                           = 6.851 m/s
+V rotor+cuerpo (drogue sin aporte) C_R=1.0              = 7.809 m/s
+V rotor+drogue+cuerpo C_R=1.1                           = 6.612 m/s
+V rotor+cuerpo (drogue sin aporte) C_R=1.1              = 7.46 m/s
+V rotor+drogue+cuerpo C_R=1.2                           = 6.396 m/s
+V rotor+cuerpo (drogue sin aporte) C_R=1.2              = 7.154 m/s
+V rotor+drogue+cuerpo C_R=1.3                           = 6.2 m/s
+V rotor+cuerpo (drogue sin aporte) C_R=1.3              = 6.883 m/s
+V2 recomendada                                          = 6.396 m/s
+empuje del rotor T                                      = 3.779 N
+velocidad inducida de vuelo estacionario v_h            = 3.503 m/s
+relación V2/v_h                                         = 1.826 
+C_R equivalente = 4 (v_h/V)^2                           = 1.2 
+v_i (polinomio empírico)                                = 6.335 m/s
+flujo neto por el disco Vc+v_i                          = -0.06123 m/s
+carga de disco T/A                                      = 30.07 N/m2
+
+== rpm según perfil (T = B 1/2 rho Omega^2 c Cl (R^3-e^3)/3) ==
+  placa plana 3%     Omega= 236.0 rad/s  rpm=  2253  Vpunta= 47.2 m/s  Re_punta=  110115  Re_0.5R=  55058
+  fondo plano        Omega= 166.8 rad/s  rpm=  1593  Vpunta= 33.4 m/s  Re_punta=   77863  Re_0.5R=  38932
+  curvada 7% c35     Omega= 136.2 rad/s  rpm=  1301  Vpunta= 27.2 m/s  Re_punta=   63575  Re_0.5R=  31788
+  curvada 7% c45     Omega= 120.1 rad/s  rpm=  1147  Vpunta= 24.0 m/s  Re_punta=   72087  Re_0.5R=  36044
+  curvada 7% c50     Omega= 108.1 rad/s  rpm=  1033  Vpunta= 21.6 m/s  Re_punta=   72087  Re_0.5R=  36044
+Omega diseño                                            = 120.1 rad/s
+rpm diseño                                              = 1147 rpm
+
+== Pala ==
+masa de pala (placa 0.5 mm + 2 g raíz)                  = 7.441 g
+fuerza centrífuga por pala                              = 13.1 N
+tensión de corte pasador Ø2 doble corte                 = 2.085 MPa
+sustentación por pala                                   = 0.9447 N
+momento de sustentación en bisagra                      = 0.1001 N m
+rigidez centrífuga de batimiento                        = 1.24 N m/rad
+conicidad de equilibrio beta0                           = 4.364 deg
+momento de inercia de batimiento I_b                    = 6.036e-05 kg m2
+número de Lock gamma                                    = 8.263 
+frecuencia de batimiento nu_beta/Omega                  = 1.193 
+inercia polar del rotor                                 = 0.0005133 kg m2
+energía cinética de giro                                = 3.705 J
+tiempo de arranque con Q=0.005 N m                      = 12.34 s
+tiempo de arranque con Q=0.01 N m                       = 6.168 s
+tiempo de arranque con Q=0.02 N m                       = 3.084 s
+fuerza por desbalance 0.1 g a 0.12 m                    = 0.1732 N
+fuerza por desbalance 0.5 g a 0.12 m                    = 0.8661 N
+fuerza por desbalance 1.0 g a 0.12 m                    = 1.732 N
+
+== Estructura ==
+esfuerzo axial pared 2 mm a 15 G                        = 0.1259 MPa
+esfuerzo axial pared 2 mm a 30 G                        = 0.2518 MPa
+tensión crítica de pandeo (knockdown 0.3)               = 16.11 MPa
+carga por pala en choque 30 G                           = 2.19 N
+choque en cuerda del drogue 30 G sobre 0.5 kg           = 147.2 N
+
+== Transición y tiempos ==
+  apogeo 500 m: etapa1   7.5 s, etapa2  62.5 s, total  70.0 s, V media total 7.14 m/s, V media etapa2 6.40
+  apogeo 700 m: etapa1  10.5 s, etapa2  87.6 s, total  98.0 s, V media total 7.14 m/s, V media etapa2 6.40
+  apogeo 1000 m: etapa1  15.0 s, etapa2 125.1 s, total 140.1 s, V media total 7.14 m/s, V media etapa2 6.40
+V etapa 1 (drogue 25 cm + cuerpo)                       = 13.35 m/s
+V etapa 1 con Cd=0.75                                   = 13.73 m/s
+V etapa 1 con Cd=0.9                                    = 12.67 m/s
+
+== Par de arranque (Omega=0, flujo a 90 grados) ==
+par de arranque, paso -6 grados                         = 0.07774 N m
+par de arranque, paso -4 grados                         = 0.05204 N m
+par de arranque, paso -2 grados                         = 0.02608 N m
+par de arranque, paso +0 grados                         = 4.579e-17 N m
+par de arranque, paso +2 grados                         = -0.02608 N m

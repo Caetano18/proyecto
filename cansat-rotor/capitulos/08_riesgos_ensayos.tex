@@ -1,0 +1,112 @@
+\chapter{Riesgos y plan de ensayos}\label{cap:riesgos}
+
+\section{Análisis de modos de falla (AMFE)}
+Severidad (S), ocurrencia (O) y detección (D) de 1 a 10; el número de prioridad es
+$\mathrm{NPR}=S\cdot O\cdot D$. Los valores son estimaciones del equipo antes de los
+ensayos y se actualizan con cada resultado.
+
+\begin{longtable}{@{}p{3.3cm}p{2.7cm}ccccp{4.6cm}@{}}
+\caption{AMFE del sistema de descenso, ordenado por NPR.}\label{tab:amfe}\\
+\toprule
+\textbf{Modo de falla} & \textbf{Efecto} & \textbf{S} & \textbf{O} & \textbf{D} & \textbf{NPR} & \textbf{Mitigación}\\\midrule
+\endfirsthead
+\toprule
+\textbf{Modo de falla} & \textbf{Efecto} & \textbf{S} & \textbf{O} & \textbf{D} & \textbf{NPR} & \textbf{Mitigación}\\\midrule
+\endhead
+\bottomrule
+\endfoot
+El rotor no arranca & Caída a $\approx\SI{13}{m/s}$; falla \Req{C4} & 9 & 4 & 4 & 144 & Paso $\le\ang{-2}$ (tabla~\ref{tab:arranque}); ensayo E2 de 10 arranques; reintento del servo\\
+La traba no suelta & Rotor no se despliega & 9 & 3 & 3 & 81 & Servo con engranajes metálicos; 20 liberaciones en E1; reintento automático\\
+Drogue en la estela del rotor & Caída hasta \SI{7.8}{m/s} & 5 & 5 & 3 & 75 & Cuerda de \SI{1.5}{m}; E4 mide con y sin drogue\\
+Liberación prematura & Etapa 1 corta; \Req{C4} dudoso & 7 & 2 & 5 & 70 & Solo en \texttt{DESCENT}; $h_{\max}$ en FRAM; filtro de 50\,Hz\\
+Palas que se abren en el ascenso & Daño, despliegue fuera de tiempo & 8 & 2 & 4 & 64 & Traba positiva; espuma detrás de las palas; E5 vibración\\
+Cuerda que se retuerce o roza & Rotura de la cuerda & 7 & 2 & 4 & 56 & Destorcedor; borde del eje redondeado y pulido\\
+Desbalance de palas & Vibración, video inutilizable & 4 & 4 & 2 & 32 & Balanceo a $\pm\SI{0.1}{g}$; palas marcadas\\
+Conicidad excesiva o flameo & Menos área efectiva, rotura & 6 & 2 & 3 & 36 & Tope a \ang{+10}; centro de masa al 25\,\%\\
+Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto en CAD; lastre ajustable\\
+\end{longtable}
+
+\section{Ensayos}
+
+\begin{table}[H]
+\centering\small
+\caption{Plan de ensayos, en orden de ejecución.}\label{tab:ensayos}
+\begin{tabularx}{\textwidth}{@{}clYY@{}}
+\toprule
+\textbf{N.º} & \textbf{Ensayo} & \textbf{Qué se mide} & \textbf{Criterio de aceptación}\\\midrule
+E1 & Banco: mecanismo & Giro libre a mano, balanceo, 20 liberaciones de la traba & Gira libre $>\SI{5}{s}$; 20 de 20 liberaciones\\
+E2 & Ventilador vertical (o auto a \SI{20}{km/h}) & Arranque desde cero, rpm, conicidad (video), paso óptimo & 10 de 10 arranques en $<\SI{5}{s}$; rpm medidas $\pm$20\,\% de 1150\\
+E3 & Balanza de empuje en túnel o ventilador & Empuje frente a velocidad del aire: obtiene $\CR$ real & $\CR\ge1{,}0$\\
+E4 & Caída desde drone (\SIrange{30}{60}{m}) & Velocidad con barómetro, con y sin drogue & $\Vr\le\SI{7.5}{m/s}$ sin drogue; $\le\SI{7}{m/s}$ con drogue\\
+E5 & Vibración y choque & 15\,G y 30\,G (\Req{S4}, \Req{S5}) & Nada se suelta; traba sigue cerrada\\
+E6 & Integración completa & Secuencia de estados, video, telemetría & Todos los estados en el CSV; video de las dos etapas\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1mm, y=1mm]
+  % ---- E2: ventilador vertical
+  \node[font=\small\bfseries] at (35,92) {E2: ventilador vertical};
+  \draw[fijo] (10,0) rectangle (60,12);
+  \node[font=\scriptsize] at (35,6) {ventilador};
+  \foreach \x in {18,26,34,42,50}{\draw[flecha, cfijo!60] (\x,14) -- (\x,32);}
+  \draw[cgris] (35,12) -- (35,40);
+  \draw[black, line width=0.8pt] (33,40) -- (37,40);
+  \filldraw[fijo] (31,40) rectangle (39,62);
+  \filldraw[rot] (14,63) rectangle (56,64.5);
+  \filldraw[rot] (30,62) rectangle (40,66);
+  \draw[cgris] (35,66) -- (35,84);
+  \draw[black] (28,84) -- (42,84);
+  \node[font=\scriptsize, anchor=west] at (43,84) {celda de carga};
+  \node[font=\scriptsize, anchor=west] at (58,63) {rotor};
+  \node[font=\scriptsize, anchor=west] at (40,28) {anemómetro};
+  \draw[black] (40,24) circle (1.2);
+  \node[font=\scriptsize, anchor=west] at (40,50) {tacómetro óptico};
+  \draw[crot] (14,63) -- (6,70);
+  % ---- E4: caída desde drone
+  \begin{scope}[shift={(85,0)}]
+  \node[font=\small\bfseries] at (35,92) {E4: caída desde drone};
+  \draw[fijo] (22,80) rectangle (48,84);
+  \draw[fijo] (18,84) -- (52,84);
+  \node[font=\scriptsize] at (35,87) {drone};
+  \draw[cgris, densely dashed] (35,80) -- (35,74);
+  \draw[act] (33,72) rectangle (37,74);
+  \node[font=\scriptsize, anchor=west] at (38,73) {liberador};
+  \filldraw[fijo] (32,45) rectangle (38,60);
+  \filldraw[rot] (20,60) rectangle (50,61.2);
+  \draw[cuerda] (35,61) -- (35,70);
+  \draw[flecha, cgris] (60,60) -- (60,10) node[midway, right, font=\scriptsize, align=left] {30--60 m\\ barómetro\\ a 50\,Hz};
+  \draw[black] (0,5) -- (70,5);
+  \node[font=\scriptsize] at (35,2) {suelo};
+  \end{scope}
+\end{tikzpicture}
+\caption{Esquemas de los ensayos E2 y E4.}
+\label{fig:ensayos}
+\end{figure}
+
+\section{Cronograma}
+\begin{figure}[H]
+\centering
+\begin{ganttchart}[hgrid, vgrid, x unit=0.82cm, y unit chart=0.62cm,
+    title label font=\scriptsize, bar label font=\small,
+    bar/.append style={fill=cfijo!35, draw=cfijo},
+    milestone/.append style={fill=cfreno, draw=cfreno}]{1}{14}
+  \gantttitlelist{1,...,14}{1}\\
+  \ganttbar{CAD y presupuesto de masa}{1}{2}\\
+  \ganttbar{Fabricación de palas y cubo}{2}{4}\\
+  \ganttbar{E1 banco}{4}{4}\\
+  \ganttbar{E2 ventilador, elección de paso}{5}{6}\\
+  \ganttbar{E3 empuje ($\CR$ real)}{6}{7}\\
+  \ganttmilestone{Rotor congelado}{7}\\
+  \ganttbar{Electrónica y software de estados}{3}{8}\\
+  \ganttbar{E4 caídas desde drone}{8}{9}\\
+  \ganttbar{E5 vibración y choque}{10}{10}\\
+  \ganttbar{E6 integración}{11}{12}\\
+  \ganttmilestone{Listo para vuelo}{12}\\
+  \ganttbar{Margen}{13}{14}
+\end{ganttchart}
+\caption{Cronograma tentativo en semanas desde el inicio del trabajo.}
+\label{fig:gantt}
+\end{figure}

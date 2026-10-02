@@ -1,0 +1,164 @@
+% =====================================================================
+%  Sistema de descenso de dos etapas con rotor libre
+%  CanSat Universitario 2026-2027
+%  Compilar: latexmk -pdf main.tex   (o pdflatex x2)
+% =====================================================================
+\documentclass[11pt,a4paper,oneside]{report}
+
+% ---------- Idioma y tipografía ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---------- Página ----------
+\usepackage[a4paper,margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\setstretch{1.08}
+
+% ---------- Matemática y unidades ----------
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,},separate-uncertainty=true,group-separator={\,},per-mode=symbol,
+         range-phrase={\,--\,},list-final-separator={ y },
+         exponent-product=\cdot}
+
+% ---------- Tablas ----------
+\usepackage{booktabs,tabularx,multirow,longtable,array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\renewcommand{\arraystretch}{1.18}
+
+% ---------- Figuras ----------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,patterns,decorations.pathreplacing,
+  decorations.markings,shapes.geometric,shapes.misc,positioning,angles,quotes,
+  fit,backgrounds,intersections}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18,
+  /pgf/number format/use comma,
+  /pgf/number format/1000 sep={\,},
+  every axis/.append style={font=\small, grid=major, grid style={gray!25}},
+}
+\usepgfplotslibrary{fillbetween}
+\usepackage{pgfgantt}
+
+% ---------- Otros ----------
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=4pt}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+
+% ---------- Colores del proyecto ----------
+\definecolor{cfijo}{HTML}{2F6F9F}     % partes fijas (azul)
+\definecolor{crot}{HTML}{D9762B}      % partes que giran (naranja)
+\definecolor{cfreno}{HTML}{B0413E}    % actuadores (rojo)
+\definecolor{ccuerda}{HTML}{3C8A5A}   % drogue y cuerda (verde)
+\definecolor{ccont}{HTML}{6B5AA6}     % contenedor (violeta)
+\definecolor{cgris}{HTML}{5B6975}
+\colorlet{ffijo}{cfijo!18}
+\colorlet{frot}{crot!22}
+\colorlet{fcont}{ccont!15}
+
+% ---------- Estilos TikZ comunes ----------
+\tikzset{
+  plano/.style={line width=0.6pt, line join=round},
+  fijo/.style={draw=cfijo, fill=ffijo, line width=0.7pt},
+  rot/.style={draw=crot, fill=frot, line width=0.7pt},
+  act/.style={draw=cfreno, fill=cfreno!12, line width=0.7pt},
+  cuerda/.style={draw=ccuerda, line width=1.1pt},
+  cont/.style={draw=ccont, fill=fcont, line width=0.7pt},
+  eje/.style={draw=cgris, dash pattern=on 8pt off 2pt on 1.5pt off 2pt, line width=0.4pt},
+  cota/.style={draw=cgris, line width=0.35pt, {Latex[length=1.6mm]}-{Latex[length=1.6mm]}},
+  ref/.style={draw=black!70, line width=0.35pt},
+  marca/.style={circle, fill=black!80, text=white, inner sep=0.8pt, minimum size=4.2mm,
+                font=\scriptsize\bfseries},
+  corte/.style={pattern=north east lines, pattern color=#1},
+  flecha/.style={-{Latex[length=2.4mm]}, line width=0.8pt},
+  caja/.style={draw, rounded corners=2pt, align=center, font=\small,
+               minimum height=8mm, inner sep=4pt, fill=white},
+}
+% Recuadro de rótulo de plano
+\newcommand{\rotulo}[4]{%
+  \node[draw, anchor=south east, inner sep=0pt, font=\scriptsize] at (#1) {%
+    \begin{tabular}{@{\,}l|l@{\,}}
+      \multicolumn{2}{@{\,}l@{\,}}{\textbf{#2}}\\\hline
+      Escala: #3 & Unid.: mm\\\hline
+      Plano #4 & CanSat 2026--27
+    \end{tabular}};}
+
+% Caja de resultado destacado
+\newtcolorbox{resultado}[1][]{colback=cfijo!5, colframe=cfijo!70, boxrule=0.6pt,
+  arc=2pt, left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small,
+  title={#1}}
+\newtcolorbox{nota}[1][]{colback=crot!6, colframe=crot!70, boxrule=0.6pt,
+  arc=2pt, left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\small,
+  title={#1}}
+
+% ---------- Listados ----------
+\lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, breaklines=true,
+  frame=single, rulecolor=\color{black!25}, numbers=left, numberstyle=\tiny\color{gray},
+  keywordstyle=\color{cfijo}\bfseries, commentstyle=\color{ccuerda}\itshape,
+  stringstyle=\color{crot}, showstringspaces=false, literate=
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1
+  {°}{{\textdegree}}1 {Ø}{{\O}}1 {·}{{$\cdot$}}1 {²}{{$^2$}}1 {³}{{$^3$}}1 {±}{{$\pm$}}1}
+
+% ---------- Encabezados ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small Rotor libre · CanSat 2026--27}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Atajos ----------
+\newcommand{\Vd}{V_{\mathrm{d}}}
+\newcommand{\Vr}{V_{\mathrm{r}}}
+\newcommand{\vh}{v_{\mathrm{h}}}
+\newcommand{\vi}{v_{\mathrm{i}}}
+\newcommand{\CR}{C_{R}}
+\newcommand{\Req}[1]{\textsf{#1}}
+
+\title{\vspace{-1cm}
+  {\Large CanSat Universitario 2026--2027}\\[6pt]
+  {\Huge\bfseries Sistema de descenso de dos etapas\\ con rotor libre}\\[8pt]
+  {\large Investigación, dimensionamiento, planos y plan de validación}}
+\author{Equipo CanSat}
+\date{2 de octubre de 2026}
+
+\begin{document}
+\pagenumbering{roman}
+\input{capitulos/00_portada}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\pagenumbering{arabic}
+
+\input{capitulos/01_introduccion}
+\input{capitulos/02_requisitos}
+\input{capitulos/03_estado_arte}
+\input{capitulos/04_teoria}
+\input{capitulos/05_dimensionamiento}
+\input{capitulos/06_planos}
+\input{capitulos/07_electronica}
+\input{capitulos/08_riesgos_ensayos}
+\input{capitulos/09_cumplimiento}
+\input{capitulos/10_conclusiones}
+
+\appendix
+\input{capitulos/A_derivaciones}
+\input{capitulos/B_script}
+
+\input{capitulos/bibliografia}
+\end{document}

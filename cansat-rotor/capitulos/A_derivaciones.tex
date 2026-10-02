@@ -1,0 +1,53 @@
+\chapter{Derivaciones}\label{ap:deriv}
+
+\section{Velocidad inducida en vuelo estacionario}
+Se aplica conservación de masa, cantidad de movimiento y energía a un tubo de corriente
+que atraviesa el disco~\cite{leishman2006}. Con caudal $\dot m=\rho A_R\vi$ y velocidad
+final en la estela $w$:
+\begin{align*}
+  T &= \dot m\,w, &
+  T\,\vi &= \tfrac12\dot m\,w^2
+  \;\Rightarrow\; w=2\vi .
+\end{align*}
+Entonces $T=2\rho A_R\vi^2$ y $\vi=\vh=\sqrt{T/(2\rho A_R)}$, la
+ecuación~\eqref{eq:vh}.
+
+\section{Estado de molino frenante}
+Con el rotor bajando a $|V_c|$, el aire entra por abajo a $|V_c|$, pasa por el disco a
+$|V_c|-\vi$ y sale arriba a $|V_c|-2\vi$. El empuje es
+$T=2\rho A_R(|V_c|-\vi)\vi$; dividiendo por $2\rho A_R\vh^2$,
+\begin{equation*}
+  \left(\frac{\vi}{\vh}\right)^2 - \frac{|V_c|}{\vh}\frac{\vi}{\vh} + 1 = 0
+  \;\Rightarrow\;
+  \frac{\vi}{\vh} = \frac{|V_c|}{2\vh} - \sqrt{\left(\frac{V_c}{2\vh}\right)^2-1},
+\end{equation*}
+que tiene solución real solo si $|V_c|\ge2\vh$: por eso la teoría no cubre la zona
+$0<|V_c|<2\vh$.
+
+\section{Coeficiente equivalente}
+$\CR=T/(\tfrac12\rho V^2A_R)$ y $T=2\rho A_R\vh^2$ dan
+$\CR=4\vh^2/V^2$, la ecuación~\eqref{eq:CR}. Con $V=\SI{6.40}{m/s}$ y
+$\vh=\SI{3.50}{m/s}$, $\CR=1{,}20$.
+
+\section{Flecha de un arco}
+Un arco de radio $R_c$ y cuerda $c$ forma con su centro un triángulo rectángulo de catetos
+$c/2$ y $R_c-s$: $(R_c-s)^2+(c/2)^2=R_c^2$, de donde sale la ecuación~\eqref{eq:flecha}.
+
+\section{Conicidad}
+Para una pala uniforme de masa $m_b$ entre $e$ y $R$, el momento de la fuerza centrífuga
+respecto de la bisagra, con ángulo pequeño $\beta$, es
+\begin{equation*}
+  M_c=\int_e^R \Omega^2 r\,(r-e)\,\beta\,\frac{m_b}{L_b}\,dr
+     = m_b\Omega^2\beta\left(e\frac{L_b}{2}+\frac{L_b^2}{3}\right).
+\end{equation*}
+Igualando $M_c=M_L-M_W$ se obtiene la ecuación~\eqref{eq:conicidad}.
+
+\section{Par de arranque}
+Con $\Omega=0$, $U=V$, $\phi=\ang{90}$ y $\alpha=\ang{90}+\theta$. Con $C_n=2\sin\alpha$ y
+$C_l=C_n\cos\alpha=\sin2\alpha=\sin(\ang{180}+2\theta)=-\sin2\theta$, la
+ecuación~\eqref{eq:dQ} con $\sin\phi=1$, $\cos\phi=0$ da
+\begin{equation*}
+  Q_0 = B\,\tfrac12\rho V^2 c\,(-\sin2\theta)\int_e^R r\,dr
+      = B\,\tfrac12\rho V^2 c\,(-\sin2\theta)\,\frac{R^2-e^2}{2},
+\end{equation*}
+positivo para $\theta<0$.

@@ -1,0 +1,40 @@
+\chapter{Conclusiones y recomendación}\label{cap:concl}
+
+\begin{enumerate}
+  \item \textbf{El rotor libre cumple \Req{C4} con $R=\SI{0.20}{m}$.} Con 4 palas y el
+        drogue atado, la segunda etapa baja a \SI{6.4}{m/s}; el peor caso analizado
+        (rotor pobre y drogue sin aporte) da \SI{7.8}{m/s}, todavía bajo el límite de
+        \SI{8}{m/s}. Llegar a \SI{5}{m/s} exactos pediría $R\approx\SI{0.27}{m}$.
+  \item \textbf{El límite lo pone la física, no el perfil.} Un rotor en autorrotación
+        frena como un disco de $\CR\approx1{,}2$; el perfil decide la velocidad de giro,
+        no la de caída.
+  \item \textbf{Una placa fina curvada al 7\,\% baja la rpm a la mitad} ($\approx1150$
+        frente a $\approx2250$), con fuerza centrífuga de \SI{13}{N} por pala, conicidad
+        de \ang{4.4} y número de Lock de 8. Se fabrica sobre un caño de PVC de Ø\,160.
+  \item \textbf{El paso debe ser negativo} ($\ang{-2}$ a $\ang{-6}$): con paso positivo
+        el rotor no arranca. Es la variable que más importa ajustar en ensayo.
+  \item \textbf{El freno no sirve con $R=\SI{0.20}{m}$}: solo puede acelerar la caída.
+  \item \textbf{La arquitectura cumple los requisitos mecánicos} sin calor, sin rebajes
+        en la pared y dentro de Ø\,95 × 250, con \SI{83}{g} de margen de masa.
+\end{enumerate}
+
+\begin{resultado}[Recomendación]
+Avanzar con la configuración A: rotor de 4 palas de placa de carbono curvada al 7\,\%
+($156\times45\times0{,}5$\,mm), bisagras de batimiento con tope a \ang{+10}, eje fijo
+hueco con la cuerda del drogue por dentro, drogue de Ø\,\SI{25}{cm} y traba por anillo
+interno con servo. Consultar por escrito a la organización sobre el contenedor. Ejecutar
+E1 y E2 antes de comprometer el resto del diseño, y mantener un paracaídas de
+Ø\,\SI{70}{cm} como plan~B hasta que E4 confirme la velocidad.
+\end{resultado}
+
+\section*{Próximos pasos}
+\begin{enumerate}
+  \item Modelo CAD completo y cierre del presupuesto de masa.
+  \item Fabricar dos juegos de palas (placa plana y curvada) y los portapalas de
+        \ang{-6} a \ang{0}.
+  \item E1 y E2; elegir el paso.
+  \item E3 para medir $\CR$ real y recalcular con \texttt{calculos.py}.
+  \item Software de estados con el respaldo por tiempo; ensayo de la liberación con el
+        comando \texttt{MEC}.
+  \item E4, E5 y E6.
+\end{enumerate}

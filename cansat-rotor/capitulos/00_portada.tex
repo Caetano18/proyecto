@@ -1,0 +1,87 @@
+\begin{titlepage}
+\centering
+\vspace*{1.2cm}
+{\large\scshape CanSat Universitario 2026--2027}\\[4pt]
+{\small Segunda etapa de descenso --- requisito \Req{C4}}\\[1.6cm]
+{\Huge\bfseries Sistema de descenso de dos etapas\\[4pt] con rotor libre\par}
+\vspace{0.6cm}
+{\large Investigación, dimensionamiento, planos y plan de validación\par}
+\vspace{1.2cm}
+
+% Ilustración de portada: rotor desplegado con drogue
+\begin{tikzpicture}[scale=0.62]
+  % drogue
+  \draw[cuerda, fill=ccuerda!12] (-2.2,7.0) .. controls (-1.6,8.2) and (1.6,8.2) .. (2.2,7.0)
+        .. controls (1.2,6.7) and (-1.2,6.7) .. (-2.2,7.0);
+  \foreach \x in {-2.2,-1.1,0,1.1,2.2}{\draw[ccuerda, line width=0.4pt] (\x,7.0) -- (0,5.2);}
+  \draw[cuerda] (0,5.2) -- (0,2.4);
+  \fill[ccuerda] (0,5.2) circle (2.5pt);
+  % disco del rotor
+  \draw[crot, dashed, line width=0.6pt] (0,2.1) ellipse (6.0 and 0.9);
+  \foreach \a in {20,110,200,290}{
+     \draw[crot, line width=4pt, line cap=round] ($(0,2.15)+({0.6*cos(\a)},{0.12*sin(\a)})$) --
+                ($(0,2.15)+({5.8*cos(\a)},{0.85*sin(\a)+0.3})$);
+     \draw[frot, line width=2.4pt, line cap=round] ($(0,2.15)+({0.6*cos(\a)},{0.12*sin(\a)})$) --
+                ($(0,2.15)+({5.8*cos(\a)},{0.85*sin(\a)+0.3})$);}
+  \draw[rot] (-0.7,1.85) rectangle (0.7,2.35);
+  % cuerpo
+  \draw[fijo] (-0.95,-3.6) rectangle (0.95,1.85);
+  \draw[fijo] (-0.95,-3.6) arc (180:360:0.95 and 0.22);
+  \draw[cfijo] (0,1.85) ellipse (0.95 and 0.22);
+  \node[font=\scriptsize, cgris] at (0,-1.0) {\rotatebox{90}{CanSat Ø\,95}};
+  % flecha de giro
+  \draw[crot, -{Latex}, line width=0.8pt] (3.6,3.6) arc (60:120:3.2 and 0.9);
+  \node[crot, font=\small] at (4.7,3.4) {$\approx$\,1150 rpm};
+  \draw[flecha, cgris] (4.2,-1.5) -- (4.2,-3.5) node[midway, right, font=\small] {$\approx$\,6,4 m/s};
+\end{tikzpicture}
+
+\vfill
+\begin{tabular}{rl}
+  \textbf{Rotor:} & 4 palas libres, $R=\SI{0.20}{m}$, placa curvada al 7\,\%, cuerda \SI{45}{mm}\\
+  \textbf{Drogue:} & Ø\,\SI{25}{cm}, atado al CanSat por el eje hueco del rotor\\
+  \textbf{Velocidades:} & etapa 1 $\approx\SI{13.4}{m/s}$ · etapa 2 $\approx\SI{6.4}{m/s}$\\
+  \textbf{Masa:} & \SI{500 \pm 10}{g} · Ø\,\SI{95}{mm} · largo \SI{250}{mm}\\
+\end{tabular}
+\vspace{1cm}
+
+{\large 2 de octubre de 2026}
+\end{titlepage}
+
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+Este documento investiga, dimensiona y especifica la segunda etapa de descenso del CanSat
+2026--2027 mediante un \textbf{rotor libre} (autogiro en descenso vertical), que el anexo
+de requisitos técnicos exige activar al 80\,\% de la altitud máxima y que debe llevar la
+velocidad de caída a $\SI{5}{m/s}\pm\SI{3}{m/s}$ (\Req{C4}). El equipo impuso dos
+restricciones adicionales: radio del rotor de \SI{0.20}{m} como máximo y el drogue atado
+al CanSat durante todo el vuelo.
+
+\paragraph{Resultado principal.} Un rotor de 4 palas finas curvadas (placa de carbono de
+\SI{0.5}{mm}, curvatura del 7\,\%, cuerda de \SI{45}{mm}, largo de \SI{156}{mm}), con
+bisagra de batimiento y sin freno, combinado con un drogue de Ø\,\SI{25}{cm}, da:
+\begin{itemize}
+  \item etapa 1 (drogue): $\Vd\approx\SI{13.4}{m/s}$, dentro de $15\pm3$ (\Req{C3});
+  \item etapa 2 (rotor + drogue): $\Vr\approx\SI{6.4}{m/s}$, dentro de $5\pm3$ (\Req{C4});
+        peor caso analizado, \SI{7.8}{m/s};
+  \item velocidad de giro $\approx\SI{1150}{rpm}$ (contra $\approx\SI{2250}{rpm}$ de una
+        placa plana), conicidad de equilibrio $\approx\ang{4.4}$, número de Lock $\approx 8$.
+\end{itemize}
+
+\paragraph{Arquitectura.} Eje central hueco y fijo; la cuerda del drogue baja por su
+interior hasta un anclaje en la estructura. El cubo gira sobre dos rodamientos 688ZZ. Las
+palas cuelgan plegadas contra el cuerpo (Ø\,\SI{88}{mm}, pared de \SI{2}{mm}) y un anillo
+interno, girado por un micro servo, retiene sus puntas. No hay calor ni pirotecnia
+(\Req{M1}, \Req{M2}).
+
+\paragraph{Alcance y límites.} Los cálculos combinan teoría de cantidad de movimiento,
+datos empíricos de descenso axial y teoría de elemento de pala. Tienen una incertidumbre
+estimada de $\pm$15--20\,\% y se cierran con el plan de ensayos del
+capítulo~\ref{cap:riesgos}. Los planos son de anteproyecto: fijan disposición, medidas
+principales e interfaces; el detalle de fabricación se cierra en CAD.
+
+\paragraph{Decisión abierta.} El anexo menciona un \emph{contenedor} (\Req{C2},
+\Req{S1}, \Req{E4}, \Req{E5}, \Req{E9}). Se propone la configuración A (contenedor
+mínimo: copa del drogue) y se documenta la configuración B (camisa completa) por si la
+organización la exige; la B excede el presupuesto de masa en unos \SI{50}{g} con pared
+impresa de \SI{2}{mm}.

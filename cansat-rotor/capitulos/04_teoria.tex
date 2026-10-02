@@ -1,0 +1,391 @@
+\chapter{Marco teórico}\label{cap:teoria}
+
+Este capítulo reúne la teoría que se usa en el dimensionamiento. Se parte del caso más
+simple (equilibrio de fuerzas) y se agregan, en orden, el comportamiento del flujo a
+través del disco, el de cada sección de pala, el del perfil a bajo número de Reynolds y
+la dinámica de las palas articuladas.
+
+%=====================================================================
+\section{Equilibrio vertical}
+A velocidad de descenso constante $V$, el peso iguala la suma de las fuerzas que frenan:
+rotor, drogue y cuerpo.
+\begin{equation}
+  W = m g = \tfrac12 \rho V^2 \left( \CR A_R + C_{D,d} A_d + C_{D,c} A_c \right)
+  \;\Rightarrow\;
+  V = \sqrt{\dfrac{2 m g}{\rho \left( \CR A_R + C_{D,d} A_d + C_{D,c} A_c\right)}}
+  \label{eq:equilibrio}
+\end{equation}
+donde $A_R=\pi R^2$ es el área del disco del rotor, $\CR$ su coeficiente de resistencia
+equivalente, $A_d$ y $C_{D,d}$ los del drogue y $A_c$ y $C_{D,c}$ los del cuerpo. Todo el
+problema se reduce a conocer $\CR$, lo que desarrollan las secciones siguientes.
+
+%=====================================================================
+\section{Teoría de cantidad de movimiento en vuelo axial}\label{sec:momento}
+
+\subsection{Vuelo estacionario y velocidad inducida de referencia}
+Un rotor que sostiene un empuje $T$ acelera el aire a través del disco. En vuelo
+estacionario, la velocidad inducida en el disco es~\cite{leishman2006,johnson1980}
+\begin{equation}
+  \vh = \sqrt{\frac{T}{2\rho A_R}} ,
+  \label{eq:vh}
+\end{equation}
+que se usa como escala para todos los regímenes axiales.
+
+\subsection{Ramas válidas de la teoría}
+Con velocidad axial $V_c$ (positiva subiendo, negativa bajando) e inducida $\vi$
+(positiva hacia abajo), la teoría de cantidad de movimiento da dos ramas con solución
+física:
+\begin{align}
+  \text{ascenso } (V_c \ge 0):&\quad \frac{\vi}{\vh} = -\frac{V_c}{2\vh} +
+      \sqrt{\left(\frac{V_c}{2\vh}\right)^2 + 1},\label{eq:ascenso}\\
+  \text{molino frenante } (V_c \le -2\vh):&\quad \frac{\vi}{\vh} = -\frac{V_c}{2\vh} -
+      \sqrt{\left(\frac{V_c}{2\vh}\right)^2 - 1}.\label{eq:molino}
+\end{align}
+Entre $-2\vh < V_c < 0$ el flujo no tiene una dirección definida a través del disco: es
+la zona del \textbf{anillo de vórtices} y de la \textbf{estela turbulenta}, donde la
+teoría no vale y se usan datos experimentales~\cite{castles1951,johnson2005,leishman2004}.
+
+\subsection{Curva empírica en descenso}
+Leishman~\cite{leishman2006} ajusta los datos de descenso axial con un polinomio,
+válido para $-2\le V_c/\vh\le0$:
+\begin{equation}
+  \frac{\vi}{\vh} = \kappa + k_1 x + k_2 x^2 + k_3 x^3 + k_4 x^4, \qquad x=\frac{V_c}{\vh},
+  \label{eq:poly}
+\end{equation}
+con $\kappa=1{,}15$, $k_1=-1{,}125$, $k_2=-1{,}372$, $k_3=-1{,}718$, $k_4=-0{,}655$.%
+\footnote{Coeficientes tomados de Leishman (2006), cap.~2; conviene verificarlos contra la
+edición disponible. El resultado del capítulo~\ref{cap:dim} se contrasta además con un
+modelo de elemento de pala independiente.}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.92\textwidth, height=8.2cm,
+  xmin=-4, xmax=1.5, ymin=0, ymax=3.6,
+  xlabel={Velocidad axial $V_c/\vh$ \quad(negativa: descenso)},
+  ylabel={Velocidad inducida $\vi/\vh$},
+  legend style={at={(0.02,0.98)}, anchor=north west, font=\footnotesize, cells={anchor=west}},
+  clip=false]
+  % zonas
+  \fill[cfreno!8] (axis cs:-2,0) rectangle (axis cs:-1.4,3.6);
+  \fill[ccuerda!10] (axis cs:-1.4,0) rectangle (axis cs:0,3.6);
+  \fill[cfijo!8] (axis cs:-4,0) rectangle (axis cs:-2,3.6);
+  % ramas de cantidad de movimiento
+  \addplot[cfijo, very thick, domain=0:1.5, samples=60] {-x/2 + sqrt(x^2/4+1)};
+  \addlegendentry{Teoría: ascenso}
+  \addplot[cfijo, very thick, dashed, domain=-4:-2, samples=80] {-x/2 - sqrt(max(x^2/4-1,0))};
+  \addlegendentry{Teoría: molino frenante}
+  % polinomio empírico
+  \addplot[crot, very thick, domain=-2:0, samples=80]
+    {1.15 - 1.125*x - 1.372*x^2 - 1.718*x^3 - 0.655*x^4};
+  \addlegendentry{Empírico (ec.~\ref{eq:poly})}
+  % autorrotación ideal vi = -Vc
+  \addplot[black!60, dashed, domain=-3.6:0, samples=2] {-x};
+  \addlegendentry{Autorrotación ideal: $\vi=-V_c$}
+  % punto de operación
+  \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(-1.826,1.808)};
+  \node[cfreno, font=\footnotesize, anchor=west, align=left, fill=white, inner sep=1pt] at (axis cs:-1.1,3.05)
+     {Punto de diseño\\ $V/\vh=1{,}83$, $\CR\approx1{,}2$};
+  \draw[cfreno, -{Latex}] (axis cs:-1.1,2.95) -- (axis cs:-1.78,1.88);
+  % rótulos de zonas
+  \node[font=\scriptsize, align=center, cfijo] at (axis cs:-3.0,0.3) {Molino\\ frenante};
+  \node[font=\scriptsize, align=center, cfreno] at (axis cs:-1.7,0.3) {Estela\\ turbulenta};
+  \node[font=\scriptsize, align=center, ccuerda!70!black] at (axis cs:-0.7,0.3) {Anillo de\\ vórtices};
+  \node[font=\scriptsize, align=center] at (axis cs:0.75,0.3) {Ascenso};
+\end{axis}
+\end{tikzpicture}
+\caption{Velocidad inducida en vuelo axial. La teoría de cantidad de movimiento vale en
+ascenso y en el estado de molino frenante; entre ambos se usa la curva empírica. El rotor
+libre opera cerca de la autorrotación ideal, donde el flujo neto a través del disco es casi
+nulo ($V_c+\vi\approx0$).}
+\label{fig:estados}
+\end{figure}
+
+\subsection{Coeficiente equivalente del rotor}
+Como $T=2\rho A_R\vh^2$, el coeficiente de resistencia equivalente del rotor que baja a $V$ es
+\begin{equation}
+  \CR = \frac{T}{\tfrac12\rho V^2 A_R} = 4\left(\frac{\vh}{V}\right)^2 .
+  \label{eq:CR}
+\end{equation}
+La autorrotación ideal (sin pérdidas de perfil) ocurre donde la curva empírica corta la
+recta $\vi=-V_c$: con la ecuación~\eqref{eq:poly} eso sucede en $V/\vh\approx1{,}8$, es
+decir $\CR\approx1{,}2$--$1{,}3$. Las pérdidas por resistencia de perfil y de punta
+llevan los rotores reales a $V/\vh\approx1{,}8$--$2{,}0$, o sea
+$\CR\approx1{,}0$--$1{,}2$~\cite{leishman2006,johnson1980}. Este es el
+\textbf{límite físico}: ningún perfil lleva el rotor a frenar mucho más que un disco
+macizo de $\CR\approx1{,}3$, por lo que la forma de mejorar la caída es el área, no el
+perfil.
+
+%=====================================================================
+\section{Teoría de elemento de pala}\label{sec:bet}
+
+\subsection{Triángulo de velocidades}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+  \draw[eje] (-7.6,0) -- (5.4,0) node[right, font=\footnotesize, black] {plano de giro};
+  \begin{scope}[rotate=6]
+    \draw[rot, line width=1pt] (-3,0) .. controls (-1.8,0.62) and (1.2,0.60) .. (3,0.04)
+         .. controls (1.2,0.40) and (-1.8,0.42) .. (-3,0) -- cycle;
+    \draw[cgris, densely dotted] (-4.2,0) -- (4.6,0) node[right, font=\footnotesize, black] {cuerda};
+  \end{scope}
+  \node[font=\footnotesize, crot, anchor=south east] at (-3.1,0.15) {borde de ataque};
+  \draw[cgris] (4.3,0) arc (0:6:4.3);
+  \node[font=\footnotesize, anchor=west] at (4.35,0.2) {$|\theta|$};
+  % viento relativo
+  \draw[flecha, cfijo] (-7.4,-1.32) -- (-3.2,-0.40);
+  \node[font=\small, cfijo, anchor=south east] at (-5.2,-0.85) {$U$};
+  \draw[flecha, cfijo!55] (-7.4,-1.32) -- (-3.2,-1.32) node[midway, below, font=\small] {$U_T=\Omega r$};
+  \draw[flecha, cfijo!55] (-3.2,-1.32) -- (-3.2,-0.42) node[midway, right, font=\small] {$U_P=V-v$};
+  \draw[cfijo] (-6.0,-1.32) arc (0:12.4:1.4);
+  \node[font=\small, cfijo] at (-5.75,-1.13) {$\phi$};
+  % fuerzas
+  \coordinate (P) at (-1.5,0.12);
+  \draw[flecha, ccuerda] (P) -- ++(102:3.4) node[above left, font=\small] {$dL$ (perpendicular a $U$)};
+  \draw[flecha, cfreno] (P) -- ++(12.4:1.4) node[above right, font=\small] {$dD$};
+  \draw[flecha, black!70, densely dashed] (P) -- ++(0,3.4) node[above right, font=\small] {$dT$};
+  \draw[flecha, black!70, densely dashed] ($(P)+(0,1.6)$) -- ++(-1.1,0) node[left, font=\small] {$dF_Q$ impulsa};
+  \fill (P) circle (1.5pt);
+  \draw[-{Latex}, crot, line width=1pt] (2.6,3.2) -- (0.6,3.2) node[midway, above, font=\footnotesize] {movimiento de la pala};
+  \node[font=\footnotesize, anchor=west] at (0.3,-1.3) {$\alpha=\phi+\theta$, \;$\theta<0$ (borde de ataque abajo)};
+\end{tikzpicture}
+
+\caption{Triángulo de velocidades y fuerzas en una sección de pala de un rotor libre en
+descenso. El aire llega desde abajo y desde adelante; la sustentación queda inclinada
+hacia adelante y es la que impulsa el giro.}
+\label{fig:triangulo}
+\end{figure}
+
+En una sección a radio $r$, el aire llega con la componente tangencial $U_T=\Omega r$ y la
+perpendicular $U_P=V-v$ (hacia arriba). El ángulo de flujo y el de ataque son
+\begin{equation}
+  \phi=\arctan\frac{U_P}{U_T}, \qquad \alpha=\phi+\theta ,
+\end{equation}
+con $\theta$ el paso geométrico (negativo si el borde de ataque baja). Las fuerzas de las
+$B$ palas en un anillo $dr$ son
+\begin{align}
+  dT &= B\,\tfrac12\rho U^2 c\,\bigl(C_l\cos\phi + C_d\sin\phi\bigr)\,dr,\label{eq:dT}\\
+  dQ &= B\,\tfrac12\rho U^2 c\,\bigl(C_l\sin\phi - C_d\cos\phi\bigr)\,r\,dr.\label{eq:dQ}
+\end{align}
+
+\subsection{Condición de autorrotación}
+El rotor está en equilibrio cuando el par total es nulo: $Q=\int_{e}^{R}dQ=0$. En cada
+sección, el término $C_l\sin\phi$ impulsa y $C_d\cos\phi$ frena; la sección es neutra si
+\begin{equation}
+  \tan\phi = \frac{C_d}{C_l}. \label{eq:autorrot}
+\end{equation}
+Un perfil con buena relación $C_l/C_d$ autorrota con $\phi$ pequeño, es decir con $U_T$
+grande frente a $U_P$: gira rápido. A lo largo de la pala aparecen tres zonas
+(figura~\ref{fig:zonas}): cerca de la raíz $\phi$ es grande, el perfil está en pérdida y
+frena; en la zona media la sustentación inclinada impulsa; cerca de la punta $\phi$ es
+pequeño y la sección es arrastrada~\cite{leishman2006}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.65mm, y=1mm]
+  \fill[cfreno!25] (44,0) rectangle (75,8);
+  \fill[ccuerda!30] (75,0) rectangle (150,8);
+  \fill[cfijo!20] (150,0) rectangle (200,8);
+  \draw (0,0) rectangle (200,8);
+  \fill[ffijo] (0,0) rectangle (44,8);
+  \node[font=\scriptsize] at (22,4) {cubo + bisagra};
+  \node[font=\scriptsize] at (59.5,4) {pérdida};
+  \node[font=\scriptsize] at (112.5,4) {impulsora ($dQ>0$)};
+  \node[font=\scriptsize] at (175,4) {impulsada ($dQ<0$)};
+  \foreach \r/\l in {0/0,44/e,100/0{,}5R,150/0{,}75R,200/R}{
+     \draw (\r,0) -- (\r,-1.5) node[below, font=\scriptsize] {$\l$};}
+\end{tikzpicture}
+\caption{Zonas típicas de una pala en autorrotación vertical (posiciones indicativas; la
+frontera exacta depende del paso y del perfil).}
+\label{fig:zonas}
+\end{figure}
+
+\subsection{Velocidad de giro de equilibrio}
+Integrando~\eqref{eq:dT} con $\phi$ pequeño y $C_l$ medio constante,
+\begin{equation}
+  T \approx B\,\tfrac12\rho\,\Omega^2 c\,\bar C_l\,\frac{R^3-e^3}{3}
+  \quad\Rightarrow\quad
+  \Omega \approx \sqrt{\frac{6\,T}{B\rho\,c\,\bar C_l\,(R^3-e^3)}} .
+  \label{eq:omega}
+\end{equation}
+El empuje $T$ lo fija el equilibrio vertical, así que \textbf{la velocidad de giro baja
+con la raíz de $c\,\bar C_l$}: un perfil de alta sustentación y más cuerda gira más lento
+con la misma velocidad de caída. Es el argumento del capítulo~\ref{cap:dim} para elegir
+una placa curvada.
+
+\subsection{Par de arranque}\label{sec:arranque-teoria}
+Con el rotor quieto ($\Omega=0$) el aire llega perpendicular al plano de giro:
+$\phi=\ang{90}$ y $\alpha=\ang{90}+\theta$. Una placa a gran ángulo de ataque genera una
+fuerza normal $C_n\approx2\sin\alpha$~\cite{hoerner1965}, con sustentación
+$C_l=C_n\cos\alpha$. El par de arranque es entonces
+\begin{equation}
+  Q_0 = B\,\tfrac12\rho V^2\,c\,C_l(\ang{90}+\theta)\,\frac{R^2-e^2}{2},
+  \qquad C_l(\ang{90}+\theta)\approx -\sin 2\theta .
+  \label{eq:Q0}
+\end{equation}
+\textbf{El signo lo decide el paso}: con $\theta<0$ (borde de ataque hacia abajo) la
+fuerza normal tiene una componente hacia adelante y el rotor arranca solo; con
+$\theta>0$ el par es negativo y el rotor no arranca, o arranca al revés. Esta es la razón
+física para fijar el paso en $\theta\le0$.
+
+%=====================================================================
+\section{Aerodinámica a bajo número de Reynolds}\label{sec:lowre}
+El número de Reynolds de la sección es $Re=U c/\nu$. Con cuerdas de
+\SIrange{35}{50}{mm} y velocidades de \SIrange{10}{50}{m/s}, las palas trabajan entre
+$Re\approx\num{2e4}$ y $\num{1.2e5}$.
+
+\begin{itemize}
+  \item Por debajo de $Re\approx\num{1e5}$, la capa límite laminar se separa y forma una
+        \textbf{burbuja de separación laminar} que aumenta mucho la resistencia de los
+        perfiles gruesos~\cite{lissaman1983,mueller2003}.
+  \item Las \textbf{placas finas curvadas} no dependen de una transición controlada: el
+        borde de ataque afilado fija la separación y la curvatura recupera la
+        sustentación. Schmitz~\cite{schmitz1942} midió su ventaja en aeromodelos;
+        Pelletier y Mueller~\cite{pelletier2000} y Okamoto y colaboradores~\cite{okamoto1996}
+        confirmaron que, a $Re\sim10^4$--$10^5$, superan a los perfiles convencionales.
+  \item Una curvatura de \SIrange{4}{8}{\percent} da $C_{l,\max}\approx1{,}1$--$1{,}4$ con
+        relación $C_l/C_d$ de 10--20 en ese rango~\cite{pelletier2000,mueller2003,selig1995}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.95\textwidth, height=8.5cm,
+  xmin=-0.02, xmax=1.02, ymin=-0.19, ymax=0.62, ytick=\empty, xtick={0,0.25,0.5,0.75,1},
+  xlabel={$x/c$}, grid=none, legend columns=2, legend style={font=\scriptsize, at={(0.5,-0.2)}, anchor=north,
+  cells={anchor=west}}]
+  % placa plana (desplazada +0.50)
+  \addplot[black, thick] coordinates {(0,0.55) (1,0.55)};
+  \addlegendentry{Placa plana 3\,\%}
+  % placa curvada 7% (desplazada +0.30)
+  \addplot[crot, very thick, domain=0:1, samples=60]
+     {sqrt(1.8207^2-(x-0.5)^2)-(1.8207-0.07)+0.40};
+  \addlegendentry{Placa curvada 7\,\% (elegida)}
+  % fondo plano tipo Clark Y (desplazada +0.12)
+  \addplot[ccuerda, thick, domain=0:1, samples=80]
+     {0.22 + 0.6*(0.2969*sqrt(x)-0.1260*x-0.3516*x^2+0.2843*x^3-0.1036*x^4)};
+  \addplot[ccuerda, thick, forget plot] coordinates {(0,0.22) (1,0.22)};
+  \addlegendentry{Fondo plano (tipo Clark Y)}
+  % NACA 6412 (desplazada -0.10)
+  \addplot[cfijo, thick, domain=0:180, samples=90, variable=\t]
+    ({0.5*(1-cos(t))},
+     {0.03 + (0.5*(1-cos(t))<0.4 ? 0.06/0.16*(0.8*0.5*(1-cos(t))-(0.5*(1-cos(t)))^2)
+                                  : 0.06/0.36*(0.2+0.8*0.5*(1-cos(t))-(0.5*(1-cos(t)))^2))
+      + 5*0.12*(0.2969*sqrt(0.5*(1-cos(t)))-0.1260*0.5*(1-cos(t))-0.3516*(0.5*(1-cos(t)))^2
+      +0.2843*(0.5*(1-cos(t)))^3-0.1015*(0.5*(1-cos(t)))^4)});
+  \addplot[cfijo, thick, domain=0:180, samples=90, variable=\t, forget plot]
+    ({0.5*(1-cos(t))},
+     {0.03 + (0.5*(1-cos(t))<0.4 ? 0.06/0.16*(0.8*0.5*(1-cos(t))-(0.5*(1-cos(t)))^2)
+                                  : 0.06/0.36*(0.2+0.8*0.5*(1-cos(t))-(0.5*(1-cos(t)))^2))
+      - 5*0.12*(0.2969*sqrt(0.5*(1-cos(t)))-0.1260*0.5*(1-cos(t))-0.3516*(0.5*(1-cos(t)))^2
+      +0.2843*(0.5*(1-cos(t)))^3-0.1015*(0.5*(1-cos(t)))^4)});
+  \addlegendentry{NACA 6412 (Ventura 2022)}
+  % NACA 0012 (desplazada -0.27)
+  \addplot[cgris, thick, domain=0:180, samples=90, variable=\t]
+    ({0.5*(1-cos(t))}, {-0.12 + 0.6*(0.2969*sqrt(0.5*(1-cos(t)))-0.1260*0.5*(1-cos(t))
+      -0.3516*(0.5*(1-cos(t)))^2+0.2843*(0.5*(1-cos(t)))^3-0.1015*(0.5*(1-cos(t)))^4)});
+  \addplot[cgris, thick, domain=0:180, samples=90, variable=\t, forget plot]
+    ({0.5*(1-cos(t))}, {-0.12 - 0.6*(0.2969*sqrt(0.5*(1-cos(t)))-0.1260*0.5*(1-cos(t))
+      -0.3516*(0.5*(1-cos(t)))^2+0.2843*(0.5*(1-cos(t)))^3-0.1015*(0.5*(1-cos(t)))^4)});
+  \addlegendentry{NACA 0012 (helicópteros)}
+\end{axis}
+\end{tikzpicture}
+\caption{Secciones comparadas, desplazadas en vertical para verlas por separado. La
+escala vertical está ampliada unas 2,5 veces respecto de la horizontal. El espesor de la
+placa curvada se dibuja como una línea porque es el 1,1\,\% de la cuerda.}
+\label{fig:perfiles}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Características aproximadas a $Re\approx\num{5e4}$--$\num{1e5}$ (orden de
+magnitud de la literatura~\cite{pelletier2000,mueller2003,selig1995,okamoto1996}; deben
+verificarse en ensayo).}\label{tab:polares}
+\begin{tabular}{@{}lcccl@{}}
+\toprule
+\textbf{Sección} & $\boldsymbol{C_{l,\max}}$ & $\boldsymbol{(C_l/C_d)_{\max}}$ & $\boldsymbol{C_l}$ \textbf{de trabajo} & \textbf{Fabricación}\\\midrule
+Placa plana 3\,\%            & 0,8--0,9 & 6--10  & $\approx0{,}3$ & Muy fácil\\
+Fondo plano (Clark Y aprox.) & 1,0--1,2 & 10--15 & $\approx0{,}6$ & Lija y plantilla\\
+Placa curvada 4\,\%          & 1,0--1,2 & 12--18 & $\approx0{,}7$ & Molde\\
+\textbf{Placa curvada 7\,\%} & \textbf{1,2--1,4} & \textbf{12--20} & $\boldsymbol{\approx0{,}9}$ & \textbf{Molde}\\
+NACA 6412                    & 1,1--1,3 & 10--20 & $\approx0{,}8$ & Impresión o fresado\\
+NACA 0012                    & 0,7--0,9 & 5--10  & $\approx0{,}4$ & Impresión o fresado\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=====================================================================
+\section{Dinámica de batimiento}\label{sec:batimiento}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.0]
+  \draw[fijo] (-0.6,-0.8) rectangle (0,0.6);
+  \node[font=\scriptsize, cfijo, rotate=90] at (-0.3,-0.1) {cubo};
+  \draw[eje] (-0.3,-1.2) -- (-0.3,2.4) node[above, font=\footnotesize, black] {eje de giro};
+  \fill[black] (0.25,0) circle (2pt); \node[font=\footnotesize, anchor=north west] at (0.35,-0.25) {bisagra};
+  \draw[eje] (0.25,0) -- (8.2,0);
+  \begin{scope}[rotate around={7:(0.25,0)}]
+    \draw[rot] (0.25,-0.07) rectangle (8,0.07);
+    \draw[flecha, ccuerda] (5.6,0.1) -- ++(0,1.5) node[above, font=\small] {$L$ (sustentación)};
+    \draw[flecha, cfreno] (4.1,0) -- ++(1.6,0);
+    \fill[black] (4.1,0) circle (1.6pt);
+    \draw[flecha, cgris] (4.1,-0.05) -- ++(0,-0.9) node[below, font=\small] {$m_b g$};
+  \end{scope}
+  \node[cfreno, font=\small, anchor=north] at (6.4,0.35) {$F_c = m_b r_g \Omega^2$};
+  \draw[cgris] (2.4,0) arc (0:7:2.15);
+  \node[font=\small] at (2.75,0.17) {$\beta_0$};
+  \draw[cota] (0.25,-1.6) -- (8.0,-1.6) node[midway, below, font=\footnotesize] {$L_b = R-e$};
+  \draw[cota] (-0.3,-2.2) -- (0.25,-2.2) node[midway, below, font=\footnotesize] {$e$};
+\end{tikzpicture}
+\caption{Equilibrio de una pala articulada: la sustentación la levanta y la fuerza
+centrífuga la lleva hacia el plano de giro. El resultado es un ángulo de conicidad
+$\beta_0$ de pocos grados.}
+\label{fig:batimiento}
+\end{figure}
+
+Cada pala se une al cubo con una bisagra de batimiento a radio $e$, como en el rotor de
+Cierva. Para ángulos pequeños, el equilibrio de momentos en la bisagra da
+\begin{equation}
+  \beta_0 = \frac{M_L - M_W}{m_b\,\Omega^2 \,\overline{r(r-e)}},\qquad
+  \overline{r(r-e)} = e\frac{L_b}{2}+\frac{L_b^2}{3},
+  \label{eq:conicidad}
+\end{equation}
+con $M_L$ el momento de la sustentación de la pala respecto de la bisagra, $M_W$ el de su
+peso y $m_b$ su masa (pala uniforme). Como la sustentación y la fuerza centrífuga crecen
+ambas con $\Omega^2$, la conicidad casi no depende de la velocidad de giro, salvo en el
+arranque.
+
+La relación entre fuerzas aerodinámicas e inerciales la mide el \textbf{número de Lock}
+\begin{equation}
+  \gamma = \frac{\rho\, a\, c\, R^4}{I_b}, \qquad I_b \approx \frac{m_b L_b^2}{3},
+  \label{eq:lock}
+\end{equation}
+con $a$ la pendiente de sustentación. En helicópteros $\gamma\approx5$--10; valores
+mayores indican palas muy livianas, con mucha amortiguación aerodinámica pero conicidad
+grande~\cite{johnson1980,leishman2006}. La frecuencia natural de batimiento de una pala
+articulada con excentricidad $e$ es
+\begin{equation}
+  \frac{\nu_\beta}{\Omega} = \sqrt{1+\frac{3}{2}\frac{e}{L_b}} .
+  \label{eq:nubeta}
+\end{equation}
+
+%=====================================================================
+\section{Paracaídas de frenado (drogue)}\label{sec:teoria-drogue}
+El drogue se dimensiona con la ecuación~\eqref{eq:equilibrio}. Knacke~\cite{knacke1992}
+da coeficientes, referidos al área nominal, de \numrange{0.75}{0.80} para paracaídas
+circulares planos y valores similares, algo menores, para los de cruz. La carga de apertura
+se estima con
+\begin{equation}
+  F_o = C_x\, X_1\, q\, C_D S, \qquad q=\tfrac12\rho V_{\text{ap}}^2 ,
+  \label{eq:apertura}
+\end{equation}
+donde $C_x\approx1{,}5$--1,8 es el factor de choque a masa infinita y $X_1\le1$ el factor
+de reducción por masa finita~\cite{knacke1992}. Se toma $C_x=1{,}5$ y $X_1=1$
+(conservador).
+
+\section{Resistencia del cuerpo}
+Un cilindro romo moviéndose según su eje tiene $C_D\approx0{,}8$--1,0 para relaciones de
+aspecto de 2 a 3~\cite{hoerner1965}. Se usa $C_{D,c}=0{,}8$ sobre el área frontal de
+Ø\,\SI{95}{mm}. Su aporte es menor al 3\,\% de la resistencia total en la segunda etapa.

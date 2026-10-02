@@ -1,0 +1,191 @@
+\chapter{Estado del arte y alternativas}\label{cap:arte}
+
+\section{Antecedentes en CanSat}
+
+\paragraph{CanSat Competition (AAS, AIAA, NASA y otros).} La competencia internacional usó
+el descenso por autogiro como misión central en al menos dos ediciones. En la misión 2019
+(\emph{Auto-gyro Probe})~\cite{cansat2019} y en la 2025 (\emph{Auto Gyro
+Descender})~\cite{cansat2025}, el conjunto baja primero con paracaídas y, a una fracción
+de la altitud máxima, la carga útil se separa del contenedor y desciende con un autogiro a
+unos \SI{5}{m/s}. La guía 2025 pide además telemetría de la velocidad de giro del autogiro
+y una cámara que muestre la separación y el autogiro funcionando. La estructura de
+requisitos de nuestro anexo (contenedor, dos etapas, liberación a una fracción del apogeo,
+estados \texttt{PROBE\_RELEASE} y \texttt{PAYLOAD\_RELEASE}) es muy parecida, lo que
+sugiere que deriva de esas guías. Los informes de diseño de los equipos (PDR y CDR) se
+publican en el sitio de la competencia y son una buena fuente de soluciones probadas.
+
+\paragraph{Ventura y colaboradores (2022).} Desarrollaron en la Universidad Nacional de
+Ingeniería (Perú) una carga útil CanSat con autogiro para cohetes experimentales, con
+análisis CFD y ensayos de caída libre~\cite{ventura2022}. Usaron dos conjuntos de palas
+que giran en sentidos opuestos, para que el cuerpo no gire, y perfil NACA~6412, validado
+con QBlade. Es la referencia publicada más cercana a este proyecto.
+
+\paragraph{Ramadhan y colaboradores (2019).} Prototipo de CanSat con carga útil de
+autogiro para educación en satélites pequeños, presentado en IEEE TSSA~2019~\cite{ramadhan2019}.
+
+\paragraph{Revisiones.} Chun, Tanveer y Chakravarty (2023) revisan el estado de los
+CanSat científicos, sus subsistemas y sus aplicaciones~\cite{chun2023}.
+
+\section{Antecedentes en la naturaleza: semillas autorrotantes}
+Las sámaras (semillas de arce, fresno, caoba) son rotores libres de una sola pala que
+caen a \SIrange{0.5}{1.5}{m/s} con cargas de disco muy bajas.
+\begin{itemize}
+  \item \textbf{Norberg (1973)} explicó la autorrotación, la autoestabilidad y la
+        estructura de las sámaras, y dio fórmulas de desempeño~\cite{norberg1973}.
+  \item \textbf{Azuma y Yasuda (1989)} midieron y modelaron el desempeño de vuelo de
+        semillas rotatorias con teoría de elemento de pala~\cite{azuma1989}.
+  \item \textbf{Seter y Rosen (1992)} estudiaron la autorrotación vertical de la sámara
+        de una pala y su estabilidad~\cite{seter1992}.
+  \item \textbf{Lentink y colaboradores (2009)} mostraron que las semillas de arce
+        generan un vórtice de borde de ataque estable que eleva la sustentación muy por
+        encima de lo que da el flujo adherido~\cite{lentink2009}.
+\end{itemize}
+Dos lecciones se trasladan al diseño: una pala fina y algo curvada trabaja bien a
+números de Reynolds bajos, y la posición del centro de masa a lo largo de la cuerda
+(hacia el borde de ataque) es la que da estabilidad.
+
+\section{Antecedentes en helicópteros y autogiros}
+La teoría de la autorrotación nace con los autogiros de Juan de la Cierva y el análisis
+de Glauert (1926)~\cite{glauert1926}. Las mediciones de Castles y Gray (1951) en cuatro
+rotores modelo~\cite{castles1951} siguen siendo la base empírica del descenso axial,
+donde la teoría de cantidad de movimiento deja de valer. Los textos de
+Gessow y Myers~\cite{gessow1952}, Johnson~\cite{johnson1980,johnson2013} y
+Leishman~\cite{leishman2006} desarrollan el tema; Leishman, Bhagwat y Ananthan
+(2004)~\cite{leishman2004} y Johnson (2005)~\cite{johnson2005} estudian el estado de
+anillo de vórtices, el régimen peligroso que un rotor libre atraviesa al arrancar.
+
+\section{Alternativas para la segunda etapa}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.78, every node/.style={font=\footnotesize, align=center}]
+  % ---- 1 paracaídas
+  \begin{scope}[shift={(0,0)}]
+    \draw[cuerda, fill=ccuerda!12] (-1.2,2.4) .. controls (-0.9,3.3) and (0.9,3.3) .. (1.2,2.4) -- cycle;
+    \foreach \x in {-1.2,-0.6,0,0.6,1.2}{\draw[ccuerda,line width=0.3pt] (\x,2.4) -- (0,1.1);}
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,1.1);
+    \node at (0,-0.35) {(a) Paracaídas};
+  \end{scope}
+  % ---- 2 parapente
+  \begin{scope}[shift={(4.4,0)}]
+    \draw[cuerda, fill=ccuerda!12] (-1.4,2.7) .. controls (-0.5,3.2) and (0.5,3.2) .. (1.4,2.7)
+         -- (1.4,2.45) .. controls (0.5,2.95) and (-0.5,2.95) .. (-1.4,2.45) -- cycle;
+    \foreach \x in {-1.4,-0.7,0,0.7,1.4}{\draw[ccuerda,line width=0.3pt] (\x,2.5) -- (0,1.1);}
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,1.1);
+    \node at (0,-0.35) {(b) Parapente};
+  \end{scope}
+  % ---- 3 autogiro
+  \begin{scope}[shift={(8.8,0)}]
+    \draw[crot, dashed] (0,1.9) ellipse (1.5 and 0.3);
+    \draw[rot] (-1.5,1.85) rectangle (1.5,1.98);
+    \draw[cuerda] (0,1.98) -- (0,3.0);
+    \draw[cuerda, fill=ccuerda!12] (-0.4,3.0) .. controls (-0.3,3.35) and (0.3,3.35) .. (0.4,3.0) -- cycle;
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,1.85);
+    \node at (0,-0.45) {(c) Autogiro\\ (elegido)};
+  \end{scope}
+  % ---- 4 monocóptero
+  \begin{scope}[shift={(13.2,0)}]
+    \draw[crot, dashed] (0,1.6) ellipse (1.5 and 0.3);
+    \draw[rot] (0.3,1.55) -- (1.5,1.6) -- (1.5,1.75) -- (0.3,1.70) -- cycle;
+    \draw[fijo] (-0.3,0.4) rectangle (0.3,1.6);
+    \node at (0,-0.45) {(d) Monocóptero\\ (sámara)};
+  \end{scope}
+  % ---- 5 coaxial
+  \begin{scope}[shift={(2.2,-4.4)}]
+    \draw[rot] (-1.4,2.3) rectangle (1.4,2.4);
+    \draw[rot] (-1.4,1.8) rectangle (1.4,1.9);
+    \draw[crot,-{Latex}] (1.0,2.6) arc (60:120:2 and 0.4);
+    \draw[crot,{Latex}-] (1.0,1.55) arc (-60:-120:2 and 0.4);
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,1.8);
+    \node at (0,-0.45) {(e) Rotores\\ contrarrotantes};
+  \end{scope}
+  % ---- 6 aletas
+  \begin{scope}[shift={(6.6,-4.4)}]
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,2.6);
+    \draw[cont] (-0.3,2.6) -- (-0.9,3.0) -- (-0.9,2.4) -- (-0.3,2.0);
+    \draw[cont] (0.3,2.6) -- (0.9,3.0) -- (0.9,2.4) -- (0.3,2.0);
+    \node at (0,-0.45) {(f) Aletas\\ de arrastre};
+  \end{scope}
+  % ---- 7 inflable
+  \begin{scope}[shift={(11.0,-4.4)}]
+    \draw[ccont, fill=fcont, line width=0.7pt] (0,2.55) ellipse (1.0 and 0.55);
+    \draw[fijo] (-0.3,0.2) rectangle (0.3,1.9);
+    \draw (0,1.9) -- (0,2.0);
+    \node at (0,-0.45) {(g) Cuerpo\\ inflable};
+  \end{scope}
+\end{tikzpicture}
+\caption{Alternativas evaluadas para la segunda etapa de descenso (esquemas, sin escala).}
+\label{fig:alternativas}
+\end{figure}
+
+\begin{description}
+  \item[(a) Paracaídas.] Ø\,$\approx\SI{70}{cm}$ para \SI{5}{m/s} con \SI{500}{g} ($C_D A\approx\SI{0.32}{m^2}$).
+        Probado, liviano, simple. Riesgo: enredo con el drogue (dos telas en la misma
+        cuerda) y oscilación pendular, que afecta el video.
+  \item[(b) Parapente.] Planea con fineza 3--5: deriva lejos del sitio de lanzamiento y
+        es difícil de plegar en \SI{250}{mm}.
+  \item[(c) Autogiro de 4 palas.] Rotor libre con bisagras de batimiento. Cumple \Req{C4}
+        con $R=\SI{0.20}{m}$, mantiene el eje libre para la cuerda del drogue y tiene
+        antecedentes directos~\cite{cansat2019,cansat2025,ventura2022}.
+  \item[(d) Monocóptero.] Una sola pala, como la sámara~\cite{norberg1973}. Muy elegante,
+        pero todo el CanSat gira a la velocidad del rotor: las cámaras no sirven y la
+        cuerda del drogue se retuerce.
+  \item[(e) Contrarrotantes.] Dos rotores que giran en sentidos opuestos anulan el par
+        sobre el cuerpo~\cite{ventura2022}. Duplica mecanismos y el rotor inferior
+        trabaja en la estela del superior.
+  \item[(f) Aletas o cintas.] Para \SI{5}{m/s} con \SI{500}{g} hace falta
+        $C_D A\approx\SI{0.32}{m^2}$: no hay forma de lograrlo con aletas rígidas dentro
+        de los límites de tamaño.
+  \item[(g) Inflable.] Necesita gas o bomba, válvula y una envoltura de unos
+        \SI{90}{cm} de diámetro (esfera, $C_D\approx0{,}47$). Masa y riesgo altos.
+\end{description}
+
+\section{Matriz de decisión}
+Se puntúa cada alternativa de 1 (malo) a 5 (muy bueno) en seis criterios ponderados.
+Los pesos reflejan las prioridades del equipo: cumplir \Req{C4} con bajo riesgo, sin
+olvidar el valor técnico del proyecto.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Matriz de decisión ponderada (máximo posible: 500 puntos).}\label{tab:pugh}
+\begin{tabular}{@{}lc*{7}{c}@{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{(a)} & \textbf{(b)} & \textbf{(c)} & \textbf{(d)} & \textbf{(e)} & \textbf{(f)} & \textbf{(g)}\\\midrule
+Cumplimiento de \Req{C4}         & 25 & 5 & 4 & 4 & 3 & 4 & 1 & 3\\
+Riesgo técnico (5 = bajo)        & 20 & 5 & 2 & 3 & 2 & 2 & 5 & 2\\
+Masa y volumen                   & 15 & 5 & 4 & 4 & 4 & 3 & 5 & 3\\
+Fabricación y complejidad        & 15 & 5 & 2 & 3 & 3 & 2 & 5 & 2\\
+Compatibilidad con $R\le0{,}20$ y drogue atado & 10 & 4 & 3 & 5 & 2 & 4 & 5 & 3\\
+Valor técnico e innovación       & 15 & 1 & 4 & 5 & 5 & 5 & 1 & 4\\\midrule
+\textbf{Total}                   &    & \textbf{430} & 320 & \textbf{390} & 315 & 330 & 340 & 280\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{resultado}[Lectura de la matriz]
+El paracaídas (a) obtiene el puntaje más alto: es la opción más segura y por eso queda
+como \textbf{plan~B}. Entre los sistemas que no son paracaídas, el autogiro (c) gana con
+claridad (390 puntos, 60 por encima del siguiente) y es la opción que el equipo eligió
+desarrollar. El resto del documento dimensiona el autogiro.
+\end{resultado}
+
+\section{Variantes del autogiro evaluadas}
+\begin{table}[H]
+\centering\small
+\caption{Variantes del autogiro consideradas durante el diseño.}\label{tab:variantes}
+\begin{tabularx}{\textwidth}{@{}lYY@{}}
+\toprule
+\textbf{Variante} & \textbf{Ventaja} & \textbf{Resultado}\\\midrule
+$R=\SI{0.27}{m}$ & Caída de \SI{5}{m/s} casi exacta & Descartada: excede $R\le\SI{0.20}{m}$\\
+Freno del rotor con servo & Regula la velocidad & Descartada: frenar solo acelera la caída, y con $R=\SI{0.20}{m}$ ya se está por encima de \SI{5}{m/s}\\
+Paso colectivo con servo & Regula en los dos sentidos & Descartada: varillaje en un cubo de \SI{40}{mm}\\
+Hilo de nicrom en las puntas & Muy liviano & Descartada: calor expuesto (\Req{M2})\\
+Rebaje del cuerpo para alojar palas & Palas al ras & Descartada: pared bajo \SI{2}{mm} (\Req{S6})\\
+Camisa (contenedor) que baja y queda colgando & Cumple la palabra \emph{contenedor}; protege las palas & Configuración B, si la organización la exige; excede la masa con pared impresa de \SI{2}{mm}\\
+Placa plana (paso $-2^\circ$) & Fácil de fabricar & Gira a $\approx\SI{2250}{rpm}$; sirve para el primer prototipo\\
+Placa curvada al 9,5\,\% (molde Ø\,95) & Molde disponible & Más resistencia y momento de picado que la de 7\,\%\\
+\textbf{Placa curvada al 7\,\%, cuerda \SI{45}{mm}} & \textbf{$\approx\SI{1150}{rpm}$, cargas bajas} & \textbf{Elegida}\\
+\bottomrule
+\end{tabularx}
+\end{table}

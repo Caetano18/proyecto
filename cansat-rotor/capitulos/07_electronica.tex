@@ -1,0 +1,133 @@
+\chapter{Electrónica y lógica de vuelo del sistema}\label{cap:elec}
+
+Este capítulo cubre solo lo que el sistema de descenso necesita de la electrónica: la
+detección del 80\,\% de la altitud, la orden de liberación, la confirmación de que el
+rotor gira y los datos que lo documentan.
+
+\section{Diagrama de bloques}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[caja, fill=ffijo, minimum width=32mm, minimum height=14mm] (mcu) at (0,0) {Microcontrolador\\ \footnotesize máquina de estados};
+  \node[caja, minimum width=28mm] (baro) at (-5.2,1.7) {Barómetro \footnotesize 50\,Hz};
+  \node[caja, minimum width=28mm] (imu)  at (-5.2,0)   {IMU \footnotesize acel. y giro};
+  \node[caja, minimum width=28mm] (gps)  at (-5.2,-1.7) {GPS};
+  \node[caja, minimum width=28mm, draw=cfreno, fill=cfreno!8] (servo) at (5.2,1.7) {Servo de traba \footnotesize \ang{15}};
+  \node[caja, minimum width=28mm] (radio) at (5.2,0) {Radio (\Req{X1})};
+  \node[caja, minimum width=28mm] (sd) at (5.2,-1.7) {SD y FRAM (\Req{F5})};
+  \node[caja, minimum width=28mm] (hall) at (0,-2.6) {Sensor hall \footnotesize rpm};
+  \node[caja, minimum width=40mm, fill=ccuerda!10] (pwr) at (0,3.0) {Batería 18650 + regulador\\ \footnotesize medición V e I (\Req{SN3}, \Req{SN8})};
+  \node[caja, minimum width=28mm] (cams) at (-5.2,3.5) {Cámaras cenit y nadir};
+  \node[caja, minimum width=28mm] (bal) at (5.2,3.5) {Baliza, pila propia (\Req{C8})};
+  \draw[flecha] (baro.east) -- (mcu.west |- 0,0.35);
+  \draw[flecha] (imu) -- (mcu);
+  \draw[flecha] (gps.east) -- (mcu.west |- 0,-0.35);
+  \draw[flecha] (hall) -- (mcu);
+  \draw[flecha] (mcu.east |- 0,0.35) -- (servo.west);
+  \draw[flecha, {Latex[length=2.4mm]}-{Latex[length=2.4mm]}] (mcu) -- (radio);
+  \draw[flecha] (mcu.east |- 0,-0.35) -- (sd.west);
+  \draw[flecha] (pwr) -- (mcu);
+  \draw[flecha] (pwr) -- (cams);
+  \node[font=\scriptsize, cgris, anchor=north] at (bal.south) {sin conexión eléctrica};
+\end{tikzpicture}
+\caption{Bloques electrónicos relacionados con el descenso. La baliza no comparte
+alimentación con el resto (\Req{C8}).}
+\label{fig:bloques}
+\end{figure}
+
+\section{Máquina de estados}\label{sec:estados}
+Se usan los estados de la telemetría del anexo~\cite{anexo}. Se propone emplear
+\texttt{PROBE\_RELEASE} para la orden de liberación del rotor y \texttt{PAYLOAD\_RELEASE}
+para la confirmación de que el rotor gira; esta asignación conviene confirmarla con la
+organización.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=6mm and 4mm,
+    st/.style={draw, rounded corners=3pt, fill=ffijo, minimum width=27mm, minimum height=9mm,
+               align=center, font=\footnotesize\ttfamily},
+    tr/.style={font=\scriptsize, align=center}]
+  \node[st] (pad) {LAUNCH\_PAD};
+  \node[st, right=22mm of pad] (asc) {ASCENT};
+  \node[st, right=22mm of asc] (apo) {APOGEE};
+  \node[st, below=16mm of apo] (des) {DESCENT};
+  \node[st, left=22mm of des, fill=cfreno!12] (prb) {PROBE\_RELEASE};
+  \node[st, left=22mm of prb, fill=crot!15] (pay) {PAYLOAD\_RELEASE};
+  \node[st, below=16mm of pay] (lan) {LANDED};
+  \draw[flecha] (pad) -- node[tr, above] {$h>\SI{10}{m}$ y\\ $a_z>2\,g$} (asc);
+  \draw[flecha] (asc) -- node[tr, above] {$\dot h<0$\\ 5 muestras} (apo);
+  \draw[flecha] (apo) -- node[tr, right] {guarda $h_{\max}$\\ en FRAM} (des);
+  \draw[flecha] (des) -- node[tr, above] {$h\le0{,}8\,h_{\max}$\\ (o temporizador)} (prb);
+  \draw[flecha] (prb) -- node[tr, above] {rpm $>\num{600}$\\ en $\le\SI{5}{s}$} (pay);
+  \draw[flecha] (pay) -- node[tr, right] {$|\dot h|<\SI{0.5}{m/s}$\\ durante \SI{5}{s}} (lan);
+  \draw[flecha, cfreno] (prb.south) |- node[tr, below, pos=0.75] {sin giro: reintento\\ del servo (2 veces)} ($(lan.east)+(0,2mm)$);
+\end{tikzpicture}
+\caption{Máquina de estados del software de vuelo con las transiciones propuestas. Los
+umbrales son valores iniciales a ajustar en ensayo.}
+\label{fig:estados-sw}
+\end{figure}
+
+\section{Detección del 80\,\% de la altitud}
+\begin{itemize}
+  \item La altitud sale del barómetro (\Req{SN1}), leído a \SI{50}{Hz} y filtrado (media
+        móvil exponencial o filtro de Kalman de dos estados: altura y velocidad). La
+        telemetría a \SI{1}{Hz} (\Req{X5}) no interviene en la decisión.
+  \item El apogeo se confirma cuando la velocidad vertical filtrada es negativa durante 5
+        muestras seguidas; $h_{\max}$ se guarda en memoria no volátil (\Req{F5}), así un
+        reinicio no la pierde.
+  \item La liberación se ordena cuando $h\le0{,}8\,h_{\max}$ y el estado es
+        \texttt{DESCENT}. Nunca antes del apogeo.
+  \item \textbf{Respaldo por tiempo}: si el barómetro falla, se libera a
+        $t_{\text{apogeo}}+0{,}2\,h_{\max}/\Vd+\SI{2}{s}$, estimando $h_{\max}$ con el GPS.
+\end{itemize}
+
+\section{Pseudocódigo de liberación}
+\begin{lstlisting}[language=C, caption={Lógica de liberación y confirmación (pseudocódigo).}]
+// llamado a 50 Hz
+void control_descenso(void) {
+  float h  = filtro_altura(leer_barometro());
+  float vz = filtro_velocidad();
+  switch (estado) {
+    case DESCENT:
+      if (h <= 0.8f * h_max || tiempo_desde_apogeo() > t_respaldo) {
+        servo_traba(LIBERAR);              // anillo gira 15 grados
+        t_liberacion = millis();
+        cambiar_estado(PROBE_RELEASE);     // se guarda en FRAM
+      }
+      break;
+    case PROBE_RELEASE:
+      if (rpm_rotor() > 600) cambiar_estado(PAYLOAD_RELEASE);
+      else if (millis() - t_liberacion > 5000 && reintentos < 2) {
+        servo_traba(TRABAR); demora(300); servo_traba(LIBERAR);
+        reintentos++; t_liberacion = millis();
+      }
+      break;
+    case PAYLOAD_RELEASE:
+      if (fabsf(vz) < 0.5f && tiempo_quieto() > 5000) cambiar_estado(LANDED);
+      break;
+  }
+}
+\end{lstlisting}
+
+\section{Telemetría y comandos}
+\begin{itemize}
+  \item \textbf{Campos opcionales}: después de los obligatorios y de las dos comas que
+        indica el anexo, se agregan \texttt{ROTOR\_RPM} y \texttt{LATCH} (0 trabado,
+        1 liberado). Así los jueces ven en el archivo CSV el momento exacto de la
+        liberación y el arranque del rotor.
+  \item \textbf{Comando \texttt{MEC}}: \texttt{CMD,<TEAM\_ID>,MEC,LATCH,ON} libera y
+        \texttt{\ldots,OFF} traba. Sirve para probar el mecanismo en tierra y para armar
+        el CanSat antes de cargarlo en el cohete.
+  \item \textbf{Giro del cuerpo}: el giróscopo (\Req{SN5}) registra cuánto gira el
+        cuerpo por el rozamiento de los rodamientos; es un dato útil para la revisión
+        posterior al vuelo.
+\end{itemize}
+
+\section{Video}
+La cámara cenit (\Req{C6}) va fuera del eje, en un hueco entre palas, inclinada \ang{15}
+hacia afuera: ve el drogue durante todo el vuelo y las palas al abrirse y girar. A
+\SI{1150}{rpm} pasan $4\times1150/60\approx77$ palas por segundo; con una cámara de
+\SI{30}{fps} el rotor se ve casi quieto o girando lento (efecto estroboscópico), lo que
+documenta bien el funcionamiento. La cámara nadir (\Req{C7}) graba el suelo desde la tapa
+inferior. Ambas en color y con al menos $640\times480$ (\Req{SN7}).
