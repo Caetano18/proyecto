@@ -211,7 +211,7 @@ def caso_capa(c):
     os.makedirs(c["dir"], exist_ok=True)
     a_s = 2.0 if c["perfil"] in CURVOS else 0.0
     for npan in PANELES:
-        pol = f"cl_{c['alfa']:+05.1f}_{npan}.pol"
+        pol = f"{c['tag']}_{npan}.pol"
         ruta = os.path.join(c["dir"], pol)
         if os.path.exists(ruta):
             os.remove(ruta)
@@ -224,6 +224,8 @@ def caso_capa(c):
         _, colgado = correr(cmds, c["dir"])
         P = leer_polar(ruta)
         if not colgado and len(P) and abs(P[-1, 0] - c["alfa"]) < 1e-3:
+            # fila del ángulo pedido (alpha cl cd cdp cm xtrs xtri ...) para el posproceso
+            np.savetxt(os.path.join(c["dir"], c["tag"] + ".pt"), P[-1:], fmt="%.5f")
             return dict(tag=c["tag"], npan=npan, ok=True)
     return dict(tag=c["tag"], npan=None, ok=False)
 

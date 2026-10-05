@@ -1,7 +1,7 @@
 """Capitulo de revision de la literatura (prefijo literatura).
 Compara la carga de disco y la velocidad de descenso de decelerador rotativo publicados
 con el diseno propio. Solo usa datos publicados (Brindejonc et al. 2007) y los datos base
-del proyecto. Salida: analysis/data/literatura_curvas.dat y literatura_puntos.dat."""
+del proyecto. Salidas: analysis/data/literatura_{curvas,puntos,ct_a,ct_leish,energia}.dat."""
 import numpy as np, os
 rho = 1.225; g = 9.81
 out = os.path.join(os.path.dirname(__file__), 'data')
@@ -30,9 +30,11 @@ with open(os.path.join(out, 'literatura_puntos.dat'), 'w') as f:
     for p in pts:
         f.write(f'{p[0]} {p[1]:.3f} {p[2]:.3f} {p[3]:.3f}\n')
 for p in pts: print(p)
-# Frecuencia de respiracion del drogue si St = f D / V = 0,55 (Johari y Desabrais 2005)
+# Frecuencia de respiracion del drogue si St = f D_p / V = 0,55 (Johari y Desabrais 2005).
+# Johari usa el diametro PROYECTADO medio de la campana. 0,25 m es el diametro nominal
+# (Cd = 0,8 referido a el); para un paracaidas plano circular D_p/D_0 ~ 0,67-0,70 (Knacke).
 for v in (6.4, 13.4):
-    print('f_resp', v, 0.55*v/0.25)
+    print('f_resp', v, 'D0:', 0.55*v/0.25, 'Dp=0,68 D0:', 0.55*v/(0.68*0.25))
 # Numero de Reynolds de Laitone (20 000 - 70 000) frente al rotor propio
 print('Re punta', 24*0.045/1.5e-5, 'Re medio', 12*0.045/1.5e-5)
 
@@ -56,3 +58,32 @@ print('Leishman x=-1.83: vi/vh', vi, 'a', vi/1.83, 'CT', 4/1.83**2)
 from scipy.optimize import brentq
 for C in (1.0, 1.2):
     print('Buhl a para CT', C, brentq(lambda t: float(buhl(t)) - C, 0.4, 1.0))
+
+# ---- Cierre por balance de energia (revision): en autorrotacion T (V - v_i) = P0 (potencia de
+# perfil). Con Omega fijo en la estimacion base (120 rad/s) y C_d medio de la pala como
+# parametro, se obtiene el flujo neto por el disco w = V - v_i, el factor a = 1 - w/V, y la
+# velocidad de equilibrio V que da cada curva empirica (Leishman o Buhl), con el drogue y el
+# cuerpo en corriente libre (T = W - D_drogue - D_cuerpo). Es una estimacion de orden.
+Wt = 0.500*g; AR = 0.1257; R = 0.200; e = 0.044; B = 4; c = 0.045; Om = 120.0
+def vi_l(x): return kap + k1*x + k2*x**2 + k3*x**3 + k4*x**4
+def buhl_a(CT):
+    if CT <= 0.96: return 0.5*(1 - np.sqrt(1 - CT))
+    return brentq(lambda t: float(buhl(t)) - CT, 0.4, 1.05)
+def T_of_V(V): return Wt - 0.5*rho*V**2*0.8*(0.0491 + 0.00709)
+with open(os.path.join(out, 'literatura_energia.dat'), 'w') as f:
+    f.write('Cd P0 w a phi75 VL CRL VB CRB\n')
+    for Cd in (0.03, 0.045, 0.06, 0.075, 0.09):
+        P0 = B*0.5*rho*c*Cd*Om**3*(R**4 - e**4)/4
+        w = P0/3.78; a_ = 1 - w/6.4
+        phi = np.degrees(np.arctan(w/(Om*0.75*R)))
+        def fL(V):
+            T = T_of_V(V); vh = np.sqrt(T/(2*rho*AR))
+            return V - vi_l(-V/vh)*vh - P0/T
+        def fB(V):
+            T = T_of_V(V); CT = T/(0.5*rho*V**2*AR)
+            return V*(1 - buhl_a(min(CT, 2.0))) - P0/T
+        VL = brentq(fL, 5.0, 7.5); VB = brentq(fB, 4.0, 7.5)
+        CRL = T_of_V(VL)/(0.5*rho*VL**2*AR); CRB = T_of_V(VB)/(0.5*rho*VB**2*AR)
+        f.write(f'{Cd:.3f} {P0:.3f} {w:.3f} {a_:.3f} {phi:.2f} {VL:.3f} {CRL:.3f} {VB:.3f} {CRB:.3f}\n')
+        print(f'energia Cd={Cd} P0={P0:.2f} W w={w:.2f} m/s a={a_:.3f} phi75={phi:.1f} | '
+              f'Leishman V={VL:.2f} CR={CRL:.2f} | Buhl V={VB:.2f} CR={CRB:.2f}')

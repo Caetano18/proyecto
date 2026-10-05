@@ -36,9 +36,11 @@
 \newcommand{\confPb}[2]{\node[conf-p] at ($(#1.south)+(0,-3.1mm)$) {#2};}
 
 Con el diseño propuesto y las acciones de este capítulo, la probabilidad estimada de que
-la segunda etapa no cumpla \Req{C4} es \SI{3.3}{\percent} por vuelo (intervalo de
-\SI{90}{\percent}: \SIrange{2.9}{11}{\percent}) y la de perder el CanSat,
-\SI{2.2}{\percent} (\SIrange{1.6}{6.2}{\percent}). Este capítulo amplía el AMFE del
+la segunda etapa no cumpla \Req{C4} es \SI{3.3}{\percent} por vuelo como estimación
+puntual y \SI{5.9}{\percent} como media cuando se incluye la incertidumbre (intervalo de
+\SI{90}{\percent}: \SIrange{2.9}{11}{\percent}). La de perder el CanSat es
+\SI{2.2}{\percent} puntual y \SI{3.4}{\percent} de media
+(\SIrange{1.6}{6.2}{\percent}). Este capítulo amplía el AMFE del
 capítulo~\ref{cap:riesgos} de 9 a 37 modos. Agrega árboles de fallas cuantificados, el
 diagrama de bloques de la liberación, los peligros para las personas, la gestión de
 configuración y los criterios de vuelo.
@@ -175,7 +177,7 @@ probabilidad.
   \node[conf-ev=21mm] (G2) at (99,-22) {No arranca o se detiene\\ \num{6.49e-3}};
   \node[conf-ev=24mm] (G3) at (124,-22) {Falla estructural en vuelo\\ \num{1.80e-3}};
   \node[conf-nd] (x17) at (146,-22) {$x_{17}$};
-  \node[conf-eb] (x18) at (156,-22) {$x_{18}$};
+  \node[conf-eb] (x18) at (158,-22) {$x_{18}$};
   \confP{x17}{\num{5.4e-3}} \confPb{x18}{\num{2e-3}}
   \foreach \h in {G1,G2,G3,x17,x18}{\confC{T}{\h}}
   \confO{G1} \confO{G2} \confO{G3}
@@ -291,7 +293,7 @@ solo FV los distingue (figura~\ref{fig:confiabilidad-fv}). Los mayores son $x_{1
 (\SI{16}{\percent}), $x_3$ y $x_{13}$ (\SI{15}{\percent} cada uno) y $x_7$
 (\SI{9}{\percent}). Por grupos: electrónica y software ($x_1$--$x_6$), \SI{27}{\percent};
 traba ($x_7$--$x_9$), \SI{20}{\percent}; rotor desplegado ($x_{10}$--$x_{16}$),
-\SI{30}{\percent}. La causa común $x_6$ pesa cinco veces más que la falla conjunta
+\SI{30}{\percent}. La causa común $x_6$ pesa más de cinco veces lo que la falla conjunta
 $x_4x_5$ (\num{1e-3} frente a \num{1.8e-4}): el respaldo solo sirve si detecta el apogeo
 sin depender del barómetro.
 
@@ -389,10 +391,12 @@ Con \num{100000} muestras se evaluaron ambos árboles
 (tabla~\ref{tab:confiabilidad-incert}, figura~\ref{fig:confiabilidad-incert}b). Incluso la
 mediana de $P(T_1)$ (\SI{5.1}{\percent}) supera la estimación puntual
 (\SI{3.3}{\percent}), que se calculó con las medianas de los eventos. No es un error: en un
-sistema casi en serie $P(T)\approx\sum_i p_i$, y la suma de lognormales tiene una mediana
-mayor que la suma de las medianas, porque cada término aporta su cola superior. La media
-supera a su vez a la mediana por la asimetría, y los EF grandes ($x_{2}$, $x_{13}$,
-$x_{14}$) arrastran la cola superior. Por eso los objetivos se fijan sobre la media y no
+sistema casi en serie $P(T)\approx\sum_i p_i$. La media de cada lognormal supera a su
+mediana en el factor $e^{\sigma^2/2}$ (1,25 con $\mathrm{EF}=3$; 1,61 con
+$\mathrm{EF}=5$; 2,66 con $\mathrm{EF}=10$), y la suma de muchos términos se concentra
+cerca de la suma de las medias, no de las medianas. La distribución de la suma sigue
+siendo asimétrica, así que su media supera a su mediana; los EF grandes ($x_{2}$,
+$x_{13}$, $x_{14}$) arrastran la cola superior. Por eso los objetivos se fijan sobre la media y no
 sobre la estimación puntual.
 
 \begin{table}[H]
@@ -443,6 +447,7 @@ cada árbol.}
   xmin=0.02, xmax=0.25, ymin=1e-4, ymax=0.5,
   xlabel={$\sigma_{\CR}$}, ylabel={$P(\bar V_2>\SI{8}{m/s})$},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
+  legend cell align=left,
   legend style={font=\scriptsize, at={(0.5,-0.3)}, anchor=north, fill=white,
     legend columns=2, /tikz/every even column/.append style={column sep=4pt}},
   title={\small (a) Sensibilidad de $x_{17}$}]
@@ -480,8 +485,9 @@ $P(T_2)\le\SI{3}{\percent}$. Las estimaciones puntuales cumplen, pero las medias
 (\SI{5.9}{\percent} y \SI{3.4}{\percent}) no, por la incertidumbre. Los ensayos E2--E4
 reducen justo los EF de la cola ($x_{13}$, $x_{14}$, $x_{17}$). Si los tres bajan a
 $\mathrm{EF}=3$, la media de $P(T_1)$ queda en \SI{4.9}{\percent}. La de $P(T_2)$ baja solo
-a \SI{3.1}{\percent} porque depende del sitio ($x_{23}$): se cumple con observadores y
-medios de recuperación en altura.
+a \SI{3.1}{\percent} porque depende del sitio ($x_{23}$). Si además se reduce $x_{23}$ a
+la mitad (observadores a lo largo de la deriva y medios para recuperar en altura), la
+media baja a \SI{2.5}{\percent}; esa reducción es una hipótesis que depende del sitio.
 \end{resultado}
 
 %=====================================================================
@@ -558,9 +564,12 @@ E & D + comando manual \texttt{MEC} & \num{1.43e-3} & \num{6.79e-3} & \num{1.86e
 \end{tabular}
 \end{table}
 
-Los reintentos dan la mayor mejora (dividen por 3,7 la falla de la traba); les siguen
-FRAM y watchdog (reinicios sin recuperación de \num{1e-2} a \num{1e-3}). El respaldo por
-tiempo aporta poco: el barómetro ya es confiable y la causa común limita la ganancia. El
+Los reintentos dan la mayor mejora: dividen por 3,7 la falla de la traba y bajan $Q$
+en 1,8 puntos porcentuales. Les siguen, casi empatados, FRAM y watchdog (reinicios sin
+recuperación de \num{1e-2} a \num{1e-3}; 0,9 puntos) y el respaldo por tiempo (falla de
+la detección de \num{1e-2} a \num{1.2e-3}; 0,8 puntos). La causa común le resta poco al
+respaldo (B frente a B$_0$: 0,1 puntos), siempre que el respaldo detecte el apogeo sin
+usar el barómetro. El
 comando manual \texttt{MEC} cubre lógica, detección y reinicios, pero no la alimentación
 ni la traba. Se recomienda implementarlo y confirmar con la organización que puede usarse
 en vuelo~\cite{anexo}. Con la configuración E, $P(T_1)$ bajaría a cerca de
@@ -575,7 +584,7 @@ buena detección. Por ese motivo el manual AIAG--VDA reemplazó el NPR por una p
 acción~\cite{confiabilidad-aiagvda2019}. El NPR es un producto de escalas ordinales: sirve
 para ordenar, no para comparar proporciones.
 
-\par\ifdim\dimexpr\pagegoal-\pagetotal\relax<4.5cm\newpage\fi
+\par\ifdim\dimexpr\pagegoal-\pagetotal\relax<7cm\newpage\fi
 {\scriptsize
 \setlength{\tabcolsep}{2.2pt}
 \renewcommand{\arraystretch}{1.12}
@@ -667,7 +676,7 @@ más de \SI{11}{ft.lbf} ($\approx\SI{14.9}{J}$, \SI{7.7}{m/s} para \SI{0.5}{kg})
 tienen partes giratorias expuestas que puedan cortar~\cite{confiabilidad-faa2021}. La
 norma no aplica a un CanSat, pero muestra que solo la etapa 2 normal queda por debajo y
 que las palas descubiertas no la cumplirían. La \textbf{batería 18650} guarda unos
-\SI{11}{Wh}; un corto, una mala carga o un aplastamiento pueden iniciar una fuga térmica,
+\SI{11}{Wh} (celda de \SI{3}{Ah} a \SI{3.6}{V}); un corto, una mala carga o un aplastamiento pueden iniciar una fuga térmica,
 con cientos de grados y gases inflamables~\cite{confiabilidad-feng2018}.
 
 \begin{table}[H]
@@ -780,7 +789,9 @@ Análisis & Ningún $\mathrm{NPR}'\ge100$ sin aceptación firmada; árboles actu
 \begin{nota}[Validez de E4]
 El arranque consume \SIrange{30}{60}{m}; con \SI{4}{s} estacionarios a unos
 \SI{7}{m/s}, la caída debe empezar a \SI{100}{m} o más. Una caída de \SI{30}{m} solo mide
-el transitorio.
+el transitorio. En una caída desde el reposo el arranque es distinto del de vuelo (el
+CanSat parte con velocidad nula y no a \SI{13.4}{m/s}), así que esa altura es una
+estimación: la primera caída debe confirmarla con el registro del barómetro.
 \end{nota}
 
 \begin{footnotesize}
@@ -825,15 +836,17 @@ $\square$ & Confirmación final & Estación terrena muestra \texttt{LAUNCH\_PAD}
 \begin{resultado}[Resultados de confiabilidad]
 \begin{itemize}
   \item Probabilidad estimada de no cumplir \Req{C4}: \SI{3.3}{\percent} por vuelo
-        (media \SI{5.9}{\percent}, P95 \SI{11}{\percent}). Probabilidad de perder el CanSat:
+        como estimación puntual (media \SI{5.9}{\percent}, P95 \SI{11}{\percent}). Probabilidad de perder el CanSat:
         \SI{2.2}{\percent} (media \SI{3.4}{\percent}).
   \item La cadena de \Req{C4} es casi un sistema en serie: 16 de sus 17 cortes mínimos
         son de orden 1. Los mayores contribuyentes son el rendimiento real del rotor, la
         lógica de liberación y la cuerda en el plano del rotor.
   \item Con el arranque incluido, \Req{C4} exige $\Vr\le V_2^{*}$, entre \SIlist{7.66;7.92}{m/s}
-        según el apogeo. El peor caso de la estimación base (\SI{7.8}{m/s}) está en el límite.
-  \item Los reintentos del servo y la FRAM son las redundancias más eficaces. El
-        respaldo por tiempo vale solo si detecta el apogeo sin usar el barómetro.
+        según el apogeo y la duración del arranque. El peor caso de la estimación base (\SI{7.8}{m/s}) está en el límite: no cumple
+        con apogeo bajo y arranque lento.
+  \item Los reintentos del servo son la redundancia más eficaz; la FRAM con watchdog y
+        el respaldo por tiempo aportan cerca de la mitad de esa mejora cada uno. El respaldo vale
+        solo si detecta el apogeo sin usar el barómetro.
   \item Acciones nuevas: criterio de E4 sin drogue $\le\SI{7.43}{m/s}$ a
         $\rho=1{,}225$ y caídas de $\ge\SI{100}{m}$; ensayo estático de la raíz a
         \SI{1}{N.m}; modo de emergencia por falla del drogue; comando manual

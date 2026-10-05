@@ -1,0 +1,700 @@
+\chapter{Polares aerodinámicas a bajo número de Reynolds}\label{cap:polares}
+
+%%RESUMEN%%
+
+%=====================================================================
+\section{Régimen de trabajo de la pala}\label{sec:polares-regimen}
+
+La pala trabaja entre $Re\approx\num{16000}$ en la raíz y $\num{72000}$ en la punta; el
+número de Reynolds que pesa en el empuje es $\approx\num{55000}$. Por eso las polares se
+calculan a $Re=\num{20000}$, \num{35000}, \num{50000}, \num{75000} y \num{100000}.
+
+\subsection{Número de Reynolds local}
+En autorrotación la velocidad relativa de la sección es
+$U=\sqrt{(\Omega r)^2+U_P^2}$, con $U_P$ la componente perpendicular al disco. Cerca del
+punto de trabajo $U_P\ll\Omega r$ (el ángulo de entrada es de pocos grados), y
+\begin{equation}
+  Re(r)=\frac{U\,c}{\nu}\approx\frac{\Omega\,r\,c}{\nu},
+  \label{eq:polares-re}
+\end{equation}
+que con $\Omega=\SI{120}{rad/s}$, $c=\SI{45}{mm}$ y $\nu=\SI{1.5e-5}{m^2/s}$ da
+$Re=\num{360000}\,r$ ($r$ en metros). La figura~\ref{fig:polares-repala} muestra la
+distribución y la banda de $\pm\SI{20}{\percent}$ en $\Omega$, que cubre la incertidumbre
+de la estimación de rpm del capítulo~\ref{cap:dim}.
+
+El empuje de un elemento crece como $U^2\,dr\propto r^2\,dr$; el radio medio ponderado
+por el empuje entre $e$ y $R$ es
+\begin{equation}
+  r_T=\left(\frac{\int_e^R r^2\cdot r^2\,dr}{\int_e^R r^2\,dr}\right)^{1/2}
+     =\left(\frac35\,\frac{R^5-e^5}{R^3-e^3}\right)^{1/2}\approx\SI{0.155}{m}=0{,}78\,R,
+  \label{eq:polares-rt}
+\end{equation}
+donde $Re\approx\num{56000}$. El valor de referencia de \num{36000} del
+capítulo~\ref{cap:dim} corresponde a $r\approx\SI{0.10}{m}$, la mitad de la pala medida
+desde el eje: describe bien la zona interior, pero no la zona que sostiene el CanSat.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.82\textwidth, height=6.2cm, xlabel={$r$ [m]}, ylabel={$Re$},
+  xmin=0.04, xmax=0.205, ymin=0, ymax=95000, scaled x ticks=false,
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
+  scaled y ticks=false, yticklabel style={/pgf/number format/fixed},
+  legend style={font=\footnotesize, at={(0.03,0.97)}, anchor=north west, cells={anchor=west}}]
+  \addplot[name path=hi, draw=none, forget plot] table[x=r, y=re_hi] {analysis/data/polares_repala.dat};
+  \addplot[name path=lo, draw=none, forget plot] table[x=r, y=re_lo] {analysis/data/polares_repala.dat};
+  \addplot[frot, opacity=0.7] fill between[of=hi and lo];
+  \addlegendentry{$\Omega=\SI{120}{rad/s}\pm\SI{20}{\percent}$}
+  \addplot[crot, very thick] table[x=r, y=re] {analysis/data/polares_repala.dat};
+  \addlegendentry{$\Omega=\SI{120}{rad/s}$}
+  \foreach \yy in {20000,35000,50000,75000,100000}{
+    \edef\temp{\noexpand\addplot[cfijo, dashed, forget plot, domain=0.04:0.205] {\yy};}\temp}
+  \addplot[cfijo, dashed] coordinates {(0,-1) (0,-1)};
+  \addlegendentry{$Re$ calculados con XFOIL}
+  \addplot[only marks, mark=*, mark size=2pt, black] coordinates {(0.155,55800)};
+  \addlegendentry{radio de empuje $r_T$}
+  \draw[cgris, densely dotted] (axis cs:0.044,0) -- (axis cs:0.044,95000)
+     node[pos=0.92, anchor=west, font=\scriptsize] {bisagra $e$};
+\end{axis}
+\end{tikzpicture}
+\caption{Número de Reynolds local a lo largo de la pala en autorrotación
+(ec.~\ref{eq:polares-re}). Las líneas de trazos son los cinco $Re$ calculados.}
+\label{fig:polares-repala}
+\end{figure}
+
+\subsection{Ángulos de ataque que importan}
+La polar se necesita en tres zonas de ángulo de ataque, con exigencias distintas:
+\begin{enumerate}
+  \item \textbf{Régimen de autorrotación} ($\alpha\approx\ang{0}$ a \ang{10}): la sección
+        está en flujo adherido o con una burbuja corta. Aquí se decide la velocidad de
+        descenso, por lo que se necesitan $C_l$ y $C_d$ precisos. XFOIL es la herramienta
+        adecuada.
+  \item \textbf{Raíz de la pala y transitorios} ($\alpha\approx\ang{10}$ a \ang{40}): la
+        sección está en pérdida. Pesa poco en el empuje porque $\Omega r$ es chico, pero
+        frena el rotor. XFOIL deja de converger o da resultados poco fiables.
+  \item \textbf{Arranque} ($\alpha\approx\ang{90}+\theta$, ec.~\ref{eq:Q0}): el aire llega
+        perpendicular al plano del rotor con $\Omega=0$. La sección se comporta como una
+        placa normal a la corriente.
+\end{enumerate}
+Las zonas 2 y 3 se cubren con la polar extendida de la
+sección~\ref{sec:polares-ext}.
+
+%=====================================================================
+\section{Secciones comparadas y modelo geométrico}\label{sec:polares-geom}
+
+Se comparan seis secciones: tres placas (curvadas al 7 y al \SI{4}{\percent}, plana) y
+tres perfiles gruesos de referencia (fondo plano tipo Clark~Y, NACA~6412 y NACA~0012). La
+placa curvada al \SI{7}{\percent} es la sección elegida en el capítulo~\ref{cap:dim}.
+
+\subsection{Placas: por qué un espesor del 1,5\,\% y no el real}
+La pala real es una placa de carbono de \SI{0.5}{mm} con cuerda de \SI{45}{mm}: espesor
+relativo $t/c=\SI{1.1}{\percent}$. XFOIL necesita un contorno cerrado y suave, con un
+radio de borde de ataque finito, porque resuelve el flujo potencial con paneles y la capa
+límite con un método integral que arranca en el punto de remanso~\cite{polares-drela1989}.
+Con una nariz muy aguda el pico de succión se vuelve singular, la capa límite se separa en
+el primer panel y el acoplamiento viscoso no converge. Por eso el modelo usa:
+\begin{itemize}
+  \item \textbf{Línea media en arco circular} de flecha $h=f/c$ (0,07 o 0,04), igual que
+        la placa conformada sobre el molde:
+        \begin{equation}
+          y_c(x)=\sqrt{R_c^2-(x-\tfrac12)^2}-(R_c-h),\qquad
+          R_c=\frac{\tfrac14+h^2}{2h},
+          \label{eq:polares-arco}
+        \end{equation}
+        con $R_c=1{,}821\,c=\SI{81.9}{mm}$ para $h=0{,}07$.
+  \item \textbf{Semiespesor} aplicado en dirección normal a la línea media,
+        \begin{equation}
+          y_t(x)=\frac t2\,\sqrt{1-e^{-x/a}}\;\bigl(1-\xi^2\bigr),\qquad
+          \xi=\max\!\Bigl(0,\frac{x-0{,}85}{0{,}15}\Bigr),\qquad a=\frac t4 .
+          \label{eq:polares-espesor}
+        \end{equation}
+        Cerca de $x=0$ la nariz es la parábola $y_t^2\approx t^2x/(4a)$, de radio
+        $r_{BA}=t^2/(8a)=t/2$: una nariz semicircular, como la de una placa con el canto
+        lijado a radio completo. El factor $(1-\xi^2)$ afina el último \SI{15}{\percent}
+        hasta un borde de fuga de espesor nulo.
+  \item \textbf{Espesor $t=\SI{1.5}{\percent}$}: es el menor con el que XFOIL converge en
+        la mayor parte del barrido. El radio de nariz resultante,
+        $r_{BA}=0{,}0064\,c=\SI{0.29}{mm}$, es casi el de una placa de \SI{0.5}{mm} con el
+        canto redondeado completo (\SI{0.25}{mm}). La sensibilidad al espesor se calcula
+        con $t=\SI{1.1}{\percent}$ (el real) y \SI{2.0}{\percent} en la
+        sección~\ref{sec:polares-espesor}.
+\end{itemize}
+Una variante con nariz más aguda ($a=t/2$, $r_{BA}=t/4$) casi no converge y se descartó.
+La placa plana se modela con $t=\SI{3}{\percent}$, la misma ley de nariz y el mismo bisel,
+como referencia de una pala recortada de chapa sin curvar.
+
+\begin{nota}[Diferencias entre el modelo y la pala real]
+El borde de fuga real es romo (\SI{0.5}{mm}, $\SI{1.1}{\percent}$ de la cuerda) y no
+afilado: agrega una resistencia de base que el modelo no incluye. Con un coeficiente de
+presión de base $C_{p,b}\approx-0{,}1$ a $-0{,}2$ (valor supuesto),
+$\Delta C_d\approx-C_{p,b}\,t_{BF}/c\approx0{,}001$--$0{,}002$, entre el 5 y el
+\SI{10}{\percent} del $C_d$ de trabajo. El canto de ataque real depende del lijado: si queda a
+escuadra, la separación en el borde de ataque llega antes que en el modelo.
+\end{nota}
+
+\subsection{Perfiles de referencia}
+El \textbf{NACA~6412} es la sección de Ventura y colaboradores~\cite{ventura2022}; el
+\textbf{NACA~0012} es la referencia clásica de palas de helicóptero; ambos con las fórmulas
+de la serie de cuatro cifras y borde de fuga abierto ($\approx\SI{0.25}{\percent}$). El
+\textbf{Clark~Y} se genera con sus ordenadas clásicas tabuladas, interpoladas en la
+variable $\sqrt x$; su fondo plano forma \ang{1.97} con la cuerda (borde de ataque a borde
+de fuga), que es la referencia de $\alpha$ en XFOIL. Las coordenadas están en
+\texttt{analysis/data/polares\_geom\_*.dat} (script \texttt{analysis/polares\_geom.py}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\textwidth, height=8.8cm, axis equal image, xmin=-0.02, xmax=1.02,
+  ymin=-1.05, ymax=0.12, ytick=\empty, xtick={0,0.25,0.5,0.75,1}, xlabel={$x/c$},
+  grid=none, clip=false]
+  \addplot[crot, thick, fill=frot] table[x=x, y=y] {analysis/data/polares_geom_placa7.dat};
+  \addplot[crot!70!black, thick, fill=frot, y filter/.expression={y-0.20}] table[x=x, y=y] {analysis/data/polares_geom_placa4.dat};
+  \addplot[black, thick, fill=gray!20, y filter/.expression={y-0.38}] table[x=x, y=y] {analysis/data/polares_geom_plana3.dat};
+  \addplot[ccuerda, thick, fill=ccuerda!15, y filter/.expression={y-0.60}] table[x=x, y=y] {analysis/data/polares_geom_clarky.dat};
+  \addplot[cfijo, thick, fill=ffijo, y filter/.expression={y-0.80}] table[x=x, y=y] {analysis/data/polares_geom_naca6412.dat};
+  \addplot[cgris, thick, fill=cgris!15, y filter/.expression={y-0.98}] table[x=x, y=y] {analysis/data/polares_geom_naca0012.dat};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,0.02) {placa 7\,\% ($t$ 1,5\,\%)};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,-0.19) {placa 4\,\% ($t$ 1,5\,\%)};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,-0.38) {placa plana 3\,\%};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,-0.58) {Clark Y (11,7\,\%)};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,-0.78) {NACA 6412};
+  \node[anchor=west, font=\footnotesize] at (axis cs:1.03,-0.98) {NACA 0012};
+\end{axis}
+\end{tikzpicture}
+
+\vspace{2mm}
+\begin{tikzpicture}
+\begin{axis}[width=0.47\textwidth, height=4.4cm, axis equal image, xmin=-0.005, xmax=0.06,
+  ymin=-0.012, ymax=0.026, xlabel={$x/c$}, ylabel={$y/c$}, title={\footnotesize Borde de ataque, placa 7\,\%},
+  xtick={0,0.02,0.04,0.06}, ytick={-0.01,0,0.01,0.02}, scaled ticks=false, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
+  \addplot[crot, thick, fill=frot] table[x=x, y=y] {analysis/data/polares_geom_placa7_ba.dat};
+  \draw[cgris, dashed] (axis cs:0.0064,0.0) circle [radius=0.0064];
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.47\textwidth, height=4.4cm, axis equal image, xmin=0.80, xmax=1.005,
+  ymin=-0.01, ymax=0.06, xlabel={$x/c$}, title={\footnotesize Borde de fuga, placa 7\,\%},
+  xtick={0.8,0.85,0.9,0.95,1}, ytick={0,0.02,0.04}, scaled ticks=false, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
+  \addplot[crot, thick, fill=frot] table[x=x, y=y] {analysis/data/polares_geom_placa7_bf.dat};
+  \draw[cgris, densely dotted] (axis cs:0.85,-0.01) -- (axis cs:0.85,0.06) node[pos=0.1, anchor=west, font=\scriptsize] {inicio del bisel};
+\end{axis}
+\end{tikzpicture}
+\caption{Arriba: las seis secciones a escala real (cuerda unitaria), desplazadas en
+vertical. Abajo: detalle de la nariz semicircular (círculo de trazos de radio
+$0{,}0064\,c$) y del bisel de fuga del modelo de la placa al \SI{7}{\percent}.}
+\label{fig:polares-geom}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Propiedades geométricas de los modelos (calculadas sobre las coordenadas que
+recibe XFOIL; $r_{BA}$ por ajuste de un círculo a tres puntos del borde de ataque).}
+\label{tab:polares-geom}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Sección} & $t_{\max}/c$ [\%] & $x_t/c$ & $f_{\max}/c$ [\%] & $x_f/c$ & $r_{BA}/c$ [\%]\\\midrule
+%%TABGEOM%%
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=====================================================================
+\section{Método de cálculo con XFOIL}\label{sec:polares-metodo}
+
+Las polares se calcularon con XFOIL~6.99, que acopla un método de paneles con una capa
+límite integral de dos ecuaciones y resuelve el sistema completo por Newton; la
+transición se predice con el método $e^N$~\cite{polares-drela1987,polares-drela1989,polares-vaningen2008}.
+
+\subsection{Criterio de transición}
+En el método $e^N$ la transición ocurre cuando la amplitud de la onda inestable más
+amplificada crece $e^{N_{\text{crit}}}$ veces. $N_{\text{crit}}$ representa el ambiente:
+cuanto más turbulenta es la corriente libre, antes transiciona la capa límite. La
+documentación de XFOIL lo relaciona con la intensidad de turbulencia $Tu$ mediante la
+correlación de Mack,
+\begin{equation}
+  N_{\text{crit}}=-8{,}43-2{,}4\,\ln Tu ,
+  \label{eq:polares-mack}
+\end{equation}
+de modo que $N_{\text{crit}}=9$ corresponde a $Tu\approx\SI{0.07}{\percent}$ (túnel
+silencioso, aire calmo) y $N_{\text{crit}}=5$ a $Tu\approx\SI{0.37}{\percent}$. Una pala de
+rotor gira en la estela de las palas anteriores y en aire con ráfagas, y el drogue deja una
+estela arriba del rotor: es razonable esperar $Tu$ mayor que el de un túnel, por lo que
+$N_{\text{crit}}=5$ es al menos tan representativo como el valor estándar 9. Se usó
+$N_{\text{crit}}=9$ como caso base (es el de la mayoría de las comparaciones publicadas) y
+$N_{\text{crit}}=5$ como sensibilidad para la placa al \SI{7}{\percent} y el NACA~6412.
+
+\subsection{Barridos y manejo de faltas de convergencia}
+A bajo $Re$ el acoplamiento viscoso-no viscoso es rígido: la burbuja laminar puede tener
+dos soluciones estables (corta y larga) y la solución de un ángulo depende de la del ángulo
+anterior. Un barrido único ascendente da, por eso, polares con saltos y huecos. El script
+\texttt{analysis/polares\_xfoil.py} aplica este procedimiento a cada caso (perfil, $Re$,
+$N_{\text{crit}}$):
+\begin{enumerate}
+  \item Tres panelados (160, 200 y 240 nodos) y cuatro barridos por panelado con paso
+        \ang{0.25}: de \ang{-6} a \ang{16} y de \ang{2} a \ang{16} (ascendentes), de
+        \ang{8} a \ang{-6} y de \ang{2} a \ang{-6} (descendentes). Hasta 12 soluciones por
+        ángulo, con hasta 120 iteraciones por punto y un tiempo límite de \SI{60}{s} por
+        barrido.
+  \item Fusión por ángulo: si los $C_l$ caben en una banda de 0,08 se toma la mediana. Si
+        no, se separan dos grupos por el mayor salto. Un grupo de un solo punto es un
+        atípico numérico y se descarta. Si ambos grupos tienen dos o más puntos, el ángulo es
+        \textbf{biestable}: la polar principal toma la rama de $C_l$ bajo (conservadora para
+        la autorrotación) y la otra se guarda aparte.
+  \item Rescate: si faltan más de tres ángulos se repiten los barridos con un factor de
+        relajación viscosa menor (\texttt{VACC}~0,005) y con 140 nodos, y se fusiona todo
+        de nuevo.
+\end{enumerate}
+Los ángulos que no convergen en ninguna de las hasta 28 corridas se dejan vacíos: no se
+interpolan en las tablas de XFOIL y aparecen como huecos en las figuras. La
+tabla~\ref{tab:polares-conv} resume la convergencia.
+
+%%CONV%%
+
+%=====================================================================
+\section{Polares de la placa curvada al 7\,\%}\label{sec:polares-placa7}
+
+%%TXT7%%
+
+\pgfplotsset{polares/.style={width=0.5\textwidth, height=5.6cm, xmin=-6, xmax=16,
+  xtick={-6,-3,0,3,6,9,12,15}, unbounded coords=jump, xlabel={$\alpha$ [\si{\degree}]},
+  legend style={font=\scriptsize, cells={anchor=west}}, every axis plot/.append style={line join=round}}}
+\pgfplotsset{polaresre/.style={cycle list={{ccuerda, thick},{cfijo, thick},{crot, very thick},{ccont, thick},{black, thick, dashed}}}}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.6, ymax=1.6, legend pos=south east]
+  \addplot[ccuerda, solid, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re20.dat};
+  \addplot[cfijo, solid, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re35.dat};
+  \addplot[crot, very thick, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[ccont, solid, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re75.dat};
+  \addplot[black, dashed, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re100.dat};
+  \legend{$Re$ 20\,000, 35\,000, 50\,000, 75\,000, 100\,000}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_d$}, ymin=0, ymax=0.12, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, scaled y ticks=false]
+  \addplot[ccuerda, solid, thick, no marks] table[x=alpha, y=cd] {analysis/data/polares_g_placa7_Re20.dat};
+  \addplot[cfijo, solid, thick, no marks] table[x=alpha, y=cd] {analysis/data/polares_g_placa7_Re35.dat};
+  \addplot[crot, very thick, thick, no marks] table[x=alpha, y=cd] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[ccont, solid, thick, no marks] table[x=alpha, y=cd] {analysis/data/polares_g_placa7_Re75.dat};
+  \addplot[black, dashed, thick, no marks] table[x=alpha, y=cd] {analysis/data/polares_g_placa7_Re100.dat};
+\end{axis}
+\end{tikzpicture}
+
+\vspace{1mm}
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l/C_d$}, ymin=-30, ymax=60, legend pos=north east]
+  \addplot[ccuerda, solid, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re20.dat};
+  \addplot[cfijo, solid, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re35.dat};
+  \addplot[crot, very thick, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[ccont, solid, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re75.dat};
+  \addplot[black, dashed, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re100.dat};
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_{m,c/4}$}, ymin=-0.25, ymax=0.0, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, scaled y ticks=false]
+  \addplot[ccuerda, solid, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re20.dat};
+  \addplot[cfijo, solid, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re35.dat};
+  \addplot[crot, very thick, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[ccont, solid, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re75.dat};
+  \addplot[black, dashed, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re100.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Placa curvada al \SI{7}{\percent} ($t=\SI{1.5}{\percent}$), XFOIL con
+$N_{\text{crit}}=9$: $C_l$, $C_d$, $C_l/C_d$ y $C_m$ respecto de $c/4$ en función de
+$\alpha$. Los huecos son ángulos sin solución convergida.}
+\label{fig:polares-placa7}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[polares, width=0.62\textwidth, height=6.4cm, xmin=0, xmax=0.08, ymin=-0.4, ymax=1.6,
+  xtick={0,0.02,0.04,0.06,0.08}, xlabel={$C_d$}, ylabel={$C_l$}, scaled x ticks=false,
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, legend pos=south east]
+  \addplot[ccuerda, solid, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re20.dat};
+  \addplot[cfijo, solid, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re35.dat};
+  \addplot[crot, very thick, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[ccont, solid, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re75.dat};
+  \addplot[black, dashed, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re100.dat};
+  \legend{$Re$ 20\,000, 35\,000, 50\,000, 75\,000, 100\,000}
+  \addplot[cgris, densely dotted, domain=0:0.08, forget plot] {0.9};
+  \node[font=\scriptsize, anchor=south east, cgris] at (axis cs:0.079,0.9) {$C_l=0{,}9$ (diseño)};
+\end{axis}
+\end{tikzpicture}
+\caption{Polar $C_l$--$C_d$ de la placa al \SI{7}{\percent}. La línea de puntos marca el
+$C_l$ de diseño usado para estimar las rpm (ec.~\ref{eq:omega}).}
+\label{fig:polares-placa7-polar}
+\end{figure}
+
+%=====================================================================
+\section{Comparación de secciones a $Re=\num{50000}$}\label{sec:polares-comp}
+
+%%TXTCOMP%%
+
+\pgfplotsset{polaresperf/.style={cycle list={{crot, very thick},{crot!60!black, thick, dashed},{black, thick},{ccuerda, thick},{cfijo, thick},{cgris, thick, densely dashed}}}}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.8, ymax=1.6, legend pos=south east, legend style={font=\tiny}]
+  \addplot[crot, very thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa4_Re50.dat};
+  \addplot[black, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_plana3_Re50.dat};
+  \addplot[ccuerda, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_clarky_Re50.dat};
+  \addplot[cfijo, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cgris, thick, densely dashed, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_naca0012_Re50.dat};
+  \legend{placa 7\,\%, placa 4\,\%, plana 3\,\%, Clark Y, NACA 6412, NACA 0012}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, xmin=0, xmax=0.1, xtick={0,0.025,0.05,0.075,0.1}, scaled x ticks=false,
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=3}, xlabel={$C_d$}, ylabel={$C_l$}, ymin=-0.8, ymax=1.6]
+  \addplot[crot, very thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed, no marks] table[x=cd, y=cl] {analysis/data/polares_g_placa4_Re50.dat};
+  \addplot[black, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_plana3_Re50.dat};
+  \addplot[ccuerda, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_clarky_Re50.dat};
+  \addplot[cfijo, thick, no marks] table[x=cd, y=cl] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cgris, thick, densely dashed, no marks] table[x=cd, y=cl] {analysis/data/polares_g_naca0012_Re50.dat};
+\end{axis}
+\end{tikzpicture}
+
+\vspace{1mm}
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l/C_d$}, ymin=-30, ymax=40]
+  \addplot[crot, very thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_placa4_Re50.dat};
+  \addplot[black, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_plana3_Re50.dat};
+  \addplot[ccuerda, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_clarky_Re50.dat};
+  \addplot[cfijo, thick, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cgris, thick, densely dashed, no marks] table[x=alpha, y=ld] {analysis/data/polares_g_naca0012_Re50.dat};
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_{m,c/4}$}, ymin=-0.25, ymax=0.05, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, scaled y ticks=false]
+  \addplot[crot, very thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_placa4_Re50.dat};
+  \addplot[black, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_plana3_Re50.dat};
+  \addplot[ccuerda, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_clarky_Re50.dat};
+  \addplot[cfijo, thick, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cgris, thick, densely dashed, no marks] table[x=alpha, y=cm] {analysis/data/polares_g_naca0012_Re50.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Comparación de las seis secciones a $Re=\num{50000}$, $N_{\text{crit}}=9$.}
+\label{fig:polares-comp}
+\end{figure}
+
+%%TABRES%%
+
+%=====================================================================
+\section{Efecto del número de Reynolds y de la turbulencia}\label{sec:polares-re}
+
+%%TXTRE%%
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmode=log, xmin=18000, xmax=110000,
+  xtick={20000,35000,50000,75000,100000}, xticklabels={20k,35k,50k,75k,100k},
+  xlabel={$Re$}, ylabel={$(C_l/C_d)_{\max}$}, ymin=0, ymax=65, legend style={font=\tiny, cells={anchor=west}}, legend pos=north west]
+  \addplot[crot, very thick, mark=*] table[x=Re, y=ld_placa7] {analysis/data/polares_tend.dat};
+  \addplot[crot!60!black, thick, dashed, mark=square*] table[x=Re, y=ld_placa4] {analysis/data/polares_tend.dat};
+  \addplot[black, thick, mark=triangle*] table[x=Re, y=ld_plana3] {analysis/data/polares_tend.dat};
+  \addplot[ccuerda, thick, mark=diamond*] table[x=Re, y=ld_clarky] {analysis/data/polares_tend.dat};
+  \addplot[cfijo, thick, mark=pentagon*] table[x=Re, y=ld_naca6412] {analysis/data/polares_tend.dat};
+  \addplot[cgris, thick, densely dashed, mark=o] table[x=Re, y=ld_naca0012] {analysis/data/polares_tend.dat};
+  \addplot[crot, thick, densely dotted, mark=*, mark options={fill=white}] table[x=Re, y=ld_placa7_N5] {analysis/data/polares_tend.dat};
+  \addplot[cfijo, thick, densely dotted, mark=pentagon*, mark options={fill=white}] table[x=Re, y=ld_naca6412_N5] {analysis/data/polares_tend.dat};
+  \legend{placa 7\,\%, placa 4\,\%, plana 3\,\%, Clark Y, NACA 6412, NACA 0012, placa 7\,\% $N$5, NACA 6412 $N$5}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmode=log, xmin=18000, xmax=110000,
+  xtick={20000,35000,50000,75000,100000}, xticklabels={20k,35k,50k,75k,100k},
+  xlabel={$Re$}, ylabel={$C_{l,\max}$ (bloque convergido)}, ymin=0.4, ymax=1.8]
+  \addplot[crot, very thick, mark=*] table[x=Re, y=cl_placa7] {analysis/data/polares_tend.dat};
+  \addplot[crot!60!black, thick, dashed, mark=square*] table[x=Re, y=cl_placa4] {analysis/data/polares_tend.dat};
+  \addplot[black, thick, mark=triangle*] table[x=Re, y=cl_plana3] {analysis/data/polares_tend.dat};
+  \addplot[ccuerda, thick, mark=diamond*] table[x=Re, y=cl_clarky] {analysis/data/polares_tend.dat};
+  \addplot[cfijo, thick, mark=pentagon*] table[x=Re, y=cl_naca6412] {analysis/data/polares_tend.dat};
+  \addplot[cgris, thick, densely dashed, mark=o] table[x=Re, y=cl_naca0012] {analysis/data/polares_tend.dat};
+  \addplot[crot, thick, densely dotted, mark=*, mark options={fill=white}] table[x=Re, y=cl_placa7_N5] {analysis/data/polares_tend.dat};
+  \addplot[cfijo, thick, densely dotted, mark=pentagon*, mark options={fill=white}] table[x=Re, y=cl_naca6412_N5] {analysis/data/polares_tend.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Eficiencia máxima y $C_{l,\max}$ en función de $Re$. Línea llena:
+$N_{\text{crit}}=9$; punteada con marcas huecas: $N_{\text{crit}}=5$.}
+\label{fig:polares-tend}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.6, ymax=1.7, legend pos=south east, legend style={font=\tiny}]
+  \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot, thick, densely dotted] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50_N5.dat};
+  \addplot[cfijo, very thick] table[x=alpha, y=cl] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cfijo, thick, densely dotted] table[x=alpha, y=cl] {analysis/data/polares_g_naca6412_Re50_N5.dat};
+  \legend{placa 7\,\% $N$9, placa 7\,\% $N$5, NACA 6412 $N$9, NACA 6412 $N$5}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l/C_d$}, ymin=-30, ymax=45]
+  \addplot[crot, very thick] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot, thick, densely dotted] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re50_N5.dat};
+  \addplot[cfijo, very thick] table[x=alpha, y=ld] {analysis/data/polares_g_naca6412_Re50.dat};
+  \addplot[cfijo, thick, densely dotted] table[x=alpha, y=ld] {analysis/data/polares_g_naca6412_Re50_N5.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Sensibilidad a $N_{\text{crit}}$ a $Re=\num{50000}$.}
+\label{fig:polares-ncrit}
+\end{figure}
+
+%=====================================================================
+\section{Burbuja de separación laminar}\label{sec:polares-burbuja}
+
+%%TXTBUR%%
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=0, xmax=1, ymin=-0.006, ymax=0.025,
+  xlabel={$x/c$}, ylabel={$C_f$ (extradós)}, scaled y ticks=false,
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=3},
+  legend style={font=\tiny, cells={anchor=west}}, legend pos=north east]
+  \addplot[ccuerda, thick] table[x=x, y=cf] {analysis/data/polares_cf_placa7_Re50_N9_a+00.dat};
+  \addplot[cfijo, thick] table[x=x, y=cf] {analysis/data/polares_cf_placa7_Re50_N9_a+02.dat};
+  \addplot[crot, very thick] table[x=x, y=cf] {analysis/data/polares_cf_placa7_Re50_N9_a+04.dat};
+  \addplot[ccont, thick] table[x=x, y=cf] {analysis/data/polares_cf_placa7_Re50_N9_a+06.dat};
+  \addplot[black, thick, dashed] table[x=x, y=cf] {analysis/data/polares_cf_placa7_Re50_N9_a+08.dat};
+  \addplot[cgris, thin, forget plot, domain=0:1] {0};
+  \legend{\ang{0}, \ang{2}, \ang{4}, \ang{6}, \ang{8}}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=0, xmax=1, y dir=reverse, ymin=-2.5, ymax=1.2,
+  xlabel={$x/c$}, ylabel={$C_p$}, legend style={font=\tiny, cells={anchor=west}}, legend pos=south east]
+  \addplot[ccuerda, thick] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re20_N9_a+04.dat};
+  \addplot[crot, very thick] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re50_N9_a+04.dat};
+  \addplot[crot, thick, densely dotted] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re50_N5_a+04.dat};
+  \addplot[black, thick, dashed] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re100_N9_a+04.dat};
+  \legend{$Re$ 20k, $Re$ 50k, $Re$ 50k $N$5, $Re$ 100k}
+\end{axis}
+\end{tikzpicture}
+\caption{Izquierda: coeficiente de fricción del extradós de la placa al \SI{7}{\percent} a
+$Re=\num{50000}$ ($C_f<0$: flujo separado). Derecha: distribución de presión a
+$\alpha=\ang{4}$ para varios $Re$ y $N_{\text{crit}}$.}
+\label{fig:polares-cf}
+\end{figure}
+
+%%TABBUR%%
+
+%=====================================================================
+\section{Sensibilidad al espesor del modelo}\label{sec:polares-espesor}
+
+%%TXTESP%%
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.6, ymax=1.6, legend pos=south east, legend style={font=\tiny}]
+  \addplot[crot!50, thick] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_t11_Re50.dat};
+  \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_t20_Re50.dat};
+  \legend{$t$ 1,1\,\% (real), $t$ 1,5\,\% (base), $t$ 2,0\,\%}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[polares, ylabel={$C_l/C_d$}, ymin=-30, ymax=40]
+  \addplot[crot!50, thick] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_t11_Re50.dat};
+  \addplot[crot, very thick] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_Re50.dat};
+  \addplot[crot!60!black, thick, dashed] table[x=alpha, y=ld] {analysis/data/polares_g_placa7_t20_Re50.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Efecto del espesor del modelo de la placa al \SI{7}{\percent} a $Re=\num{50000}$,
+$N_{\text{crit}}=9$.}
+\label{fig:polares-espesor}
+\end{figure}
+
+%=====================================================================
+\section{Validez de XFOIL y comparación con la literatura}\label{sec:polares-validez}
+
+XFOIL describe bien la tendencia y el orden de magnitud a $Re\ge\num{50000}$ en el bloque
+de flujo adherido; por debajo, y cerca de la pérdida, sus números deben leerse como
+estimaciones con una incertidumbre de varias decenas por ciento.
+
+\subsection{Límites del modelo}
+\begin{itemize}
+  \item \textbf{Flujo estacionario y bidimensional.} XFOIL resuelve una solución
+        estacionaria. A $Re\approx\num{20000}$ la capa de corte separada se vuelve
+        inestable y desprende vórtices; la polar medida es un promedio temporal de un flujo
+        no estacionario que XFOIL no representa. Las soluciones biestables y los puntos que
+        no convergen (tabla~\ref{tab:polares-conv}) son el síntoma numérico de ese
+        comportamiento físico.
+  \item \textbf{Burbuja modelada con una capa límite integral.} La burbuja corta se
+        reproduce razonablemente; la burbuja larga y su estallido (la pérdida de borde de
+        ataque típica de las placas finas) quedan fuera del rango de las relaciones de
+        cierre. Por eso $C_{l,\max}$ y el ángulo de pérdida de las placas son los valores
+        menos confiables del capítulo.
+  \item \textbf{Geometría modificada.} La placa real es más fina y con canto menos
+        redondeado que el modelo; la sección~\ref{sec:polares-espesor} acota ese efecto
+        en el flujo adherido, pero no en la pérdida.
+  \item \textbf{Transición incierta.} El paso de $N_{\text{crit}}=9$ a 5 cambia $C_l/C_d$
+        en un orden similar al efecto de $Re$ (figura~\ref{fig:polares-ncrit}). En la pala
+        real la turbulencia de la estela de las otras palas y la rugosidad del tejido de
+        carbono adelantan la transición, lo que favorece a $N_{\text{crit}}$ bajo.
+  \item \textbf{Efectos de rotación.} En la raíz, la fuerza centrífuga y la de Coriolis
+        sobre la capa límite separada retrasan la pérdida (retraso de pérdida rotacional);
+        XFOIL no lo incluye, de modo que la polar es conservadora en esa zona.
+\end{itemize}
+
+\subsection{Comparación con resultados publicados}
+Los resultados reproducen las tendencias que muestran los ensayos a bajo $Re$:
+\begin{itemize}
+  \item \textbf{Perfiles finos curvados frente a perfiles gruesos.} Laitone ensayó alas
+        rectangulares hasta $Re\approx\num{20000}$ en un túnel de baja turbulencia y
+        encontró que una placa fina curvada con borde de ataque afilado supera a un perfil
+        convencional como el NACA~0012~\cite{polares-laitone1997}. Sunada y colaboradores
+        compararon veinte secciones a $Re=\num{4000}$ y concluyeron que una curvatura del
+        orden del \SI{5}{\percent}, un borde de ataque afilado o una corrugación mejoran
+        la sección rectangular~\cite{polares-sunada1997,polares-sunada2002}. Winslow y
+        colaboradores revisaron el intervalo $\num{e4}$--$\num{e5}$ y señalan la ventaja de
+        las secciones finas~\cite{polares-winslow2018}. XFOIL reproduce lo mismo: a
+        $Re\le\num{35000}$ la placa al \SI{7}{\percent} tiene una eficiencia varias veces
+        mayor que el NACA~6412 y que el Clark~Y.
+  \item \textbf{Caída de los perfiles gruesos.} Lissaman describe un $Re$ crítico del orden
+        de \num{e5} (más bajo para perfiles finos) por debajo del cual la capa laminar se
+        separa sin reinsertarse y la eficiencia cae bruscamente~\cite{lissaman1983}; la
+        figura~\ref{fig:polares-tend} muestra esa caída para el NACA~6412 y el Clark~Y
+        entre \num{35000} y \num{50000}. Las placas finas no tienen esa caída porque la
+        separación queda fijada en el borde de ataque o cerca de él.
+  \item \textbf{Placas planas y curvadas de bajo alargamiento.} Pelletier y Mueller
+        midieron placas planas y curvadas en alas de alargamiento 0,5 a 3 a
+        $Re=\num{6e4}$--\num{2e5}~\cite{pelletier2000}. Sus alas tienen resistencia
+        inducida y no son comparables de forma directa con la sección 2D, pero confirman
+        que la curvatura aumenta $C_l$ y $C_l/C_d$ y que las placas son poco sensibles a
+        $Re$ en ese intervalo. Los órdenes de magnitud de la tabla~\ref{tab:polares} del
+        capítulo de teoría (eficiencia 12--20 en alas) son coherentes con las eficiencias
+        de sección de XFOIL una vez agregada la resistencia inducida de un ala corta.
+\end{itemize}
+
+\begin{nota}[Qué hacer con esta incertidumbre]
+Las polares de XFOIL son la mejor estimación disponible sin ensayo, no un dato medido. La
+BEMT debe correrse al menos con dos juegos ($N_{\text{crit}}=9$ y 5) y con una penalización
+de $C_d$ de $+\SI{20}{\percent}$ como caso pesimista. El ensayo de caída del rotor
+(capítulo~\ref{cap:riesgos}) es el que fija el valor real.
+\end{nota}
+
+
+%=====================================================================
+\section{Polar extendida para la BEMT}\label{sec:polares-ext}
+
+La BEMT necesita $C_l$, $C_d$ y $C_m$ en todo el intervalo $\ang{-180}\le\alpha\le\ang{180}$;
+XFOIL solo es confiable en el bloque de flujo adherido. La polar extendida empalma XFOIL
+con el modelo de pérdida profunda de Viterna y Corrigan~\cite{polares-viterna1982} y con
+el de una placa plana, como en las herramientas de cálculo de aerogeneradores, que
+trabajan con la misma necesidad~\cite{polares-spera2008}.
+
+\subsection{Modelo de Viterna y Corrigan}
+Por encima del ángulo de empalme $\alpha_s$, con los valores de XFOIL $(C_{l,s},C_{d,s})$
+en ese ángulo,
+\begin{align}
+  C_l&=\frac{C_{D,\max}}{2}\,\sin2\alpha+A_2\,\frac{\cos^2\alpha}{\sin\alpha},&
+  A_2&=\bigl(C_{l,s}-C_{D,\max}\sin\alpha_s\cos\alpha_s\bigr)\frac{\sin\alpha_s}{\cos^2\alpha_s},
+  \label{eq:polares-vc-cl}\\
+  C_d&=C_{D,\max}\,\sin^2\alpha+B_2\cos\alpha,&
+  B_2&=\frac{C_{d,s}-C_{D,\max}\sin^2\alpha_s}{\cos\alpha_s},
+  \label{eq:polares-vc-cd}
+\end{align}
+con $C_{D,\max}=1{,}11+0{,}018\,\mathcal{A}$ para alargamientos $\mathcal A\le50$. Las
+constantes $A_2$ y $B_2$ hacen que la curva pase exactamente por el punto de empalme; a
+\ang{90} se obtiene $C_l=0$ y $C_d=C_{D,\max}$. Los primeros términos son los de una placa
+plana cuya fuerza es normal a ella, $C_N=C_{D,\max}\sin\alpha$; los segundos llevan la
+transición desde el último punto adherido.
+
+\subsection{Elección de $C_{D,\max}$}
+Es el parámetro más incierto. Una placa bidimensional normal a la corriente tiene
+$C_D\approx2$~\cite{hoerner1965}; una placa rectangular de alargamiento pequeño tiene
+$C_D\approx1{,}2$. La pala, de alargamiento $\mathcal A=156/45=3{,}47$, está entre ambos
+casos: es una placa aislada en el arranque (rotor parado, pala casi normal al viento) y
+forma parte de un disco de cuatro palas con solidez 0,286 en régimen. El modelo base usa
+\begin{equation}
+  C_{D,\max}=1{,}11+0{,}018\times3{,}47=1{,}17 ,
+  \label{eq:polares-cdmax}
+\end{equation}
+y se entrega una variante con $C_{D,\max}=1{,}98$ (bidimensional) para estimar la
+sensibilidad.
+
+\subsection{Empalmes y flujo invertido}
+\begin{itemize}
+  \item \textbf{Empalme superior}: $\alpha_s=\min(\alpha_{\text{fin}},\,\alpha_{C_{l,\max}}+\ang{1})$,
+        donde $\alpha_{\text{fin}}$ es el último ángulo del bloque convergido que contiene
+        $(C_l/C_d)_{\max}$. Así no se usan las ramas de post-pérdida de XFOIL, que a bajo
+        $Re$ suelen dar $C_l$ demasiado altos.
+  \item \textbf{Empalme inferior} ($\alpha<\alpha_{\text{ini}}$): placa plana
+        $C_l=C_{D,\max}\sin\alpha\cos\alpha$, $C_d=C_{D,\max}\sin^2\alpha$, más la
+        diferencia con XFOIL en $\alpha_{\text{ini}}$, que decae con un coseno en
+        \ang{12}. Esto da continuidad de valor sin inventar una pérdida negativa que XFOIL
+        no calculó.
+  \item \textbf{Flujo invertido} ($|\alpha|>\ang{90}$, el aire entra por el borde de
+        fuga): se refleja el ángulo, $\alpha'=\pm\ang{180}-\alpha$, y se toma
+        $C_d(\alpha)=C_d(\alpha')$ y $C_l(\alpha)=-0{,}7\,C_l(\alpha')$. El factor 0,7 es
+        una hipótesis de trabajo (la curvatura invertida y el borde afilado adelante
+        rinden menos); en el rotor esta zona solo aparece en transitorios.
+  \item \textbf{Momento}: el centro de presión migra linealmente desde su valor en el
+        empalme hasta $0{,}5\,c$ a \ang{90} y $0{,}75\,c$ a \ang{180}, como en una placa
+        plana; $C_m=-C_N\,(x_{cp}-\tfrac14)$ respecto de $c/4$.
+  \item $C_d$ nunca baja del $C_{d,\min}$ de XFOIL.
+\end{itemize}
+Las tablas extendidas tienen paso de \ang{0.5} y columnas \texttt{alpha cl cd cm fuente}
+(fuente: 0 XFOIL, 1 Viterna-Corrigan, 2 placa plana, 3 flujo invertido).
+
+%%TXTEXT%%
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\textwidth, height=6.3cm, xmin=-180, xmax=180, xtick={-180,-135,-90,-45,0,45,90,135,180},
+  ymin=-1.5, ymax=2.1, xlabel={$\alpha$ [\si{\degree}]}, ylabel={$C_l$, $C_d$},
+  legend style={font=\scriptsize, cells={anchor=west}}, legend columns=3, legend pos=north west]
+  \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_ext_placa7_Re50.dat};
+  \addplot[crot, thick, dashed] table[x=alpha, y=cd] {analysis/data/polares_ext_placa7_Re50.dat};
+  \addplot[crot!50, thick, densely dotted] table[x=alpha, y=cd] {analysis/data/polares_ext_placa7_Re50_2D.dat};
+  \addplot[black, thick] table[x=alpha, y=cl] {analysis/data/polares_ext_plana3_Re50.dat};
+  \addplot[black, thick, dashed] table[x=alpha, y=cd] {analysis/data/polares_ext_plana3_Re50.dat};
+  \addplot[crot!50, thick, densely dotted, forget plot] table[x=alpha, y=cl] {analysis/data/polares_ext_placa7_Re50_2D.dat};
+  \legend{$C_l$ placa 7\,\%, $C_d$ placa 7\,\%, placa 7\,\% $C_{D,\max}{=}1{,}98$, $C_l$ plana 3\,\%, $C_d$ plana 3\,\%}
+\end{axis}
+\end{tikzpicture}
+
+\vspace{1mm}
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=-20, xmax=45, ymin=-0.8, ymax=1.6,
+  xlabel={$\alpha$ [\si{\degree}]}, ylabel={$C_l$}, legend style={font=\tiny, cells={anchor=west}}, legend pos=south east]
+  \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_ext_placa7_Re50.dat};
+  \addplot[only marks, mark=*, mark size=0.8pt, cfijo] table[x=alpha, y=cl] {analysis/data/polares_placa7_Re50.dat};
+  \addplot[black, thick] table[x=alpha, y=cl] {analysis/data/polares_ext_plana3_Re50.dat};
+  \addplot[only marks, mark=*, mark size=0.8pt, cgris] table[x=alpha, y=cl] {analysis/data/polares_plana3_Re50.dat};
+  \legend{extendida 7\,\%, XFOIL 7\,\%, extendida plana, XFOIL plana}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=-20, xmax=45, ymin=0, ymax=0.8,
+  xlabel={$\alpha$ [\si{\degree}]}, ylabel={$C_d$}, scaled y ticks=false,
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
+  \addplot[crot, very thick] table[x=alpha, y=cd] {analysis/data/polares_ext_placa7_Re50.dat};
+  \addplot[only marks, mark=*, mark size=0.8pt, cfijo] table[x=alpha, y=cd] {analysis/data/polares_placa7_Re50.dat};
+  \addplot[black, thick] table[x=alpha, y=cd] {analysis/data/polares_ext_plana3_Re50.dat};
+  \addplot[only marks, mark=*, mark size=0.8pt, cgris] table[x=alpha, y=cd] {analysis/data/polares_plana3_Re50.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Polares extendidas a $Re=\num{50000}$. Arriba: intervalo completo, con la
+variante bidimensional ($C_{D,\max}=1{,}98$) de la placa al \SI{7}{\percent}. Abajo:
+detalle del empalme; los puntos son XFOIL (todos los convergidos, incluidos los de
+post-pérdida que el modelo descarta).}
+\label{fig:polares-ext}
+\end{figure}
+
+%%TABEXT%%
+
+%%SECCIONES%%

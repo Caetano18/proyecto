@@ -260,6 +260,11 @@ for e, ef in EF_post.items():
     Ps_post[e] = np.minimum(med * np.exp(np.log(ef) / 1.645 *
                                          np.log(Ps[e] / med) / (np.log(ef0) / 1.645)), 1.0)
 unc_post = {top: float(np.mean(p_top(top, Ps_post))) for top in ("TOP1", "TOP2")}
+# Mismo escenario y, además, el sitio de caída mejorado: mediana de x23 a 5e-3
+# (observadores y medios para recuperar en altura); mismos números aleatorios
+Ps_post_x23 = dict(Ps_post)
+Ps_post_x23["x23"] = np.minimum(Ps["x23"] * 0.5, 1.0)
+unc_post_x23 = float(np.mean(p_top("TOP2", Ps_post_x23)))
 q = np.linspace(0.005, 0.995, 199)
 idx = (q * (NS - 1)).astype(int)
 np.savetxt(os.path.join(DATA, "confiabilidad_cdf.dat"),
@@ -368,6 +373,7 @@ if __name__ == "__main__":
         u = unc[top]
         print(f"  incertidumbre: media {u['mean']:.3e}, p05 {u['p05']:.3e}, p50 {u['p50']:.3e}, p95 {u['p95']:.3e}")
     print(f"\n  medias con EF=3 en x13, x14, x17: TOP1 {unc_post['TOP1']:.4f}, TOP2 {unc_post['TOP2']:.4f}")
+    print(f"  ídem y mediana de x23 = 5e-3: media de TOP2 {unc_post_x23:.4f}")
     print("\n== compuertas ==")
     for k, v in gate_p.items():
         print(f"  {k:5s} {v:.3e}")

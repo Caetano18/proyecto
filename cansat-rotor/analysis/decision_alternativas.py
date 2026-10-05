@@ -238,7 +238,7 @@ MASA = [m_par, m_pp, m_rot, m_mono, m_coax, m_al, m_inf]
 VOL = [vol_par, vol_pp, vol_rot, vol_mono, vol_coax, vol_al, vol_inf]
 PIEZAS = [2, 2, 7, 4, 12, 5, 3]          # piezas móviles del subsistema
 # Movimiento angular del cuerpo para el video, °/s (estimación, ver capítulo)
-ANG = [60, 20, 25, 3600, 10, 30, 40]
+ANG = [60, 20, 25, 4000, 10, 30, 40]
 DERIVA = [0.0, VX_PP, 0.0, 0.0, 0.0, 0.0, 0.0]  # velocidad horizontal propia
 
 

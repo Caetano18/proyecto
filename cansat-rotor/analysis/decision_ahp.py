@@ -128,6 +128,11 @@ for (i, j), v in {(0, 6): 1/2, (1, 6): 1/2, (5, 6): 1/2, (4, 6): 1/4, (0, 5): 2,
     Cm[j, i] = 1 / v
 ESC["mision"] = prioridades(Cm)[0]
 CR_M = prioridades(Cm)[3]
+# Pesos de la matriz de Pugh del capítulo 3 (tab:pugh) trasladados a K1-K7:
+# C4 25, riesgo 20, masa y volumen 15 (7,5 + 7,5), complejidad 15,
+# compatibilidad con R <= 0,20 y drogue 10 (se asigna a K6, aproximado), valor técnico 15.
+W_PUGH = np.array([25, 20, 7.5, 7.5, 15, 10, 15], float)
+ESC["pugh"] = W_PUGH / W_PUGH.sum()
 
 
 def global_ahp(w, loc=LOC):

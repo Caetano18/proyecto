@@ -172,6 +172,8 @@ def capa():
     filas = []
     for path in sorted(glob.glob(os.path.join(d, "*.bl"))):
         tag = os.path.basename(path)[:-3]
+        if len(tag.split("_")) != 4:
+            continue  # volcado residual sin etiqueta
         perfil, rek, nc, al = tag.split("_")
         sup = leer_bl(path)
         xs, xr, xte = burbuja(sup)
@@ -179,11 +181,16 @@ def capa():
         suf = "" if nc == "N9" else "_N5"
         D = cargar(perfil, int(rek[2:]), suf)
         a = float(al[1:])
+        # transición del extradós: de la misma corrida que generó el volcado
         xt = np.nan
-        if D is not None:
-            j = np.where(np.abs(D[:, 0] - a) < 1e-3)[0]
-            if len(j):
-                xt = D[j[0], 4]
+        pt = os.path.join(d, tag + ".pt")
+        if os.path.exists(pt):
+            xt = float(np.loadtxt(pt, ndmin=2)[0, 5])
+        with open(os.path.join(DATA, f"polares_cf_{tag}.dat"), "w") as f:
+            f.write("x cf H\n")
+            for r in sup:
+                if r[1] > 0.0005:
+                    f.write(f"{r[1]:.5f} {r[6]:.6f} {r[7]:.4f}\n")
         filas.append((perfil, int(rek[2:]), int(nc[1:]), a, xs, xt, xr, xte))
         cp = os.path.join(d, tag + ".cp")
         if os.path.exists(cp) and (abs(a - 4) < 1e-6 or perfil == "placa7"):
@@ -298,7 +305,47 @@ def re_pala(omega=120.0, R=0.200, e=0.044, c=0.045, nu=1.5e-5, V=0.0, vi=0.0):
                     f"{np.hypot(1.2*omega*r, V)*c/nu:.0f}\n")
 
 
+def para_graficar():
+    """Copias para pgfplots con fila nan en cada hueco (> 0,3 grados), columna ld = Cl/Cd y
+    phi = atan(Cd/Cl) en grados (ángulo de entrada neutro, ec. de autorrotación)."""
+    for p in PERFILES + ["placa7_t11", "placa7_t20"]:
+        for r in RES:
+            for suf in ("", "_N5"):
+                D = cargar(p, r, suf)
+                if D is None:
+                    continue
+                with open(os.path.join(DATA, f"polares_g_{p}_Re{r}{suf}.dat"), "w") as f:
+                    f.write("alpha cl cd cm ld phi\n")
+                    for k, d in enumerate(D):
+                        if k and d[0] - D[k - 1, 0] > 0.3:
+                            f.write("nan nan nan nan nan nan\n")
+                        ld = d[1] / d[2]
+                        phi = np.degrees(np.arctan2(d[2], d[1])) if d[1] > 0.05 else np.nan
+                        f.write(f"{d[0]:.2f} {d[1]:.4f} {d[2]:.5f} {d[3]:.4f} {ld:.2f} "
+                                + ("nan" if np.isnan(phi) else f"{phi:.3f}") + "\n")
+
+
+def convergencia():
+    """Resumen de convergencia de cada caso (de los log.json de polares_xfoil.py)."""
+    import json
+    filas = []
+    for path in sorted(glob.glob(os.path.join(RAW, "runs", "*", "log.json"))):
+        L = json.load(open(path))
+        p, rek, nc = L["tag"].rsplit("_", 2)
+        fal = L.get("faltan", [])
+        filas.append((p, int(rek[2:]), int(nc[1:]), L["n_ok"], L["n_grilla"], len(fal),
+                      len(L.get("biestables", [])), L.get("atipicos", 0), int(L.get("rescate", 0)),
+                      L.get("colgados", 0), " ".join(f"{a:g}" for a in fal) or "-"))
+    with open(os.path.join(DATA, "polares_conv.dat"), "w") as f:
+        f.write("perfil Re ncrit ok grilla faltan biest atip rescate colgados angulos\n")
+        for r in filas:
+            f.write(" ".join(str(v) for v in r[:10]) + " " + r[10].replace(" ", ",") + "\n")
+    return filas
+
+
 def main():
+    convergencia()
+    para_graficar()
     alternativas()
     re_pala()
     filas = resumen()

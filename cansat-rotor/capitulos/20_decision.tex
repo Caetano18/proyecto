@@ -1,15 +1,16 @@
 \chapter[Decisión multicriterio y estudio de alternativas]{Análisis de decisión multicriterio y estudio cuantitativo de alternativas}\label{cap:decision}
 
-Con los pesos que mejor representan las prioridades del proyecto, el paracaídas y el
-autogiro quedan \emph{empatados}: el AHP da $0{,}218$ frente a $0{,}217$, y TOPSIS da al
-autogiro $0{,}79$ frente a $0{,}61$. Este capítulo reemplaza la matriz de puntos de la
+Con los pesos base del equipo, el paracaídas y el autogiro quedan \emph{empatados} en el
+AHP ($0{,}218$ frente a $0{,}217$), y TOPSIS prefiere el autogiro ($0{,}79$ frente a
+$0{,}66$ del coaxial y $0{,}61$ del paracaídas). Este capítulo reemplaza la matriz de puntos de la
 tabla~\ref{tab:pugh} por un estudio cuantitativo. Primero modela cada alternativa de la
 figura~\ref{fig:alternativas} dentro de la envolvente del CanSat. Luego aplica dos
 métodos de decisión (AHP y TOPSIS) y mide cuán robusta es la elección frente a los pesos,
-los juicios y el método. La conclusión es honesta: el autogiro no gana por sus
-prestaciones, que son peores que las del paracaídas, sino porque el proyecto valora su
-contenido técnico. Si ese valor pesa menos de \SI{24}{\percent} del total, conviene el
-paracaídas.
+los juicios y el método. El autogiro no gana por sus prestaciones, que son peores que las del paracaídas, sino
+porque el proyecto valora su contenido técnico. En el AHP conviene el paracaídas mientras
+ese valor pese menos de \SI{24.5}{\percent} del total, y el peso base
+(\SI{24.3}{\percent}) queda apenas por debajo. Con los pesos de la tabla~\ref{tab:pugh}
+el AHP elige el paracaídas con claridad.
 
 \begin{nota}[Alcance de los números]
 No se hizo ningún ensayo. Las velocidades salen de modelos de bibliografía; las masas y
@@ -47,8 +48,8 @@ un elemento rígido no.
 
 \paragraph{Incertidumbre.} Cada velocidad se propaga por Monte Carlo
 ($2\times10^5$ muestras) con distribuciones uniformes comunes: masa
-\SIrange{490}{510}{g}, densidad \SIrange{1.10}{1.25}{kg/m^3} (\SIrange{0}{700}{m} y
-\SIrange{5}{30}{\celsius}), $C_{D,d}$ entre $0{,}75$ y $0{,}85$, y $f$ entre 0 y 1. A eso
+\SIrange{490}{510}{g}, densidad \SIrange{1.10}{1.25}{kg/m^3} (casi todo el rango de \SIrange{0}{700}{m} y
+\SIrange{5}{30}{\celsius}, que va de \SIrange{1.07}{1.27}{kg/m^3}), $C_{D,d}$ entre $0{,}75$ y $0{,}85$, y $f$ entre 0 y 1. A eso
 se suma la incertidumbre propia de cada alternativa (tabla~\ref{tab:decision-cuant}).
 
 \begin{figure}[H]
@@ -70,7 +71,7 @@ se suma la incertidumbre propia de cada alternativa (tabla~\ref{tab:decision-cua
   \addplot[crot, densely dashed, thick] table[x=r, y=Vmono] {analysis/data/decision_tamano.dat};
   \addlegendentry{(d) monocóptero, $\CR=0{,}9$}
   \addplot[cfreno, thick] table[x=r, y=Val] {analysis/data/decision_tamano.dat};
-  \addlegendentry{(f) 4 aletas de \SI{65}{mm}}
+  \addlegendentry{(f) 4 aletas de \SI{65}{mm} de ancho}
   \addplot[ccont, thick] table[x=r, y=Vesf] {analysis/data/decision_tamano.dat};
   \addlegendentry{(g) esfera, $C_D=0{,}47$}
   \node[font=\scriptsize, text=ccuerda!70!black, anchor=south west] at (axis cs:0.33,2.1) {banda de \Req{C4}};
@@ -82,17 +83,23 @@ se suma la incertidumbre propia de cada alternativa (tabla~\ref{tab:decision-cua
 \end{tikzpicture}
 \caption{Velocidad de descenso frente al tamaño radial desplegado, con el drogue
 aportando por completo ($f=1$). Los puntos marcan el diseño de cada alternativa: el
-paracaídas de Ø\,\SI{0.67}{m}, el rotor de $R=\SI{0.20}{m}$, las aletas de
-\SI{152}{mm} y la esfera que infla un cartucho de \SI{16}{g} de CO$_2$. Datos:
+paracaídas de Ø\,\SI{0.67}{m} nominal, el rotor de $R=\SI{0.20}{m}$, las aletas de
+\SI{152}{mm} y la esfera que infla un cartucho de \SI{16}{g} de CO$_2$. Para el
+paracaídas, $r$ es el radio nominal (tela extendida); inflado, su radio proyectado es
+unos dos tercios de ese valor. Datos:
 \texttt{decision\_alternativas.py}.}
 \label{fig:decision-tamano}
 \end{figure}
 
-La figura~\ref{fig:decision-tamano} resume la física. Un rotor en autorrotación es el
-dispositivo de mayor $C_D$ por unidad de área de disco ($\CR\approx1{,}2$ contra
-$0{,}75$--$0{,}8$ de un paracaídas plano y $0{,}47$ de una esfera), pero con $R$
-limitado a \SI{0.20}{m} solo llega a \SI{6.4}{m/s}. Una tela de radio \SI{0.34}{m}
-llega a \SI{5}{m/s} con holgura.
+La figura~\ref{fig:decision-tamano} resume la física. Por unidad de radio
+\emph{nominal}, el rotor ($\CR\approx1{,}2$ sobre $\pi R^2$) supera al paracaídas plano
+($C_{D0}=0{,}75$--$0{,}80$ sobre la tela extendida) y a la esfera ($0{,}47$). La
+comparación justa es otra: el paracaídas inflado tiene un diámetro proyectado de unos
+$0{,}66$--$0{,}70\,D_0$~\cite{knacke1992}, y referido a esa área su coeficiente es
+$C_{D0}(D_0/D_p)^2\approx1{,}6$--$1{,}8$, mayor que el del rotor. El rotor no es, entonces, el
+dispositivo más eficiente por área ocupada. Su desventaja decisiva es otra: con $R$
+limitado a \SI{0.20}{m} solo llega a \SI{6.4}{m/s}, mientras que una tela de radio
+nominal \SI{0.34}{m} (unos \SI{0.23}{m} inflada) llega a \SI{5}{m/s}.
 
 %=====================================================================
 \section{Modelo cuantitativo de cada alternativa}\label{sec:decision-modelos}
@@ -115,7 +122,8 @@ $\approx\SI{92}{cm^3}$ (un cilindro de Ø\,\SI{80}{mm} y \SI{18}{mm} de alto).
 
 \paragraph{Oscilación.} El paracaídas plano es el tipo que más oscila: Knacke da
 amplitudes del orden de $\pm\ang{10}$ a $\pm\ang{40}$, frente a $\pm\ang{10}$--$\ang{15}$
-del hemisférico y casi cero de la cruz o la superficie guía~\cite{knacke1992}. Como un
+del hemisférico y amplitudes pequeñas de la cruz o la superficie guía~\cite{knacke1992}.
+Son datos de paracaídas grandes; a esta escala pueden diferir. Como un
 péndulo de largo efectivo $L\approx\SI{1}{m}$, el período es $T=2\pi\sqrt{L/g}\approx
 \SI{2}{s}$. Con $\theta_0=\pm\ang{20}$, la velocidad angular de pico es
 $\dot\theta_{\max}=2\pi\theta_0/T\approx\SI{60}{\degree/s}$: el video de nadir
@@ -159,8 +167,8 @@ que el valor nominal porque incluye densidades menores que la del nivel del mar 
 drogue que puede no aportar ($f<1$). La masa de la etapa~2 es la de la
 tabla~\ref{tab:masa}: palas (\SI{30}{g}), cubo, eje y rodamientos (\SI{24}{g}) y traba
 (\SI{16}{g}). Las palas cuelgan por fuera del cuerpo, así que el volumen interno es
-pequeño (\SI{40}{cm^3}, cubo y copa). Tiene siete piezas móviles: cuatro bisagras, el par
-de rodamientos, el anillo de traba y el destorcedor.
+pequeño (\SI{40}{cm^3}, cubo y copa). Se cuentan siete piezas móviles: cuatro bisagras, el
+cubo sobre su par de rodamientos, el anillo de traba y el destorcedor.
 
 El cuerpo no gira con el rotor, pero el par de fricción de los rodamientos lo hace girar
 despacio en guiñada. Sin datos, se estima una velocidad angular de unos
@@ -187,8 +195,8 @@ alternativa más liviana (\SI{42}{g}) y una de las más simples.
 Dos rotores en el mismo eje dan prácticamente la misma velocidad que uno
 (\SI{6.3}{m/s}) con el doble de rotor (\SI{134}{g}). La teoría de cantidad de
 movimiento explica por qué: los dos rotores actúan sobre el \emph{mismo} tubo de
-corriente, y la resistencia de un disco actuador está acotada por su área, no por el número
-de palas. El rotor inferior trabaja en la estela del superior y la interferencia aumenta
+corriente, y en esa teoría la resistencia del disco actuador depende de su área y de la
+velocidad inducida, no del número de palas. El rotor inferior trabaja en la estela del superior y la interferencia aumenta
 las pérdidas~\cite{decision-coleman1997,leishman2006}. Se toma $\CR$ entre $1{,}0$ y
 $1{,}35$: algo más de solidez, sin ganancia de área. La ventaja real es otra: el par neto
 sobre el cuerpo es casi nulo, y el video queda más estable que con un solo rotor.
@@ -311,7 +319,7 @@ donde $W_k$ es el peso del criterio $k$ y $p_{ik}$ la prioridad local de $i$ en 
 \centering
 \begin{tikzpicture}[font=\scriptsize,
   nivel/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt, fill=white,
-    minimum height=9mm, text width=15.5mm},
+    minimum height=10.5mm, text width=15.5mm},
   lin/.style={draw=black!40, line width=0.35pt}]
   \node[nivel, draw=cfijo, fill=ffijo, text width=60mm, line width=0.8pt] (meta) at (0,3.0)
     {\textbf{Objetivo}: elegir el sistema de la etapa~2\\(\Req{C4} con drogue atado)};
@@ -381,10 +389,17 @@ K7: (c) 7, (e) 6, (d) 5, (b) 4, (g) 3, (f) 2 y (a) 1. El coaxial no puntúa más
 autogiro en K7: duplicar un mecanismo no agrega conocimiento.
 
 \subsection{Pesos de los criterios}
-La matriz de criterios (tabla~\ref{tab:decision-wcrit}) sigue el orden de prioridades de
-la tabla~\ref{tab:pugh}: cumplir \Req{C4}, el riesgo y el valor técnico pesan lo mismo y
-dominan; masa y volumen pesan poco, porque la configuración~A tiene \SI{83}{g} de lastre
-disponible. El resultado es $CR=0{,}009$. Se definen además dos escenarios: \emph{seguridad
+La matriz de criterios (tabla~\ref{tab:decision-wcrit}) da a cumplir \Req{C4}, al
+riesgo y al valor técnico la misma importancia, y los pone por encima del resto; masa y
+volumen pesan poco, porque la configuración~A tiene \SI{83}{g} de lastre disponible. El
+resultado es $CR=0{,}009$. Esta matriz \emph{no} reproduce los pesos de la
+tabla~\ref{tab:pugh}: allí \Req{C4} vale \SI{25}{\percent}, el riesgo \SI{20}{\percent} y
+el valor técnico \SI{15}{\percent}. El equipo sube aquí el valor técnico a
+\SI{24}{\percent} de forma deliberada, y ese juicio es el que decide el resultado
+(sección~\ref{sec:decision-sens}). Por eso se evalúa también un escenario con los
+\emph{pesos de la Pugh} trasladados a los siete criterios (K1 0,25; K2 0,20; K3 y K4
+0,075 cada uno; K5 0,15; K6 0,10, que toma el lugar de la compatibilidad con el drogue;
+K7 0,15). Se definen además otros dos escenarios: \emph{seguridad
 primero} (el valor técnico baja a \SI{6}{\percent}) y \emph{misión técnica} (sube a
 \SI{30}{\percent}), y el caso de pesos iguales.
 
@@ -395,7 +410,7 @@ los escenarios alternativos. $\lambda_{\max}=7{,}072$, $CR=0{,}009$ (seguridad:
 $0{,}011$; misión: $0{,}014$).}
 \label{tab:decision-wcrit}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}l*{7}{c}|c|ccc@{}}
+\begin{tabular}{@{}l*{7}{c}cccc@{}}
 \toprule
  & K1 & K2 & K3 & K4 & K5 & K6 & K7 & $W$ base & Seguridad & Misión & Iguales\\\midrule
 K1 & 1 & 1 & 3 & 4 & 3 & 3 & 1 & \num{0.234} & \num{0.287} & \num{0.201} & \num{0.143}\\
@@ -420,7 +435,7 @@ completas las imprime \texttt{decision\_ahp.py}.
 \caption{Matriz de comparación por pares para K2 (riesgo funcional), derivada de $P_F$
 con la ecuación~\eqref{eq:decision-escala}. $\lambda_{\max}=7{,}311$, $CR=0{,}039$.}
 \label{tab:decision-k2}
-\begin{tabular}{@{}l*{7}{c}|c@{}}
+\begin{tabular}{@{}l*{7}{c}c@{}}
 \toprule
  & (a) & (b) & (c) & (d) & (e) & (f) & (g) & $p_{i2}$\\\midrule
 (a) $P_F=0{,}03$ & 1 & 7 & 2 & 8 & 5 & 3 & 9 & \num{0.368}\\
@@ -460,15 +475,17 @@ incertidumbre de cualquier juicio. El paracaídas gana en \Req{C4}, riesgo y
 complejidad; el autogiro, en video y valor técnico. Siguen el coaxial ($0{,}152$) y el
 parapente ($0{,}147$). Con \emph{seguridad primero} el paracaídas gana con claridad
 ($0{,}265$ contra $0{,}185$); con \emph{misión técnica} gana el autogiro ($0{,}227$
-contra $0{,}195$); con pesos iguales vuelven a empatar ($0{,}189$ y $0{,}186$).
+contra $0{,}195$); con pesos iguales vuelven a empatar ($0{,}189$ y $0{,}186$). Con los pesos de la Pugh
+gana el paracaídas con margen ($0{,}231$ contra $0{,}190$).
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.92\textwidth, height=6cm, ybar, bar width=4.2pt, ymin=0, ymax=0.3,
+\begin{axis}[width=0.92\textwidth, height=6cm, ybar, bar width=3.6pt, ymin=0, ymax=0.3,
   xtick={0,...,6}, xticklabels={(a),(b),(c),(d),(e),(f),(g)}, enlarge x limits=0.08,
   ylabel={Prioridad global $G_i$}, ymajorgrids, grid style={black!8},
-  legend style={font=\scriptsize, at={(0.5,1.03)}, anchor=south, legend columns=4},
+  legend style={font=\scriptsize, at={(0.5,1.03)}, anchor=south, legend columns=5,
+    /tikz/every even column/.append style={column sep=6pt}},
   yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
   \addplot[fill=cfijo, draw=cfijo] table[x=idx, y=ahp_base] {analysis/data/decision_global.dat};
   \addlegendentry{base}
@@ -478,16 +495,18 @@ contra $0{,}195$); con pesos iguales vuelven a empatar ($0{,}189$ y $0{,}186$).
   \addlegendentry{misión técnica}
   \addplot[fill=cgris!50, draw=cgris] table[x=idx, y=ahp_iguales] {analysis/data/decision_global.dat};
   \addlegendentry{pesos iguales}
+  \addplot[fill=ccuerda!60, draw=ccuerda] table[x=idx, y=ahp_pugh] {analysis/data/decision_global.dat};
+  \addlegendentry{pesos Pugh}
 \end{axis}
 \end{tikzpicture}
-\caption{Prioridades globales del AHP en cuatro escenarios de pesos.}
+\caption{Prioridades globales del AHP en cinco escenarios de pesos.}
 \label{fig:decision-global}
 \end{figure}
 
 %=====================================================================
 \section{TOPSIS como segundo método}\label{sec:decision-topsis}
-TOPSIS elige el autogiro con margen ($0{,}79$ contra $0{,}63$ del parapente y $0{,}61$
-del paracaídas). El método de Hwang y Yoon~\cite{decision-hwang1981} trabaja con las
+TOPSIS elige el autogiro con margen ($0{,}79$ contra $0{,}66$ del coaxial, $0{,}63$ del
+parapente y $0{,}61$ del paracaídas). El método de Hwang y Yoon~\cite{decision-hwang1981} trabaja con las
 métricas crudas $x_{ik}$ de la tabla~\ref{tab:decision-cuant} (y los puntajes de K6 y
 K7). Normaliza cada columna, pondera, y mide la distancia de cada alternativa a una
 solución ideal $v^+$ y a una anti-ideal $v^-$:
@@ -502,7 +521,7 @@ $v_k^-$ el peor.
 
 \begin{table}[H]
 \centering\small
-\caption{Coeficiente de cercanía $C_i$ de TOPSIS en los cuatro escenarios.}
+\caption{Coeficiente de cercanía $C_i$ de TOPSIS en los cinco escenarios.}
 \label{tab:decision-topsis}
 \begin{tabular}{@{}l*{7}{c}@{}}
 \toprule
@@ -511,6 +530,7 @@ Base              & 0,605 & 0,625 & \textbf{0,788} & 0,458 & 0,656 & 0,423 & 0,2
 Seguridad primero & \textbf{0,812} & 0,655 & 0,754 & 0,390 & 0,617 & 0,480 & 0,236\\
 Misión técnica    & 0,523 & 0,601 & \textbf{0,807} & 0,493 & 0,674 & 0,396 & 0,284\\
 Pesos iguales     & 0,591 & 0,594 & \textbf{0,715} & 0,530 & 0,502 & 0,545 & 0,395\\
+Pesos Pugh        & 0,700 & 0,674 & \textbf{0,726} & 0,464 & 0,567 & 0,445 & 0,319\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -523,7 +543,8 @@ lineal, la diferencia entre \SI{3}{\percent} y \SI{4}{\percent} es pequeña fren
 \SI{20}{\percent} del inflable, que fija el anti-ideal. El AHP con
 la regla~\eqref{eq:decision-escala} es más compensatorio y lee esa misma diferencia como
 ``igual a moderada''. Ninguno de los dos es ``el correcto'': miden cosas
-distintas, y por eso conviene usar ambos.
+distintas, y por eso conviene usar ambos. Con los pesos de la Pugh, TOPSIS todavía
+prefiere el autogiro, pero por poco ($0{,}726$ frente a $0{,}700$).
 
 \begin{table}[H]
 \centering\small
@@ -548,15 +569,18 @@ La tabla~\ref{tab:decision-variantes} muestra que TOPSIS elige el autogiro en to
 variantes, y que el AHP lo hace cambiar según detalles de método. Con juicios por
 cociente, el AHP comprime las diferencias entre alternativas buenas (una métrica de
 \num{9} contra \num{6.5} da $a_{ij}=1$) y favorece al autogiro. Quitar las dos
-alternativas no factibles cambia la escala de las métricas y favorece al paracaídas: es
-la conocida inversión de rangos del AHP distributivo~\cite{decision-triantaphyllou1997}.
+alternativas no factibles cambia la escala de las métricas y amplía la ventaja del
+paracaídas (de $0{,}001$ a $0{,}031$). El orden entre (a) y (c) no se invierte en este
+caso, pero el efecto es el mismo que origina la conocida inversión de rangos del AHP
+distributivo: la prioridad de una alternativa depende de cuáles otras entran en la
+comparación~\cite{decision-belton1983}.
 
 %=====================================================================
 \section{Sensibilidad}\label{sec:decision-sens}
 
 \subsection{Monte Carlo sobre los pesos y los juicios}
-Siguiendo a Butler, Jia y Dyer~\cite{decision-butler1997}, los pesos se muestrean de una
-distribución de Dirichlet:
+En la línea de la simulación de pesos de Butler, Jia y Dyer~\cite{decision-butler1997},
+los pesos se muestrean de una distribución de Dirichlet:
 \begin{equation}
   \mathbf{W}\sim\mathrm{Dir}(\kappa\,\mathbf{W}_0),\qquad
   \mathrm{E}[W_k]=W_{0,k},\qquad
@@ -567,7 +591,7 @@ Con $\kappa=30$, un peso base de $0{,}24$ varía con desvío $\pm0{,}077$: equiv
 cada integrante del equipo opine distinto dentro de lo razonable. La Dirichlet uniforme
 ($\kappa\mathbf{W}_0=\mathbf{1}$) recorre todo el simplex: representa no saber nada de
 los pesos. En un tercer caso se perturban también los juicios: cada $a_{ij}$ se multiplica
-por $e^{\varepsilon}$ con $\varepsilon\sim\mathcal{N}(0;\,0{,}35)$ (algo menos de un
+por $e^{\varepsilon}$ con $\varepsilon$ normal de media 0 y desvío $0{,}35$ (algo menos de un
 escalón de la escala) y cada $P_F$ por un factor lognormal con factor de error 2. Se usan
 \num{40000} muestras (\num{8000} en el caso con juicios).
 
@@ -609,17 +633,22 @@ $\mathrm{Dir}(30\,\mathbf{W}_0)$. El autogiro queda primero o segundo en el
 \label{fig:decision-rangos}
 \end{figure}
 
-Tres lecturas. Primera: con pesos razonables solo (a) y (c) pueden ganar; ambos quedan
-entre los dos primeros en el \SI{98}{\percent} de los casos (figura~\ref{fig:decision-rangos}).
+Tres lecturas. Primera: con pesos razonables solo (a) y (c) pueden ganar (uno de los dos es el primero
+en el \SI{99.98}{\percent} de los casos); el autogiro queda entre los dos primeros en el
+\SI{98}{\percent} de los casos y el paracaídas en el \SI{94}{\percent}
+(figura~\ref{fig:decision-rangos}).
 Segunda: dentro del AHP la elección es una moneda al aire; perturbar los juicios la
 inclina apenas hacia el autogiro. Tercera: si no se sabe nada de los pesos (Dirichlet
 uniforme), el paracaídas es la opción más probable en el AHP, y las aletas ganan en el
-\SI{12}{\percent} de los casos. Eso ocurre cuando casi todo el peso cae en volumen o masa:
+\SI{12}{\percent} de los casos. Eso ocurre cuando gran parte del peso cae en el volumen (en esos casos
+$W_4$ vale $0{,}39$ en promedio):
 la Dirichlet uniforme ignora que (f) no cumple \Req{C4}. Es un recordatorio de que el
 filtro de factibilidad debe ir \emph{antes} de cualquier ponderación.
 
 \subsection{Barridos de un peso y cambio de ranking}
-Variar un peso a la vez muestra que el empate del AHP está en un filo. Cada barrido fija
+Variar un peso a la vez muestra que el empate del AHP está en un filo. Se busca el
+cambio mínimo de un peso que invierte el orden, como proponen Triantaphyllou y
+Sánchez~\cite{decision-triantaphyllou1997}. Cada barrido fija
 $W_k=x$ y reescala los demás en proporción, $W_j=W_{0,j}(1-x)/(1-W_{0,k})$
 (figura~\ref{fig:decision-barridos}). La tabla~\ref{tab:decision-cruces} da el peso donde
 el paracaídas y el autogiro se cruzan.
@@ -695,7 +724,8 @@ autogiro; violeta: coaxial; verde: parapente.}
 \begin{table}[H]
 \centering\small
 \caption{Cambios de ganador al barrer un peso (los demás se reescalan en proporción). Se
-indica el ganador en cada tramo y el peso donde cambia.}
+indica el ganador en cada tramo y el peso donde cambia. Los cruces del AHP y el de K7 en
+TOPSIS están interpolados; los demás de TOPSIS, con paso de $0{,}01$.}
 \label{tab:decision-cruces}
 \begin{tabular}{@{}lcll@{}}
 \toprule
@@ -706,7 +736,7 @@ K3 Masa              & 0,059 & (c) $\xrightarrow{0{,}053}$ (a) $\xrightarrow{0{,
 K4 Volumen           & 0,054 & (a) $\xrightarrow{0{,}060}$ (c) $\xrightarrow{0{,}34}$ (f) & (c) $\xrightarrow{0{,}44}$ (f)\\
 K5 Complejidad       & 0,097 & (c) $\xrightarrow{0{,}093}$ (a) & (c) $\xrightarrow{0{,}23}$ (b)\\
 K6 Video y deriva    & 0,092 & (a) $\xrightarrow{0{,}096}$ (c) $\xrightarrow{0{,}43}$ (e) & (c) $\xrightarrow{0{,}45}$ (e)\\
-K7 Valor técnico     & 0,243 & (a) $\xrightarrow{0{,}245}$ (c) & (a) $\xrightarrow{0{,}12}$ (c)\\
+K7 Valor técnico     & 0,243 & (a) $\xrightarrow{0{,}245}$ (c) & (a) $\xrightarrow{0{,}11}$ (c)\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -714,11 +744,49 @@ K7 Valor técnico     & 0,243 & (a) $\xrightarrow{0{,}245}$ (c) & (a) $\xrightar
 En el AHP, todos los cruces entre (a) y (c) están a menos de $0{,}007$ de su peso base.
 Cualquier cambio pequeño de opinión invierte el resultado: no hay una elección robusta.
 En TOPSIS, en cambio, el autogiro gana en un entorno amplio del peso base. Deja de ganar
-si el valor técnico pesa menos de $0{,}12$ (gana el paracaídas), si la complejidad pesa
+si el valor técnico pesa menos de $0{,}11$ (gana el paracaídas), si la complejidad pesa
 más de $0{,}23$ o \Req{C4} más de $0{,}40$ (gana el parapente, que TOPSIS ve como un
 compromiso: simple, liviano y con buena velocidad vertical, sin penalizar bien su deriva),
 o si el riesgo pesa más de $0{,}81$. Que aparezcan (d), (f) o (e) con pesos extremos en
 masa, volumen o video solo muestra que cada una es la mejor en un único aspecto.
+
+\subsection{¿Cuánto riesgo tolera la elección del autogiro?}
+El autogiro gana mientras su probabilidad de falla quede bajo \SI{3.5}{\percent} (AHP
+base), \SI{6.8}{\percent} (AHP misión técnica) o \SI{19}{\percent} (TOPSIS base). Con la
+estimación actual de \SI{4}{\percent} ya está por encima del umbral del AHP base. La figura~\ref{fig:decision-umbral} muestra la ventaja del
+autogiro sobre el paracaídas al variar solo $P_{F,c}$.
+Este es el número que los ensayos deben fijar: si las caídas de prueba
+(capítulo~\ref{cap:riesgos}) indican una tasa de falla de arranque mayor que una cada 15 lanzamientos
+(\SI{6.8}{\percent}), el autogiro deja de ser defendible aun con los pesos de la misión
+técnica.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{semilogxaxis}[width=0.8\textwidth, height=4.6cm, xmin=0.01, xmax=0.3,
+  ymin=-0.15, ymax=0.22, xlabel={$P_{F}$ del autogiro}, ylabel={Ventaja de (c) sobre (a)},
+  grid=both, grid style={black!8}, legend style={font=\scriptsize, at={(0.5,1.03)},
+  anchor=south, legend columns=2, /tikz/every even column/.append style={column sep=6pt}},
+  log basis x=10,
+  xtick={0.01,0.02,0.05,0.1,0.2},
+  xticklabel={\pgfmathparse{exp(\tick*ln(10))}\pgfmathprintnumber[fixed,precision=2]{\pgfmathresult}},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
+  \draw[black!60] (axis cs:0.01,0) -- (axis cs:0.3,0);
+  \draw[cgris, densely dotted] (axis cs:0.04,-0.15) -- (axis cs:0.04,0.22)
+    node[pos=0.75, right, font=\scriptsize, text=cgris] {estimación};
+  \addplot[cfijo, thick] table[x=pf, y=dAHPbase] {analysis/data/decision_umbralpf.dat};
+  \addlegendentry{AHP base: $G_c-G_a$}
+  \addplot[crot, thick] table[x=pf, y=dAHPmision] {analysis/data/decision_umbralpf.dat};
+  \addlegendentry{AHP misión técnica: $G_c-G_a$}
+  \addplot[ccont, thick, densely dashed] table[x=pf, y=dTOPbase] {analysis/data/decision_umbralpf.dat};
+  \addlegendentry{TOPSIS base: $C_c-C_a$}
+\end{semilogxaxis}
+\end{tikzpicture}
+\caption{Ventaja del autogiro sobre el paracaídas en función de su probabilidad de falla
+funcional. El autogiro gana mientras la curva esté sobre cero. Las curvas del AHP son
+escalonadas porque los juicios se redondean a la escala de Saaty.}
+\label{fig:decision-umbral}
+\end{figure}
 
 \subsection{Frontera de decisión}
 El plano de la figura~\ref{fig:decision-frontera} cruza los dos criterios en disputa:
@@ -752,45 +820,11 @@ saca ventaja.
 \end{axis}
 \end{tikzpicture}
 \caption{Frontera paracaídas/autogiro en el plano riesgo--valor técnico (los otros cinco
-pesos conservan sus proporciones base). Entre las dos curvas los métodos discrepan. En el
+pesos conservan sus proporciones base; los puntos de los escenarios, que no cumplen
+esa condición, se ubican de forma aproximada). Entre las dos curvas los métodos discrepan. En el
 AHP gana siempre (a) o (c); en TOPSIS, bajo su curva, gana (a), salvo en la esquina de
 riesgo bajo ($W_2\lesssim0{,}15$, $W_7\approx0{,}05$--$0{,}2$), donde gana el parapente.}
 \label{fig:decision-frontera}
-\end{figure}
-
-\subsection{¿Cuánto riesgo tolera la elección del autogiro?}
-La elección del autogiro se sostiene mientras su probabilidad de falla quede bajo
-\SI{3.5}{\percent} (AHP base), \SI{6.8}{\percent} (AHP misión técnica) o
-\SI{19}{\percent} (TOPSIS). La figura~\ref{fig:decision-umbral} muestra la ventaja del
-autogiro sobre el paracaídas al variar solo $P_{F,c}$.
-Este es el número que los ensayos deben fijar: si las caídas de prueba
-(capítulo~\ref{cap:riesgos}) muestran más de una falla de arranque cada 15 a 20
-lanzamientos, el autogiro deja de ser defendible aun con los pesos de la misión técnica.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}
-\begin{semilogxaxis}[width=0.8\textwidth, height=5.4cm, xmin=0.01, xmax=0.3,
-  ymin=-0.15, ymax=0.22, xlabel={$P_{F}$ del autogiro}, ylabel={Ventaja de (c) sobre (a)},
-  grid=both, grid style={black!8}, legend style={font=\scriptsize, at={(0.02,0.03)},
-  anchor=south west}, log basis x=10,
-  xtick={0.01,0.02,0.05,0.1,0.2},
-  xticklabel={\pgfmathparse{exp(\tick*ln(10))}\pgfmathprintnumber[fixed,precision=2]{\pgfmathresult}},
-  yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
-  \draw[black!60] (axis cs:0.01,0) -- (axis cs:0.3,0);
-  \draw[cgris, densely dotted] (axis cs:0.04,-0.15) -- (axis cs:0.04,0.22)
-    node[pos=0.75, right, font=\scriptsize, text=cgris] {estimación};
-  \addplot[cfijo, thick] table[x=pf, y=dAHPbase] {analysis/data/decision_umbralpf.dat};
-  \addlegendentry{AHP base: $G_c-G_a$}
-  \addplot[crot, thick] table[x=pf, y=dAHPmision] {analysis/data/decision_umbralpf.dat};
-  \addlegendentry{AHP misión técnica: $G_c-G_a$}
-  \addplot[ccont, thick, densely dashed] table[x=pf, y=dTOPbase] {analysis/data/decision_umbralpf.dat};
-  \addlegendentry{TOPSIS base: $C_c-C_a$}
-\end{semilogxaxis}
-\end{tikzpicture}
-\caption{Ventaja del autogiro sobre el paracaídas en función de su probabilidad de falla
-funcional. El autogiro gana mientras la curva esté sobre cero.}
-\label{fig:decision-umbral}
 \end{figure}
 
 %=====================================================================
@@ -803,17 +837,20 @@ funcional. El autogiro gana mientras la curva esté sobre cero.}
         es más liviano, más simple y algo más confiable.
   \item El autogiro es mejor en video (sin péndulo de \SI{60}{\degree/s}), en volumen
         interno y, sobre todo, en valor técnico.
-  \item AHP y TOPSIS coinciden en que solo (a) y (c) son candidatos, y discrepan en cuál
-        gana. El AHP los da empatados; TOPSIS prefiere el autogiro con margen.
+  \item AHP y TOPSIS coinciden en que, con pesos razonables, solo (a) y (c) ganan con
+        probabilidad apreciable, y discrepan en cuál. El AHP los da empatados; TOPSIS
+        prefiere el autogiro con margen.
   \item La elección depende de un solo juicio: cuánto vale el contenido técnico. Con
-        $W_7<0{,}24$ en el AHP, o $W_7<0{,}12$ en TOPSIS, conviene el paracaídas.
+        $W_7<0{,}245$ en el AHP, o $W_7<0{,}11$ en TOPSIS, conviene el paracaídas. El
+        peso base ($0{,}243$) está en el filo, y con los pesos de la tabla~\ref{tab:pugh}
+        ($W_7=0{,}15$) el AHP elige el paracaídas.
 \end{enumerate}
 \end{resultado}
 
 \paragraph{Cuándo debería ganar el paracaídas.} En cuatro escenarios concretos: (1) si el
 objetivo del equipo es solo aprobar la misión con el menor riesgo (escenario
 \emph{seguridad primero}); (2) si los ensayos muestran $P_{F,c}$ por encima de
-\SIrange{4}{7}{\percent}; (3) si las caídas muestran velocidades medias de la etapa~2
+\SIrange{3.5}{7}{\percent}; (3) si las caídas muestran velocidades medias de la etapa~2
 por encima de unos \SI{7.5}{m/s}, que dejan sin margen a \Req{C4}; y (4) si el calendario
 no deja tiempo para la campaña de ensayos del rotor. En cualquiera de esos casos, el
 análisis respalda cambiar sin dudar.
@@ -836,13 +873,19 @@ alcanza al menos 15 arranques seguidos sin falla y una velocidad media de la eta
 \SI{7.5}{m/s} o menos. Con 15 éxitos en 15 intentos, el límite superior de
 $P_{F}$ al \SI{60}{\percent} de confianza es $1-0{,}4^{1/15}\approx\SI{6}{\percent}$, justo
 bajo el umbral de la figura~\ref{fig:decision-umbral} con los pesos de la misión técnica.
+Es una evidencia débil: al \SI{90}{\percent} de confianza el mismo resultado solo asegura
+$P_F<1-0{,}1^{1/15}\approx\SI{14}{\percent}$, y para demostrar $P_F<\SI{6.8}{\percent}$
+con esa confianza harían falta 33 arranques seguidos sin falla. Las caídas de prueba no
+son, además, idénticas al vuelo real.
 
 \begin{nota}[Límites de este análisis]
 \begin{itemize}
   \item Las $P_F$ son estimaciones; el resultado del AHP base cambia con solo pasar la
         del autogiro de \SI{4}{\percent} a \SI{3.5}{\percent}.
-  \item El modelo del parapente usa coeficientes genéricos de alas grandes; a esta
-        escala ($Re\sim10^5$) su $C_L$ puede ser bastante menor.
+  \item El peso del valor técnico ($0{,}243$) es mayor que el de la tabla~\ref{tab:pugh}
+        ($0{,}15$), y es el juicio que más influye en el resultado.
+  \item El modelo del parapente usa coeficientes genéricos de parapentes de tamaño
+        real; a esta escala ($Re\sim10^5$) su $C_L$ puede ser bastante menor.
   \item La velocidad del monocóptero y la del coaxial usan $\CR$ supuestos, sin
         ensayos propios.
   \item El movimiento angular del autogiro (\SI{25}{\degree/s}) es una conjetura; puede ser

@@ -69,6 +69,14 @@ print(f'IMU: a(U=6 g mm)={a:.3f} m/s2 = {a/9.81*1e3:.1f} mg; ruido promediado 10
 # ---- pestaña de inoxidable: desarrollo plano
 t, ri, K = 0.5, 0.5, 0.33
 BA = np.pi/2*(ri + K*t)
-L1, L2 = 6.0, 10.0      # alas exteriores (medidas exteriores) pegada / radial
+L1, L2 = 6.0, 11.5      # alas exteriores (medidas exteriores) pegada / radial
 L_flat = (L1 - (ri + t)) + (L2 - (ri + t)) + BA
 print(f'Pestaña: BA={BA:.3f} mm, BD={2*(ri+t)-BA:.3f} mm, largo desarrollado={L_flat:.2f} mm')
+r_out = 45.3           # cara exterior del pliegue (pala r_mo=44,62 + 0,5 + adhesivo ~0,2)
+r_wire = 36.5
+x_oj = r_out - r_wire  # centro del ojal desde la cara exterior del pliegue
+print(f'Ojal: a {x_oj:.2f} mm de la cara exterior; a {L2-x_oj:.2f} mm del extremo; '
+      f'en el desarrollo a {L_flat-(L2-x_oj):.2f} mm del extremo pegado; '
+      f'extremo interior a r={r_out-L2:.2f} mm')
+# pegado de la pestaña: 5 x 5 mm, corte admisible conservador 5 MPa
+A = 5*5; print(f'Pegado: area {A} mm2, capacidad a 5 MPa = {5*A:.0f} N')
