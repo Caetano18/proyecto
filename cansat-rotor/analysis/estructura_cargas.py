@@ -201,10 +201,14 @@ if __name__ == "__main__":
     for lab, Mh in (("estático", Mh_stat), ("golpe rígido", Mh_rig), ("golpe blando", Mh_soft)):
         pr(f"brazo del cubo, {lab}: sigma (XY)", 1.2 * Mh / Zarm / 1e6, "MPa")
     pr("brazo del cubo, centrífuga: sigma tracción", Fc / (10e-3 * 8e-3) / 1e6, "MPa")
-    # oreja: desgarro con distancia al borde 1,3 mm (plano 4) y 3 mm
+    # oreja: desgarro por la fuerza centrífuga. e = distancia del CENTRO del agujero al
+    # borde (plano 4: 1,3 mm; propuesta: 3 mm). Ligamento = e - d/2; área de corte
+    # 2 x (espesor total 5 mm) x ligamento.
     for el in (1.3e-3, 3.0e-3):
-        tau_so = Fc / (2 * 5e-3 * (el - 0.0))
-        pr(f"oreja, corte por desgarro centrífugo, e={el*1e3:.1f} mm", tau_so / 1e6, "MPa")
+        lig = el - d / 2
+        tau_so = Fc / (2 * 5e-3 * lig)
+        pr(f"oreja, desgarro centrífugo, e={el*1e3:.1f} mm (ligamento {lig*1e3:.1f} mm)", tau_so / 1e6,
+           f"MPa ; FS {12e6/tau_so:.1f} (admisible en corte Z 12 MPa)")
     # portapala: cuello 6 x 8 mm (plano 6)
     Zpp = 6e-3 * 8e-3**2 / 6
     pr("portapala, cuello 6x8: sigma con golpe rígido / blando / estático", Mh_rig / Zpp / 1e6,
