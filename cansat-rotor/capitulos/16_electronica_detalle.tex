@@ -40,55 +40,48 @@ descarga de la celda (figura~\ref{fig:electronica-esq}).
 \centering
 \begin{subfigure}{\textwidth}\centering
 \begin{circuitikz}[font=\scriptsize, line width=0.5pt]
-  \ctikzset{bipoles/length=0.85cm}
+  \ctikzset{bipoles/length=0.8cm}
   % --- camino de potencia
   \draw (0,-2.6) to[battery1, l_={B1 18650}] (0,0)
-        to[fuse, l={F1 \SI{3}{A}}] (1.5,0);
-  \node[draw, fill=ffijo, minimum width=13mm, minimum height=8mm, align=center] (prot) at (2.3,0)
+        to[fuse, l={F1 \SI{3}{A}}] (1.3,0);
+  \node[draw, fill=ffijo, minimum width=13mm, minimum height=8mm, align=center] (prot) at (2.15,0)
         {Protec.\\[-1pt]OV/UV/OC};
-  \draw (1.5,0) -- (prot.west);
-  \draw (prot.east) to[nos, l={S1 (\Req{E4})}] (4.3,0)
-        to[R, l_={$R_s$ \SI{20}{m\ohm}}] (5.6,0) -- (9.0,0);
-  \node[draw, fill=white, minimum width=14mm, minimum height=5mm] (ina) at (4.95,1.05) {INA219};
-  \draw (4.3,0) |- ([yshift=-1mm]ina.west);
-  \draw (5.6,0) |- ([yshift=-1mm]ina.east);
-  \node[anchor=west, cgris] at (ina.north east) {I$^2$C};
-  \node[above, font=\scriptsize\bfseries] at (6.1,0) {VBAT};
-  \draw (6.5,0) to[R, l_={\SI{1}{k\ohm}}, *-] (6.5,-1.3) to[leDo, l_={\Req{E6}}] (6.5,-2.6);
-  \draw (7.7,0) to[R, l_={\SI{100}{k\ohm}}, *-] (7.7,-1.3) to[R, l_={\SI{100}{k\ohm}}] (7.7,-2.6);
-  \draw (7.7,-1.3) to[short, *-] (8.2,-1.3) node[right] {ADC\_VBAT};
-  \draw (0,-2.6) -- (9.0,-2.6);
-  \draw (prot.south) -- (2.3,-2.6);
+  \draw (1.3,0) -- (prot.west);
+  \draw (prot.east) to[nos, l={S1 (\Req{E4})}] (3.9,0)
+        to[R, l_={$R_s$ \SI{20}{m\ohm}}] (5.0,0) -- (9.4,0);
+  \node[draw, fill=white, minimum width=13mm, minimum height=5mm] (ina) at (4.45,1.0) {INA219};
+  \draw (3.9,0) |- ([yshift=-1mm]ina.west);
+  \draw (5.0,0) |- ([yshift=-1mm]ina.east);
+  \node[anchor=west, cgris] at (ina.east) {I$^2$C};
+  \node[above, font=\scriptsize\bfseries] at (5.55,0) {VBAT};
+  \draw (6.2,0) to[R, l_={\SI{1}{k\ohm}}, *-] (6.2,-1.3) to[leDo, l_={\Req{E6}}] (6.2,-2.6);
+  \draw (7.6,0) to[R, l_={\SI{100}{k\ohm}}, *-] (7.6,-1.3) to[R, l_={\SI{100}{k\ohm}}] (7.6,-2.6);
+  \draw (7.6,-1.3) to[short, *-] (8.0,-1.3) node[right] {ADC};
+  \draw (0,-2.6) -- (10.6,-2.6);
+  \draw (prot.south) -- (2.15,-2.6);
   % --- convertidores
-  \node[draw, fill=ffijo, minimum width=20mm, minimum height=9mm, align=center] (u1) at (10.5,-1.0)
+  \node[draw, fill=ffijo, minimum width=20mm, minimum height=9mm, align=center] (u1) at (10.6,-1.0)
         {Buck-boost 3,3\,V\\[-1pt]TPS63020};
-  \node[draw, fill=cfreno!10, minimum width=20mm, minimum height=9mm, align=center] (u2) at (10.5,1.0)
+  \node[draw, fill=cfreno!10, minimum width=20mm, minimum height=9mm, align=center] (u2) at (10.6,1.0)
         {Elevador 5\,V\\[-1pt]2\,A (repr.)};
-  \draw (9.0,0) to[short, *-] (9.0,1.0) -- (u2.west);
-  \draw (9.0,0) -- (9.0,-1.0) -- (u1.west);
-  \draw (u1.south) -- (10.5,-2.6) -- (9.0,-2.6);
-  \draw (u2.south) -- ++(0,-0.35) node[ground]{};
+  \draw (9.4,0) to[short, *-] (9.4,1.0) -- (u2.west);
+  \draw (9.4,0) -- (9.4,-1.0) -- (u1.west);
+  \draw (u1.south) -- (10.6,-2.6);
+  \draw (u2.south) -- ++(0,-0.2) node[ground]{};
   % --- riel de 3,3 V
-  \draw (u1.east) -- (12.4,-1.0) node[right, align=left] {\textbf{+3V3}\\[-1pt]a (b)};
-  \draw (11.95,-1.0) to[C, l_={\SI{2x22}{\micro F}}, *-] (11.95,-2.4) node[ground]{};
+  \draw (u1.east) -- (13.0,-1.0) node[right, align=left] {\textbf{+3V3}\\[-1pt]a la parte (b)};
+  \draw (12.1,-1.0) to[C, l={$2\times\SI{22}{\micro F}$}, *-] (12.1,-1.8) node[ground]{};
   % --- riel de 5 V
-  \draw (u2.east) -- (16.2,1.0);
+  \draw (u2.east) -- (14.1,1.0) node[right, align=left] {a Q1 (servo)\\[-1pt]y Q2 (cámaras)};
   \node[above, font=\scriptsize\bfseries] at (12.0,1.0) {+5V};
-  \draw (12.6,1.0) to[eC, l_={\SI{470}{\micro F}}, *-] (12.6,-0.3) node[ground]{};
-  \draw (13.6,1.0) to[D, l_={TVS}, *-] (13.6,-0.3) node[ground]{};
-  \node[draw, fill=cfreno!10, minimum width=13mm, minimum height=6mm, align=center] (sv) at (14.75,-0.15)
-        {Servo};
-  \node[draw, fill=white, minimum width=11mm, minimum height=6mm, align=center] (cam) at (15.85,-0.15)
-        {Cámaras};
-  \draw (14.75,1.0) to[nos, l_={Q1}, *-] (sv.north);
-  \draw (15.85,1.0) to[nos, l={Q2}] (cam.north);
-  \node[cgris, align=center, font=\tiny] at (15.3,-0.9) {P-MOS: SERVO\_EN, CAM\_EN};
+  \draw (12.5,1.0) to[eC, l={\SI{470}{\micro F}}, *-] (12.5,-0.05) node[ground]{};
+  \draw (13.6,1.0) to[D, l={TVS}, *-] (13.6,-0.05) node[ground]{};
   % --- baliza independiente
-  \begin{scope}[shift={(12.0,-2.0)}]
-    \draw[dashed, ccuerda] (-0.25,-1.15) rectangle (4.35,0.55);
-    \node[ccuerda, anchor=north west, font=\tiny] at (-0.2,0.52) {Baliza (\Req{C8}, \Req{E8}, \Req{E9}): sin conexión};
-    \draw (0.3,-0.95) to[battery1, l_={B2}] (0.3,0.05) to[nos, l={S2}] (2.0,0.05)
-          to[buzzer] (3.7,0.05) -- (3.7,-0.95) -- (0.3,-0.95);
+  \begin{scope}[shift={(11.6,-3.55)}]
+    \draw[dashed, ccuerda] (0,0) rectangle (4.0,1.25);
+    \draw (0.45,0.2) to[battery1, l_={B2}] (0.45,1.05) to[nos, l={S2 (\Req{E9})}] (2.1,1.05)
+          to[buzzer] (3.6,1.05) -- (3.6,0.2) -- (0.45,0.2);
+    \node[ccuerda, below, font=\tiny] at (2.0,0) {Baliza (\Req{C8}, \Req{E8}): sin conexión con el resto};
   \end{scope}
 \end{circuitikz}
 \caption{Potencia: celda, protección, interruptor, medición y rieles.}
@@ -97,37 +90,38 @@ descarga de la celda (figura~\ref{fig:electronica-esq}).
 \vspace{4mm}
 \begin{subfigure}{\textwidth}\centering
 \begin{circuitikz}[font=\scriptsize, line width=0.5pt]
-  \ctikzset{bipoles/length=0.75cm}
-  \node[draw, fill=ffijo, minimum width=34mm, minimum height=52mm, align=center] (mcu) at (8,0)
-        {\small\bfseries MCU\\ \small Cortex-M, 3,3\,V\\[2pt] \footnotesize lazo 50\,Hz\\ \footnotesize perro guardián};
+  \ctikzset{bipoles/length=0.7cm}
+  \node[draw, fill=ffijo, minimum width=42mm, minimum height=62mm] (mcu) at (7.1,0) {};
+  \node[align=center] at (6.7,-0.1) {\small\bfseries MCU\\ \footnotesize Cortex-M, 3,3\,V\\ \footnotesize lazo de 50\,Hz\\ \footnotesize perro guardián};
   \tikzset{per/.style={draw, fill=white, minimum width=30mm, minimum height=6mm, align=center}}
-  % izquierda: bus I2C y SPI
-  \node[per] (baro) at (1.9,2.1) {Barómetro MS5611};
-  \node[per] (imu)  at (1.9,1.25) {IMU $\pm16\,g$ (repr.)};
-  \node[per] (ina2) at (1.9,0.4) {INA219 (V, I)};
-  \node[per] (fram) at (1.9,-0.45) {FRAM MB85RC256V};
-  \node[per] (sd)   at (1.9,-1.45) {Tarjeta SD};
-  \draw[line width=1.2pt, cfijo] (4.3,2.1) -- (4.3,-0.45);
-  \foreach \n in {baro,imu,ina2,fram} \draw[cfijo] (\n.east) -- (4.3,0 |- \n.east) node[circ]{};
-  \draw[cfijo, line width=1.2pt] (4.3,0.8) -- (mcu.west |- 0,0.8) node[right, black] {I2C};
+  % izquierda: bus I2C, SPI y RTC
+  \node[per] (baro) at (1.6,2.6) {Barómetro MS5611};
+  \node[per] (imu)  at (1.6,1.8) {IMU $\pm16\,g$ (repr.)};
+  \node[per] (ina2) at (1.6,1.0) {INA219 (V, I)};
+  \node[per] (fram) at (1.6,0.2) {FRAM MB85RC256V};
+  \node[per] (sd)   at (1.6,-1.0) {Tarjeta SD};
+  \draw[line width=1.2pt, cfijo] (3.7,2.6) -- (3.7,0.2);
+  \foreach \n in {baro,imu,ina2,fram} \draw[cfijo] (\n.east) -- (3.7,0 |- \n.east) node[circ]{};
+  \draw[cfijo, line width=1.2pt] (3.7,1.4) -- (mcu.west |- 0,1.4) node[right, black] {I2C};
   \draw[cfijo] (sd.east) -- (mcu.west |- sd.east) node[right, black] {SPI};
-  \draw (mcu.west |- 0,-2.2) node[right] {VBAT\textsubscript{RTC}} to[battery1, l_={CR1220 (\Req{F2})}] (3.4,-2.2) -- (3.4,-2.45) node[ground]{};
-  % derecha: UART, PWM, hall, cámaras, panel
-  \node[per] (gps)  at (14.1,2.1) {GPS (repr.)};
-  \node[per] (xb)   at (14.1,1.25) {Radio XBee (\Req{X1})};
+  \draw (mcu.west |- 0,-2.4) node[right] {VBAT\textsubscript{RTC}} -- (4.4,-2.4)
+        to[battery1, l={CR1220 (\Req{F2})}] (3.0,-2.4) -- (2.6,-2.4) node[ground]{};
+  % derecha
+  \node[per] (gps)  at (14.1,2.6) {GPS (repr.)};
+  \node[per] (xb)   at (14.1,1.8) {Radio XBee (\Req{X1})};
   \draw (gps.west) -- (mcu.east |- gps.west) node[left] {UART1};
   \draw (xb.west) -- (mcu.east |- xb.west) node[left] {UART2};
-  \draw (xb.east) -- ++(0.35,0) node[antenna, anchor=south]{};
-  \node[per, fill=cfreno!10] (srv) at (14.1,0.35) {Servo de traba};
-  \draw (mcu.east |- srv.west) node[left] {PWM} to[R, l={\SI{1}{k\ohm}}] (11.4,0.35) -- (srv.west);
-  \draw (11.65,0.35) to[R, l_={\SI{10}{k\ohm}}, *-] (11.65,-0.55) node[ground]{};
-  \node[per, fill=frot] (hall) at (14.1,-1.05) {Hall + 2 imanes};
-  \draw (hall.west) -- (12.6,-1.05) to[R, l_={\SI{1}{k\ohm}}] (11.0,-1.05) -- (mcu.east |- 0,-1.05) node[left] {EXTI};
-  \draw (12.6,-1.05) to[R, l={\SI{10}{k\ohm}}, *-] (12.6,-0.25) node[above, font=\tiny] {+3V3};
-  \draw (11.25,-1.05) to[C, l_={\SI{10}{nF}}, *-] (11.25,-1.85) node[ground]{};
-  \node[per] (cmr) at (14.1,-2.05) {Cámaras cenit y nadir};
-  \draw (cmr.west) -- (mcu.east |- cmr.west) node[left] {CAM\_EN, SERVO\_EN};
-  \node[per] (sol) at (14.1,-2.85) {Paneles solares (\Req{E3})};
+  \draw (xb.east) -- ++(0.3,0) node[antenna, anchor=south]{};
+  \node[per, fill=cfreno!10] (srv) at (14.1,0.9) {Servo de traba};
+  \draw (mcu.east |- srv.west) node[left] {PWM} -- (9.5,0.9) to[R, l={\SI{1}{k\ohm}}] (10.6,0.9) -- (srv.west);
+  \draw (11.1,0.9) to[R, l={\SI{10}{k\ohm}}, *-] (11.1,0.1) node[ground]{};
+  \node[per, fill=frot] (hall) at (14.1,-0.5) {Hall + 2 imanes};
+  \draw (hall.west) -- (12.2,-0.5) to[R, l_={\SI{1}{k\ohm}}] (11.1,-0.5) -- (mcu.east |- 0,-0.5) node[left] {EXTI};
+  \draw (12.2,-0.5) to[R, l_={\SI{10}{k\ohm}}, *-] (12.2,0.3) node[above, font=\tiny] {+3V3};
+  \draw (10.2,-0.5) to[C, l={\SI{10}{nF}}, *-] (10.2,-1.25) node[ground]{};
+  \node[per] (cmr) at (14.1,-2.0) {P-MOS Q1 (servo), Q2 (cám.)};
+  \draw (cmr.west) -- (mcu.east |- cmr.west) node[left] {GPIO};
+  \node[per] (sol) at (14.1,-2.8) {Paneles solares (\Req{E3})};
   \draw (sol.west) -- (mcu.east |- sol.west) node[left] {ADC (\Req{X7})};
 \end{circuitikz}
 \caption{Señales: buses, entradas con acondicionamiento y salidas.}
@@ -428,8 +422,11 @@ del apogeo) y el choque (3 a $30\,g$).
 \end{tikzpicture}
 \caption{Vuelo nominal en lazo cerrado (escenario 2). La lógica C detecta el apogeo
 \SI{0.52}{s} después del real y libera a \SI{560.5}{m} (79,9\,\% de \SI{701.4}{m}), a
-\SI{0.04}{s} del cruce real del 80\,\%. Los errores durante el motor (fuera de escala, hasta
-$\approx\SI{3}{m}$ por el error de presión dinámica) se anulan antes del apogeo.}
+\SI{0.04}{s} del cruce real del 80\,\%. En el ascenso rápido el error llega a \SI{15}{m} y
+\SI{9}{m/s} (fuera de escala) por el error de presión dinámica supuesto; cerca del apogeo
+baja a \SI{0.11}{m} y \SI{0.31}{m/s}, y en todo el descenso queda por debajo de
+\SI{0.15}{m} y \SI{0.14}{m/s}. El pico final es un artefacto: el modelo detiene el CanSat al
+tocar el suelo sin que la IMU registre el impacto.}
 \label{fig:electronica-vuelo}
 \end{figure}
 
@@ -472,17 +469,17 @@ y no se aparta de la altura real.}
 y su detección. Error de liberación: altura real al liberar menos $0{,}8\,h_{\max}$.
 Prematura: por encima del 85\,\% de $h_{\max}$; tardía: por debajo del 75\,\% o sin
 liberar.}\label{tab:electronica-mc}
-\begin{tabular}{@{}clcccccc@{}}
+\begin{tabular}{@{}clccccccc@{}}
 \toprule
-& & \multicolumn{2}{c}{\textbf{Retardo de apogeo} [s]} & \textbf{Apogeo} & \multicolumn{3}{c}{\textbf{Liberación}}\\
-\cmidrule(lr){3-4}\cmidrule(lr){6-8}
-\textbf{Esc.} & \textbf{Lógica} & mediana & p95 & \textbf{falso} [\%] & error mediano [m] & prematura [\%] & tardía [\%]\\\midrule
-1 & A: crudo, umbrales     & 0,34 & 0,52 & 37,5 & $+0{,}2$ & 0,2 & 28,4\\
-1 & B: EMA y derivada      & 0,54 & 0,58 & 0,8  & $-3{,}4$ & 0,0 & 0,8\\
-1 & C: Kalman y votación   & 0,70 & 0,78 & 0,0  & $-0{,}3$ & 0,0 & 0,0\\\midrule
-2 & A: crudo, umbrales     & $-0{,}30$ & 0,50 & 45,6 & $+107$ & 60,3 & 24,1\\
-2 & B: EMA y derivada      & 0,50 & 0,56 & 13,4 & $-3{,}4$ & 28,8 & 0,9\\
-2 & C: Kalman y votación   & 0,70 & 0,80 & 0,1  & $-0{,}3$ & 0,0 & 0,0\\
+& & \multicolumn{2}{c}{\textbf{Retardo de apogeo} [s]} & \textbf{Apogeo} & \multicolumn{4}{c}{\textbf{Liberación}}\\
+\cmidrule(lr){3-4}\cmidrule(lr){6-9}
+\textbf{Esc.} & \textbf{Lógica} & mediana & p95 & falso [\%] & error med. [m] & p95 $|$error$|$ [m] & prem. [\%] & tardía [\%]\\\midrule
+1 & A: crudo     & 0,34 & 0,52 & 37,5 & $+0{,}2$ & 393 & 0,2 & 28,4\\
+1 & B: EMA       & 0,54 & 0,58 & 0,8  & $-3{,}4$ & 3,8 & 0,0 & 0,8\\
+1 & C: Kalman    & 0,70 & 0,78 & 0,0  & $-0{,}3$ & 0,5 & 0,0 & 0,0\\\midrule
+2 & A: crudo     & $-0{,}30$ & 0,50 & 45,6 & $+107$ & 389 & 60,3 & 24,1\\
+2 & B: EMA       & 0,50 & 0,56 & 13,4 & $-3{,}4$ & 146 & 28,8 & 0,9\\
+2 & C: Kalman    & 0,70 & 0,80 & 0,1  & $-0{,}3$ & 0,6 & 0,0 & 0,0\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -584,7 +581,7 @@ firmware en la PC con un corte de \SI{0.3}{s} (liberación nominal a \SI{28.38}{
 %=====================================================================
 \section{Software de vuelo}\label{sec:electronica-fw}
 
-El archivo \texttt{analysis/electronica\_firmware.cpp} (\num{410} líneas) contiene la
+El archivo \texttt{analysis/electronica\_firmware.cpp} (\num{408} líneas) contiene la
 lógica completa en C++ para Arduino/PlatformIO. El acceso al hardware queda en funciones
 \texttt{hal\_*} que se implementan con las bibliotecas de cada componente. El lazo principal
 corre el control a \SI{50}{Hz}, la telemetría a \SI{1}{Hz} y lee comandos en cada vuelta.
@@ -629,7 +626,7 @@ llega un pulso en $\max(\SI{0.5}{s},\,3T)$, con tope de \SI{1.5}{s}. Con
   caption={Medición de rpm (extracto de \texttt{electronica\_firmware.cpp}).},
   label={lst:electronica-rpm}]{analysis/electronica_firmware.cpp}
 
-\lstinputlisting[language=C++, firstline=237, lastline=268, firstnumber=237,
+\lstinputlisting[language=C++, firstline=237, lastline=267, firstnumber=237,
   caption={Apogeo por votación y liberación (extracto).},
   label={lst:electronica-estados}]{analysis/electronica_firmware.cpp}
 

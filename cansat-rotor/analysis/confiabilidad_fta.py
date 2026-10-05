@@ -250,6 +250,14 @@ for top in ("TOP1", "TOP2"):
     unc[top] = dict(mean=float(np.mean(v)), p05=float(np.percentile(v, 5)),
                     p50=float(np.percentile(v, 50)), p95=float(np.percentile(v, 95)))
     cdf_cols.append(np.sort(v))
+# Escenario tras ensayos: EF = 3 para x13, x14 y x17 (E2-E4 reducen su incertidumbre)
+EF_post = {"x13": 3, "x14": 3, "x17": 3}
+Ps_post = dict(Ps)
+for e, ef in EF_post.items():
+    med, ef0 = EB[e]
+    Ps_post[e] = np.minimum(med * np.exp(np.log(ef) / 1.645 *
+                                         np.log(Ps[e] / med) / (np.log(ef0) / 1.645)), 1.0)
+unc_post = {top: float(np.mean(p_top(top, Ps_post))) for top in ("TOP1", "TOP2")}
 q = np.linspace(0.005, 0.995, 199)
 idx = (q * (NS - 1)).astype(int)
 np.savetxt(os.path.join(DATA, "confiabilidad_cdf.dat"),
@@ -357,6 +365,7 @@ if __name__ == "__main__":
             print(f"    {e:4s} FV={d['FV']:.3f} IB={d['IB']:.3f} RAW={d['RAW']:.2f} RRW={d['RRW']:.3f}")
         u = unc[top]
         print(f"  incertidumbre: media {u['mean']:.3e}, p05 {u['p05']:.3e}, p50 {u['p50']:.3e}, p95 {u['p95']:.3e}")
+    print(f"\n  medias con EF=3 en x13, x14, x17: TOP1 {unc_post['TOP1']:.4f}, TOP2 {unc_post['TOP2']:.4f}")
     print("\n== compuertas ==")
     for k, v in gate_p.items():
         print(f"  {k:5s} {v:.3e}")

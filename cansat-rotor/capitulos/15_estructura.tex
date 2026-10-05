@@ -1,0 +1,676 @@
+\chapter{Análisis estructural, aeroelástico y de vida útil}\label{cap:estructura}
+
+Este capítulo verifica que la pala de carbono curvada, la bisagra, el cubo, el eje y el
+cuerpo resisten las cargas de vuelo, de liberación, de lanzamiento (\Req{S4}, \Req{S5}) y
+de aterrizaje, y que la pala no entra en resonancia ni en una inestabilidad aeroelástica
+entre 0 y \SI{1500}{rpm}. Los cálculos están en \texttt{analysis/estructura\_*.py}. Las
+propiedades de los materiales son \textbf{típicas de catálogo, no medidas}: los factores
+de seguridad (FS) que siguen valen como orden de magnitud y como guía para los ensayos.
+
+\begin{resultado}[Resumen del capítulo]
+\begin{itemize}[leftmargin=*]
+  \item La pala de la base (dos capas de tejido 0/90) es \textbf{débil en torsión}: su
+        primer modo torsional cae entre 4,0 y 5,4 veces por vuelta, cruza la excitación 4P
+        cerca de \SI{1150}{rpm}, se tuerce $\approx\ang{+2.4}$ en la punta (nariz arriba) y
+        diverge o flamea a $\approx2$ veces la velocidad de giro de diseño.
+  \item Un laminado del mismo espesor con capas externas a $\pm\ang{45}$ y una varilla de
+        carbono Ø\,\SI{2}{mm} en el borde de ataque (configuración BV, $+\SI{0.85}{g}$ por
+        pala) multiplica $GJ$ por 6,8, lleva la torsión a $\ge8$ veces por vuelta y aleja
+        la divergencia a más de 6,6 veces la velocidad de diseño.
+  \item El \textbf{golpe de la pala contra el tope de $\ang{+10}$} al abrirse es el caso
+        dimensionante de la bisagra: con un tope rígido a \SI{4}{mm} del pasador rompe el
+        pasador y las orejas. Se necesita un tope elastomérico con brazo $\ge\SI{10}{mm}$.
+  \item Con la distribución de masa real, la conicidad es $\approx\ang{6.1}$ (no
+        \ang{4.4}) y una ráfaga lleva la pala a \ang{9.3}, casi contra el tope.
+  \item Rodamientos, eje, pestañas, anillo y tubo tienen FS amplios; la fatiga no
+        gobierna. El aterrizaje sin amortiguador produce del orden de \SI{1000}{g} en suelo
+        duro; \SI{25}{mm} de espuma lo bajan a \SIrange{150}{220}{g}.
+\end{itemize}
+\end{resultado}
+
+%=====================================================================
+\section{Pala: laminado y propiedades de sección}\label{sec:estructura-pala}
+
+La curvatura multiplica por 44 la rigidez a flexión en batimiento de la placa, pero no
+aporta rigidez torsional: la sección es abierta y su centro de corte queda en el 50\,\% de
+la cuerda, detrás del centro aerodinámico.
+
+\subsection{Laminados}
+Se comparan dos apilados de \SI{0.5}{mm}: \textbf{A} (base), dos capas de tejido de
+carbono 0/90 de \SI{0.25}{mm}; y \textbf{B}, $[(\pm45)_T/0_{UD}/0_{UD}/(\pm45)_T]$ con
+capas de \SI{0.125}{mm} (tejido fino de $\approx\SI{100}{g/m^2}$ y cinta unidireccional).
+Con la teoría clásica de laminados~\cite{estructura-jones1999}, para capas de espesor
+$z_k-z_{k-1}$ y rigidez transformada $\bar Q_{ij}$,
+\begin{equation}
+  A_{ij}=\sum_k \bar Q_{ij}\,(z_k-z_{k-1}),\qquad
+  D_{ij}=\frac13\sum_k \bar Q_{ij}\,(z_k^3-z_{k-1}^3),
+  \label{eq:estructura-clt}
+\end{equation}
+y de ahí el módulo de membrana $E_x=1/(t\,a_{11})$ y las rigideces de placa
+$D_{11}^*=1/d_{11}$, $D_{66}^*=1/d_{66}$ ($a=A^{-1}$, $d=D^{-1}$). Ambos laminados son
+simétricos y balanceados: no se alabean al curar sobre el molde.
+
+\begin{table}[H]
+\centering\small
+\caption{Propiedades típicas de lámina de carbono/epoxi (catálogo, $\pm15$\,\%; no
+medidas).}\label{tab:estructura-lamina}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Lámina} & $E_1$ [GPa] & $E_2$ [GPa] & $G_{12}$ [GPa] & $\nu_{12}$ & $\rho$ [kg/m$^3$] & $\varepsilon_u$ (t/c) [\%]\\\midrule
+Tejido 0/90 ($v_f\approx0{,}5$) & 55 & 55 & 4,0 & 0,05 & 1500 & 1,0 / 0,8\\
+Unidireccional ($v_f\approx0{,}55$) & 125 & 8,5 & 4,5 & 0,30 & 1550 & 1,2 / 0,9\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sección abierta curvada}
+La línea media es un arco de radio $a=R_c=\SI{81.9}{mm}$ y semiángulo
+$\alpha=\arcsin(c/2a)=\ang{15.95}$. Se discretiza en 400 segmentos y se integran, con
+pesos de módulo~\cite{estructura-megson2017},
+\begin{gather}
+  EI_\beta=E_x t\!\int (z-\bar z)^2\,ds+\!\int D_{11}^*\cos^2\psi\,ds,\qquad
+  EI_\zeta=E_x t\!\int (y-\bar y)^2\,ds+\!\int D_{11}^*\sin^2\psi\,ds,\label{eq:estructura-EI}\\
+  GJ=4\!\int D_{66}^*\,ds + G_vJ_v,\qquad
+  E\Gamma=E_x t\!\int \omega_n^2\,ds,\label{eq:estructura-GJ}
+\end{gather}
+donde $\psi$ es la pendiente local, $\omega_n$ la coordenada sectorial normalizada
+respecto del centro de corte y el subíndice $v$ indica la varilla. El centro de corte se
+obtiene del flujo de corte de pared abierta (nulo en los bordes) y se verifica con la
+solución cerrada del arco:
+\begin{equation}
+  e_{cc}=2a\,\frac{\sin\alpha-\alpha\cos\alpha}{\alpha-\sin\alpha\cos\alpha}\approx
+  a\Bigl(1+\frac{\alpha^2}{10}\Bigr),\qquad
+  \bar e=a\,\frac{\sin\alpha}{\alpha}\approx a\Bigl(1-\frac{\alpha^2}{6}\Bigr),
+  \label{eq:estructura-cc}
+\end{equation}
+medidos desde el centro del arco. El centro de corte queda \SI{0.64}{mm}
+\emph{por encima} del vértice (del lado convexo) y el centroide \SI{1.05}{mm} por
+debajo; el cálculo numérico coincide con~\eqref{eq:estructura-cc} en
+\SI{0.01}{mm}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=2.9mm, y=5.8mm]
+  % ---------- (a) configuraciones A y B
+  \node[font=\small\bfseries, anchor=west] at (-3,5.4) {(a) A y B: placa sola};
+  \draw[cgris, densely dotted] (-1.5,0) -- (47,0) node[right, font=\scriptsize, black] {cuerda};
+  \draw[crot, line width=1.6pt, domain=0:45, samples=60] plot ({\x},{3.15*(1-((\x-22.5)/22.5)^2)});
+  \foreach \p/\l in {0/0, 11.25/0{,}25c, 22.5/0{,}5c, 45/c}{
+    \draw[cgris] (\p,-0.15) -- (\p,0.15); \node[font=\scriptsize, anchor=north] at (\p,-0.25) {$\l$};}
+  % puntos
+  \draw[cfreno, line width=0.8pt] (22.5,3.79) circle (0.5 and 0.25);
+  \draw[cfreno] (22,3.79) -- (23,3.79) (22.5,3.54) -- (22.5,4.04);
+  \node[font=\scriptsize, cfreno, anchor=west] at (23.5,4.25) {centro de corte (0{,}5c; $z=\SI{3.79}{mm}$)};
+  \fill[cfijo] (22.5,2.10) circle (0.38 and 0.19);
+  \draw[cfijo, line width=0.4pt] (22.7,1.95) -- (28,-1.3);
+  \node[font=\scriptsize, cfijo, anchor=west] at (28,-1.4) {centroide y c.\,m. ($z=\SI{2.10}{mm}$)};
+  \fill[ccuerda] (11.25,0) -- ++(-0.6,-0.45) -- ++(1.2,0) -- cycle;
+  \node[font=\scriptsize, ccuerda!70!black, anchor=south] at (11.25,0.2) {c.\,a.};
+  \draw[cota] (11.25,-1.35) -- (22.5,-1.35) node[midway, fill=white, font=\scriptsize] {$e_{ca}=0{,}25c$};
+  \draw[cota] (47,0) -- (47,3.15) node[midway, right, font=\scriptsize] {$s=3{,}15$};
+  % ---------- (b) configuración BV
+  \begin{scope}[yshift=-4.9cm]
+  \node[font=\small\bfseries, anchor=west] at (-3,5.4) {(b) BV: laminado B + varilla Ø\,2 en el borde de ataque};
+  \draw[cgris, densely dotted] (-1.5,0) -- (47,0);
+  \draw[crot, line width=1.6pt, domain=0:45, samples=60] plot ({\x},{3.15*(1-((\x-22.5)/22.5)^2)});
+  \draw[rot] (1.0,-1.25) circle (1.0 and 0.5);
+  \node[font=\scriptsize, crot, anchor=north] at (1.0,-1.8) {varilla};
+  \foreach \p/\l in {11.25/0{,}25c, 22.5/0{,}5c}{
+    \draw[cgris] (\p,-0.15) -- (\p,0.15);}
+  \draw[cfreno, line width=0.8pt] (19.26,4.02) circle (0.5 and 0.25);
+  \draw[cfreno] (18.76,4.02) -- (19.76,4.02) (19.26,3.77) -- (19.26,4.27);
+  \node[font=\scriptsize, cfreno, anchor=west] at (20.3,4.5) {centro de corte (0{,}428c)};
+  \fill[cfijo] (18.27,1.44) circle (0.38 and 0.19);
+  \draw[cfijo, line width=0.4pt] (18.4,1.3) -- (27,-1.3);
+  \node[font=\scriptsize, cfijo, anchor=west] at (27,-1.4) {centroide (0{,}406c)};
+  \fill[black] (19.86,1.69) circle (0.3 and 0.15);
+  \node[font=\scriptsize, anchor=west] at (20.6,1.5) {c.\,m. (0{,}441c)};
+  \fill[ccuerda] (11.25,0) -- ++(-0.6,-0.45) -- ++(1.2,0) -- cycle;
+  \draw[cota] (11.25,-1.35) -- (19.26,-1.35) node[midway, below, font=\scriptsize] {$e_{ca}=0{,}178c$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Sección de la pala (escala horizontal 1:1,1, vertical exagerada al doble).
+El centro de corte de la placa sola cae en el 50\,\% de la cuerda, por encima del arco;
+el centro aerodinámico (c.\,a.), en el 25\,\%. La varilla del borde de ataque adelanta el
+centro de corte y el centro de masa.}
+\label{fig:estructura-seccion}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Propiedades de sección del tramo libre de la pala (cálculo propio,
+\texttt{estructura\_seccion.py}). $y$ desde el borde de ataque.}\label{tab:estructura-seccion}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Propiedad} & \textbf{A (base)} & \textbf{B} & \textbf{BV (B + varilla Ø\,2)}\\\midrule
+Laminado: $E_x$ de membrana [GPa]            & 55,0 & 70,2 & 70,2\\
+Laminado: $G$ equivalente en torsión, $12D_{66}^*/t^3$ [GPa] & 4,0 & 23,5 & 23,5\\
+Masa por unidad de largo $m$ [g/m]           & 34,2 & 34,8 & 39,6\\
+Masa de pala con portapala $m_b$ [g]          & 7,33 & 7,42 & 8,18\\
+$EI_\beta$ batimiento [N\,m$^2$] (placa plana: 0,026) & 1,13 & 1,43 & 5,06\\
+$EI_\zeta$ en el plano [N\,m$^2$]             & 214 & 273 & 419\\
+$GJ$ [\num{e-3} N\,m$^2$]                     & 7,6 & 44,6 & 51,7\\
+$E\Gamma$ [\num{e-5} N\,m$^4$]; $L\sqrt{GJ/E\Gamma}$ & 1,68; 2,9 & 2,14; 6,2 & 5,26; 4,3\\
+Centroide $\bar y/c$; $\bar z$ [mm]            & 0,500; 2,10 & 0,500; 2,10 & 0,406; 1,44\\
+Centro de corte $y_{cc}/c$; $z_{cc}$ [mm]      & 0,500; 3,79 & 0,500; 3,79 & 0,428; 4,02\\
+Centro de masa $y_{cm}/c$                      & 0,500 & 0,500 & 0,441\\
+$I_\theta$ respecto del c.\,c. [\num{e-6} kg\,m] & 5,96 & 6,06 & 8,21\\
+Momento de pliegue $M^+$ / $M^-$ [N\,m]         & 0,34 / 0,30 & 0,39 / 0,13 & $\ge$ B\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pliegue tipo cinta métrica.} Una lámina curvada se pliega de golpe si el
+momento supera el de pliegue~\cite{estructura-seffen1999},
+$M^\pm=(D_{11}\pm D_{12})\,2\alpha$. La flexión hacia arriba (sustentación, golpe contra
+el tope) pone los bordes en tracción: es el sentido opuesto, $M^+$, con un momento pico
+antes del pliegue aún mayor. La flexión hacia abajo comprime los bordes ($M^-$) y solo
+aparece en un golpe contra el suelo. El parámetro $L\sqrt{GJ/E\Gamma}<5$ de A indica que
+el alabeo restringido por el portapala aporta rigidez torsional apreciable; como esa
+restricción es incierta, la torsión se calcula en los dos extremos (alabeo restringido y
+libre).
+
+%=====================================================================
+\section{Frecuencias en giro y diagrama de Campbell}\label{sec:estructura-campbell}
+
+Batimiento y arrastre quedan lejos de 1P--4P en todo el rango; la torsión de la pala A
+cruza 4P a \SI{1140}{rpm}, justo en el punto de diseño, y la de B y BV queda por encima de
+8P.
+
+\subsection{Modelo}
+Se usa Rayleigh--Ritz con polinomios $x^k$ ($x$ desde la bisagra, siete términos) y la
+rigidización centrífuga de Southwell~\cite{johnson1980,johnson2013}. Con la tracción
+\begin{equation}
+  N(x)=\Omega^2\int_x^{L_b} m(\xi)\,(e+\xi)\,d\xi ,
+  \label{eq:estructura-N}
+\end{equation}
+las energías de deformación son, para batimiento ($w$), arrastre ($v$) y torsión ($\phi$),
+\begin{align}
+  U_\beta &= \tfrac12\!\int EI_\beta w''^2 + \tfrac12\!\int N w'^2 + \tfrac12 k_\beta w'(0)^2,\nonumber\\
+  U_\zeta &= \tfrac12\!\int EI_\zeta v''^2 + \tfrac12\!\int N v'^2 - \tfrac12\Omega^2\!\int m v^2 + \tfrac12 k_\zeta v'(0)^2,
+  \label{eq:estructura-ritz}\\
+  U_\theta &= \tfrac12\!\int \bigl(GJ + N k_A^2\bigr)\phi'^2 + \tfrac12\!\int E\Gamma\,\phi''^2
+     + \tfrac12\Omega^2\!\int (J_y-J_z)\,\phi^2 ,\nonumber
+\end{align}
+con energías cinéticas $\frac12\int m\dot w^2$ y $\frac12\int I_\theta\dot\phi^2$. El
+término $Nk_A^2$ es el efecto trapecio ($k_A$, radio polar de la sección respecto del
+centro de corte) y $\Omega^2(J_y-J_z)$ el momento de hélice, que lleva la cuerda al plano
+de giro. El portapala (\SI{20}{mm}, \SI{2}{g}) se modela rígido. La bisagra de
+batimiento tiene el resorte de apertura $k_\beta\approx\SI{0.005}{N.m/rad}$; en arrastre
+no hay bisagra y la raíz tiene la rigidez de giro $k_\zeta$ de las orejas impresas,
+estimada entre 30 y \SI{150}{N.m/rad} por aplastamiento del PETG contra el pasador.
+
+\paragraph{Corrección a la conicidad.} El portapala concentra \SI{2}{g} junto a la
+bisagra, donde casi no aporta rigidez centrífuga. Con esa distribución,
+$I_b=\SI{4.35e-5}{kg.m^2}$ (no \num{6.0e-5}), la conicidad de equilibrio es
+$\beta_0\approx\ang{6.1}$ en lugar de los \ang{4.4} del capítulo~\ref{cap:dim} y el
+número de Lock sube de 8,3 a 11,5. Con una ráfaga que lleve la sustentación al límite de
+pérdida ($n\approx C_{l,\max}/C_l\approx1{,}5$), la pala llega a \ang{9.3}: a
+\ang{0.7} del tope. En BV (pala más pesada) los valores son \ang{5.3} y \ang{8.0}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.95\textwidth, height=8.4cm, xmin=0, xmax=1500, ymin=0, ymax=210,
+  xlabel={Velocidad de giro [rpm]}, ylabel={Frecuencia en el sistema giratorio [Hz]},
+  legend columns=3, legend style={font=\scriptsize, at={(0.5,-0.17)}, anchor=north, cells={anchor=west}},
+  unbounded coords=jump, clip=true]
+  \fill[ccuerda!10] (axis cs:920,0) rectangle (axis cs:1380,210);
+  \node[font=\scriptsize, ccuerda!60!black, anchor=north] at (axis cs:1150,207) {diseño $\pm20$\,\%};
+  \draw[ccuerda!60!black, dashed] (axis cs:1150,0) -- (axis cs:1150,190);
+  % excitaciones
+  \pgfplotsinvokeforeach{1,2,3,4}{
+    \addplot[black!45, thin, domain=0:1500, samples=2, forget plot] {#1*x/60};}
+  \pgfplotsinvokeforeach{5,6,7,8}{
+    \addplot[black!25, thin, dotted, domain=0:1500, samples=2, forget plot] {#1*x/60};}
+  \node[font=\scriptsize, black!60, anchor=west] at (axis cs:1500,25) {1P};
+  \node[font=\scriptsize, black!60, anchor=south east] at (axis cs:1490,50) {2P};
+  \node[font=\scriptsize, black!60, anchor=south east] at (axis cs:1490,75) {3P};
+  \node[font=\scriptsize, black!60, anchor=south east] at (axis cs:1490,100) {4P};
+  \node[font=\scriptsize, black!40, anchor=south east] at (axis cs:1250,166.7) {8P};
+  % torsión A (banda entre alabeo libre y restringido)
+  \addplot[name path=ta, cfreno, thick] table[x=rpm, y=torA] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Torsión A (alabeo restr.)}
+  \addplot[name path=tal, cfreno, thick, dashed] table[x=rpm, y=torAl] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Torsión A (alabeo libre)}
+  \addplot[cfreno!15, forget plot] fill between[of=ta and tal];
+  % torsión BV
+  \addplot[name path=tb, cfijo, thick] table[x=rpm, y=torBV] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Torsión BV (restr.)}
+  \addplot[name path=tbl, cfijo, thick, dashed] table[x=rpm, y=torBVl] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Torsión BV (libre)}
+  \addplot[cfijo!12, forget plot] fill between[of=tb and tbl];
+  % arrastre y batimiento
+  \addplot[ccont, thick] table[x=rpm, y=lag30] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Arrastre, $k_\zeta=30$}
+  \addplot[crot, very thick] table[x=rpm, y=bat] {analysis/data/estructura_campbell.dat};
+  \addlegendentry{Batimiento rígido}
+  \addplot[only marks, mark=*, mark size=2.4pt, cfreno, forget plot] coordinates {(1142,76.1)};
+  \node[font=\scriptsize, cfreno, anchor=north west, fill=white, inner sep=1pt] at (axis cs:520,63) {A cruza 4P a \SI{1142}{rpm}};
+  \draw[cfreno, -{Latex[length=1.6mm]}] (axis cs:830,62) -- (axis cs:1125,74);
+\end{axis}
+\end{tikzpicture}
+\caption{Diagrama de Campbell. El batimiento rígido queda en $1{,}20\Omega$; el arrastre
+($k_\zeta=\SI{150}{N.m/rad}$: \SI{294}{Hz}, fuera de escala) y la torsión de BV quedan
+por encima de 4P en todo el rango. La banda de torsión de A contiene 4P y 5P en la zona
+de diseño. El primer modo elástico de batimiento está en \SIrange{590}{1150}{Hz}
+(30 a 60 veces por vuelta).}
+\label{fig:estructura-campbell}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Frecuencias a \SI{1150}{rpm} ($\Omega=\SI{120}{rad/s}$) en veces por vuelta y
+cruces con 1P--4P entre 0 y \SI{1500}{rpm}.}\label{tab:estructura-frec}
+\begin{tabularx}{\textwidth}{@{}lcccY@{}}
+\toprule
+\textbf{Modo} & \textbf{A} & \textbf{B} & \textbf{BV} & \textbf{Cruces con 1P--4P y margen}\\\midrule
+Batimiento rígido & 1,20 & 1,20 & 1,20 & 2P--4P solo por debajo de \SI{64}{rpm} (arranque); 20\,\% sobre 1P\\
+1.\textsuperscript{er} batimiento elástico & 30,7 & 34,1 & 60,2 & Ninguno\\
+1.\textsuperscript{er} arrastre ($k_\zeta=30$--150) & 6,9--15,4 & 6,9--15,3 & 6,5--14,3 & Ninguno; cruzaría 4P si $k_\zeta<\SI{17}{N.m/rad}$ (juego en la bisagra)\\
+1.\textsuperscript{a} torsión (alabeo restr.--libre) & 5,36--3,98 & 10,1--8,6 & 10,2--8,1 & A: 4P a \SI{1142}{rpm} (margen 0,6\,\%). B y BV: ninguno (8P cerca de 1160--1480 rpm)\\
+Ídem con rigidez aerodinámica & 4,5--2,8 & 9,7--8,1 & 10,0--7,8 & A: 3P y 4P en la zona de diseño\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Aeroelasticidad: torsión estática, divergencia y flameo}\label{sec:estructura-aeroel}
+
+La pala A tiene un margen aeroelástico insuficiente (inestable a $\approx2\Omega$ y con
+$\approx\ang{2.4}$ de giro estático); B y BV lo resuelven sin agregar masa de balanceo.
+
+\paragraph{Momento de cabeceo.} Una corrida de XFOIL~\cite{estructura-drela1989}
+(\texttt{estructura\_cm.py}, $Re=\num{36000}$, $N_{crit}=9$) da para la placa curvada al
+7\,\% $C_{m,c/4}=\numrange{-0.127}{-0.137}$ entre \ang{1} y \ang{5}; la teoría de perfil
+delgado da $-\pi f/c=-0{,}22$, que XFOIL no viscoso reproduce ($-0{,}226$). Se toma
+$C_{m0}=-0{,}13$ con el rango $-0{,}10$ a $-0{,}23$. Con $C_l\approx0{,}9$, el centro de
+presión está en $x_{cp}/c=0{,}25-C_{m0}/C_l\approx0{,}39$: delante del centro de corte
+(0,50) de A y B, y casi sobre el de BV (0,43).
+
+\paragraph{Divergencia y giro estático.} Una sección con centro aerodinámico a $e_{ca}$
+delante del centro de corte recibe, al torcerse $\phi$, un momento
+$q\,c\,a\,e_{ca}\,\phi$ que reduce su rigidez. Con $q=\frac12\rho(\Omega r)^2$ y
+$a=\SI{5.7}{rad^{-1}}$ (conservador), la velocidad de divergencia es el menor $\Omega$ que
+anula
+\begin{equation}
+  \det\!\Bigl[K_{GJ}+K_{E\Gamma}-\Omega^2\bigl(K_a-K_N-K_h\bigr)\Bigr]=0,\qquad
+  (K_a)_{ij}=\int \tfrac12\rho r^2 c\,a\,e_{ca}\,\phi_i\phi_j\,dr ,
+  \label{eq:estructura-div}
+\end{equation}
+donde $K_N$ y $K_h$ son el trapecio y el momento de hélice por unidad de $\Omega^2$. El
+giro estático de la punta resulta de cargar la misma matriz con el momento por unidad de
+largo $m_t=q c^2 C_{m0}+q c\,C_l\,e_{ca}-\Omega^2(J_y-J_z)\theta_0$.
+
+\paragraph{Flameo.} Se usa la sección típica a $0{,}75R$ con aerodinámica no estacionaria
+de Theodorsen~\cite{estructura-theodorsen1935} y el método p-k~\cite{estructura-hodges2011}:
+grado de libertad de batimiento con $\nu_\beta=1{,}20\Omega$, torsión con la frecuencia de
+la tabla~\ref{tab:estructura-frec}, relación de masas $\mu=m/\pi\rho b^2\approx18$. Se
+recorre $\Omega$ hasta que algún modo pierde amortiguamiento.
+
+\begin{table}[H]
+\centering\small
+\caption{Resultados aeroelásticos (diseño: \SI{1150}{rpm}). Los rangos corresponden a
+alabeo restringido y libre en el portapala.}\label{tab:estructura-aeroel}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & \textbf{A} & \textbf{B} & \textbf{BV}\\\midrule
+$e_{ca}/c$ (c.\,c. detrás del c.\,a.) & 0,25 & 0,25 & 0,178\\
+$x_\alpha$ (c.\,m. detrás del c.\,c., en semicuerdas) & 0 & 0 & $+0{,}03$\\
+Divergencia [rpm] ($\Omega_D/\Omega$) & 1790--2400 (1,6--2,1) & 4280--4900 (3,7--4,3) & 7630--9220 (6,6--8,0)\\
+Flameo, p-k [rpm] ($\Omega_F/\Omega$) & 2320 (2,0) & 4570 (4,0) & $>5700$ ($>5$)\\
+Giro de punta, $C_{m0}=-0{,}13$ & $+\ang{2.4}$ & $+\ang{0.45}$ & $+\ang{0.14}$\\
+Ídem, $C_{m0}=-0{,}10$ a $-0{,}23$ & $+\ang{3.1}$ a $+\ang{0.1}$ & $+\ang{0.6}$ a $\ang{0.0}$ & $+\ang{0.2}$ a $\ang{-0.2}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.86\textwidth, height=6.0cm, xmin=0.30, xmax=0.70, ymin=0, ymax=8000,
+  xlabel={Posición del centro de masa $y_{cm}/c$}, ylabel={Velocidad de flameo [rpm]},
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
+  scaled y ticks=false, unbounded coords=jump,
+  legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}]
+  \fill[cfreno!8] (axis cs:0.30,0) rectangle (axis cs:0.70,2300);
+  \addplot[cfreno, very thick, mark=*, mark size=1.4pt] table[x=xcg, y=OmF_A] {analysis/data/estructura_flameo.dat};
+  \addlegendentry{A}
+  \addplot[cfijo, very thick, mark=square*, mark size=1.4pt] table[x=xcg, y=OmF_BV] {analysis/data/estructura_flameo.dat};
+  \addlegendentry{BV}
+  \draw[black, dashed] (axis cs:0.30,1150) -- (axis cs:0.70,1150) node[pos=0.03, above, font=\scriptsize, anchor=south west] {diseño \SI{1150}{rpm}};
+  \draw[black!60, dotted, thick] (axis cs:0.30,2300) -- (axis cs:0.70,2300) node[pos=0.03, above, font=\scriptsize, anchor=south west] {$2\Omega$};
+  \draw[cfreno, densely dashed] (axis cs:0.50,0) -- (axis cs:0.50,7600);
+  \node[font=\scriptsize, cfreno, rotate=90, anchor=south west] at (axis cs:0.50,3600) {c.\,m. de A};
+  \draw[cfijo, densely dashed] (axis cs:0.441,0) -- (axis cs:0.441,7600);
+  \node[font=\scriptsize, cfijo, rotate=90, anchor=south west] at (axis cs:0.441,3600) {c.\,m. de BV};
+  \node[font=\scriptsize, align=center] at (axis cs:0.36,6200) {sin flameo\\ hasta \SI{7600}{rpm}};
+\end{axis}
+\end{tikzpicture}
+\caption{Velocidad de flameo de la sección típica en función de la posición del centro
+de masa. Adelantar el centro de masa por delante de $\approx0{,}43c$ elimina el flameo en A
+y en BV.}
+\label{fig:estructura-flameo}
+\end{figure}
+
+\paragraph{Masa de balanceo.} En A, llevar el centro de masa a $0{,}425c$ exige
+$m_{ba}=m\,(0{,}5-0{,}425)/(0{,}425-0{,}011)\approx\SI{6.2}{g/m}$, es decir un alambre de
+acero Ø\,\SI{1}{mm} pegado en el borde de ataque ($+\SI{0.85}{g}$ por pala). Eso elimina
+el flameo pero \textbf{no la divergencia ni el giro estático}, que dependen de $GJ$ y de
+$e_{ca}$, no del centro de masa. En BV la varilla ya adelanta el centro de masa a
+$0{,}441c$ y el flameo queda por encima de \SI{5700}{rpm}: no hace falta masa adicional.
+
+\begin{resultado}[Pala recomendada: BV]
+Laminado $[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm} con varilla pultruida Ø\,\SI{2}{mm}
+en el borde de ataque, del lado cóncavo: $+\SI{0.85}{g}$ por pala ($+\SI{3.4}{g}$ en el
+rotor, que salen del lastre). $GJ\times6{,}8$, $EI_\beta\times4{,}5$, torsión $\ge8$
+veces por vuelta, divergencia $\ge6{,}6\Omega$, flameo $>5\Omega$ y giro estático
+$<\ang{0.2}$. Si la varilla no se consigue, el laminado B solo ya da márgenes $\ge3{,}7$.
+\end{resultado}
+
+%=====================================================================
+\section{Apertura de las palas y golpe contra el tope}\label{sec:estructura-tope}
+
+Al liberarse, el aire de la etapa 1 abre las palas en \SIrange{130}{150}{ms} y las
+estrella contra el tope de \ang{+10} a \SIrange{41}{52}{rad/s}; con un tope rígido ese
+golpe es la carga más alta de toda la bisagra.
+
+Con $\Omega\approx0$ y el aire subiendo a $\Vd=\SI{13.4}{m/s}$, cada elemento de pala
+recibe una fuerza normal de flujo cruzado. La ecuación de la pala alrededor de la
+bisagra es
+\begin{equation}
+  I_b\ddot\beta=\int_0^{L_b}\tfrac12\rho\,C_{dc}\,c\,u_n|u_n|\,x\,dx+M_r-S_b\,g\cos\beta,
+  \qquad u_n=\Vd\cos\beta-\dot\beta x ,
+  \label{eq:estructura-apertura}
+\end{equation}
+desde $\beta=\ang{-89}$ hasta $\ang{+10}$, con $C_{dc}=1{,}2$ (placa de alargamiento 3,5)
+y 2,0 (placa bidimensional, cota superior)~\cite{hoerner1965}, $M_r=\SI{0.005}{N.m}$ el
+resorte y $S_b$ el momento estático de la pala. Se desprecia la desaceleración del cuerpo,
+que frenaría la apertura. La energía del golpe es
+$\frac12I_b\dot\beta_i^2=\SIrange{0.041}{0.061}{J}$. Tras el contacto, la pala se modela
+con un resorte $k_s$ en la bisagra (el tope) y se superponen sus modos de batimiento con
+la velocidad inicial $\dot\beta_i x$. Si la pala fuera rígida, el momento máximo sería
+$M\approx\dot\beta_i\sqrt{I_b k_s}$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.49\textwidth, height=5.6cm, xmin=0, xmax=150, ymin=-95, ymax=15,
+  xlabel={Tiempo [ms]}, ylabel={$\beta$ [grados]}, unbounded coords=jump,
+  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}, title={\small (a) Apertura (A)}]
+  \addplot[crot, very thick] table[x=t, y=beta12] {analysis/data/estructura_apertura.dat};
+  \addlegendentry{$C_{dc}=1{,}2$}
+  \addplot[cfreno, thick, dashed] table[x=t, y=beta20] {analysis/data/estructura_apertura.dat};
+  \addlegendentry{$C_{dc}=2{,}0$}
+  \draw[black!60, dashed] (axis cs:0,10) -- (axis cs:150,10) node[pos=0.5, below, font=\scriptsize] {tope $+\ang{10}$};
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{loglogaxis}[width=0.49\textwidth, height=5.6cm,
+  xmin=0.3, xmax=1000, ymin=0.03, ymax=10,
+  xlabel={Rigidez del tope $k_s$ [N\,m/rad]}, ylabel={Momento máximo [N\,m]},
+  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}, title={\small (b) Golpe ($C_{dc}=2$)}]
+  \fill[ccuerda!12] (axis cs:2,0.03) rectangle (axis cs:10,10);
+  \addplot[cfreno, very thick] table[x=ks, y=MhA] {analysis/data/estructura_tope.dat};
+  \addlegendentry{bisagra, A}
+  \addplot[cfreno, thick, dashed] table[x=ks, y=MrA] {analysis/data/estructura_tope.dat};
+  \addlegendentry{raíz de pala, A}
+  \addplot[cfijo, thick] table[x=ks, y=MhBV] {analysis/data/estructura_tope.dat};
+  \addlegendentry{bisagra, BV}
+  \draw[black!70, dotted, thick] (axis cs:0.3,0.34) -- (axis cs:1000,0.34) node[pos=0.98, below left, font=\scriptsize] {$M^+$ pliegue};
+  \node[font=\scriptsize, ccuerda!60!black, align=center] at (axis cs:4.5,6) {tope\\ blando};
+  \node[font=\scriptsize, align=center] at (axis cs:250,0.12) {PETG\\ rígido};
+  \draw[-{Latex[length=1.5mm]}] (axis cs:250,0.17) -- (axis cs:250,0.45);
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{(a) Ángulo de batimiento durante la apertura: la pala recorre \ang{100} en
+\SIrange{127}{138}{ms}. (b) Momento máximo en la bisagra (reacción del tope) y en la raíz de la
+pala tras el golpe, en función de la rigidez del tope. Un tope de PETG con contacto de
+$4\times\SI{2}{mm}$ a \SI{4}{mm} del pasador tiene $k_s\approx\SI{250}{N.m/rad}$.}
+\label{fig:estructura-tope}
+\end{figure}
+
+Con el tope rígido de los planos ($k_s\approx\SI{250}{N.m/rad}$, brazo \SI{4}{mm}), el
+momento en la bisagra llega a \SI{3.2}{N.m} y la fuerza de contacto a \SI{800}{N}: el
+pasador de Ø\,\SI{2}{mm} se flexiona a \SI{1400}{MPa} y las orejas se aplastan a
+\SI{80}{MPa}. La pala misma resiste ($\varepsilon=0{,}10$\,\%), pero su momento en la raíz
+(\SI{0.51}{N.m}) supera el momento de pliegue estacionario. Un tope blando de
+$k_s=\SIrange{2}{10}{N.m/rad}$ baja el momento en la bisagra a \SIrange{0.5}{1.0}{N.m} y en
+la raíz a \SIrange{0.09}{0.20}{N.m}, a costa de \SIrange{6}{14}{\degree} de recorrido
+elástico.
+
+\begin{resultado}[Tope de batimiento]
+Tope con almohadilla de silicona de $\approx\SI{400}{mm^3}$ (p.~ej. $8\times8\times\SI{6}{mm}$,
+60\,ShA; absorbe \SI{0.06}{J} con deformación $\le30$\,\%), $k_s\approx\SI{5}{N.m/rad}$, actuando a
+$\ge\SI{10}{mm}$ del pasador; tope a $\ang{+15}$ en lugar de \ang{+10} para no tocarlo en
+ráfagas (\ang{9.3}); pasador de acero templado (pasador cilíndrico ISO 8734) o Ø\,\SI{3}{mm}.
+El ensayo E1 debe filmar la apertura a alta velocidad para medir $\dot\beta_i$.
+\end{resultado}
+
+%=====================================================================
+\section{Tensiones y factores de seguridad}\label{sec:estructura-fs}
+
+Con el tope blando, todos los componentes tienen FS $\ge1{,}6$; los más justos son el eje
+bajo el tirón de \SI{147}{N} de la cuerda (\Req{S5}) y el pasador si es de acero común.
+Para piezas impresas se exige FS $\ge2$ (dispersión de impresión) y para metales $\ge1{,}5$.
+
+\paragraph{Supuestos.} PETG impreso: $E=\SI{2.0}{GPa}$, resistencia \SI{45}{MPa} en el plano
+de capa (XY) y \SI{25}{MPa} entre capas (Z); la anisotropía de las piezas FDM está bien
+documentada~\cite{estructura-ahn2002}. Aluminio 6061-T6: $\sigma_y=\SI{276}{MPa}$. Acero
+común del pasador: $\sigma_y\approx\SI{350}{MPa}$. Inoxidable 304 recocido:
+$\sigma_y=\SI{215}{MPa}$. Medidas tomadas de los planos 1, 4, 6 y 7: orejas de 3 y \SI{2}{mm} de espesor,
+distancia al borde \SI{1.3}{mm}; cuello del portapala $6\times\SI{8}{mm}$; brazo del cubo
+$10\times\SI{8}{mm}$ y \SI{22}{mm}; pestaña de $3\times\SI{0.5}{mm}$ con ojal de
+$1{,}5\times\SI{1}{mm}$; diente de $1{,}2\times\SI{0.8}{mm}$.
+
+\paragraph{Ajuste a presión del cubo.} Por Lamé~\cite{budynas2015}, con interferencia
+diametral $\delta$, cubo de PETG ($D=44$, $d=\SI{16}{mm}$) y aro de acero,
+\begin{equation}
+  p=\frac{\delta}{d\left[\dfrac{1}{E_c}\left(\dfrac{D^2+d^2}{D^2-d^2}+\nu_c\right)+\dfrac{1-\nu_a}{E_a}\right]},
+  \qquad \sigma_\theta=p\,\frac{D^2+d^2}{D^2-d^2}.
+  \label{eq:estructura-lame}
+\end{equation}
+Con $\delta=\SI{0.05}{mm}$, $p=\SI{3.7}{MPa}$ y la fuerza axial de retención de los dos
+rodamientos es $\mu p\pi d w\approx\SI{560}{N}$. El PETG relaja: con un módulo de
+relajación de 0,4--0,6\,$E$ al cabo de meses (valor típico de termoplásticos amorfos por
+debajo de $T_g$, no medido) la retención baja a \SIrange{220}{330}{N}, y más si el cubo se
+calienta al sol. La tolerancia de impresión ($\pm\SI{0.1}{mm}$) hace que $\delta$ pueda ir
+de holgura a \SI{0.15}{mm}. Por eso el ajuste solo centra: el empuje lo toma la tuerca y
+el aterrizaje un hombro inferior; el alojamiento se imprime en menos y se repasa con
+escariador.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Tensiones y factores de seguridad (cálculo en \texttt{estructura\_cargas.py}).
+``Golpe'' es el impacto contra el tope de la sección~\ref{sec:estructura-tope} con
+$C_{dc}=2$.}\label{tab:estructura-fs}
+\begin{tabularx}{\textwidth}{@{}lYccc@{}}
+\toprule
+\textbf{Componente} & \textbf{Caso} & \textbf{Solicitación} & \textbf{Admisible} & \textbf{FS}\\\midrule
+Pala, raíz (A) & Vuelo, $n=1$ y $1{,}5$ ($M\le\SI{0.006}{N.m}$, $N=\SI{8.9}{N}$) & $\varepsilon=\num{0.002}$\,\% & 0,8\,\% & $>100$\\
+               & Tope estático, $\Omega=0$, \SI{13.4}{m/s} ($M=\SI{0.092}{N.m}$) & $M$ & $M^+=\SI{0.34}{N.m}$ & 3,7\\
+               & Golpe, tope rígido ($M=\SI{0.51}{N.m}$) & $M$ & $M^+$ & \textbf{0,7}\\
+               & Golpe, tope blando $k_s=10$ ($M=\SI{0.20}{N.m}$) & $M$ & $M^+$ & 1,7\\
+Pasador Ø\,2 & Centrífuga a \SI{1500}{rpm} (\SI{18.7}{N}) & $\tau=\SI{3.0}{MPa}$ & \SI{200}{MPa} & 67\\
+             & Golpe, tope rígido, brazo \SI{4}{mm} (\SI{800}{N}) & $\sigma_f=\SI{1400}{MPa}$ & \SI{350}{MPa} & \textbf{0,25}\\
+             & Golpe, tope blando, brazo \SI{10}{mm} (\SI{102}{N}) & $\sigma_f=\SI{180}{MPa}$ & \SI{350}{MPa} & 1,9\\
+Orejas (PETG, Z) & Golpe, tope rígido / blando & $\sigma_{ap}=80$ / \SI{10.3}{MPa} & \SI{25}{MPa} & \textbf{0,3} / 2,4\\
+                 & Centrífuga, desgarro con borde de \SI{1.3}{mm} & $\tau=\SI{0.84}{MPa}$ & \SI{12}{MPa} & 15\\
+Brazo del cubo (XY) & Golpe, tope rígido / blando & $\sigma=35{,}9$ / \SI{11.5}{MPa} & \SI{45}{MPa} & 1,25 / 3,9\\
+Portapala, cuello & Golpe, tope blando & $\sigma=\SI{15.9}{MPa}$ & 45 (XY) / 25 (Z) & 2,8 / 1,6\\
+Cubo, ajuste & $\delta=0{,}05$ / \SI{0.10}{mm} & $\sigma_\theta=4{,}8$ / \SI{9.6}{MPa} & \SI{45}{MPa} & 9,4 / 4,7\\
+Eje Al Ø\,8×5 & Desbalance \SI{1}{g} + momento de cubo (\SI{0.048}{N.m}) & \SI{1.5}{MPa} & \SI{276}{MPa} & 180\\
+              & Cuerda desviada \ang{30} en la boca, \SI{44}{N} (apertura a \SI{35}{m/s}); rosca, $K_t=2{,}5$ & \SI{50}{MPa} & \SI{276}{MPa} & 5,5\\
+              & Ídem, \SI{147}{N} (30\,G, \Req{S5}) & \SI{168}{MPa} & \SI{276}{MPa} & \textbf{1,6}\\
+Pestaña inox & 30\,G lateral sobre la pala plegada (\SI{2.2}{N}) & $\sigma_{neta}=\SI{2.9}{MPa}$ & \SI{215}{MPa} & 74\\
+Diente del anillo & Ídem & $\sigma_f=\SI{16.9}{MPa}$ & \SI{45}{MPa} & 2,7\\
+Tubo Ø\,88×2 & 30\,G axial (\SI{147}{N}), $K_t=3$ en orificios & \SI{0.82}{MPa} & \SI{25}{MPa} (Z) & 30\\
+             & Pandeo con aberturas: $0{,}3\times0{,}5\,\sigma_{cl}$ & \SI{0.27}{MPa} & \SI{8.7}{MPa} & 32\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Notas.} El momento de cubo sale de una inclinación de \ang{5} entre el disco y
+el eje, $M_h=\frac B2\,e\,S_b\Omega^2\beta_1$~\cite{johnson1980}. La cuerda del drogue
+pasa por el eje: si el cuerpo pendulea, la cuerda se desvía en la boca y carga el eje
+lateralmente con $T\sin\theta$; una guía de latón o PTFE con radio $\ge\SI{3}{mm}$ en la
+boca reduce la concentración y el roce. El pandeo del tubo usa la
+tensión clásica $Et/(R\sqrt{3(1-\nu^2)})=\SI{58}{MPa}$~\cite{timoshenko1961}, un factor
+de imperfección de 0,3 y otro de 0,5 por las aberturas de Ø\,\SI{8}{mm}: su parámetro
+$r/\sqrt{Rt}=0{,}43$ está en la zona donde Starnes observó reducciones
+apreciables~\cite{estructura-starnes1970}. Con las capas del tubo perpendiculares al eje,
+la carga axial tracciona entre capas: por eso se compara con la resistencia Z.
+
+%=====================================================================
+\section{Rodamientos}\label{sec:estructura-rod}
+
+Los dos 688ZZ trabajan al 1\,\% de su capacidad: su vida por fatiga es ilimitada en
+la práctica y se reemplazarán por suciedad o desgaste, no por fatiga. El 688ZZ
+(8×16×5) equivale al SKF 628/8-2Z, con $C=\SI{1.33}{kN}$, $C_0=\SI{0.57}{kN}$ y
+velocidad límite de \SI{45000}{r/min}~\cite{estructura-skf}. La carga equivalente es
+$P=XF_r+YF_a$ con $X=0{,}56$ e $Y=2{,}30$ para $F_a/C_0\le0{,}014$~\cite{budynas2015}, y
+$L_{10}=(C/P)^3$ millones de vueltas. La carga radial está dominada por el par que forma
+el momento de cubo sobre la separación de \SI{8}{mm} entre rodamientos.
+
+\begin{table}[H]
+\centering\small
+\caption{Verificación de los rodamientos 628/8-2Z (688ZZ).}\label{tab:estructura-rod}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Caso} & $F_a$ [N] & $F_r$ [N] & $P$ [N] & $L_{10}$ [\num{e6} vueltas] & \textbf{Vida a \SI{1150}{rpm}}\\\midrule
+Vuelo                       & 3,8 & 6,1 & 12,1 & \num{1.3e6} & \num{1.9e7} h\\
+Ráfaga ($n=1{,}5$)          & 5,7 & 9,1 & 18,2 & \num{3.9e5} & \num{5.7e6} h\\\midrule
+\textbf{Carga estática} & \multicolumn{2}{c}{$F_a$ [N]} & $P_0$ [N] & \multicolumn{2}{c}{$s_0=C_0/P_0$}\\\midrule
+30\,G (rotor, copa y drogue, \SI{75}{g}) & \multicolumn{2}{c}{22} & 11 & \multicolumn{2}{c}{52}\\
+Aterrizaje a \SI{150}{g} & \multicolumn{2}{c}{110} & 55 & \multicolumn{2}{c}{10}\\
+Aterrizaje a \SI{500}{g} (suelo duro) & \multicolumn{2}{c}{368} & 184 & \multicolumn{2}{c}{3,1}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La velocidad de trabajo es el 2,6\,\% de la límite. El riesgo real es otro: con el anillo
+exterior girando y la carga de desbalance girando con él, el anillo interior ve una carga
+rotativa y puede deslizar sobre el eje fijo; se recomienda fijar los aros interiores con
+adhesivo de retención.
+
+%=====================================================================
+\section{Fatiga y vida útil}\label{sec:estructura-fatiga}
+
+Ningún componente se acerca a su límite de fatiga; la vida útil la limitan el desgaste de
+las bisagras impresas, la relajación del ajuste del cubo y los golpes de apertura.
+
+Un vuelo da $\approx\num{1700}$ vueltas y la campaña de ensayos unas \num{7e4}; se
+verifica a $N=\num{e6}$ ciclos 1P (y \num{4e6} ciclos 4P en el sistema fijo). Las curvas
+S-N son típicas: carbono/epoxi tejido $S_N=S_u(1-0{,}07\log N)$, es decir 58\,\% de la
+resistencia estática a \num{e6} ciclos; PETG impreso, $\approx25$\,\% a \num{e6} ciclos,
+con mucha dispersión según la orientación y el relleno~\cite{estructura-shanmugam2021};
+aluminio 6061-T6, \SI{96}{MPa} a \num{5e8} ciclos. Las cargas alternantes 1P salen de una
+inclinación de \ang{5} entre disco y eje (la pala la absorbe casi toda por la bisagra).
+
+\begin{table}[H]
+\centering\small
+\caption{Fatiga a \num{e6} ciclos (valores alternantes 1P).}\label{tab:estructura-fatiga}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Componente} & \textbf{Fuente} & \textbf{Alternante} & \textbf{Admisible a \num{e6}} & \textbf{FS}\\\midrule
+Pala (carbono) & 1P de batimiento ($\pm50$\,\% del medio, supuesto) & $\varepsilon=\num{0.001}$\,\% & 0,58\,\% & $>500$\\
+Brazo del cubo (PETG) & Inclinación de \ang{5} & \SI{0.20}{MPa} & \SI{11}{MPa} & 55\\
+Eje (Al) & Desbalance de \SI{1}{g}, 1P en el sistema fijo & \SI{0.35}{MPa} & \SI{96}{MPa} & 270\\
+Bisagra, tope & Golpes de apertura ($\approx50$, tope blando) & \SIrange{10}{16}{MPa} & $\approx\SI{30}{MPa}$ a \num{e2} & 2\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{nota}[Vida útil real]
+Lo que se desgasta es la bisagra: el pasador de acero contra PETG genera juego, y el
+juego baja $k_\zeta$ (tabla~\ref{tab:estructura-frec}) y degrada el balanceo. Se revisa el
+juego de cada bisagra después de cada ensayo E2--E4 y se reemplazan cubo y portapalas si
+supera \SI{0.1}{mm}. Las palas se tratan como consumibles.
+\end{nota}
+
+%=====================================================================
+\section{Impacto al aterrizar}\label{sec:estructura-impacto}
+
+Sin amortiguador, el aterrizaje a \SIrange{6.4}{7.8}{m/s} produce \SIrange{1300}{1900}{g}
+en suelo duro y \SIrange{260}{390}{g} en suelo blando; un anillo de espuma de \SI{25}{mm}
+los baja a \SIrange{150}{220}{g}, que es lo mínimo compatible con el largo de \SI{250}{mm}.
+
+La energía es $\frac12mV^2=\SI{10.2}{J}$ (diseño) a \SI{15.2}{J} (peor caso), más
+\SI{3.7}{J} en el rotor. Con una carrera de frenado $s$ y una eficiencia de fuerza
+constante $\eta\approx0{,}8$,
+\begin{equation}
+  a=\frac{V^2}{2\,\eta\,s}.
+  \label{eq:estructura-impacto}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{semilogyaxis}[width=0.86\textwidth, height=6.2cm, xmin=0, xmax=80, ymin=10, ymax=3000,
+  xlabel={Carrera de frenado $s$ [mm]}, ylabel={Desaceleración [g]},
+  legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}]
+  \addplot[cfreno, very thick, domain=1.5:80, samples=80] {7.8^2/(2*0.8*x/1000)/9.81};
+  \addlegendentry{$V=\SI{7.8}{m/s}$ (peor caso)}
+  \addplot[crot, very thick, dashed, domain=1.5:80, samples=80] {6.4^2/(2*0.8*x/1000)/9.81};
+  \addlegendentry{$V=\SI{6.4}{m/s}$ (diseño)}
+  \draw[black!60, dashed] (axis cs:0,30) -- (axis cs:80,30) node[pos=0.97, above left, font=\scriptsize] {30\,G (\Req{S5}, ensayado)};
+  \pgfplotsinvokeforeach{2,10,17.5,27.5}{
+    \draw[cgris, densely dotted] (axis cs:#1,10) -- (axis cs:#1,3000);}
+  \node[font=\scriptsize, rotate=90, anchor=south west] at (axis cs:2,12) {suelo duro};
+  \node[font=\scriptsize, rotate=90, anchor=south west] at (axis cs:10,12) {suelo blando};
+  \node[font=\scriptsize, rotate=90, anchor=south west] at (axis cs:17.5,12) {espuma 25};
+  \node[font=\scriptsize, rotate=90, anchor=south west] at (axis cs:27.5,12) {espuma + suelo};
+\end{semilogyaxis}
+\end{tikzpicture}
+\caption{Desaceleración de aterrizaje según la carrera de frenado. Bajar a 30\,G exigiría
+$\approx\SI{100}{mm}$ de carrera, incompatible con \Req{S3}.}
+\label{fig:estructura-impacto}
+\end{figure}
+
+\paragraph{Amortiguador propuesto.} Anillo de espuma de polipropileno expandido (EPP) o
+de celosía de TPU impresa, Ø\,88/58 y \SI{25}{mm} de alto, bajo la tapa inferior, con la
+cámara nadir mirando por el centro. Para absorber \SI{15.2}{J} en \SI{17.5}{mm} útiles
+(70\,\% de compresión) necesita una tensión de meseta de $\approx\SI{0.32}{MPa}$, del orden
+de la de un EPP de \SIrange{40}{60}{kg/m^3} (valor de catálogo a verificar con un ensayo
+de compresión). Los \SI{25}{mm} salen de la zona de baliza y lastre
+(tabla~\ref{tab:largo}): el lastre de acero de \SI{83}{g} ocupa solo \SI{2}{mm} de
+espesor a Ø\,80. A \SI{200}{g} las fijaciones internas ven: batería \SI{108}{N}, rotor
+\SI{106}{N} (rodamientos con $s_0\approx10$), lastre \SI{163}{N}; las bridas y tornillos
+deben dimensionarse para esas cargas, no para 30\,G.
+
+\begin{nota}[El rotor al tocar el suelo]
+El rotor llega girando con \SI{3.7}{J} y sin freno. Si el CanSat cae de costado, las palas
+golpean el suelo a \SI{24}{m/s} de punta: en el plano (arrastre) la pala se rompe o
+arranca la oreja; hacia abajo se pliega como cinta ($M^-=\SIrange{0.13}{0.30}{N.m}$). Es
+un daño esperable y aceptable después de \texttt{LANDED}, pero no debe dañar la
+electrónica: los fragmentos quedan fuera del cuerpo.
+\end{nota}
+
+%=====================================================================
+\section{Conclusiones y cambios al diseño}\label{sec:estructura-conclusiones}
+
+\begin{resultado}[Cambios recomendados]
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Pala BV}: laminado $[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm} y varilla
+        de carbono Ø\,2 en el borde de ataque (+\SI{3.4}{g} en el rotor). Resuelve torsión,
+        divergencia, flameo y giro estático.
+  \item \textbf{Tope de batimiento blando} ($k_s\approx\SI{5}{N.m/rad}$, brazo
+        $\ge\SI{10}{mm}$) a \ang{+15}; pasador templado o Ø\,\SI{3}{mm}; distancia al
+        borde de las orejas $\ge\SI{3}{mm}$ ($e/D\ge1{,}5$).
+  \item Cubo impreso en plano (capas perpendiculares al eje), alojamientos repasados,
+        hombro inferior y aros interiores con adhesivo de retención.
+  \item Guía de cuerda con radio $\ge\SI{3}{mm}$ en la boca del eje.
+  \item Anillo amortiguador de \SI{25}{mm} en la base y fijaciones internas dimensionadas a
+        \SI{200}{g}.
+\end{enumerate}
+\end{resultado}
+
+\begin{nota}[Incertidumbres y ensayos que las cierran]
+Las propiedades de lámina y de PETG son típicas ($\pm15$ a 30\,\%); $k_\zeta$, la
+restricción de alabeo, $C_{dc}$ y la rigidez del tope son estimaciones. Antes del vuelo:
+(1) medir la frecuencia torsional de una pala colgada con un martillo de impacto y un
+micrófono (A: \SIrange{69}{98}{Hz}; BV: \SIrange{151}{193}{Hz} a \SI{0}{rpm});
+(2) filmar la apertura en E1--E2 a $\ge\SI{240}{fps}$; (3) medir la conicidad en E2
+($\approx\ang{6}$ esperados con A); (4) ensayo de compresión del amortiguador. Ningún
+valor de este capítulo proviene de un ensayo.
+\end{nota}

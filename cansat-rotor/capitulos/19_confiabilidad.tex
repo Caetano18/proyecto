@@ -286,9 +286,9 @@ el único de orden 2 es $\{x_4,x_5\}$. La cadena es, en la práctica, un sistema
 Por eso los 16 eventos de orden 1 tienen $I_B\approx0{,}97$ y $\mathrm{RAW}\approx30$, y
 solo FV los distingue (figura~\ref{fig:confiabilidad-fv}). Los mayores son $x_{17}$
 (\SI{16}{\percent}), $x_3$ y $x_{13}$ (\SI{15}{\percent} cada uno) y $x_7$
-(\SI{9}{\percent}). Por grupos: electrónica y software ($x_1$--$x_6$), \SI{28}{\percent};
+(\SI{9}{\percent}). Por grupos: electrónica y software ($x_1$--$x_6$), \SI{27}{\percent};
 traba ($x_7$--$x_9$), \SI{20}{\percent}; rotor desplegado ($x_{10}$--$x_{16}$),
-\SI{31}{\percent}. La causa común $x_6$ pesa cinco veces más que la falla conjunta
+\SI{30}{\percent}. La causa común $x_6$ pesa cinco veces más que la falla conjunta
 $x_4x_5$ (\num{1e-3} frente a \num{1.8e-4}): el respaldo solo sirve si detecta el apogeo
 sin depender del barómetro.
 
@@ -451,11 +451,13 @@ son las estimaciones puntuales.}
 \end{figure}
 
 \begin{resultado}[Objetivos de confiabilidad]
-Se proponen como objetivos una media de $P(T_1)\le\SI{5}{\percent}$ y de
-$P(T_2)\le\SI{3}{\percent}$. La estimación puntual cumple los dos, pero las medias
+Se proponen como objetivos medias de $P(T_1)\le\SI{5}{\percent}$ y
+$P(T_2)\le\SI{3}{\percent}$. Las estimaciones puntuales cumplen, pero las medias
 (\SI{5.9}{\percent} y \SI{3.4}{\percent}) no, por la incertidumbre. Los ensayos E2--E4
-reducen justo los EF que dominan la cola ($x_{13}$, $x_{14}$, $x_{17}$). Pasar los tres
-de $\mathrm{EF}=5$--10 a $\mathrm{EF}=3$ deja las medias dentro de los objetivos.
+reducen justo los EF de la cola ($x_{13}$, $x_{14}$, $x_{17}$). Si los tres bajan a
+$\mathrm{EF}=3$, la media de $P(T_1)$ queda en \SI{4.9}{\percent}. La de $P(T_2)$ baja solo
+a \SI{3.1}{\percent} porque depende del sitio ($x_{23}$): se cumple con observadores y
+medios de recuperación en altura.
 \end{resultado}
 
 %=====================================================================
@@ -549,7 +551,7 @@ buena detección. Por ese motivo el manual AIAG--VDA reemplazó el NPR por una p
 acción~\cite{confiabilidad-aiagvda2019}. El NPR es un producto de escalas ordinales: sirve
 para ordenar, no para comparar proporciones.
 
-\par\ifdim\dimexpr\pagegoal-\pagetotal\relax<7cm\newpage\fi
+\par\ifdim\dimexpr\pagegoal-\pagetotal\relax<4.5cm\newpage\fi
 {\scriptsize
 \setlength{\tabcolsep}{2.2pt}
 \renewcommand{\arraystretch}{1.12}
