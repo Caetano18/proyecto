@@ -6,6 +6,8 @@ Entradas: analysis/data/polares_<perfil>_Re<k>[_N5].dat (de polares_xfoil.py) y 
 volcados de capa límite en <raw>/capa.
 Salidas (analysis/data):
   polares_resumen.dat          métricas por perfil, Re y Ncrit
+  polares_alt_<perfil>_Re<k>.dat  puntos biestables (rama de Cl alto)
+  polares_repala.dat           Re local a lo largo de la pala
   polares_tend.dat             (Cl/Cd)max y Cl,max frente a Re (formato ancho)
   polares_burbuja.dat          separación, transición y reinserción (placa 7 %, NACA 6412)
   polares_cp_<caso>.dat        Cp(x) en casos seleccionados
@@ -15,7 +17,7 @@ Salidas (analysis/data):
 Modelo de la polar extendida (ver capítulo 11):
   * XFOIL en el bloque convergido [a_lo, a_hi] (interpolación lineal en 0,5 grados).
   * a > a_hi: Viterna-Corrigan con C_D,max = 1,11 + 0,018 AR (AR = 3,47), empalmado
-    en (a_hi, Cl, Cd).
+    en (a_hi, Cl, Cd), con a_hi = min(fin del bloque convergido, alfa(Cl,max) + 1).
   * a < a_lo: placa plana (Cn = C_D,max sen a) más el desvío en a_lo, que decae con un
     coseno en 12 grados.
   * |a| > 90: flujo invertido, Cl = -0,7 Cl(reflejado) y Cd = Cd(reflejado).
@@ -61,10 +63,14 @@ def metricas(D):
     ld = cl / cd
     i = int(np.argmax(ld))
     blq = [b for b in bloques(a) if b[0] <= i <= b[1]][0]
-    j = int(np.argmax(cl))
+    # Cl,max dentro del bloque principal (fuera de él XFOIL da ramas de pérdida poco fiables)
+    j = blq[0] + int(np.argmax(cl[blq[0]:blq[1] + 1]))
     # Cl,max "cerrado" si después del máximo hay puntos convergidos con Cl menor
     despues = (a > a[j] + 0.4) & (cl < cl[j] - 0.02)
     cerrado = bool(np.any(despues))
+    # empalme superior de la polar extendida: 1 grado después de Cl,max, sin salir del bloque
+    ahi_ext = min(a[blq[1]], a[j] + 1.0)
+    nbi = int(D[:, 9].sum()) if D.shape[1] > 9 else 0
     # punto de diseño Cl = 0,9: primer cruce en el bloque principal
     s = slice(blq[0], blq[1] + 1)
     aa, cc, dd = a[s], cl[s], cd[s]
@@ -80,7 +86,7 @@ def metricas(D):
     return dict(n=len(a), amin=a.min(), amax=a.max(), clmax=cl[j], aclmax=a[j],
                 cerrado=int(cerrado), ldmax=ld[i], ald=a[i], clld=cl[i], cdld=cd[i],
                 cmld=cm[i], cdmin=cd.min(), a09=a09, ld09=ld09,
-                alo=a[blq[0]], ahi=a[blq[1]])
+                alo=a[blq[0]], ahi=a[blq[1]], ahi_ext=ahi_ext, nbi=nbi)
 
 
 def resumen():
@@ -95,13 +101,13 @@ def resumen():
                 filas.append((p, r, n, m))
     with open(os.path.join(DATA, "polares_resumen.dat"), "w") as f:
         f.write("perfil Re ncrit n amin amax clmax aclmax cerrado ldmax ald clld cdld cmld "
-                "cdmin a09 ld09 alo ahi\n")
+                "cdmin a09 ld09 alo ahi ahiext nbi\n")
         for p, r, n, m in filas:
             f.write(f"{p} {r*1000} {n} {m['n']} {m['amin']:.2f} {m['amax']:.2f} "
                     f"{m['clmax']:.3f} {m['aclmax']:.2f} {m['cerrado']} {m['ldmax']:.1f} "
                     f"{m['ald']:.2f} {m['clld']:.3f} {m['cdld']:.4f} {m['cmld']:.3f} "
                     f"{m['cdmin']:.4f} {m['a09']:.2f} {m['ld09']:.1f} {m['alo']:.2f} "
-                    f"{m['ahi']:.2f}\n")
+                    f"{m['ahi']:.2f} {m['ahi_ext']:.2f} {m['nbi']}\n")
     # formato ancho para las figuras de tendencia
     with open(os.path.join(DATA, "polares_tend.dat"), "w") as f:
         cols = [f"ld_{p}" for p in PERFILES] + [f"cl_{p}" for p in PERFILES] + \
@@ -209,7 +215,7 @@ def extendida(perfil, re_k, cdmax=CDMAX, suf_out=""):
     if D is None:
         return None
     m = metricas(D)
-    a_lo, a_hi = m["alo"], m["ahi"]
+    a_lo, a_hi = m["alo"], m["ahi_ext"]
     sel = (D[:, 0] >= a_lo - 1e-6) & (D[:, 0] <= a_hi + 1e-6)
     a_x, cl_x, cd_x, cm_x = D[sel, 0], D[sel, 1], D[sel, 2], D[sel, 3]
     cd_min = cd_x.min()
@@ -265,13 +271,42 @@ def extendida(perfil, re_k, cdmax=CDMAX, suf_out=""):
     return a_lo, a_hi, cdmax
 
 
+def alternativas():
+    """Puntos biestables (rama de Cl alto) para dibujarlos aparte."""
+    for p in PERFILES + ["placa7_t11", "placa7_t20"]:
+        for r in RES:
+            for suf in ("", "_N5"):
+                D = cargar(p, r, suf)
+                if D is None or D.shape[1] < 12:
+                    continue
+                B = D[D[:, 9] > 0]
+                with open(os.path.join(DATA, f"polares_alt_{p}_Re{r}{suf}.dat"), "w") as f:
+                    f.write("alpha cl cd clalt cdalt\n")
+                    if len(B) == 0:
+                        f.write("nan nan nan nan nan\n")
+                    for b in B:
+                        f.write(f"{b[0]:.2f} {b[1]:.4f} {b[2]:.5f} {b[10]:.4f} {b[11]:.5f}\n")
+
+
+def re_pala(omega=120.0, R=0.200, e=0.044, c=0.045, nu=1.5e-5, V=0.0, vi=0.0):
+    """Re local a lo largo de la pala (velocidad relativa con la componente axial)."""
+    with open(os.path.join(DATA, "polares_repala.dat"), "w") as f:
+        f.write("r re re_lo re_hi\n")
+        for r in np.linspace(e, R, 33):
+            w = np.hypot(omega * r, V)
+            f.write(f"{r:.4f} {w*c/nu:.0f} {np.hypot(0.8*omega*r, V)*c/nu:.0f} "
+                    f"{np.hypot(1.2*omega*r, V)*c/nu:.0f}\n")
+
+
 def main():
+    alternativas()
+    re_pala()
     filas = resumen()
     print(f"{'perfil':11s} {'Re':>6s} N  n  [amin,amax]  Clmax@a (c)  L/Dmax@a  Cl  Cm  a09 LD09")
     for p, r, n, m in filas:
         print(f"{p:11s} {r*1000:6d} {n} {m['n']:2d} [{m['amin']:5.2f},{m['amax']:5.2f}] "
               f"{m['clmax']:.3f}@{m['aclmax']:5.2f} ({m['cerrado']}) {m['ldmax']:5.1f}@{m['ald']:5.2f} "
-              f"{m['clld']:.3f} {m['cmld']:.3f} {m['a09']:5.2f} {m['ld09']:5.1f}  blq[{m['alo']},{m['ahi']}]")
+              f"{m['clld']:.3f} {m['cmld']:.3f} {m['a09']:5.2f} {m['ld09']:5.1f}  blq[{m['alo']},{m['ahi']}] ext<={m['ahi_ext']} bi={m['nbi']}")
     if os.path.isdir(os.path.join(RAW, "capa")):
         for r in capa():
             print("capa", r)

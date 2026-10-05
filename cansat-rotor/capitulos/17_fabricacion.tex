@@ -1,0 +1,745 @@
+\chapter{Fabricación, tolerancias, montaje y costos}\label{cap:fabricacion}
+
+Este capítulo convierte los planos de anteproyecto (capítulo~\ref{cap:planos}) en piezas
+que se pueden fabricar, medir y montar con las herramientas de un laboratorio
+universitario. Fija los procesos, las tolerancias que importan y su justificación, el
+orden de montaje, las listas de control y el costo. Los cálculos están en
+\texttt{analysis/fabricacion\_sens.py} (sensibilidad aerodinámica de la pala),
+\texttt{analysis/fabricacion\_tol.py} (cadenas de tolerancias) y
+\texttt{analysis/fabricacion\_ajuste.py} (ajustes a presión, balanceo y pestaña). Ningún
+número de este capítulo proviene de un ensayo: las propiedades son de catálogo y las
+capacidades de proceso son valores típicos que se confirman con las probetas que se
+describen.
+
+\begin{resultado}[Resumen del capítulo]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Flecha de la pala:} \SI{3.15 \pm 0.15}{mm} en valor absoluto y dispersión
+        $\le\SI{0.10}{mm}$ dentro del juego de cuatro palas. Lo primero limita el cambio de
+        rpm a $\pm$1--2\,\% y, sobre todo, cierra la cadena de la envolvente Ø\,95; lo segundo
+        limita la diferencia de sustentación entre palas a $\le3$\,\% y el desnivel de
+        puntas a $\le\SI{0.43}{mm}$.
+  \item \textbf{Paso:} \ang{\pm 0.5} absoluto y \ang{0.2} entre palas. Cada grado de
+        paso cambia la velocidad de giro entre 60 y \SI{80}{rpm}.
+  \item \textbf{Envolvente:} con la geometría base (cara exterior de la pala a
+        \SI{44.98}{mm} del eje) el borde de la pala excede Ø\,95 en el 56\,\% de los
+        rotores fabricados. Se corrige con cuerda de \SI{44}{mm} y alabeo controlado
+        ($P<0{,}1$\,\%), o bien con cuerpo Ø\,87,2 manteniendo la cuerda.
+  \item \textbf{Balanceo:} el criterio de \SI{0.1}{g} a \SI{120}{mm} del capítulo~\ref{cap:dim}
+        equivale al grado G\,32 de la norma ISO 21940-11. Se apunta a G\,16
+        ($U\le\SI{6}{g.mm}$) con balanceo estático por momento y ajuste dinámico en el
+        banco, medido con la propia IMU.
+  \item \textbf{Cubo:} asientos de los 688ZZ con interferencia de \SIrange{0.03}{0.08}{mm}
+        calibrada con probetas, más adhesivo de retención. Juego axial
+        \SI{0.14}{mm} (de \SIrange{0.02}{0.26}{mm} en el peor caso).
+  \item \textbf{Costo:} entre \num{431000} y \num{909000} pesos (2026, orientativo); el
+        rotor y la traba representan de \num{146000} a \num{301000}. \Req{C9} se cumple
+        en el rango nominal, pero el escenario alto con 30\,\% de imprevistos lo excede:
+        la radio y las cámaras deciden.
+\end{itemize}
+\end{resultado}
+
+%=====================================================================
+\section{Criterios de fabricación}\label{sec:fabricacion-criterios}
+
+Solo unas pocas medidas afectan el vuelo; el resto se fabrica con tolerancia general. La
+tabla~\ref{tab:fabricacion-ctf} lista las características críticas, su tolerancia y cómo
+se verifican. Las medidas sin tolerancia indicada siguen ISO 2768-1 clase
+\emph{m}~\cite{fabricacion-iso2768} para piezas metálicas y $\pm\SI{0.2}{mm}$ para piezas
+impresas. Los ajustes de ejes y agujeros metálicos usan la notación de ISO
+286-2~\cite{fabricacion-iso286}; las tolerancias de los rodamientos son las de clase
+normal de ISO 492~\cite{fabricacion-iso492}.
+
+\begin{table}[H]
+\centering\small
+\caption{Características críticas de fabricación (CTF), tolerancia y verificación.}
+\label{tab:fabricacion-ctf}
+\begin{tabularx}{\textwidth}{@{}lllY@{}}
+\toprule
+\textbf{Pieza} & \textbf{Característica} & \textbf{Tolerancia} & \textbf{Verificación y motivo}\\\midrule
+Pala & Flecha $s$ (línea media) & $3{,}15\pm0{,}15$; juego $\le0{,}10$ & Puente con comparador; rpm, envolvente y desnivel (sec.~\ref{sec:fabricacion-flecha})\\
+Pala & Cuerda $c$ & $44{,}0\pm0{,}2$ & Calibre; envolvente\\
+Pala & Alabeo longitudinal & $\le0{,}15$ & Mármol y galgas; envolvente\\
+Pala & Torsión entre estaciones & \ang{\pm 0.2} & Mármol y comparador; paso efectivo\\
+Pala & Momento estático & $\pm\SI{3}{g.mm}$ en el juego & Balanza de momento (sec.~\ref{sec:fabricacion-balanceo})\\
+Portapala & Ángulo de la ranura $\theta$ & \ang{\pm 0.2} & Altura BA--BF en mármol\\
+Cubo & Asientos Ø\,16 & interferencia $0{,}03$--$0{,}08$ & Probeta de calibración; retención\\
+Cubo & Nervio entre asientos & $3{,}00\pm0{,}08$ & Calibre de profundidad; juego axial\\
+Cubo & Radio de bisagra $e$ & $44{,}00\pm0{,}10$ & Calibre; envolvente\\
+Separador & Largo & $3{,}10\pm0{,}02$ & Refrentado en torno; juego axial\\
+Cuerpo & Pared & $\ge2{,}0$ (nominal 2,2) & Calibre en 8 puntos (\Req{S6})\\
+Cuerpo & Diámetro exterior & $88{,}0\pm0{,}3$ & Cinta pi; envolvente\\
+Pestaña & Ojal respecto de la punta & $\pm0{,}05$ & Punzonado en plantilla\\
+Anillo & Posición angular del tope & $\pm\SI{0.1}{mm}$ de arco & Plantilla; enganche de la traba\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Los valores de proceso que se usan en las cadenas son típicos de una impresora FDM de
+\SI{0.4}{mm} bien calibrada ($\pm$\SIrange{0.1}{0.2}{mm} en el plano, $\pm$ media capa en
+altura), de un torno de banco ($\pm\SI{0.02}{mm}$) y del recorte manual de compuestos con
+plantilla ($\pm\SI{0.2}{mm}$). Se adoptan como \emph{tres desvíos estándar}; las
+probetas de la sección~\ref{sec:fabricacion-impresion} los confirman antes de fabricar las
+piezas de vuelo.
+
+%=====================================================================
+\section{Pala de carbono}\label{sec:fabricacion-pala}
+
+\subsection{Laminado sobre el molde}
+
+La pala se lamina húmeda sobre un caño de PVC, se cura con bolsa de vacío y se recorta
+con plantilla. El apilado es el recomendado en el capítulo~\ref{cap:estructura}:
+$[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm}, con tejido fino de
+$\approx\SI{100}{g/m^2}$ y cinta unidireccional, y una varilla pultruida Ø\,\SI{2}{mm}
+pegada en el borde de ataque del lado cóncavo. La dirección \ang{0} es la envergadura,
+que coincide con el eje del caño.
+
+\paragraph{Radio del molde.} La cara cóncava de la pala apoya sobre el molde, así que la
+línea media queda a $t/2$ por fuera. Para un radio de línea media $R_c$ y un espesor $t$,
+el molde debe tener radio
+\begin{equation}
+  R_m = R_c - \frac{t}{2} + \frac{8\,\Delta s_{si}}{c^2}R_c^2 ,
+  \label{eq:fabricacion-molde}
+\end{equation}
+donde el último término compensa el cierre por curado $\Delta s_{si}$ (ver abajo). Sin
+compensación, $R_m=81{,}9-0{,}25=\SI{81.65}{mm}$. Un caño de Ø\,\SI{160}{mm} ($R=80$) da
+línea media de \SI{80.25}{mm} y flecha $s=\SI{3.22}{mm}$, ya en el borde superior de la
+tolerancia antes del cierre. Envolverlo con una lámina de PET o aluminio de
+\SI{1.0}{mm} lleva el radio de apoyo a \SI{81.0}{mm} y la flecha a \SI{3.18}{mm}.
+
+\paragraph{Cierre por curado.} Un laminado curvo se cierra al curar porque se contrae más
+en el espesor que en el plano~\cite{fabricacion-albert2002}. La parte térmica es
+\begin{equation}
+  \Delta\varphi = \varphi\,\frac{(\alpha_T-\alpha_I)\,\Delta T}{1+\alpha_T\,\Delta T},
+  \qquad \varphi=\frac{c}{R_c},\qquad \Delta s_{si}\approx\frac{c\,\Delta\varphi}{8},
+  \label{eq:fabricacion-springin}
+\end{equation}
+con $\varphi$ el ángulo que abarca el arco (\ang{31.5}). Con $\alpha_T\approx\SI{50e-6}{K^{-1}}$
+en el espesor, $\alpha_I\approx\SI{3e-6}{K^{-1}}$ en el plano y un poscurado a
+\SI{60}{\celsius} ($\Delta T=\SI{40}{K}$), resulta $\Delta s_{si}=\SI{0.006}{mm}$. La
+contracción química agrega más: en ángulos de \ang{90} se miden cierres de
+\ang{0.5} a \ang{2}~\cite{fabricacion-albert2002}; escalados a \ang{31.5} dan
+$\Delta s_{si}\approx$\SIrange{0.02}{0.07}{mm}. Con el molde de \SI{81.0}{mm} la flecha
+esperada es \SIrange{3.20}{3.25}{mm}: dentro de tolerancia y medible. La primera placa
+fija el valor real y, si hace falta, se cambia el espesor de la lámina de suplemento
+($\partial s/\partial R_m\approx\SI{-0.04}{mm/mm}$).
+
+\paragraph{Ovalización del caño.} Un caño comercial no es un cilindro exacto. Si sus
+semiejes difieren en \SI{1}{mm} ($a=\SI{81}{mm}$, $b=\SI{80}{mm}$), el radio de curvatura
+local varía entre $b^2/a=\SI{79.0}{mm}$ y $a^2/b=\SI{82.0}{mm}$, y la flecha entre
+\SI{3.14}{} y \SI{3.26}{mm}: casi toda la tolerancia. Antes de laminar se mide el caño con
+el puente de la ecuación~\eqref{eq:fabricacion-puente} cada \ang{30} y se lamina sobre el
+sector de radio más parejo. La alternativa es un molde mecanizado o impreso y lijado
+(\SI{81.0}{mm} de radio, con superficie sellada), que elimina este término.
+
+\paragraph{Placa y curado.} Se lamina una sola placa de $300\times\SI{200}{mm}$ (arco por
+eje) de la que salen las seis palas (cuatro de vuelo y dos de repuesto), una al lado de
+la otra en la dirección de la circunferencia: todas tienen el mismo laminado, la misma
+fracción de resina y la misma flecha local. Secuencia: cera desmoldante y alcohol
+polivinílico sobre el molde; capas a $\pm\ang{45}$, $0$, $0$, $\pm\ang{45}$; tela
+pelable; film perforado; manta absorbente; bolsa y vacío de \SI{-0.6}{bar} o más durante
+24~h a temperatura ambiente; poscurado de 4~h a \SI{60}{\celsius} \emph{sobre el molde}.
+Sin vacío, la fracción de fibra baja de $\approx0{,}5$ a $\approx0{,}35$: la placa queda
+más gruesa y \SIrange{15}{25}{\percent} más pesada. El curvado en caliente de una placa
+plana ya curada (termoformado) no se recomienda: la epoxi debe superar su temperatura de
+transición vítrea, la recuperación elástica es grande y difícil de predecir, y la resina
+se degrada.
+
+\subsection{Tolerancia de la flecha y del paso}\label{sec:fabricacion-flecha}
+
+La flecha y el paso se toleran por su efecto en dos cosas distintas: el error común a las
+cuatro palas cambia la velocidad de giro; la diferencia entre palas produce desnivel de
+puntas y una fuerza de una vez por vuelta.
+
+\paragraph{Modelo.} Se usa elemento de pala~\eqref{eq:dT}--\eqref{eq:dQ} con un flujo
+neto uniforme $u$ hacia arriba por el disco. Las incógnitas $\Omega$ y $u$ salen de
+\begin{equation}
+  B\!\int_{r_0}^{R}\!\big(\mathrm dL\cos\phi+\mathrm dD\sin\phi\big)=T,\qquad
+  B\!\int_{r_0}^{R}\!\big(\mathrm dL\sin\phi-\mathrm dD\cos\phi\big)\,r=0,\qquad
+  \phi=\arctan\frac{u}{\Omega r},
+  \label{eq:fabricacion-autorrot}
+\end{equation}
+con $T=\SI{3.78}{N}$, $r_0=\SI{64}{mm}$ (fin del portapala) y $\theta=\ang{-3}$. La polar
+es lineal con el efecto de la curvatura de la teoría de perfil delgado,
+\begin{equation}
+  C_l = a\left(\alpha + 2\eta\,\frac{f}{c}\right),\qquad C_d = C_{d0} + k\,C_l^2,
+  \label{eq:fabricacion-polar}
+\end{equation}
+con $a=0{,}8\cdot2\pi$, $C_{d0}=0{,}032$ y $k=0{,}010$ (ajuste a la polar XFOIL de la
+placa 7\,\% a $Re=\num{50000}$, rama sin pérdida). El factor $\eta$ escala la
+sensibilidad a la curvatura: $\eta=1$ es la teoría de perfil delgado
+($\partial C_l/\partial(f/c)=10{,}1$); comparando a igual ángulo las polares XFOIL de las
+placas 4\,\% y 7\,\% entre \ang{4.5} y \ang{6.5} resulta $\partial C_l/\partial(f/c)=5{,}6$,
+$10{,}2$ y $12{,}1$ para $Re=35$, 50 y \num{75}\,mil. Se usan $\eta=1$ y $\eta=0{,}55$
+(el menor) como cotas.
+
+\begin{nota}[Alcance del modelo]
+El flujo uniforme y la polar lineal no representan bien la autorrotación a
+$V/\vh=1{,}83$ (la teoría de cantidad de movimiento no vale ahí; ver
+capítulo~\ref{cap:teoria}). El modelo da \SIrange{1295}{1550}{rpm} en el punto de diseño,
+contra \SI{1150 \pm 230}{rpm} del capítulo~\ref{cap:dim}. Aquí se usa \textbf{solo para
+derivadas relativas}: cuánto cambian las rpm, la sustentación de una pala y su
+batimiento por un error de fabricación.
+\end{nota}
+
+\paragraph{Error común: rpm.} La figura~\ref{fig:fabricacion-rpm} muestra la velocidad de
+giro en función de la flecha y del paso. Al aumentar la curvatura sube $C_l$, la
+sustentación se logra con menos velocidad y las rpm bajan: $-7{,}4$ a $-12$\,\% por
+milímetro de flecha y $-61$ a $-82$\,rpm por grado de paso (más negativo, más rápido).
+Una tolerancia de $\pm\SI{0.15}{mm}$ cambia las rpm en $\pm$\SIrange{1.1}{1.8}{\percent},
+muy por debajo de la incertidumbre del modelo de rpm ($\pm$20\,\%) y sin efecto en la
+velocidad de descenso, que depende del área del disco y de $\CR$.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.97\linewidth, height=5.6cm, xlabel={Flecha $s$ [mm]}, ylabel={rpm},
+  xmin=2.55, xmax=3.75, ymin=1100, ymax=1700, legend pos=north east,
+  legend style={font=\scriptsize}, yticklabel style={/pgf/number format/1000 sep={}}]
+  \fill[ccuerda!12] (axis cs:3.00,1100) rectangle (axis cs:3.30,1700);
+  \addplot[crot, thick] table[x=s, y=rpm_tat] {analysis/data/fabricacion_camber.dat};
+  \addplot[cfijo, thick, dashed] table[x=s, y=rpm_xf] {analysis/data/fabricacion_camber.dat};
+  \draw[cgris, densely dotted] (axis cs:3.15,1100) -- (axis cs:3.15,1700);
+  \legend{$\eta=1$ (perfil delgado), $\eta=0{,}55$ (XFOIL)}
+\end{axis}
+\end{tikzpicture}
+\caption{Flecha común a las 4 palas ($\theta=\ang{-3}$).}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.49\textwidth}\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.97\linewidth, height=5.6cm, xlabel={Paso $\theta$ [\si{\degree}]},
+  ylabel={rpm}, xmin=-6, xmax=0, ymin=1100, ymax=1900,
+  yticklabel style={/pgf/number format/1000 sep={}}]
+  \fill[ccuerda!12] (axis cs:-3.5,1100) rectangle (axis cs:-2.5,1900);
+  \addplot[crot, thick] table[x=theta, y=rpm_tat] {analysis/data/fabricacion_pitch.dat};
+  \addplot[cfijo, thick, dashed] table[x=theta, y=rpm_xf] {analysis/data/fabricacion_pitch.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Paso común ($s=\SI{3.15}{mm}$).}
+\end{subfigure}
+\caption{Sensibilidad de la velocidad de giro a la flecha y al paso
+(modelo~\eqref{eq:fabricacion-autorrot}--\eqref{eq:fabricacion-polar}, solo relativo).
+Banda verde: tolerancia adoptada ($\pm\SI{0.15}{mm}$; $\pm\ang{0.5}$).}
+\label{fig:fabricacion-rpm}
+\end{figure}
+
+\paragraph{Diferencia entre palas: desnivel y vibración.} Si una pala tiene flecha
+$s+\Delta s$ o paso $\theta+\Delta\theta$, con el rotor en su punto de equilibrio, su
+momento de batimiento cambia en $\Delta M_\beta=\int\Delta(\mathrm dL)\,(r-e)$ y la pala
+sube
+\begin{equation}
+  \Delta\beta = \frac{\Delta M_\beta}{\Omega^2 S_\beta},\qquad
+  S_\beta=\int_e^R m(r)\,r\,(r-e)\,\mathrm dr = \SI{6.34e-5}{kg.m^2},\qquad
+  \Delta z_{\text{punta}} = (R-e)\,\Delta\beta,
+  \label{eq:fabricacion-track}
+\end{equation}
+donde $S_\beta$ se calculó con \SI{5.4}{g} de placa uniforme y \SI{2}{g} de portapala. La
+figura~\ref{fig:fabricacion-track} y la tabla~\ref{tab:fabricacion-track} dan los
+resultados. Hay tres efectos y sus órdenes de magnitud son muy distintos:
+\begin{itemize}
+  \item \textbf{Desnivel de puntas} (\emph{track}): \SIrange{0.24}{0.43}{mm} por cada
+        \SI{0.1}{mm} de diferencia de flecha y \SI{0.34}{mm} por cada \ang{0.2} de
+        diferencia de paso. Es lo que se ve y se mide en el banco.
+  \item \textbf{Diferencia de sustentación}: 2,5 a 3,1\,\% por \SI{0.1}{mm} y 2,4 a
+        3,5\,\% por \ang{0.2}. Con bisagra, la pala no transmite momento al cubo; solo la
+        diferencia de corte vertical en la bisagra, $\Delta L\,e$, que para 3\,\% vale
+        \SI{1.3e-3}{N.m}: despreciable.
+  \item \textbf{Fuerza tangencial de 1 vez por vuelta}: \SIrange{1.2}{1.5}{mN} por
+        \SI{0.1}{mm}, más de 100 veces menor que la de \SI{0.1}{g} de desbalance de masa
+        (\SIrange{0.17}{0.27}{N}). El balanceo de masa domina la vibración.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.97\linewidth, height=5.4cm, xlabel={Diferencia de flecha $\Delta s$ [mm]},
+  ylabel={Desnivel de punta [mm]}, xmin=0, xmax=0.5, ymin=0, ymax=2.2, legend pos=north west,
+  legend style={font=\scriptsize}]
+  \fill[ccuerda!12] (axis cs:0,0) rectangle (axis cs:0.10,2.2);
+  \addplot[crot, thick] table[x=ds, y=dz_tat] {analysis/data/fabricacion_track.dat};
+  \addplot[cfijo, thick, dashed] table[x=ds, y=dz_xf] {analysis/data/fabricacion_track.dat};
+  \draw[cfreno, densely dashed] (axis cs:0,1) -- (axis cs:0.5,1);
+  \legend{$\eta=1$, $\eta=0{,}55$}
+\end{axis}
+\end{tikzpicture}
+\caption{Flecha.}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.49\textwidth}\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.97\linewidth, height=5.4cm, xlabel={Diferencia de paso $\Delta\theta$ [\si{\degree}]},
+  ylabel={Desnivel de punta [mm]}, xmin=0, xmax=1, ymin=0, ymax=2.2]
+  \fill[ccuerda!12] (axis cs:0,0) rectangle (axis cs:0.2,2.2);
+  \addplot[crot, thick] table[x=dth, y=dz_tat] {analysis/data/fabricacion_trackpitch.dat};
+  \addplot[cfijo, thick, dashed] table[x=dth, y=dz_xf] {analysis/data/fabricacion_trackpitch.dat};
+  \draw[cfreno, densely dashed] (axis cs:0,1) -- (axis cs:1,1);
+\end{axis}
+\end{tikzpicture}
+\caption{Paso.}
+\end{subfigure}
+\caption{Desnivel de la punta de una pala respecto de las otras tres, por
+ecuación~\eqref{eq:fabricacion-track}. Línea roja: límite de \SI{1}{mm} (0,5\,\% de $R$)
+adoptado para el banco. Banda verde: dispersión admitida en el juego.}
+\label{fig:fabricacion-track}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Efecto de una pala distinta de las demás (rango entre $\eta=0{,}55$ y $\eta=1$).}
+\label{tab:fabricacion-track}
+\begin{tabularx}{\textwidth}{@{}Yccc@{}}
+\toprule
+\textbf{Diferencia} & \textbf{Desnivel} [mm] & $\Delta L/L$ [\%] & \textbf{Fuerza 1P} [mN]\\\midrule
+$\Delta s=\SI{0.05}{mm}$ & 0,12--0,21 & 1,2--1,6 & 0,6--0,8\\
+$\Delta s=\SI{0.10}{mm}$ & 0,24--0,43 & 2,5--3,1 & 1,2--1,5\\
+$\Delta s=\SI{0.30}{mm}$ & 0,71--1,29 & 7,4--9,3 & 3,6--4,5\\
+$\Delta\theta=\ang{0.2}$ & 0,34 & 2,4--3,5 & 0,9--2,1\\
+$\Delta\theta=\ang{0.5}$ & 0,84 & 6,1--8,8 & 2,3--5,3\\
+\midrule
+Desbalance de \SI{0.1}{g} a \SI{120}{mm} (comparación) & --- & --- & 170--270\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{resultado}[Tolerancias adoptadas para la pala]
+Flecha absoluta \SI{3.15 \pm 0.15}{mm} (la fija la envolvente, sección~\ref{sec:fabricacion-tol});
+dispersión dentro del juego de vuelo $\le\SI{0.10}{mm}$; paso absoluto
+\ang{-3 \pm 0.5} y diferencia entre portapalas $\le\ang{0.2}$. Con ambos límites, el
+desnivel combinado esperado (suma cuadrática) es $\le\SI{0.55}{mm}$, por debajo del
+límite de \SI{1}{mm} que se verifica en el banco.
+\end{resultado}
+
+\subsection{Recorte, plantillas y control dimensional}
+
+\paragraph{Recorte.} La placa curada se marca con una plantilla de acrílico de
+\SI{3}{mm} curvada sobre el mismo molde, con el contorno de la pala más \SI{0.5}{mm} de
+demasía. Se corta con disco diamantado a baja velocidad (con aspiración y barbijo P2: el
+polvo de carbono es irritante y conductor) y se lija hasta la línea con un taco guiado por
+la plantilla. Borde de ataque: radio completo con lija 240; borde de fuga: chaflán de
+\SI{3}{mm} del lado convexo hasta \SI{0.2}{mm} de espesor. Luego se pega la varilla Ø\,2
+con epoxi espesada, en un útil que la mantiene recta.
+
+\paragraph{Flecha con puente.} La flecha no se mide bien con calibre porque los bordes son
+delgados. Se usa un puente con dos apoyos separados $b=\SI{40}{mm}$ y un comparador de
+\SI{0.01}{mm} en el centro, apoyado del lado cóncavo. Para un arco de radio $R_c$,
+\begin{equation}
+  s_b = R_c - \sqrt{R_c^2 - b^2/4}
+  \quad\Rightarrow\quad
+  s_b(\SI{81.9}{mm}) = \SI{2.48}{mm},\qquad
+  \frac{\partial s}{\partial s_b}=\frac{c^2}{b^2}\approx1{,}27 ,
+  \label{eq:fabricacion-puente}
+\end{equation}
+de modo que la tolerancia de $\pm\SI{0.15}{mm}$ en $s$ es $\pm\SI{0.12}{mm}$ en la lectura
+$s_b$, es decir de \SIrange{2.36}{2.60}{mm}. Sobre la cara cóncava la lectura es
+\SI{0.01}{mm} mayor que la de la línea media: despreciable. Se mide
+en tres estaciones (\SIlist{40;80;120}{mm} desde la raíz) y se registra el promedio.
+
+\paragraph{Torsión y alabeo.} La pala se apoya con la cara convexa hacia arriba sobre un
+mármol (o vidrio de \SI{6}{mm}). Con el comparador se miden las alturas del borde de
+ataque y del borde de fuga en las tres estaciones; la torsión entre estaciones es
+$\Delta\theta=\arcsin\left(\Delta h_{BA-BF}/c\right)$, y \ang{0.2} equivale a
+\SI{0.15}{mm} de diferencia. El alabeo longitudinal es la luz bajo la regla apoyada sobre
+la cresta, medida con galgas: $\le\SI{0.15}{mm}$.
+
+\subsection{Masa y balanceo}\label{sec:fabricacion-balanceo}
+
+\paragraph{Grado de balanceo.} Para un rotor rígido, ISO 21940-11~\cite{fabricacion-iso21940}
+fija el desbalance residual admisible por el grado $G$ (en \si{mm/s}):
+\begin{equation}
+  U_{\text{per}} = \frac{G\,M}{\Omega},
+  \label{eq:fabricacion-G}
+\end{equation}
+con $M$ la masa que gira. Aquí $M\approx\SI{45}{g}$ (palas \SI{29.6}{g}, cubo y
+portapalas \SI{12}{g}, aros exteriores \SI{3}{g}). A $\Omega=\SI{120}{rad/s}$:
+G\,6,3 da \SI{2.3}{g.mm}, G\,16 da \SI{5.9}{g.mm} y G\,40 da \SI{14.9}{g.mm}. El criterio
+de \SI{0.1}{g} a \SI{120}{mm} del capítulo~\ref{cap:dim} ($U=\SI{12}{g.mm}$, fuerza
+\SI{0.17}{N}) equivale a G\,32.
+
+¿Hace falta más? La respuesta del cuerpo libre de \SI{0.5}{kg} a \SI{12}{g.mm} es una
+traslación de $U/M_{\text{cuerpo}}=\SI{0.024}{mm}$ y una oscilación angular de
+\ang{0.03} a \SI{19}{Hz}: invisibles para las cámaras. Los rodamientos ven \SI{0.17}{N}
+frente a una capacidad de cientos de newtons. El grado G\,32 alcanza para el vuelo; se
+apunta a \textbf{G\,16} ($U\le\SI{6}{g.mm}$, \SI{0.05}{g} a \SI{120}{mm}) porque las rpm
+reales pueden ser hasta 35\,\% mayores (la fuerza crece con $\Omega^2$) y porque el costo es
+solo una tira de cinta.
+
+\paragraph{Control de masa.} Masa objetivo de cada pala terminada, con portapala y
+pestaña: \SI{8.2 \pm 0.3}{g} con la varilla (\SI{7.4}{g} sin ella). Fuera de ese rango
+se descarta: indica falta o exceso de resina. Las seis palas se pesan con balanza de
+\SI{0.01}{g} y se elige el juego de cuatro más parejo.
+
+\paragraph{Balanceo estático por momento.} Lo que importa no es la masa sino el momento
+estático respecto del eje, $S_i=m_i\,r_{g,i}$. Se mide sin calcular el centro de masa: la
+pala con su portapala se monta en un pasador Ø\,2 a la altura del eje de bisagra (a
+$r=e$), horizontal, con la punta apoyada en una balanza de \SI{0.01}{g} a la distancia
+$\ell$ del pasador. La lectura $F$ da $S_i - m_i e = F\,\ell$, con resolución de
+$\SI{0.01}{g}\times\SI{156}{mm}=\SI{1.6}{g.mm}$. Si cada pala queda dentro de
+$\pm\Delta S$ del promedio, el peor caso de dos pares opuestos es
+$U=2\sqrt2\,\Delta S$: para $U\le\SI{8.5}{g.mm}$ basta $\Delta S=\SI{3}{g.mm}$. Las palas
+livianas se corrigen con una gota de epoxi o cinta de aluminio a \SI{180}{mm} del eje
+($\SI{3}{g.mm}$ son \SI{0.017}{g}).
+
+\paragraph{Ajuste dinámico en el banco.} Quedan el desbalance del cubo, la excentricidad
+de los asientos y el desplazamiento del centro de masa en la cuerda. Se corrigen con el
+rotor girando en el banco de ventilador (capítulo~\ref{cap:ensayos}), con el CanSat
+colgado blando y la propia IMU midiendo la aceleración lateral sincronizada con el sensor
+hall (método de coeficientes de influencia en un plano):
+\begin{enumerate}
+  \item Corrida 0: amplitud y fase de la componente de 1 vez por vuelta, $\mathbf A_0$.
+  \item Se agrega una masa de prueba $\mathbf U_t$ conocida (\SI{0.05}{g} de cinta a
+        \SI{120}{mm} sobre la pala 1, \SI{6}{g.mm}) y se mide $\mathbf A_1$.
+  \item Coeficiente de influencia y corrección:
+        \begin{equation}
+          \mathbf H=\frac{\mathbf A_1-\mathbf A_0}{\mathbf U_t},\qquad
+          \mathbf U_c=-\frac{\mathbf A_0}{\mathbf H},
+          \label{eq:fabricacion-influencia}
+        \end{equation}
+        con números complejos (amplitud y fase). $\mathbf U_c$ se reparte entre las dos
+        palas que lo encierran (a \ang{90}) por proyección.
+  \item Corrida de verificación; se repite si $|\mathbf U|>\SI{6}{g.mm}$.
+\end{enumerate}
+Con el CanSat de \SI{0.5}{kg} colgado, \SI{6}{g.mm} a \SI{120}{rad/s} producen
+\SI{0.17}{m/s^2} (\SI{18}{mg}). Una IMU con densidad de ruido de
+$\approx\SI{200}{\micro g/\sqrt{Hz}}$ promediada en forma síncrona durante \SI{10}{s}
+tiene un ruido de \SI{0.4}{mm/s^2}: la relación señal/ruido es del orden de 400 y el
+método resuelve fracciones de \si{g.mm}. Al mismo tiempo se filma el desnivel de puntas
+con una cámara a \SI{240}{fps} y una marca blanca en cada punta; si supera \SI{1}{mm}, se
+cambia el portapala de la pala desnivelada antes de balancear (cambiar el paso mueve la
+pala y altera el balanceo).
+
+%=====================================================================
+\section{Piezas impresas}\label{sec:fabricacion-impresion}
+
+\subsection{Material}
+Se imprime en \textbf{PETG}. La tabla~\ref{tab:fabricacion-materiales} compara las
+opciones con valores típicos de hoja de datos (dispersos entre marcas, no medidos). El
+PLA se descarta porque se ablanda a \SIrange{55}{60}{\celsius}, temperatura que alcanza un
+cohete al sol en la rampa. El nylon (PA12 o PA6 con fibra) es mejor para el cubo y los
+portapalas por tenacidad y desgaste, pero absorbe humedad y cambia de medida; se reserva
+como segunda opción para esas piezas.
+
+\begin{table}[H]
+\centering\small
+\caption{Materiales de impresión (valores típicos de catálogo, $\pm$20--30\,\%).}
+\label{tab:fabricacion-materiales}
+\begin{tabularx}{\textwidth}{@{}lcccY@{}}
+\toprule
+\textbf{Material} & $E$ [GPa] & $T_g$ [\si{\celsius}] & $\alpha$ [\si{10^{-6}/K}] & \textbf{Uso}\\\midrule
+PLA & 3,0--3,5 & 55--60 & 70 & Solo plantillas y probetas\\
+PETG & 1,8--2,1 & 75--80 & 60--70 & Cuerpo, tapas, cubo, anillo, portapalas, copa\\
+ASA & 1,8--2,0 & 95--100 & 90 & Alternativa al PETG si hay recinto cerrado\\
+PA12 / PA-CF & 1,2--1,7 (3--6 con fibra) & 40--50 (semicristalino) & 80--100 & Cubo y portapalas (opción); secar antes de imprimir\\
+TPU 95A & 0,03 & $<0$ & 150 & Amortiguador de aterrizaje, topes\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Parámetros y orientación}
+
+\begin{table}[H]
+\centering\small
+\caption{Parámetros de impresión por pieza (boquilla \SI{0.4}{mm}, PETG a
+\SIrange{235}{245}{\celsius}, cama a \SI{80}{\celsius}).}
+\label{tab:fabricacion-impresion}
+\begin{tabularx}{\textwidth}{@{}lcccY@{}}
+\toprule
+\textbf{Pieza} & \textbf{Capa} & \textbf{Perímetros} & \textbf{Relleno} & \textbf{Orientación y motivo}\\\midrule
+Cuerpo Ø\,88 & 0,20 & 4 de 0,55 (2,2) & --- & Eje vertical. La pared se toma con perímetros, sin relleno, para que el espesor sea el de la extrusión (\Req{S6}).\\
+Tapas & 0,20 & 4 & 40\,\% giroide & Plana. Insertos en caras paralelas a la cama.\\
+Cubo & 0,12 & 6 & 100\,\% & Eje vertical (capas $\perp$ al eje): los brazos traccionados por la fuerza centrífuga quedan en el plano de capa, que es el fuerte.\\
+Portapala & 0,12 & 5 & 100\,\% & Envergadura en el plano de la cama: la fuerza centrífuga (\SI{13}{N}) tracciona a lo largo de los filamentos. Ranura curva hacia arriba, sin soportes.\\
+Anillo de traba & 0,16 & 4 & 100\,\% & Plano. Orejas de los dientes en el plano de capa.\\
+Copa del drogue & 0,20 & 3 & 30\,\% & Boca hacia arriba.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Contracción y compensación.} El PETG contrae entre 0,2 y 0,5\,\% al enfriar, y
+los agujeros salen más chicos que el modelo por el facetado y el aplastamiento de la
+primera capa ($\approx$\SIrange{0.1}{0.2}{mm} en diámetro). En lugar de suponer un valor,
+se imprime una \textbf{probeta de calibración} con el mismo material, orientación y
+parámetros de la pieza: una placa con siete agujeros de diámetro nominal
+\SIlist{15.80;15.85;15.90;15.95;16.00;16.05;16.10}{mm}, otra con siete agujeros de
+\SIrange{1.80}{2.10}{mm} para los pasadores y un cilindro de \SI{88}{mm} de
+\SI{20}{mm} de alto. Se miden con varillas calibradas (o con mechas usadas como galgas
+pasa/no pasa) y con un rodamiento real; el valor del modelo que da la medida buscada se
+lleva al diseño. Se repite si cambia el rollo, la boquilla o la impresora.
+
+\subsection{Alojamiento de los rodamientos}\label{sec:fabricacion-ajuste}
+
+El aro exterior del 688ZZ gira con la carga (el cubo gira con el desbalance y con las palas),
+así que debe tener \textbf{interferencia} en el cubo; el aro interior está quieto respecto de
+la carga y puede ir deslizante sobre el eje ($\varnothing8$\,g6 o el tubo tal como viene,
+si entra sin forzar), apretado axialmente por la tuerca. Para un aro de acero de diámetro
+$d=\SI{16}{mm}$ y diámetro de pista $d_i\approx\SI{13.6}{mm}$ dentro de un anillo plástico de
+diámetro exterior efectivo $D_o$, la presión de contacto, la tensión tangencial en el borde
+del agujero y la fuerza axial de retención son (Lamé)
+\begin{gather}
+  p = \frac{\delta}{d\left[\dfrac{1}{E_h}\left(\dfrac{D_o^2+d^2}{D_o^2-d^2}+\nu_h\right)
+      +\dfrac{1}{E_s}\left(\dfrac{d^2+d_i^2}{d^2-d_i^2}-\nu_s\right)\right]},
+  \label{eq:fabricacion-lame}\\
+  \sigma_t = p\,\frac{D_o^2+d^2}{D_o^2-d^2},\qquad F_{ax}=\mu\,p\,\pi\,d\,B,
+  \nonumber
+\end{gather}
+con $\delta$ la interferencia diametral, $B=\SI{5}{mm}$ y $\mu\approx0{,}25$. Con
+$D_o=\SI{30}{mm}$ (conservador: el cubo es Ø\,44, pero tiene brazos y alojamientos) la
+figura~\ref{fig:fabricacion-ajuste} da, para PETG y $\delta=\SI{0.05}{mm}$,
+$p=\SI{2.8}{MPa}$, $\sigma_t=\SI{5.0}{MPa}$ (factor 9 frente a \SI{45}{MPa}) y
+$F_{ax}=\SI{176}{N}$. El acero aporta solo el 2,5\,\% de la flexibilidad: el cálculo es
+poco sensible al aro.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.62\textwidth, height=5.6cm, xlabel={Interferencia diametral $\delta$ [mm]},
+  ylabel={Fuerza de retención $F_{ax}$ [N]}, xmin=0, xmax=0.15, ymin=0, ymax=550,
+  axis y line*=left, legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west},
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
+  \fill[ccuerda!12] (axis cs:0.03,0) rectangle (axis cs:0.08,550);
+  \addplot[crot, thick] table[x=delta, y=F_petg] {analysis/data/fabricacion_ajuste.dat};
+  \addplot[cfijo, thick, dashed] table[x=delta, y=F_pa] {analysis/data/fabricacion_ajuste.dat};
+  \legend{PETG, PA12}
+\end{axis}
+\begin{axis}[width=0.62\textwidth, height=5.6cm, xmin=0, xmax=0.15, ymin=0, ymax=16,
+  axis y line*=right, axis x line=none, ylabel={$\sigma_t$ [MPa] (gris)}, grid=none]
+  \addplot[cgris, thin] table[x=delta, y=s_petg] {analysis/data/fabricacion_ajuste.dat};
+  \addplot[cgris, thin, dashed] table[x=delta, y=s_pa] {analysis/data/fabricacion_ajuste.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Ajuste a presión del 688ZZ en el cubo impreso,
+ecuación~\eqref{eq:fabricacion-lame} con $D_o=\SI{30}{mm}$. Banda verde: interferencia
+adoptada. Los valores no incluyen la relajación del plástico.}
+\label{fig:fabricacion-ajuste}
+\end{figure}
+
+\paragraph{Temperatura y relajación.} El plástico dilata más que el acero: un día a
+\SI{45}{\celsius} (\SI{25}{K} sobre el montaje) quita
+$(\alpha_h-\alpha_s)\,d\,\Delta T=\SI{0.023}{mm}$ de interferencia en PETG y
+\SI{0.031}{mm} en PA12; el frío la aumenta. Además, el plástico se relaja bajo tensión
+constante: se estima una pérdida de 30 a 50\,\% de la presión en semanas (valor típico, no
+medido). Por eso se adopta $\delta=$\SIrange{0.03}{0.08}{mm} \emph{más} un adhesivo de
+retención para rodamientos; en el peor caso (\SI{0.03}{mm}, caliente y relajado) la
+interferencia puede anularse, y entonces retiene el adhesivo y el nervio entre asientos,
+que lleva la carga axial por contacto (la sustentación empuja el cubo hacia arriba y el
+nervio apoya sobre el aro exterior superior). Un $\delta$ mayor de \SI{0.10}{mm} no
+conviene: el aro de acero casi no se deforma, pero el plástico fluye al montar y la
+interferencia real queda incierta.
+
+\paragraph{Montaje del rodamiento.} Se prensa con una prensa de banco o un tornillo con
+dos arandelas planas, \emph{apoyando sobre el aro exterior}, nunca sobre el interior ni
+sobre los blindajes. El asiento se repasa antes con una mecha o escariador de
+\SI{15.9}{mm} solo si la probeta indicó más de \SI{0.10}{mm} de interferencia.
+
+\subsection{Insertos roscados y pared}
+Las uniones desmontables (tapas al cuerpo, anillo de traba, portapila, placas) llevan
+insertos de latón colocados en caliente (M2 y M2,5, soldador a \SIrange{220}{240}{\celsius}
+para PETG), en agujeros con el diámetro que indica el fabricante del inserto, verificado en
+la probeta. La pared del agujero del inserto debe tener al menos \SI{1.5}{mm} y 3
+perímetros. Nunca se rosca directamente en el plástico una unión que se desarma más de dos
+veces.
+
+La pared del cuerpo es de \SI{2.2}{mm} nominal para que, con $\pm\SI{0.1}{mm}$ de
+proceso y la rugosidad de las capas, el espesor mínimo medido sea $\ge\SI{2.0}{mm}$
+(\Req{S6}). Se mide con calibre en 8 puntos (4 azimuts, 2 alturas) y se registra. Las
+ranuras de las pestañas y los orificios de los interruptores se modelan con un marco de
+\SI{1}{mm} de material adicional alrededor para no debilitar la pared.
+
+%=====================================================================
+\section{Planos de fabricación}\label{sec:fabricacion-planos}
+
+Los planos que siguen detallan las piezas del rotor y de la traba con las medidas y
+tolerancias de fabricación. Las cotas están en milímetros; las que no llevan tolerancia
+siguen la sección~\ref{sec:fabricacion-criterios}. Se mantienen los colores del
+capítulo~\ref{cap:planos}: naranja lo que gira, azul lo fijo, rojo la traba. El rayado
+indica corte. Tres cambios respecto del anteproyecto surgen de este capítulo y se marcan
+en los planos: tope de batimiento a \ang{+15} con almohadilla (capítulo~\ref{cap:estructura}),
+llave por collar coaxial en el portapala y dientes de alambre de acero en el anillo.
+
+% macros propias del capítulo (nombres únicos)
+\newcommand{\fabR}[2]{\filldraw[rot] #1 rectangle #2;
+  \fill[pattern=north west lines, pattern color=crot!80] #1 rectangle #2;}
+\newcommand{\fabF}[2]{\filldraw[fijo] #1 rectangle #2;
+  \fill[pattern=north east lines, pattern color=cfijo!80] #1 rectangle #2;}
+\newcommand{\fabtxt}[3][]{\node[font=\scriptsize, fill=white, inner sep=1pt, #1] at (#2) {#3};}
+
+%---------------------------------------------------------------------
+\subsection{Cubo}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.3mm, y=1.3mm]
+  \node[font=\small\bfseries, anchor=west] at (-52,26) {(a) Corte por el plano de dos brazos (escala 1,3:1)};
+  \draw[eje] (0,-9) -- (0,20);
+  % --- mitad derecha
+  \fabR{(8,0)}{(22,5.3)}
+  \fabR{(5.5,5.3)}{(22,8.3)}
+  \fabR{(8,8.3)}{(22,13.6)}
+  \fabR{(22,2.8)}{(40,10.8)}
+  \filldraw[rot] (40,1.8) rectangle (48,11.8);          % oreja (detrás del corte)
+  \draw[black, fill=white] (44,6.8) circle (1);
+  % almohadilla del tope
+  \fill[white] (30,8.8) rectangle (38,10.8);
+  \filldraw[draw=black!60, fill=black!25] (30,8.8) rectangle (38,12.8);
+  % imán
+  \fill[white] (13.45,0) rectangle (16.55,1.3);
+  \fill[black] (13.5,0.3) rectangle (16.5,1.3);
+  % --- mitad izquierda
+  \fabR{(-22,0)}{(-8,5.3)}
+  \fabR{(-22,5.3)}{(-5.5,8.3)}
+  \fabR{(-22,8.3)}{(-8,13.6)}
+  \fabR{(-40,2.8)}{(-22,10.8)}
+  \filldraw[rot] (-48,1.8) rectangle (-40,11.8);
+  \draw[black, fill=white] (-44,6.8) circle (1);
+  \fill[white] (-38,8.8) rectangle (-30,10.8);
+  \filldraw[draw=black!60, fill=black!25] (-38,8.8) rectangle (-30,12.8);
+  \fill[white] (-16.55,0) rectangle (-13.45,1.3);
+  \fill[yellow!50!brown] (-16.5,0.3) rectangle (-13.5,1.3);
+  % rodamientos fantasma
+  \foreach \s in {1,-1}{
+    \draw[cgris, densely dashed] (4*\s,0.36) rectangle (8*\s,5.3);
+    \draw[cgris, densely dashed] (4*\s,8.3) rectangle (8*\s,13.24);}
+  % --- cotas
+  \draw[cota] (-22,17) -- (22,17); \fabtxt{0,17}{Ø\,44}
+  \draw[cgris, line width=0.3pt] (-22,13.6) -- (-22,18) (22,13.6) -- (22,18);
+  \draw[cota] (0,-6) -- (44,-6); \fabtxt{24,-6}{$e=44{,}00\pm0{,}10$}
+  \draw[cgris, line width=0.3pt] (44,-7) -- (44,5.8) (0,-7) -- (0,0);
+  \draw[cota] (-48,-3) -- (48,-3); \fabtxt{-30,-3}{96}
+  \draw[cgris, line width=0.3pt] (-48,-4) -- (-48,1.8) (48,-4) -- (48,1.8);
+  \draw[cota] (-26,0) -- (-26,13.6); \fabtxt[rotate=90]{-26,6.8}{$13{,}6\pm0{,}1$}
+  \draw[cota] (-51,0) -- (-51,5.3); \fabtxt[rotate=90]{-51,2.65}{$5{,}30\pm0{,}08$}
+  \draw[cota] (-51,5.3) -- (-51,8.3); \node[font=\scriptsize, anchor=east] at (-51.5,6.8) {$3{,}00\pm0{,}08$};
+  \draw[cgris, line width=0.3pt] (-52,5.3) -- (-22,5.3) (-52,8.3) -- (-22,8.3) (-52,0) -- (-48,0);
+  \draw[cgris, line width=0.3pt] (-27,0) -- (-22,0) (-27,13.6) -- (-22,13.6);
+  \draw[cota] (51,1.8) -- (51,11.8); \fabtxt[rotate=90]{51,6.8}{10}
+  \draw[cota] (54,0) -- (54,6.8); \fabtxt[rotate=90]{54,3.4}{$6{,}8\pm0{,}1$}
+  \draw[cgris, line width=0.3pt] (48,1.8) -- (52,1.8) (48,11.8) -- (52,11.8) (45,6.8) -- (55,6.8) (48,0) -- (55,0);
+  % llamadas
+  \draw[ref] (8,2.5) -- (12,21) node[above, font=\scriptsize, align=center] {Ø\,$15{,}945\pm0{,}025$\\(probeta), $\times2$};
+  \draw[ref] (6,6.8) -- (2,21) node[above, font=\scriptsize] {Ø\,11};
+  \draw[ref] (44,7.8) -- (44,21) node[above, font=\scriptsize, align=center] {Ø\,1,98 (presión\\ pasador Ø\,2 m6)};
+  \draw[ref] (34,12.8) -- (30,21) node[above, font=\scriptsize, align=center] {almohadilla\\ $8\times8\times6$};
+  \draw[ref] (15,0.8) -- (20,-9) node[below, font=\scriptsize, align=center] {imán Ø\,3$\times$1 en\\ Ø\,3,1$\times$1,3 a $r=15$};
+  \draw[ref] (-15,0.8) -- (-20,-9) node[below, font=\scriptsize, align=center] {contrapeso de latón\\ de igual masa};
+\end{tikzpicture}
+
+\vspace{3mm}
+\begin{tikzpicture}[x=0.8mm, y=0.8mm]
+  \node[font=\small\bfseries, anchor=west] at (-50,54) {(b) Planta desde arriba (escala 0,8:1)};
+  \foreach \a in {0,90,180,270}{
+    \begin{scope}[rotate=\a]
+      \filldraw[rot] (21,-5.5) rectangle (40,5.5);
+      \filldraw[rot] (40,-5.5) rectangle (48,-2.5);
+      \filldraw[rot] (40,3.5) rectangle (48,5.5);
+      \filldraw[draw=black!60, fill=black!25] (30,-4) rectangle (38,4);
+      \draw[black, densely dashed] (43,-5.5) rectangle (45,5.5);
+    \end{scope}}
+  \filldraw[rot] (0,0) circle (22);
+  \filldraw[white, draw=crot] (0,0) circle (8);
+  \draw[cgris, densely dashed] (0,0) circle (5.5);
+  \draw[eje] (-52,0) -- (52,0) (0,-52) -- (0,52);
+  % cotas de la horquilla (brazo a 0°)
+  \draw[cota] (50,-2.5) -- (50,3.5); \node[font=\scriptsize, anchor=west] at (50.5,0.5) {$6{,}00\,^{+0{,}10}_{\phantom{+}0}$};
+  \draw[cgris, line width=0.3pt] (48,-2.5) -- (51,-2.5) (48,3.5) -- (51,3.5);
+  \draw[cota] (44,-8.5) -- (47.9,-8.5);
+  \draw[cota] (44,8.5) -- (47.9,8.5);
+  \node[font=\scriptsize, anchor=west] at (48.3,-8.5) {3 (ancha)};
+  \node[font=\scriptsize, anchor=west] at (48.3,8.5) {2 (angosta)};
+  \draw[ref] (41.5,-4.2) -- (30,-20) node[below, font=\scriptsize, align=center] {cajera Ø\,4,7$\times$1,2\\ coaxial al pasador (llave)};
+  \fill[white] (40.4,-2.5) rectangle (42.6,-3.7);
+  \draw[black, line width=0.3pt] (40.4,-2.5) -- (40.4,-3.7) -- (42.6,-3.7) -- (42.6,-2.5);
+  \node[font=\scriptsize, align=left, anchor=west] at (62,-20) {%
+    Material: PETG (o PA12), capa 0,12, 100\,\% de relleno, eje vertical.\\
+    Asientos coaxiales a 0,05: se repasan juntos con un útil pasante.\\
+    Caras de apoyo de los aros $\perp$ al eje a 0,05.\\
+    Masa estimada \SI{12}{g} con almohadillas e imán.};
+\end{tikzpicture}
+\caption{Plano F1: cubo. (a)~Corte: asientos de los 688ZZ con interferencia calibrada,
+nervio central de \SI{3.00}{mm} que transmite la carga axial, orejas de la bisagra a
+$e=\SI{44}{mm}$, almohadilla de silicona del tope de \ang{+15} e imán del sensor hall con
+su contrapeso. (b)~Planta: horquilla asimétrica (orejas de 3 y \SI{2}{mm}) con la cajera
+de llave en la oreja ancha; pasador oculto en trazo corto.}
+\label{fig:fabricacion-cubo}
+\end{figure}
+
+%---------------------------------------------------------------------
+\subsection{Portapala con cuña de paso}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.55mm, y=1.55mm]
+  \node[font=\small\bfseries, anchor=west] at (-6,31) {(a) Planta (1,55:1)};
+  % pala (fuera y dentro del encastre)
+  \filldraw[rot] (28,-22.5) -- (36,-22.5) -- (35,-8) -- (37,8) -- (36,22.5) -- (28,22.5) -- cycle;
+  % encastre y cuello
+  \filldraw[rot] (-3.5,-2.925) rectangle (3.5,2.925);
+  \filldraw[rot] (-1.25,-3.925) rectangle (1.25,-2.925);
+  \filldraw[rot] (3.5,-2.925) -- (12,-23.5) -- (12,23.5) -- (3.5,2.925) -- cycle;
+  \filldraw[rot] (12,-23.5) rectangle (28,23.5);
+  \draw[crot, densely dashed] (14,-22.5) rectangle (28,22.5);
+  \draw[black, densely dashed] (-1.025,-3.925) rectangle (1.025,2.925);
+  \draw[black] (21,11.25) circle (0.75);
+  \draw[black!60, densely dashed] (5,-4) rectangle (9,4);
+  \draw[eje] (-6,11.25) -- (38,11.25);
+  \draw[eje] (0,-27) -- (0,27);
+  \node[font=\scriptsize, anchor=south] at (31,11.4) {eje de paso};
+  \node[font=\scriptsize, anchor=south west] at (36,21) {BA};
+  \node[font=\scriptsize, anchor=north west] at (36,-21) {BF};
+  % cotas
+  \draw[cota] (0,-27) -- (12,-27); \fabtxt{6,-27}{12}
+  \draw[cota] (12,-27) -- (28,-27); \fabtxt{20,-27}{16}
+  \draw[cgris, line width=0.3pt] (12,-28) -- (12,-23.5) (28,-28) -- (28,-23.5);
+  \draw[cota] (14,26) -- (28,26); \fabtxt{21,26}{14 (pala)}
+  \draw[cgris, line width=0.3pt] (14,22.5) -- (14,27) (28,23.5) -- (28,27);
+  \draw[cota] (-5,-2.925) -- (-5,2.925); \node[font=\scriptsize, anchor=east] at (-5.3,0) {$5{,}85\pm0{,}05$};
+  \draw[cota] (-3.5,-6) -- (3.5,-6); \fabtxt{0,-7.5}{7}
+  \draw[ref] (21.5,11.8) -- (24,17) node[above, font=\scriptsize] {Ø\,1,5};
+  \draw[ref] (0,-3.4) -- (-4,-12) node[below, font=\scriptsize, align=center] {collar de llave\\ Ø\,4,5$\times$1,0};
+  \draw[ref] (7,3) -- (8,15) node[above, font=\scriptsize] {talón del tope};
+  \draw[cota] (30,-23.5) -- (30,23.5); \fabtxt[rotate=90]{30,0}{47}
+\end{tikzpicture}\hspace{2mm}%
+\begin{tikzpicture}[x=1.85mm, y=1.85mm]
+  \node[font=\small\bfseries, anchor=west] at (-24,16) {(b) Corte C--C (1,85:1), $\theta=\ang{-3}$};
+  \draw[cgris, densely dashed] (-25,0) -- (25,0);
+  \node[font=\scriptsize, anchor=south west] at (-25,0.1) {plano de giro (caras del ojo)};
+  \begin{scope}[rotate around={-3:(11.25,0)}]
+    \begin{scope}
+      \clip (-23.5,-6) rectangle (23.5,8);
+      \fill[frot, even odd rule, overlay] (0,-78.75) circle (83.4) (0,-78.75) circle (80.4);
+      \fill[overlay, pattern=north west lines, pattern color=crot!80, even odd rule] (0,-78.75) circle (83.4) (0,-78.75) circle (80.4);
+      \draw[overlay, crot, line width=0.6pt] (0,-78.75) circle (83.4) (0,-78.75) circle (80.4);
+    \end{scope}
+    \draw[crot, line width=0.6pt] (-23.5,-6) -- (-23.5,8) (23.5,-6) -- (23.5,8);
+    \begin{scope}
+      \clip (-22.5,-6) rectangle (22.5,8);
+      \fill[white, overlay] (0,-78.75) circle (82.2);
+      \fill[frot, overlay] (0,-78.75) circle (81.6);
+    \end{scope}
+    \draw[black, line width=0.9pt] (22.5,0) arc[start angle=74.05, end angle=105.95, radius=81.9];
+    \draw[eje] (11.25,-8) -- (11.25,9);
+    \draw[cgris, densely dotted] (-23,0) -- (25,0);
+  \end{scope}
+  \draw[cgris] (24,0) arc[start angle=0, end angle=-3, radius=12.75];
+  \node[font=\scriptsize, anchor=west] at (24.2,-0.6) {$\theta$};
+  \node[font=\scriptsize] at (22,4.5) {BA};
+  \node[font=\scriptsize] at (-22,4.5) {BF};
+  \draw[flecha] (6,11) -- (16,11) node[right, font=\scriptsize] {giro};
+  \draw[ref] (0,3.2) -- (-6,10) node[above, font=\scriptsize, align=center] {ranura $0{,}60\,^{+0{,}10}_{\phantom{+}0}$\\ arco $R\,81{,}9$};
+\end{tikzpicture}
+
+\vspace{2mm}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Paso $\theta$ & \ang{-6} & \ang{-4} & \ang{-3} & \ang{-2} & \ang{0}\\\midrule
+Marca (muescas en el talón) & 5 & 4 & 3 & 2 & 1\\
+Altura BA--BF, $c\sin|\theta|$ [mm] & 4,70 & 3,14 & 2,36 & 1,57 & 0,00\\
+\bottomrule
+\end{tabular}
+\caption{Plano F2: portapala. (a)~Planta: ojo de bisagra con collar de llave, cuello,
+encastre de \SI{16}{mm} con la pala pegada en \SI{14}{mm} y pasador de ubicación
+Ø\,\SI{1.5}{mm} al 25\,\% de la cuerda, que fija la posición radial de la pala. (b)~Corte por
+el encastre: ranura curva del radio de la pala, girada $\theta$ alrededor del eje de paso
+respecto de las caras del ojo; borde de ataque abajo para $\theta<0$. Tolerancia de
+$\theta$: \ang{\pm 0.2}; se verifica con la altura BA--BF sobre mármol.}
+\label{fig:fabricacion-portapala}
+\end{figure}

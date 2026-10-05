@@ -3,19 +3,20 @@
 Este capítulo convierte el plan E1--E6 del capítulo~\ref{cap:riesgos} en procedimientos
 ejecutables: qué banco se arma, qué se mide, con qué incertidumbre y con qué criterio se
 acepta cada requisito. Agrega cinco ensayos (E7--E11) para cubrir los requisitos que el
-plan original no tocaba. Todos los valores son \textbf{predicciones o estimaciones}; ningún
+plan original no tocaba, y separa E5 en vibración (E5a) y choque (E5b). Todos los valores son \textbf{predicciones o estimaciones}; ningún
 ensayo se ha hecho todavía.
 
 \begin{resultado}[Resumen del plan]
 \begin{itemize}[leftmargin=*]
   \item \textbf{Banco vertical} (E2, E3): chorro abierto de Ø\,\SI{0.8}{m} o más
         ($D_j\ge2D$), \SIrange{6}{8}{m/s}. Mide $\CR$ con
-        $U=\pm\num{0.06}$ (95\,\%), rpm, conicidad y par.
+        $U\approx\pm\num{0.055}$ (95\,\%), rpm, conicidad y par.
   \item \textbf{Auto} (E2b): cubre lo que el ventilador no alcanza, el arranque a
-        \SIrange{10}{14}{m/s}.
+        \SIrange{10}{14}{m/s}, con tramos cortos para no pasar de las rpm de diseño.
   \item \textbf{Caídas desde drone} (E4): de 80 a \SI{100}{m} de caída por ensayo según el
-        modelo nominal; 10 caídas dan $\Vr$ con $U\approx\pm\SI{0.33}{m/s}$. Con 3 caídas
-        alcanza para demostrar $\Vr\le\SI{7.5}{m/s}$.
+        modelo nominal (los \SIrange{30}{60}{m} del capítulo~\ref{cap:riesgos} no alcanzan);
+        10 caídas dan $\Vr$ con $U\approx\pm\SI{0.33}{m/s}$. Si la dispersión entre caídas
+        es de \SI{0.4}{m/s} o menos, 3 caídas alcanzan para demostrar $\Vr\le\SI{7.5}{m/s}$.
   \item \textbf{Ambientales} (E5, E7--E9) con recursos de universidad, y una matriz que
         lleva cada requisito del anexo a su método y criterio.
 \end{itemize}
@@ -65,8 +66,8 @@ dinámica corregida~\cite{ensayos-maskell1963}
 \end{equation}
 con $C$ el área de la sección de ensayo. La teoría se dedujo para placas macizas; aplicada
 a un rotor es una aproximación. Con secciones habituales la corrección es grande
-(tabla~\ref{tab:ensayos-opciones}): en un túnel de \qtyproduct{1 x 1}{m} el chorro verdadero
-sería un 38\,\% más intenso que el leído, y una incertidumbre del 20\,\% sobre esa
+(tabla~\ref{tab:ensayos-opciones}): en un túnel de \qtyproduct{1 x 1}{m} la presión
+dinámica efectiva sería un 38\,\% mayor que la leída, y una incertidumbre del 20\,\% sobre esa
 corrección ya invalida el $\pm5$\,\% buscado.
 
 \paragraph{Chorro abierto.} La frontera libre permite que el chorro se ensanche; la
@@ -75,7 +76,8 @@ desvío del chorro, bloqueo de la boquilla y gradiente de presión
 estática~\cite{ensayos-mercker1996}. Como ningún modelo cubre bien un rotor en estela
 turbulenta, \textbf{la corrección se mide}: antes del rotor se ensaya un disco macizo
 delgado de Ø\,\SI{400}{m m} en la misma posición. Su coeficiente en aire libre es
-$C_D\approx1{,}17$~\cite{hoerner1965}; el factor $F_b=1{,}17/C_{D,\text{medido}}$ se aplica
+$C_D\approx1{,}17$~\cite{hoerner1965}, con una dispersión de algunos por ciento entre
+fuentes; el factor $F_b=1{,}17/C_{D,\text{medido}}$ se aplica
 luego al rotor, que tiene casi el mismo coeficiente y por lo tanto casi el mismo bloqueo.
 
 \begin{table}[H]
@@ -298,22 +300,31 @@ margen (tabla~\ref{tab:rotor}).
 %=====================================================================
 \section{Alternativa en auto (E2b)}\label{sec:ensayos-auto}
 El auto da gratis el rango de \SIrange{10}{14}{m/s} (\SIrange{36}{50}{km/h}), que el
-ventilador no alcanza; por eso se usa para el arranque, no para medir $\CR$. El rotor va
+ventilador no alcanza; por eso se usa para el arranque, no para medir $\CR$. A velocidad
+constante el rotor no se queda en las rpm de diseño: tiende a la misma relación de
+velocidad de punta $\lambda_d\approx3{,}76$, es decir a unas \num{2400}~rpm a
+\SI{13.4}{m/s} (punta a \SI{50}{m/s}, fuerza centrífuga de \SI{57}{N} por pala, 4,4 veces
+la de diseño). En vuelo eso no ocurre porque el CanSat frena mientras el rotor acelera
+(figura~\ref{fig:ensayos-caida}: máximo de unas \num{1220}~rpm). Cada tramo en auto mide
+entonces solo el arranque, de 0 a \num{1150}~rpm, y al llegar a ese valor el auto baja a
+\SI{25}{km/h} (unas \num{1250}~rpm de equilibrio). El rotor va
 con el eje horizontal, alineado con la marcha, en un mástil a \SI{1}{m} o más sobre el
 techo (figura~\ref{fig:ensayos-auto}).
 
 \begin{itemize}
   \item \textbf{Velocidad}: se mide la del aire con el Pitot del mástil, no la del
         velocímetro ni la del GPS. Cada condición se corre en los dos sentidos del mismo
-        tramo y se promedian $\CR$ y rpm, lo que cancela casi todo el viento longitudinal.
+        tramo y se promedian los tiempos de arranque, lo que cancela casi todo el viento
+        longitudinal.
   \item \textbf{Viento cruzado}: produce flujo oblicuo. Una veleta con potenciómetro, o
         un hilo filmado, mide el ángulo. Se descartan tramos con más de \ang{5}, que a
-        \SI{7}{m/s} equivalen a solo \SI{0.6}{m/s} de viento cruzado. Por eso se ensaya
+        \SI{13.4}{m/s} equivalen a \SI{1.2}{m/s} de viento cruzado. Por eso se ensaya
         con calma, temprano por la mañana.
   \item \textbf{Gravedad}: con el eje horizontal el peso de cada pala
         (\SI{0.073}{N}) actúa en el plano de giro. Es el 0,6\,\% de la fuerza centrífuga
-        en régimen, pero en el arranque las palas cuelgan de forma asimétrica. Los tiempos
-        de arranque en auto son entonces una cota pesimista.
+        en régimen, pero en el arranque las palas cuelgan de forma asimétrica. Se espera que
+        eso alargue algo el arranque (no está cuantificado), así que los tiempos en auto
+        se toman como una cota pesimista.
   \item \textbf{Flujo del vehículo}: el techo acelera el aire. El Pitot va a la misma
         altura que el rotor y \SI{0.5}{m} al costado, y mide ese efecto en lugar de
         corregirlo.
@@ -323,7 +334,10 @@ techo (figura~\ref{fig:ensayos-auto}).
 Solo en un predio cerrado (pista, aeródromo o estacionamiento vacío), nunca en la vía
 pública; máximo \SI{50}{km/h}. Mástil sujeto a las barras de techo con cintas con
 trinquete; malla de protección alrededor del disco. Nadie en el plano de giro: una pala
-suelta de \SI{7.4}{g} a \SI{24}{m/s} lleva \SI{2}{J}. El conductor solo conduce; un
+suelta de \SI{7.4}{g} lleva \SI{0.8}{J} a \num{1150}~rpm y \SI{3.5}{J} a \num{2400}~rpm
+(velocidad de su centro de masa, a \SI{123}{mm} del eje). Antes del primer tramo, cada
+portapala se prueba con una carga estática de \SI{60}{N} (la centrífuga a \num{2400}~rpm).
+Si el hall pasa de \num{1500}~rpm, el auto frena. El conductor solo conduce; un
 segundo operador maneja la adquisición, y antes de cada tramo se revisan pasadores y
 portapalas.
 \end{nota}
@@ -384,8 +398,10 @@ portapalas.
 \section{Caídas desde drone (E4)}\label{sec:ensayos-drone}
 
 \subsection{Altura necesaria}
-Hacen falta de 80 a \SI{100}{m} de caída por ensayo si el par crece con $\Omega$ como
-predice la teoría de elemento de pala, y más de \SI{120}{m} si no. Para estimarlo se
+Hacen falta de 80 a \SI{100}{m} de caída por ensayo si la pendiente del par en el
+equilibrio es la estimada con la teoría de elemento de pala (caso nominal), y más de
+\SI{120}{m} si es mucho menor (caso conservador). Los \SIrange{30}{60}{m} previstos en
+el capítulo~\ref{cap:riesgos} no alcanzan para llegar a régimen. Para estimarlo se
 integra un modelo de orden reducido con tres estados (altura, velocidad y rpm):
 \begin{align}
   m\,\dot V &= W - (k_d+k_c)V^2 - T, &
@@ -412,9 +428,9 @@ par lineal que cae desde $Q_0$, unas 10 veces menos pendiente en el equilibrio.
 \begin{axis}[width=0.95\textwidth, height=5.8cm, xmin=0, xmax=150, ymin=0, ymax=15,
   xlabel={Altura caída desde la suelta [m]}, ylabel={Velocidad de descenso $V$ [m/s]},
   unbounded coords=jump,
-  legend columns=2, legend style={font=\footnotesize, at={(0.5,-0.2)}, anchor=north, cells={anchor=west}}]
+  legend columns=2, legend style={font=\footnotesize, at={(0.5,-0.30)}, anchor=north, cells={anchor=west}, /tikz/every even column/.append style={column sep=8pt}}]
   \fill[cfreno!8] (axis cs:122,0) rectangle (axis cs:150,15);
-  \node[font=\footnotesize, cfreno, anchor=north east, align=right] at (axis cs:149,14.6) {sobre\\ \SI{122}{m}};
+  \node[font=\footnotesize, cfreno, anchor=north east, align=right] at (axis cs:149,12.6) {sobre\\ \SI{122}{m}};
   \addplot[crot, very thick] table[x=h, y=VAnom] {analysis/data/ensayos_caida.dat};
   \addlegendentry{A: secuencia real, nominal}
   \addplot[crot, thick, dashed] table[x=h, y=VAcons] {analysis/data/ensayos_caida.dat};
@@ -426,9 +442,9 @@ par lineal que cae desde $Q_0$, unas 10 veces menos pendiente en el equilibrio.
   \addplot[ccuerda, thick] table[x=h, y=VCnom] {analysis/data/ensayos_caida.dat};
   \addlegendentry{C: rotor libre sin drogue, nominal}
   \draw[black!60, densely dotted] (axis cs:0,6.4) -- (axis cs:150,6.4);
-  \node[font=\scriptsize, anchor=south west] at (axis cs:100,6.4) {$\Vr=\SI{6.4}{m/s}$};
+  \node[font=\scriptsize, anchor=north west] at (axis cs:90,6.3) {$\Vr=\SI{6.4}{m/s}$};
   \draw[black!60, densely dotted] (axis cs:0,13.35) -- (axis cs:150,13.35);
-  \node[font=\scriptsize, anchor=south west] at (axis cs:100,13.35) {$V_1=\SI{13.4}{m/s}$};
+  \node[font=\scriptsize, anchor=north west] at (axis cs:60,13.25) {$V_1=\SI{13.4}{m/s}$};
   \draw[cgris, line width=0.6pt, {Latex[length=1.6mm]}-{Latex[length=1.6mm]}] (axis cs:57,2.0) -- (axis cs:89,2.0);
   \node[font=\scriptsize, anchor=south] at (axis cs:73,2.0) {ventana de \SI{5}{s} (caso A)};
 \end{axis}
@@ -469,18 +485,28 @@ Consecuencias:
   \item Las caídas de caracterización (repeticiones para $\Vr$ y $\CR$) se hacen en la
         configuración B, la más corta, soltando desde \SIrange{110}{120}{m}.
   \item La secuencia real A (drogue, liberación, arranque) se hace 3 veces desde la
-        altura máxima. Además de $\Vr$, verifica \Req{C3} (la primera fase llega a
-        \SI{13}{m/s} tras unos \SI{21}{m}) y la lógica de liberación.
+        altura máxima. Además de $\Vr$, verifica la lógica de liberación. No sirve para
+        \Req{C3}: a los \SI{2.5}{s} (\SI{21}{m}) la etapa 1 va a \SI{12.7}{m/s}, el 95\,\%
+        de $V_1$, todavía acelerando. $V_1$ se mide en caídas aparte con el rotor trabado,
+        que llegan al 98\,\% de $V_1$ tras unos \SI{29}{m}.
   \item Si el rotor real se parece al caso conservador, a \SI{120}{m} no llega a
         régimen. Esto se detecta a bordo: la ventana de análisis solo es válida si el
         sensor hall muestra $|\dot\Omega|<\SI{2}{rad/s^2}$. Un arranque tan lento sería
         además un hallazgo de diseño, porque también alarga la caída real, y llevaría a un
         paso más negativo.
+  \item \Req{C4} pide un \emph{promedio} en todo el descenso, no la velocidad
+        estabilizada. Con liberación a $V_1$ estable, el modelo da una media de la etapa 2
+        de \SI{6.51}{m/s} en \SI{560}{m} (apogeo de \SI{700}{m}) en el caso nominal, y de
+        \SI{6.86}{m/s} en el conservador; en \SI{100}{m}, de \SI{6.98}{m/s} y
+        \SI{8.41}{m/s}. El transitorio pesa poco en vuelo, pero domina en una caída corta,
+        por eso en E4 se mide $\Vr$ en la ventana estable y la media de vuelo se obtiene
+        por análisis.
 \end{itemize}
 
 \subsection{Suspensión y secuencia}
 El CanSat cuelga del liberador \textbf{por el vértice del drogue}, con el drogue estirado y
-la cuerda tensa; así se infla en menos de \SI{1}{s} tras la suelta. En el caso A la
+la cuerda tensa; así se espera que se infle en menos de \SI{1}{s} tras la suelta (el
+modelo supone \SI{0.5}{s}). En el caso A la
 liberación del rotor la ordena el software con un umbral de tiempo, o el comando
 \texttt{MEC} (capítulo~\ref{cap:elec}). En el caso B la traba se abre en tierra y las palas
 se sujetan con un hilo que corta el mismo liberador. Cada caída registra a bordo el
@@ -490,10 +516,11 @@ anotan la temperatura, la presión y el viento a \SI{2}{m} (anemómetro de mano)
 \subsection{Análisis de los datos del barómetro}
 La velocidad sale de la presión, no de la altitud ISA:
 \begin{equation}
-  V = -\frac{1}{\rho\,g}\,\frac{dp}{dt}, \qquad \rho = \frac{p}{R_a\,T_\text{loc}},
+  V = \frac{1}{\rho\,g}\,\frac{dp}{dt}, \qquad \rho = \frac{p}{R_a\,T_\text{loc}},
   \label{eq:ensayos-baro}
 \end{equation}
-con la temperatura medida en el lugar. Usar la atmósfera ISA ($\SI{15}{\celsius}$) un día
+con $V$ positiva hacia abajo (al descender la presión crece) y la temperatura medida en
+el lugar. Usar la atmósfera ISA ($\SI{15}{\celsius}$) un día
 de \SI{25}{\celsius} sesga la velocidad en un 3,5\,\%. La pendiente se ajusta por
 mínimos cuadrados en la ventana estable. Con $N$ muestras de ruido $\sigma_h$ a frecuencia
 $f_s$,
@@ -507,8 +534,10 @@ no es el problema. Las fuentes que dominan son otras:
   \item \textbf{Presión estática de la toma.} La presión dinámica pasa de \SI{109}{Pa} en
         la etapa 1 a \SI{25}{Pa} en la etapa 2. Con un coeficiente de presión de 0,3 a 0,6
         en la toma, eso produce un salto aparente de \SIrange{2}{4}{m} de altura en la
-        transición. Por eso no se usa la ventana de transición, y la toma va en el fondo
-        del cuerpo, lejos del rotor.
+        transición. Por eso no se usa la ventana de transición. La toma va en el costado
+        del cuerpo, con varios orificios repartidos en la circunferencia, lejos del rotor y
+        de la cara inferior: en descenso esa cara mira al flujo y es un punto de remanso
+        ($C_p\approx1$), que daría un salto de unos \SI{7}{m}.
   \item \textbf{Viento vertical.} Una térmica de \SI{0.5}{m/s} cambia $V$ en un 8\,\%.
         Se vuela temprano, sobre terreno uniforme, y se toma la media de muchas caídas.
   \item \textbf{Deriva meteorológica}: \SI{1}{hPa} en \SI{3}{h} equivale a
@@ -531,7 +560,7 @@ vertical y no se conoce de antemano. La semiamplitud del intervalo al 95\,\% de 
 \begin{tikzpicture}
 \begin{axis}[width=0.97\textwidth, height=5.4cm, xmin=3, xmax=30, ymin=0, ymax=1.0,
   xlabel={Número de caídas $n$}, ylabel={$E$ al 95\,\% [m/s]},
-  legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east}]
+  legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, cells={anchor=west}}]
   \addplot[cfijo, thick] table[x=n, y=s02] {analysis/data/ensayos_ic.dat}; \addlegendentry{$s=0{,}2$}
   \addplot[ccuerda, thick] table[x=n, y=s03] {analysis/data/ensayos_ic.dat}; \addlegendentry{$s=0{,}3$}
   \addplot[crot, thick] table[x=n, y=s04] {analysis/data/ensayos_ic.dat}; \addlegendentry{$s=0{,}4$}
@@ -566,7 +595,8 @@ en función de la rigidez de toda la cadena cuerda--soporte--CanSat
 
 \begin{resultado}[Plan secuencial de caídas]
 Se hacen 3 caídas y se calcula $s$. Para el \textbf{cumplimiento} basta la cota superior
-unilateral al 95\,\%: si $\bar V=\SI{6.4}{m/s}$, con $s=\SI{0.4}{m/s}$ y $n=3$ es
+unilateral al 95\,\%, con el límite de \SI{7.5}{m/s} que fija el equipo como margen sobre
+los \SI{8}{m/s} del anexo: si $\bar V=\SI{6.4}{m/s}$, con $s=\SI{0.4}{m/s}$ y $n=3$ es
 $\bar V+t_{0{,}95;2}\,s/\sqrt3=\SI{7.07}{m/s}<\SI{7.5}{m/s}$. Para la
 \textbf{caracterización} se completan las caídas que pida el $s$ medido
 (figura~\ref{fig:ensayos-ic}): con $s=\SI{0.3}{m/s}$ hacen falta 9 caídas para
@@ -598,7 +628,7 @@ $q_\text{ref}$: cero (\SI{0.08}{Pa}) & B & rectangular & 0,18\,\% & $\infty$\\
 $q_\text{ref}$: fluctuación del chorro & A & normal & 0,30\,\% & 30\\
 $K$: no uniformidad del chorro & A & normal & 1,00\,\% & 12\\
 $A_R$: radio $\pm\SI{0.5}{mm}$ & B & rectangular & 0,29\,\% & $\infty$\\
-$F_b$: bloqueo y chorro ($\pm3$\,\%) & B & rectangular & 1,73\,\% & 8\\
+$F_b$: bloqueo y $C_D$ del disco ($\pm3$\,\%) & B & rectangular & 1,73\,\% & 8\\
 Repetibilidad (5 montajes, $s=1$\,\%) & A & normal & 0,45\,\% & 4\\\midrule
 \multicolumn{3}{@{}l}{\textbf{Combinada} $u_c$; $\nu_\text{eff}=19$; $k=2{,}09$} & \textbf{2,19\,\%} & \\
 \multicolumn{3}{@{}l}{\textbf{Expandida} $U$ (95\,\%)} & \textbf{4,6\,\%} & \\
@@ -630,9 +660,9 @@ Masa ($\pm\SI{1}{g}$) & B & 0,002 & $\infty$\\\midrule
 
 \begin{resultado}[Incertidumbre esperada]
 \begin{itemize}[leftmargin=*]
-  \item Banco: $\CR=1{,}20\pm0{,}06$ (95\,\%). Domina el bloqueo del chorro (1,7\,\%), y
+  \item Banco: $\CR=1{,}20\pm0{,}055$ (95\,\%). Domina el bloqueo del chorro (1,7\,\%), y
         por eso se mide con el disco de referencia.
-  \item Caídas: $\Vr=\SI{6.4 \pm 0.3}{m/s}$ (95\,\%). Dominan la dispersión y el viento
+  \item Caídas: $\Vr=\SI{6.40 \pm 0.33}{m/s}$ (95\,\%). Dominan la dispersión y el viento
         vertical; más caídas solo reducen la primera.
   \item $\CR$ deducido de caídas \emph{sin} drogue: $u=4{,}6$\,\%, el doble que en el
         banco, porque $\CR\propto V^{-2}$ y además entra el $C_D$ del cuerpo. La
@@ -648,7 +678,9 @@ Masa ($\pm\SI{1}{g}$) & B & 0,002 & $\infty$\\\midrule
 \subsection{Vibración de 15\,G (E5a)}
 Un vibrador electrodinámico de \SI{200}{N} o más alcanza los 15\,G entre \SIlist{50;500}{Hz}.
 A 15\,G de pico la amplitud de desplazamiento es \SI{1.5}{mm} a \SI{50}{Hz}, pero
-\SI{9.3}{mm} a \SI{20}{Hz}, fuera del recorrido de un vibrador de laboratorio. La fuerza
+\SI{9.3}{mm} a \SI{20}{Hz} (\SI{18.6}{mm} pico a pico), más que la carrera de muchos
+vibradores pequeños. El anexo no fija la banda; la de \SIrange{50}{500}{Hz} es una
+elección del equipo. La fuerza
 pico, con CanSat, fijación y armadura (unos \SI{1.1}{kg}), es de \SI{162}{N}. Es un
 tamaño habitual en los laboratorios de vibraciones de ingeniería mecánica.
 \begin{enumerate}
@@ -659,10 +691,13 @@ tamaño habitual en los laboratorios de vibraciones de ingeniería mecánica.
   \item Repetición del barrido de baja amplitud: si una frecuencia se corre más de 5\,\%,
         algo se aflojó.
 \end{enumerate}
-La primera frecuencia de una pala plegada, estimada como viga de placa curvada
-($E\approx\SI{50}{GPa}$), es de unos \SI{340}{Hz} si la traba la sujeta en la punta, y de
-\SI{120}{Hz} si la punta queda suelta. Un pico cerca de \SI{120}{Hz} en el barrido delata
-entonces una traba floja.
+La primera frecuencia de flexión de una pala plegada, estimada como viga de placa curvada
+($E\approx\SI{50}{GPa}$) apoyada en la bisagra y en la traba de la punta, es de unos
+\SI{340}{Hz}: cae dentro de la banda de exposición, así que la punta y la traba verán
+una respuesta amplificada y conviene un acelerómetro pequeño cerca de una punta. Si la
+traba no sujeta la punta, la pala queda articulada en la bisagra y libre en el otro
+extremo: no tiene un modo elástico bajo, sino que pivota y golpea contra el cuerpo. Eso
+aparece en el barrido como impactos y ruido de banda ancha, y delata una traba floja.
 
 Como alternativa sin vibrador, la guía de la competencia CanSat propone una lijadora
 orbital aleatoria fijada boca arriba: de \SIrange{200}{233}{Hz} y de 20 a 29\,G,
@@ -682,7 +717,8 @@ Para 30\,G hace falta $k\approx\SI{3.4}{kN/m}$, con un pulso de \SI{38}{ms}
 teoría; nudos, cáncamo y estructura bajan el pico real. Por eso \textbf{el pico
 se mide}, con un acelerómetro de \SI{\pm200}{g} a \SI{1}{kHz} o más, porque la IMU de
 vuelo ($\pm16$\,g) satura. Si el pico supera 40\,G, se intercala un tramo de cuerda
-elástica. Se repite 3 veces en el eje axial. Criterio: nada se suelta, la traba sigue
+elástica, apartándose de la guía, que pide una cuerda no elástica; la desviación se
+documenta. Se repite 3 veces en el eje axial. Criterio: nada se suelta, la traba sigue
 cerrada (\Req{M3}), no hay reinicio ni corte de alimentación (\Req{M4}) y la telemetría
 sigue.
 
@@ -717,7 +753,7 @@ Ensayos E1--E6 del capítulo~\ref{cap:riesgos}; E2b, E7--E9 de este capítulo;
 redonda (E7) y los requisitos del anexo en sans serif (\Req{E7}).
 
 {\footnotesize\renewcommand{\arraystretch}{1.05}
-\begin{longtable}{@{}p{1.6cm}p{0.9cm}p{1.75cm}p{10.85cm}@{}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{1.95cm}p{0.9cm}p{1.75cm}p{10.5cm}@{}}
 \caption{Matriz de trazabilidad requisito $\rightarrow$ método $\rightarrow$ ensayo
 $\rightarrow$ criterio.}\label{tab:ensayos-matriz}\\
 \toprule
@@ -729,9 +765,9 @@ $\rightarrow$ criterio.}\label{tab:ensayos-matriz}\\
 \bottomrule
 \endfoot
 \Req{C1} & I & E10 & Contenedor entra en una maqueta del fuselaje con las medidas de la organización\\
-\Req{C2} & D & E4 (A), E10 & Drogue inflado en menos de \SI{1}{s} sin orden del software, en todas las caídas A\\
-\Req{C3} & A, E & E4 (A) & Velocidad de la etapa 1 entre \SIlist{12;18}{m/s} (previsto 13,4)\\
-\Req{C4} & A, E & E3, E4 & $\CR\ge1{,}0$ (cota inferior 95\,\%); $\Vr$ con cota superior 95\,\% $\le\SI{7.5}{m/s}$\\
+\Req{C2} & I, D & E10 & La expulsión la da el cohete; el CanSat no necesita orden propia y sale libre del tubo de referencia (ver \Req{S7})\\
+\Req{C3} & A, E & E4 & Drogue inflado en menos de \SI{1}{s} sin orden del software; velocidad de la etapa 1 entre \SIlist{12;18}{m/s} (previsto 13,4) en caídas con rotor trabado\\
+\Req{C4} & A, E & E3, E4 & $\CR\ge1{,}0$ (cota inferior 95\,\%); $\Vr$ con cota superior 95\,\% $\le\SI{7.5}{m/s}$ (margen del equipo; el anexo admite 8); media de la etapa 2 por análisis\\
 \Req{C5}, \Req{X5} & D & E6, E8 & Paquetes cada \SI{1.0 \pm 0.1}{s} durante toda la secuencia\\
 \Req{C6}, \Req{C7} & D & E4, E6 & Video cenit y nadir continuo desde la suelta hasta el suelo; se ven drogue, apertura y giro de palas\\
 \Req{C8}, \Req{E8}, \Req{E9} & I, D & E10 & Baliza suena con la batería principal desconectada; interruptor propio accesible; audible a \SI{30}{m} (criterio del equipo)\\

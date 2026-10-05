@@ -47,16 +47,16 @@ descarga de la celda (figura~\ref{fig:electronica-esq}).
   \node[draw, fill=ffijo, minimum width=13mm, minimum height=8mm, align=center] (prot) at (2.15,0)
         {Protec.\\[-1pt]OV/UV/OC};
   \draw (1.3,0) -- (prot.west);
-  \draw (prot.east) to[nos, l={S1 (\Req{E4})}] (3.9,0)
-        to[R, l_={$R_s$ \SI{20}{m\ohm}}] (5.0,0) -- (9.4,0);
-  \node[draw, fill=white, minimum width=13mm, minimum height=5mm] (ina) at (4.45,1.0) {INA219};
-  \draw (3.9,0) |- ([yshift=-1mm]ina.west);
-  \draw (5.0,0) |- ([yshift=-1mm]ina.east);
+  \draw (prot.east) to[nos, l={S1 (\Req{E4})}] (4.1,0)
+        to[R, l_={$R_s$ \SI{20}{m\ohm}}] (5.2,0) -- (9.4,0);
+  \node[draw, fill=white, minimum width=13mm, minimum height=5mm] (ina) at (4.65,1.1) {INA219};
+  \draw (4.1,0) |- ([yshift=-1mm]ina.west);
+  \draw (5.2,0) |- ([yshift=-1mm]ina.east);
   \node[anchor=west, cgris] at (ina.east) {I$^2$C};
-  \node[above, font=\scriptsize\bfseries] at (5.55,0) {VBAT};
-  \draw (6.2,0) to[R, l_={\SI{1}{k\ohm}}, *-] (6.2,-1.3) to[leDo, l_={\Req{E6}}] (6.2,-2.6);
-  \draw (7.6,0) to[R, l_={\SI{100}{k\ohm}}, *-] (7.6,-1.3) to[R, l_={\SI{100}{k\ohm}}] (7.6,-2.6);
-  \draw (7.6,-1.3) to[short, *-] (8.0,-1.3) node[right] {ADC};
+  \node[above, font=\scriptsize\bfseries] at (5.75,0) {VBAT};
+  \draw (6.2,0) to[R, l_={\SI{1}{k\ohm}}, *-] (6.2,-1.3) to[leDo, l_={LED \Req{E6}}] (6.2,-2.6);
+  \draw (8.0,0) to[R, l={\SI{100}{k\ohm}}, *-] (8.0,-1.3) to[R, l={\SI{100}{k\ohm}}] (8.0,-2.6);
+  \draw (8.0,-1.3) to[short, *-] (7.3,-1.3) node[left] {ADC};
   \draw (0,-2.6) -- (10.6,-2.6);
   \draw (prot.south) -- (2.15,-2.6);
   % --- convertidores
@@ -72,12 +72,12 @@ descarga de la celda (figura~\ref{fig:electronica-esq}).
   \draw (u1.east) -- (13.0,-1.0) node[right, align=left] {\textbf{+3V3}\\[-1pt]a la parte (b)};
   \draw (12.1,-1.0) to[C, l={$2\times\SI{22}{\micro F}$}, *-] (12.1,-1.8) node[ground]{};
   % --- riel de 5 V
-  \draw (u2.east) -- (14.1,1.0) node[right, align=left] {a Q1 (servo)\\[-1pt]y Q2 (cámaras)};
+  \draw (u2.east) -- (14.3,1.0) node[right, align=left] {a Q1 (servo)\\[-1pt]y Q2 (cám.)};
   \node[above, font=\scriptsize\bfseries] at (12.0,1.0) {+5V};
-  \draw (12.5,1.0) to[eC, l={\SI{470}{\micro F}}, *-] (12.5,-0.05) node[ground]{};
-  \draw (13.6,1.0) to[D, l={TVS}, *-] (13.6,-0.05) node[ground]{};
+  \draw (12.4,1.0) to[eC, l_={\SI{470}{\micro F}}, *-] (12.4,-0.05) node[ground]{};
+  \draw (13.7,1.0) to[D, l={TVS}, *-] (13.7,-0.05) node[ground]{};
   % --- baliza independiente
-  \begin{scope}[shift={(11.6,-3.55)}]
+  \begin{scope}[shift={(11.6,-4.25)}]
     \draw[dashed, ccuerda] (0,0) rectangle (4.0,1.25);
     \draw (0.45,0.2) to[battery1, l_={B2}] (0.45,1.05) to[nos, l={S2 (\Req{E9})}] (2.1,1.05)
           to[buzzer] (3.6,1.05) -- (3.6,0.2) -- (0.45,0.2);
@@ -113,12 +113,12 @@ descarga de la celda (figura~\ref{fig:electronica-esq}).
   \draw (xb.west) -- (mcu.east |- xb.west) node[left] {UART2};
   \draw (xb.east) -- ++(0.3,0) node[antenna, anchor=south]{};
   \node[per, fill=cfreno!10] (srv) at (14.1,0.9) {Servo de traba};
-  \draw (mcu.east |- srv.west) node[left] {PWM} -- (9.5,0.9) to[R, l={\SI{1}{k\ohm}}] (10.6,0.9) -- (srv.west);
-  \draw (11.1,0.9) to[R, l={\SI{10}{k\ohm}}, *-] (11.1,0.1) node[ground]{};
+  \draw (mcu.east |- srv.west) node[left] {PWM} -- (9.3,0.9) to[R, l={\SI{1}{k\ohm}}] (10.4,0.9) -- (srv.west);
+  \draw (10.9,0.9) to[R, l_={\SI{10}{k\ohm}}, *-] (10.9,0.1) node[ground]{};
   \node[per, fill=frot] (hall) at (14.1,-0.5) {Hall + 2 imanes};
-  \draw (hall.west) -- (12.2,-0.5) to[R, l_={\SI{1}{k\ohm}}] (11.1,-0.5) -- (mcu.east |- 0,-0.5) node[left] {EXTI};
-  \draw (12.2,-0.5) to[R, l_={\SI{10}{k\ohm}}, *-] (12.2,0.3) node[above, font=\tiny] {+3V3};
-  \draw (10.2,-0.5) to[C, l={\SI{10}{nF}}, *-] (10.2,-1.25) node[ground]{};
+  \draw (hall.west) -- (12.3,-0.5) to[R, l={\SI{1}{k\ohm}}] (11.1,-0.5) -- (mcu.east |- 0,-0.5) node[left] {EXTI};
+  \draw (12.3,-0.5) to[R, l={\SI{10}{k\ohm}}, *-] (12.3,0.2) node[right, font=\tiny] {+3V3};
+  \draw (10.2,-0.5) to[C, l_={\SI{10}{nF}}, *-] (10.2,-1.25) node[ground]{};
   \node[per] (cmr) at (14.1,-2.0) {P-MOS Q1 (servo), Q2 (cám.)};
   \draw (cmr.west) -- (mcu.east |- cmr.west) node[left] {GPIO};
   \node[per] (sol) at (14.1,-2.8) {Paneles solares (\Req{E3})};
@@ -178,26 +178,25 @@ Traba & Servo MG90S & reposo \SI{10}{mA}, movimiento \SI{200}{mA}, bloqueo $\app
   % cuerpo (escala vertical 0,34 mm/mm)
   \fill[ffijo] (0,0) rectangle (30,205);
   \draw[cfijo, line width=0.7pt] (0,0) rectangle (30,205);
-  \foreach \ya/\yb/\txt/\col in {0/40/{Baliza, lastre, cámara nadir}/ccuerda,
-      40/70/{Anillo de traba y servo}/cfreno, 70/140/{Batería 18650}/cgris,
-      140/195/{Pila de PCB (MCU, sensores, radio)}/cfijo, 195/205/{Tapa sup., cámara cenit, hall}/cfijo}{
+  \foreach \ya/\yb/\yc/\txt in {0/40/20/{Baliza, lastre, cámara nadir},
+      40/70/55/{Anillo de traba y servo}, 70/140/105/{Batería 18650},
+      140/195/164/{Pila de PCB (MCU, sensores, radio)}, 195/205/204/{Tapa sup.: cámara cenit, hall}}{
     \draw[cfijo!60] (0,\ya) -- (30,\ya);
-    \node[anchor=east, align=right, text width=36mm] at (-2,{(\ya+\yb)/2}) {\txt\\[-1pt]\textcolor{cgris}{\ya--\yb\,mm}};
+    \node[anchor=east, align=right, text width=40mm] at (-2,\yc) {\txt\\[-1pt]\textcolor{cgris}{\ya--\yb\,mm}};
   }
   \draw[rot] (8,205) rectangle (22,222);
-  \node[anchor=east, align=right] at (-2,213.5) {Cubo del rotor};
+  \node[anchor=west] at (34,213.5) {Cubo del rotor};
   \draw[cont] (8,222) rectangle (22,250);
-  \node[anchor=east, align=right] at (-2,236) {Copa del drogue};
+  \node[anchor=west] at (34,236) {Copa del drogue};
   % palas plegadas (etapa 1)
   \fill[crot, opacity=0.35] (30,57) rectangle (32.5,213);
-  \node[anchor=west, crot, font=\tiny, align=left] at (33,236) {palas plegadas\\[-1pt]57--213\,mm (etapa 1)};
-  \draw[crot, -{Latex[length=1.2mm]}] (34,229) -- (32,210);
+  \node[anchor=west, crot, font=\tiny, align=left] at (33,130) {palas\\[-1pt]plegadas\\[-1pt]57--213\,mm\\[-1pt](etapa 1)};
   % batería y PCB
   \draw[draw=cgris, fill=cgris!25] (11,72) rectangle (19,138);
   \foreach \y in {145,160,175,190} \draw[cfijo, line width=1pt] (2,\y) -- (28,\y);
   % antena en la zona libre inferior
   \draw[ccont, line width=1.2pt, decorate, decoration={coil, aspect=0.5, segment length=1.6mm, amplitude=1.2mm}] (25,8) -- (25,38);
-  \node[ccont, anchor=west, font=\tiny] at (33,22) {antena (zona libre $<57$\,mm)};
+  \node[ccont, anchor=west, font=\tiny] at (33,22) {antena (zona libre $<\SI{57}{mm}$)};
   \draw[ccont] (32.5,22) -- (26.5,22);
   % arnés
   \draw[ccuerda, line width=0.9pt] (25,40) -- (25,145);
@@ -210,7 +209,7 @@ Traba & Servo MG90S & reposo \SI{10}{mA}, movimiento \SI{200}{mA}, bloqueo $\app
   \foreach \x/\y/\n in {25/145/7, 5/145/2, 15/141/1, 20/195/3, 10/198/4, 9/30/5}
     \node[font=\tiny\bfseries, text=white] at (\x,\y) {\n};
   % leyenda
-  \node[anchor=north west, align=left, font=\scriptsize, text width=62mm] at (55,250) {%
+  \node[anchor=north west, align=left, font=\scriptsize, text width=55mm] at (60,250) {%
     \textbf{Conectores con traba} (vibración \Req{S4}, choque \Req{S5}):\\[2pt]
     \textbf{1} batería: lengüetas soldadas + conector de 2 vías con traba (\Req{M4})\\
     \textbf{2} servo: 3 vías (5\,V, GND, PWM), cable trenzado\\
@@ -433,7 +432,7 @@ tocar el suelo sin que la IMU registre el impacto.}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.52\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=640, ymax=712,
+\begin{axis}[width=0.5\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=640, ymax=712,
     xlabel={$t-t_{\mathrm{apogeo}}$ [s]}, ylabel={Altura [m]},
     legend style={font=\scriptsize, at={(0.02,0.03)}, anchor=south west}, legend cell align=left]
   \addplot[cgris!60, line width=0.4pt] table[x=tr, y=zb] {analysis/data/electronica_kalman_apogeo.dat};
@@ -446,7 +445,7 @@ tocar el suelo sin que la IMU registre el impacto.}
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
-\begin{axis}[width=0.52\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=-30, ymax=30,
+\begin{axis}[width=0.5\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=-30, ymax=30,
     xlabel={$t-t_{\mathrm{apogeo}}$ [s]}, ylabel={Velocidad [m/s]},
     legend style={font=\scriptsize, at={(0.98,0.97)}, anchor=north east}, legend cell align=left]
   \addplot[black, line width=1.1pt] table[x=tr, y=v] {analysis/data/electronica_kalman_apogeo.dat};
@@ -469,11 +468,12 @@ y no se aparta de la altura real.}
 y su detección. Error de liberación: altura real al liberar menos $0{,}8\,h_{\max}$.
 Prematura: por encima del 85\,\% de $h_{\max}$; tardía: por debajo del 75\,\% o sin
 liberar.}\label{tab:electronica-mc}
+\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}clccccccc@{}}
 \toprule
-& & \multicolumn{2}{c}{\textbf{Retardo de apogeo} [s]} & \textbf{Apogeo} & \multicolumn{4}{c}{\textbf{Liberación}}\\
+& & \multicolumn{2}{c}{\textbf{Retardo apogeo} [s]} & \textbf{Apogeo} & \multicolumn{4}{c}{\textbf{Liberación}}\\
 \cmidrule(lr){3-4}\cmidrule(lr){6-9}
-\textbf{Esc.} & \textbf{Lógica} & mediana & p95 & falso [\%] & error med. [m] & p95 $|$error$|$ [m] & prem. [\%] & tardía [\%]\\\midrule
+\textbf{Esc.} & \textbf{Lógica} & med. & p95 & falso [\%] & err. med. [m] & p95 $|$err.$|$ [m] & prem. [\%] & tardía [\%]\\\midrule
 1 & A: crudo     & 0,34 & 0,52 & 37,5 & $+0{,}2$ & 393 & 0,2 & 28,4\\
 1 & B: EMA       & 0,54 & 0,58 & 0,8  & $-3{,}4$ & 3,8 & 0,0 & 0,8\\
 1 & C: Kalman    & 0,70 & 0,78 & 0,0  & $-0{,}3$ & 0,5 & 0,0 & 0,0\\\midrule

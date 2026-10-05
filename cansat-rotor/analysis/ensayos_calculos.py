@@ -190,6 +190,48 @@ for nombre in ("A_nom", "B_nom"):
     cab.append("rpm" + nombre.replace("_", ""))
 guardar("ensayos_caida.dat", cab, cols)
 
+# etapa 1 sola (rotor trabado): altura para llegar al 98 % de V1 (verificación de C3)
+def rhs1(t, y):
+    fd = min(t / 0.5, 1.0)
+    return [y[1], (W - (fd*k_d + k_c)*y[1]*abs(y[1])) / m]
+s1 = solve_ivp(rhs1, (0, 30), [0, 0], max_step=0.01, rtol=1e-8, atol=1e-10)
+for frac in (0.95, 0.98):
+    i = np.argmax(s1.y[1] >= frac*V1)
+    linea(f"etapa 1 sola: altura hasta {frac*100:.0f} % de V1", s1.y[0][i], "m")
+    linea(f"   tiempo", s1.t[i], "s")
+i = np.argmax(s1.t >= 2.5)
+linea("etapa 1: V y altura a t = 2,5 s (liberación del caso A)", s1.y[1][i], "m/s")
+linea("   altura", s1.y[0][i], "m")
+
+# velocidad media de la etapa 2 (C4 habla de promedio): liberación con V1 ya estable
+titulo("Velocidad media de la etapa 2 (liberación a V1 estable)")
+for a, etiq in ((a_nom, "nominal"), (0.0, "conservador")):
+    def rhs2(t, y, a=a):
+        h, Vv, Om = y
+        Vp = max(Vv, 0.05)
+        T = 0.5*rho*A_R*(C_s*Vv*abs(Vv) + (C_R - C_s)*(Om*R/lam_d)**2)
+        x = Om / (lam_d*Vp/R)
+        Q = Q0_ref*(Vp/13.4)**2*(1 - x)*(1 + a*x) - Q_f*np.tanh(Om/2)
+        dOm = Q / I_p if (Om > 0 or Q > 0) else 0.0
+        return [Vv, (W - (k_d + k_c)*Vv*abs(Vv) - T)/m, dOm]
+    for H in (100.0, 300.0, 560.0):
+        ev = lambda t, y, H=H: y[0] - H
+        ev.terminal = True
+        s2 = solve_ivp(rhs2, (0, 300), [0, V1, 0], max_step=0.01, events=ev,
+                       rtol=1e-7, atol=1e-9)
+        linea(f"{etiq}: V media en {H:.0f} m de etapa 2", H/s2.t[-1], "m/s")
+
+# ensayo en auto: el rotor a velocidad constante tiende al equilibrio lambda_d
+titulo("Ensayo en auto: rpm de equilibrio a velocidad constante")
+r_g = 13.1 / (7.4e-3 * Om_d**2)          # radio del c.d.m. de la pala (F_c = 13,1 N)
+linea("radio del centro de masa de la pala", r_g, "m")
+for Vx in (7.0, 10.0, 13.4, 13.9):
+    Om = lam_d*Vx/R
+    linea(f"V = {Vx} m/s: rpm de equilibrio", Om*60/2/np.pi, "rpm")
+    linea(f"   velocidad de punta", Om*R, "m/s")
+    linea(f"   fuerza centrífuga por pala", 7.4e-3*r_g*Om**2, "N")
+    linea(f"   energía de una pala suelta (v del c.d.m.)", 0.5*7.4e-3*(Om*r_g)**2, "J")
+
 # ------------------------------------------------- 3. estadística de repeticiones
 titulo("Repeticiones necesarias")
 n = np.arange(3, 31)
@@ -324,9 +366,12 @@ Rc = 0.0819
 s_f = Rc - np.sqrt(Rc**2 - c**2/4)
 I_sec = c*t*4*s_f**2/45
 mu = rho_cf*c*t*1.03
-for nombre, cte in (("apoyada-apoyada", np.pi**2), ("voladizo", 1.875**2)):
-    f1 = cte/(2*np.pi*L_pala**2)*np.sqrt(E_cf*I_sec/mu)
-    linea(f"f1 pala plegada ({nombre})", f1, "Hz")
+# Plegada, la pala se apoya en la bisagra (articulada en batimiento) y en la traba de
+# la punta: viga simplemente apoyada. Sin traba queda articulada-libre: no tiene modo
+# elástico de flexión bajo, solo pivota en la bisagra (golpeteo contra el cuerpo).
+f1 = np.pi**2/(2*np.pi*L_pala**2)*np.sqrt(E_cf*I_sec/mu)
+linea("f1 pala plegada (bisagra + traba = apoyada-apoyada)", f1, "Hz")
+linea("   (sin traba: articulada-libre, sin modo elástico bajo)", 0.0)
 linea("flecha de la sección", s_f*1000, "mm")
 
 # ------------------------------------------------- 8. radio

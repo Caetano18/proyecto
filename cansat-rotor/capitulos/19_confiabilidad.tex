@@ -123,7 +123,8 @@ y la condición $\bar V_2\le\SI{8}{m/s}$ equivale a
 Con $V_1=\SI{13.35}{m/s}$, $t_s$ entre \SIlist{3;6}{s} (sección~\ref{sec:arranque}) y
 apogeos de \SIrange{500}{1000}{m}, $V_2^{*}$ va de \SI{7.66}{m/s} (\SI{500}{m},
 \SI{6}{s}) a \SI{7.92}{m/s} (\SI{1000}{m}, \SI{3}{s}). La aproximación de $V_s$ es
-razonable: las palas abiertas y quietas ya frenan el CanSat a unos \SI{10}{m/s}.
+razonable: las palas abiertas y quietas ($4\times\SI{70}{cm^2}$ de frente con
+$C_D\approx1{,}2$), junto con el drogue, ya frenan el CanSat a unos \SI{10}{m/s}.
 
 \begin{nota}[Diferencia con la estimación base]
 El peor caso del dimensionamiento ($\CR=1{,}0$ y drogue sin aporte,
@@ -142,23 +143,25 @@ con $\CR\sim\mathcal N(1{,}20;\,0{,}10)$, fracción conservada del arrastre del 
 $k_d\sim\mathcal U(0,1)$, $C_{D,d}\sim\mathcal U(0{,}75;\,0{,}90)$, masa
 $\mathcal U(490,510)$\,g, temperatura de \SIrange{5}{35}{\celsius} al nivel del mar
 ($\rho$ de \SIrange{1.146}{1.270}{kg/m^3}), $h_{\max}\sim\mathcal U(500,1000)$\,m y
-$t_s\sim\mathcal U(3,6)$\,s. Resulta $P(\bar V_2>\SI{8}{m/s})=\num{5.4e-3}$; si se
-ignorara el arranque, $P(\Vr>\SI{8}{m/s})=\num{1.6e-3}$. El transitorio triplica la
-probabilidad.
+$t_s\sim\mathcal U(3,6)$\,s. Resulta $P(\bar V_2>\SI{8}{m/s})=\num{5.4e-3}$ (error
+estándar del muestreo, \num{1.2e-4}); si se
+ignorara el arranque, $P(\Vr>\SI{8}{m/s})=\num{1.6e-3}$. El transitorio multiplica la
+probabilidad por 3,4.
 
 $x_{17}$ depende sobre todo de cuánto se sabe de $\CR$
 (figura~\ref{fig:confiabilidad-incert}a): con media 1,10 subiría a \SI{4}{\percent}, y con
 el drogue sin aporte y $\sigma_{\CR}=0{,}20$, a \SI{18}{\percent}. Para que
 $P(\bar V_2>8)\le\SI{1}{\percent}$ sin contar con el drogue hace falta $\CR\ge1{,}10$, o
-bien $\Vr\le\SI{7.69}{m/s}$ a la densidad de vuelo. Esos dos números fijan los criterios
+bien $\Vr\le\SI{7.69}{m/s}$ a la densidad de vuelo más baja. Esos dos números fijan los criterios
 de E3 y E4 (sección~\ref{sec:confiabilidad-gonogo}).
 
 \subsection{Estructura del árbol y eventos básicos}
 El evento tope tiene cinco ramas: el rotor no se despliega, no arranca o se detiene,
 falla estructural, rendimiento insuficiente ($x_{17}$) y liberación fuera de la ventana
-($x_{18}$) (figura~\ref{fig:confiabilidad-arbol1}). La única redundancia es la detección
-de altitud (barómetro y respaldo por tiempo), con un evento de causa común
-$x_6=\beta\,p_b$, $\beta=0{,}1$. La tabla~\ref{tab:confiabilidad-eventos} justifica cada
+($x_{18}$) (figura~\ref{fig:confiabilidad-arbol1}). La única redundancia de componentes es la
+detección de altitud (barómetro y respaldo por tiempo), con un evento de causa común
+$x_6=\beta\,p_b$, $\beta=0{,}1$. Los reintentos del servo son una redundancia temporal y ya
+están incluidos en $x_8$. La tabla~\ref{tab:confiabilidad-eventos} justifica cada
 probabilidad.
 
 \begin{figure}[H]
@@ -169,15 +172,15 @@ probabilidad.
   \confO{T}
   % ---- nivel 1
   \node[conf-ev=25mm] (G1) at (45,-22) {El rotor no se despliega\\ \num{1.78e-2}};
-  \node[conf-ev=21mm] (G2) at (101,-22) {No arranca o se detiene\\ \num{6.49e-3}};
-  \node[conf-ev=21mm] (G3) at (128,-22) {Falla estructural en vuelo\\ \num{1.80e-3}};
+  \node[conf-ev=21mm] (G2) at (99,-22) {No arranca o se detiene\\ \num{6.49e-3}};
+  \node[conf-ev=24mm] (G3) at (124,-22) {Falla estructural en vuelo\\ \num{1.80e-3}};
   \node[conf-nd] (x17) at (146,-22) {$x_{17}$};
   \node[conf-eb] (x18) at (156,-22) {$x_{18}$};
   \confP{x17}{\num{5.4e-3}} \confPb{x18}{\num{2e-3}}
   \foreach \h in {G1,G2,G3,x17,x18}{\confC{T}{\h}}
   \confO{G1} \confO{G2} \confO{G3}
   % ---- nivel 2
-  \node[conf-ev=24mm] (G11) at (21,-44) {No se emite la orden\\ \num{9.15e-3}};
+  \node[conf-ev=28mm] (G11) at (21,-44) {No se emite la orden\\ \num{9.15e-3}};
   \node[conf-ev=22mm] (G12) at (64,-44) {La traba no libera\\ \num{6.79e-3}};
   \node[conf-eb] (x10) at (81,-44) {$x_{10}$};
   \node[conf-eb] (x11) at (92,-44) {$x_{11}$};
@@ -207,14 +210,14 @@ probabilidad.
   \foreach \h in {x7,x8,x9}{\confC{G12}{\h}}
   \confO{G111}
   % ---- nivel 4
-  \node[conf-ev=15mm] (G112) at (33,-88) {Fallan ambos canales\\ \num{1.8e-4}};
-  \node[conf-eb] (x6) at (47,-88) {$x_{6}$};
+  \node[conf-ev=15mm] (G112) at (33,-94) {Fallan ambos canales\\ \num{1.8e-4}};
+  \node[conf-eb] (x6) at (47,-94) {$x_{6}$};
   \confP{x6}{\num{1e-3}}
   \confC{G111}{G112} \confC{G111}{x6}
   \confY{G112}
   % ---- nivel 5
-  \node[conf-eb] (x4) at (28.5,-110) {$x_{4}$};
-  \node[conf-eb] (x5) at (37.5,-110) {$x_{5}$};
+  \node[conf-eb] (x4) at (28.5,-124) {$x_{4}$};
+  \node[conf-eb] (x5) at (37.5,-124) {$x_{5}$};
   \confP{x4}{\num{9e-3}} \confPb{x5}{\num{2e-2}}
   \confC{G112}{x4} \confC{G112}{x5}
   % ---- leyenda
@@ -266,7 +269,7 @@ $x_{13}$ & Cuerda en el plano del rotor & \num{5e-3} & 10 & No ensayado; depende
 $x_{14}$ & Rotura de pala o portapala & \num{1e-3} & 10 & Margen $\ge9$ en tensiones (tabla~\ref{tab:cargas}); riesgo por defectos de fabricación\\
 $x_{15}$ & Falla de bisagra o pasador & \num{5e-4} & 5 & Pasador con retención; corte de \SI{2.1}{MPa}\\
 $x_{16}$ & Tuerca M8 floja, el cubo sale & \num{3e-4} & 5 & Tuerca autoblocante, fijador y marca testigo\\
-$x_{17}$ & $\bar V_2>\SI{8}{m/s}$ con rotor sano & \num{5.4e-3} & 5 & Monte Carlo (sección~\ref{sec:confiabilidad-x17})\\
+$x_{17}$ & $\bar V_2>\SI{8}{m/s}$ con rotor sano & \num{5.4e-3} & 5 & Monte Carlo (sección~\ref{sec:confiabilidad-x17}); el EF agrega la incertidumbre del modelo de cantidad de movimiento (conservador)\\
 $x_{18}$ & Liberación fuera de la ventana & \num{2e-3} & 5 & Picos de presión en la eyección; filtro y confirmación en 5 muestras\\
 $x_{19}$ & El drogue no se abre & \num{1e-2} & 3 & Paracaídas chico plegado a mano; supone 10 despliegues de prueba sin falla\\
 $x_{20}$ & Rotura de cuerda o anclaje & \num{2e-3} & 5 & Cuerda de aramida con FS $\ge8$ frente a \SI{23}{N}\\
@@ -275,7 +278,7 @@ $x_{22}$ & Baliza muda & \num{1e-2} & 3 & Pila propia; encendida y escuchada en 
 $x_{23}$ & Cae en zona inaccesible & \num{1e-2} & 3 & Depende del sitio: agua, árboles, predios cerrados\\
 $x_{24}$ & Sin última posición GPS & \num{5e-2} & 3 & El enlace suele perderse cerca del suelo\\
 $x_{25}$ & Sin seguimiento visual & 0,3 & 2 & Condicional: nadie sigue el descenso hasta el suelo\\
-$x_{26}$ & Palas rotas al abrir sin drogue & 0,3 & 2 & Condicional: a \SI{37.6}{m/s}, $\approx\SI{7}{N}$ por pala y $\approx\SI{0.5}{N.m}$ en la raíz ($\approx\SI{270}{MPa}$) más el golpe contra el tope\\
+$x_{26}$ & Palas rotas al abrir sin drogue & 0,3 & 2 & Condicional: a \SI{37.6}{m/s}, $\approx\SI{7}{N}$ por pala y $\approx\SI{0.5}{N.m}$ en la raíz ($\approx\SI{270}{MPa}$ con sección plana) más el golpe contra el tope\\
 \end{longtable}
 \end{footnotesize}
 
@@ -311,7 +314,7 @@ así que la probabilidad exacta se obtiene condicionando sobre él:
   \node[conf-top=34mm] (T) at (80,0) {\textbf{Pérdida del CanSat}\\ $P=\num{2.15e-2}$};
   \confO{T}
   \node[conf-ev=30mm] (G6) at (25,-22) {Caída sin ningún freno\\ \num{3.81e-3}};
-  \node[conf-ev=28mm] (G7) at (75,-22) {Impacto a la velocidad de la etapa 1\\ \num{7.79e-3}};
+  \node[conf-ev=33mm] (G7) at (75,-22) {Impacto a la velocidad\\ de la etapa 1\\ \num{7.79e-3}};
   \node[conf-ev=24mm] (G8) at (118,-22) {No se localiza\\ \num{1.5e-4}};
   \node[conf-eb] (x23) at (150,-22) {$x_{23}$};
   \confP{x23}{\num{1e-2}}
@@ -356,8 +359,21 @@ ensayo estático de la raíz de la pala a \SI{1.0}{N.m} (el doble del momento es
 \SI{37.6}{m/s}), que acota $x_{26}$ casi sin costo, y un \emph{modo de emergencia}: si tras
 la eyección $|v_z|>\SI{25}{m/s}$ durante \SI{2}{s}, el drogue falló y el rotor se libera
 de inmediato. En ese caso \Req{C3} y \Req{C4} ya están perdidos y liberar antes da más
-altura para frenar. Este modo debe probarse en HIL para que no se active con el pico de
-la eyección.
+altura para frenar. En caída libre con arrastre, el CanSat llega a \SI{25}{m/s} unos
+\SI{3}{s} después de la eyección y, tras los \SI{2}{s} de confirmación, libera a unos
+\SI{33}{m/s}: las cargas de apertura son el \SI{75}{\percent} de las de
+\SI{37.6}{m/s}, una mejora modesta. Este modo debe probarse en HIL para que no se active
+con el pico de la eyección.
+
+\begin{nota}[Resultado incierto del ensayo de la raíz]
+Los \SI{270}{MPa} de $x_{26}$ usan el módulo resistente de la placa plana
+($\SI{1.9}{mm^3}$, como en la tabla~\ref{tab:cargas}). La sección curvada al
+\SI{7}{\percent} ($R_c=\SI{81.9}{mm}$, flecha \SI{3.2}{mm}) tiene unos \SI{8.8}{mm^3},
+4,7 veces más. A \SI{1}{N.m} la placa plana llegaría a unos \SI{530}{MPa}, del orden de
+la resistencia del laminado, y la curvada a unos \SI{115}{MPa}. El resultado depende de
+cuánto de la curvatura conserva la raíz dentro del portapala; por eso el ensayo es
+necesario y su resultado no puede anticiparse con este cálculo.
+\end{nota}
 
 %=====================================================================
 \section{Importancia y propagación de la incertidumbre}\label{sec:confiabilidad-incert}
@@ -370,9 +386,14 @@ lognormal con mediana igual a la estimación puntual y factor de error EF:
   \label{eq:confiabilidad-lognormal}
 \end{equation}
 Con \num{100000} muestras se evaluaron ambos árboles
-(tabla~\ref{tab:confiabilidad-incert}, figura~\ref{fig:confiabilidad-incert}b). La media
-supera a la mediana por la asimetría de la lognormal, y los EF grandes ($x_{2}$,
-$x_{13}$, $x_{14}$) arrastran la cola superior.
+(tabla~\ref{tab:confiabilidad-incert}, figura~\ref{fig:confiabilidad-incert}b). Incluso la
+mediana de $P(T_1)$ (\SI{5.1}{\percent}) supera la estimación puntual
+(\SI{3.3}{\percent}), que se calculó con las medianas de los eventos. No es un error: en un
+sistema casi en serie $P(T)\approx\sum_i p_i$, y la suma de lognormales tiene una mediana
+mayor que la suma de las medianas, porque cada término aporta su cola superior. La media
+supera a su vez a la mediana por la asimetría, y los EF grandes ($x_{2}$, $x_{13}$,
+$x_{14}$) arrastran la cola superior. Por eso los objetivos se fijan sobre la media y no
+sobre la estimación puntual.
 
 \begin{table}[H]
 \centering\small
@@ -394,7 +415,7 @@ $T_2$: pérdida del CanSat & \num{2.15e-2} & \num{1.59e-2} & \num{3.00e-2} & \nu
 \begin{axis}[name=fa, width=0.5\textwidth, height=6.4cm,
   xbar, bar width=4pt, xmin=0, xmax=0.18,
   xlabel={FV para $T_1$}, ytick={0,...,11},
-  yticklabels={$x_{6}$,$x_{2}$,$x_{12}$,$x_{8}$,$x_{18}$,$x_{10}$,$x_{9}$,$x_{1}$,$x_{7}$,$x_{3}$,$x_{13}$,$x_{17}$},
+  yticklabels from table={analysis/data/confiabilidad_fv.dat}{lab},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
   scaled x ticks=false, enlarge y limits=0.06, ymajorgrids=false,
   title={\small (a) Etapa 2 no cumple \Req{C4}}]
@@ -403,7 +424,7 @@ $T_2$: pérdida del CanSat & \num{2.15e-2} & \num{1.59e-2} & \num{3.00e-2} & \nu
 \begin{axis}[at={(fa.east)}, anchor=west, xshift=1.4cm, width=0.5\textwidth, height=6.4cm,
   xbar, bar width=4pt, xmin=0, xmax=0.5,
   xlabel={FV para $T_2$}, ytick={0,...,11},
-  yticklabels={$x_{8}$,$x_{1}$,$x_{9}$,$x_{10}$,$x_{20}$,$x_{7}$,$x_{3}$,$x_{13}$,$x_{19}$,$x_{26}$,$x_{21}$,$x_{23}$},
+  yticklabels from table={analysis/data/confiabilidad_fv2.dat}{lab},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1},
   scaled x ticks=false, enlarge y limits=0.06, ymajorgrids=false,
   title={\small (b) Pérdida del CanSat}]
@@ -422,19 +443,21 @@ cada árbol.}
   xmin=0.02, xmax=0.25, ymin=1e-4, ymax=0.5,
   xlabel={$\sigma_{\CR}$}, ylabel={$P(\bar V_2>\SI{8}{m/s})$},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
-  legend style={font=\scriptsize, at={(0.98,0.03)}, anchor=south east, fill=white},
+  legend style={font=\scriptsize, at={(0.5,-0.3)}, anchor=north, fill=white,
+    legend columns=2, /tikz/every even column/.append style={column sep=4pt}},
   title={\small (a) Sensibilidad de $x_{17}$}]
   \addplot[cfijo, thick] table[x=sigma, y=P110] {analysis/data/confiabilidad_sens.dat};
   \addplot[crot, thick] table[x=sigma, y=P120] {analysis/data/confiabilidad_sens.dat};
   \addplot[ccuerda, thick] table[x=sigma, y=P130] {analysis/data/confiabilidad_sens.dat};
   \addplot[crot, thick, densely dashed] table[x=sigma, y=P120kd0] {analysis/data/confiabilidad_sens.dat};
   \addplot[only marks, mark=*, mark size=1.8pt, black] coordinates {(0.10,0.0054)};
-  \legend{$\bar\CR=1{,}10$, $\bar\CR=1{,}20$, $\bar\CR=1{,}30$, {$1{,}20$, drogue nulo}}
+  \legend{$\mu_{C_R}=1{,}10$, $\mu_{C_R}=1{,}20$, $\mu_{C_R}=1{,}30$, {$\mu_{C_R}=1{,}20$, drogue nulo}}
 \end{axis}
 \begin{axis}[at={(sa.east)}, anchor=west, xshift=1.45cm, width=0.5\textwidth, height=6.2cm,
   xmode=log, xmin=1e-2, xmax=0.3, ymin=0, ymax=1,
   xlabel={Probabilidad del evento tope por vuelo}, ylabel={Probabilidad acumulada},
-  legend style={font=\scriptsize, at={(0.98,0.03)}, anchor=south east, fill=white},
+  legend style={font=\scriptsize, at={(0.5,-0.3)}, anchor=north, fill=white,
+    legend columns=2, /tikz/every even column/.append style={column sep=4pt}},
   title={\small (b) Distribución de $P(T_1)$ y $P(T_2)$}]
   \addplot[cfijo, thick] table[x=P1, y=F] {analysis/data/confiabilidad_cdf.dat};
   \addplot[crot, thick] table[x=P2, y=F] {analysis/data/confiabilidad_cdf.dat};
@@ -444,7 +467,8 @@ cada árbol.}
 \end{axis}
 \end{tikzpicture}
 \caption{(a) Probabilidad de que la etapa 2 promedie más de \SI{8}{m/s} con el rotor
-sano, en función de la incertidumbre de $\CR$; el punto marca el valor adoptado.
+sano, en función de la desviación estándar $\sigma_{C_R}$ para tres medias $\mu_{C_R}$; el
+punto marca el valor adoptado.
 (b) Distribución acumulada de la probabilidad de los eventos tope; las líneas de trazos
 son las estimaciones puntuales.}
 \label{fig:confiabilidad-incert}
@@ -579,7 +603,7 @@ M6 & \textbf{Respaldo por tiempo}: no se activa (usa el barómetro averiado; GPS
 M7 & \textbf{Batería 18650}: desconexión momentánea por choque (portapilas de resorte) [$x_{1}$] & reinicio o apagado en vuelo & 9 & 5 & 4 & \textbf{180} & lengüetas soldadas y brida (\Req{M4}); E5 con registro de tensión & 9 & 3 & 2 & 54\\
 M8 & \textbf{Batería 18650}: descarga antes de liberar (\SI{2}{h} en el cohete) & sin orden de liberación ni telemetría & 9 & 4 & 3 & \textbf{108} & margen de energía $\times2$; carga $\ge\SI{4.15}{V}$ en la lista; cámaras desde \texttt{ASCENT} & 9 & 2 & 1 & 18\\
 M9 & \textbf{Regulador y cableado}: cortocircuito o conector flojo [$x_{1}$] & pérdida de toda la electrónica & 9 & 4 & 4 & \textbf{144} & conectores con traba; termocontraíble; prueba de tirón; inspección & 9 & 3 & 3 & 81\\
-M10 & \textbf{Sensor hall}: no detecta el imán (distancia $>\SI{3}{mm}$, imán suelto) & no confirma el giro; reintentos innecesarios & 5 & 5 & 3 & 75 & distancia con galga; confirmación por $|v_z|<\SI{10}{m/s}$ & 5 & 2 & 2 & 20\\
+M10 & \textbf{Sensor hall}: no detecta el imán (distancia $>\SI{3}{mm}$, imán suelto) & no confirma el giro; reintentos innecesarios & 5 & 5 & 3 & 75 & distancia con galga; confirmación por $|v_z|<\SI{9}{m/s}$ (palas quietas: $\approx\SI{10}{m/s}$) & 5 & 2 & 2 & 20\\
 M11 & \textbf{Radio}: pérdida del enlace & telemetría incompleta (\Req{C5}); sin comando manual & 7 & 5 & 4 & \textbf{140} & ensayo de alcance a \SI{1.5}{km}; registro en SD & 7 & 4 & 3 & 84\\
 \multicolumn{12}{@{}l}{\textbf{Mecanismo de traba}}\\*
 M12 & \textbf{Servo MG90S}: no gira (motor, engranaje roto, cable cortado) [$x_{7}$] & el rotor no se despliega & 9 & 5 & 3 & \textbf{135} & engranajes metálicos; 20 ciclos en E1 con medición de corriente & 9 & 4 & 2 & 72\\
@@ -602,9 +626,9 @@ M27 & \textbf{Tuerca M8$\times$0,75}: se afloja por vibración [$x_{16}$] & el c
 M28 & \textbf{Eje hueco}: rebaba o canto vivo en la salida & corta la cuerda del drogue & 8 & 3 & 4 & 96 & chaflán y pulido; inspección pasando un hilo & 8 & 1 & 2 & 16\\
 \multicolumn{12}{@{}l}{\textbf{Drogue y cuerda}}\\*
 M29 & \textbf{Drogue}: no se abre (plegado, enredo) [$x_{19}$] & etapa 1 sin freno (falla \Req{C3}) & 10 & 5 & 5 & \textbf{250} & plegado normalizado con fotos; 10 despliegues de prueba & 10 & 5 & 3 & \textbf{150}\\
-M30 & \textbf{Cuerda y anclaje}: rotura en la apertura (\SI{23}{N}) o por roce [$x_{20}$] & pierde el drogue: $\Vr$ sube a \SI{7.8}{m/s} & 8 & 4 & 4 & \textbf{128} & aramida $\ge\SI{200}{N}$ (FS $\ge8$); anclaje a la estructura & 8 & 3 & 2 & 48\\
+M30 & \textbf{Cuerda y anclaje}: rotura en la apertura (\SI{23}{N}) o por roce [$x_{20}$] & pierde el drogue: $\Vr$ de \SIrange{7.2}{7.8}{m/s}; en la apertura, etapa 1 sin freno & 8 & 4 & 4 & \textbf{128} & aramida $\ge\SI{200}{N}$ (FS $\ge8$); anclaje a la estructura & 8 & 3 & 2 & 48\\
 M31 & \textbf{Destorcedor}: trabado & la cuerda se retuerce & 5 & 3 & 3 & 45 & destorcedor de bolas; prueba de giro & 5 & 2 & 2 & 20\\
-M32 & \textbf{Drogue}: en la estela del rotor (sin aporte) [$x_{17}$] & $\Vr$ hasta \SI{7.8}{m/s}: \Req{C4} al límite & 8 & 6 & 6 & \textbf{288} & cuerda de \SI{1.5}{m}; E4 con y sin drogue; criterio sin drogue & 8 & 5 & 3 & \textbf{120}\\
+M32 & \textbf{Drogue}: en la estela del rotor (sin aporte) y $\CR$ bajo [$x_{17}$] & $\Vr$ hasta \SI{7.8}{m/s}: \Req{C4} al límite o excedido & 8 & 6 & 6 & \textbf{288} & cuerda de \SI{1.5}{m}; E4 con y sin drogue; criterio sin drogue & 8 & 5 & 3 & \textbf{120}\\
 M33 & \textbf{Cuerda}: cae en el plano del rotor (floja, oscilación) [$x_{13}$] & el rotor se frena o corta la cuerda & 9 & 5 & 7 & \textbf{315} & tubo guía de \SI{30}{mm} sobre el eje; video cenit en E4 & 9 & 4 & 5 & \textbf{180}\\
 \multicolumn{12}{@{}l}{\textbf{Estructura y recuperación}}\\*
 M34 & \textbf{Cuerpo PETG}: fisura en tapa o unión por choque & electrónica suelta & 8 & 3 & 4 & 96 & insertos roscados; E5 & 8 & 2 & 2 & 32\\
@@ -620,7 +644,11 @@ nadie ha observado la cuerda en la estela de un rotor tan chico, y solo el video
 E4 lo revela; si hay contacto, se alarga el tubo guía o la cuerda. \textbf{M29} (el drogue
 no abre, 150) no baja de severidad porque falla \Req{C3}. \textbf{M32} (drogue en la
 estela, 120) se gestiona exigiendo que E4 cumpla \emph{sin} drogue. \textbf{M4} (firmware,
-108) se ataca con HIL y con el comando manual \texttt{MEC}.
+108) se ataca con HIL y con el comando manual \texttt{MEC}. Por la regla de $S\ge9$ y
+$O\ge4$ queda además \textbf{M12} (servo que no gira, $\mathrm{NPR}'=72$): un MG90S de
+bajo costo no tiene datos de confiabilidad publicados, así que $O'$ solo baja con
+un lote propio ensayado. Se acepta con la condición de E1 (20 de 20 con corriente
+normal) y un servo de repuesto del mismo lote.
 
 %=====================================================================
 \section{Peligros para las personas}\label{sec:confiabilidad-peligros}
@@ -629,7 +657,9 @@ para las personas quedan en riesgo bajo o medio según
 MIL-STD-882E~\cite{confiabilidad-milstd882e} (severidad: 1 catastrófica, 2 crítica,
 3 marginal, 4 despreciable; probabilidad: de A frecuente a E improbable). Las energías en
 juego son tres. El \textbf{rotor} acumula $\tfrac12 I\Omega^2=\SI{3.7}{J}$, con la punta
-a \SI{24}{m/s} y bordes de carbono de \SI{0.5}{mm}; una pala suelta sale con \SI{2.1}{J}.
+a \SI{24}{m/s} y bordes de carbono de \SI{0.5}{mm}. Una pala suelta se lleva la cuarta
+parte, unos \SI{0.9}{J}: su centro de masa (a unos \SI{122}{mm} del eje) sale a unos
+\SI{15}{m/s}.
 El \textbf{impacto del CanSat} transfiere \SI{10}{J} a \SI{6.4}{m/s}, \SI{15}{J} a
 \SI{7.8}{m/s}, \SI{45}{J} con el rotor fallado y \SI{353}{J} sin ningún freno
 (\SI{37.6}{m/s}). Como referencia, la FAA admite drones sobre personas si no transfieren

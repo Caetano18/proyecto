@@ -1,0 +1,629 @@
+\chapter{Revisión de la literatura}\label{cap:literatura}
+
+Este capítulo revisa, con fuentes verificadas, lo que se sabe sobre cada parte del
+problema: CanSat con autogiro, autorrotación vertical de rotores pequeños, sámaras,
+aerodinámica de placas curvadas a bajo número de Reynolds, desaceleradores rotativos,
+anillo de vórtices, teoría de elemento de pala con correcciones de alta inducción y
+paracaídas pequeños. Para cada trabajo se indica qué aporta a este proyecto: un dato, un
+método o una advertencia. El capítulo~\ref{cap:arte} ya presentó los antecedentes
+básicos; aquí se amplían con 59 referencias nuevas y se contrastan con números del diseño.
+
+\begin{resultado}[Hallazgos principales de la revisión]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{No hay datos publicados de CanSat con autogiro que midan a la vez masa,
+        diámetro, velocidad y rpm.} Los seis trabajos encontrados describen el diseño y,
+        a lo sumo, una caída corta. La tabla~\ref{tab:literatura-cansat} queda con muchas
+        celdas vacías. Este proyecto puede llenar ese vacío.
+  \item \textbf{La placa curvada fina es la elección correcta.} Laitone (1997) midió que
+        por debajo de $Re=\num{70000}$ la placa con \SI{5}{\percent} de curvatura en arco
+        circular supera a un NACA~0012 en sustentación y en
+        $L/D$~\cite{literatura-laitone1997}. El rotor trabaja entre $Re\approx\num{36000}$
+        y \num{72000}.
+  \item \textbf{El paso negativo pequeño está respaldado por la naturaleza y por la
+        ingeniería.} Las sámaras naturales operan con paso entre \ang{-0.7} y
+        \ang{-2.6}~\cite{literatura-jung2024}; el \emph{Autobody} de la Universidad de
+        Maryland usó \ang{-10} con acoplamiento paso--batimiento
+        negativo~\cite{literatura-brindejonc2007}. El rango recomendado aquí
+        (\ang{-2} a \ang{-4}) queda entre ambos.
+  \item \textbf{El punto de operación está donde los modelos empíricos menos coinciden.}
+        Con $\CR\approx1{,}2$ la curva de Buhl da un factor de inducción $a\approx0{,}61$
+        y el polinomio de Leishman da $a\approx0{,}98$
+        (figura~\ref{fig:literatura-ct}). La predicción de rpm por elemento de pala
+        hereda esa incertidumbre; hay que medir.
+  \item \textbf{El drogue es necesario.} Sin él, bajar a \SI{5}{m/s} exigiría
+        $\CR\approx2{,}5$ con el disco de \SI{0.4}{m}; el mayor valor equivalente
+        encontrado en la literatura es $\approx1{,}8$ (incluye el cuerpo).
+\end{itemize}
+\end{resultado}
+
+%=====================================================================
+\section{Método de búsqueda y criterios}\label{sec:literatura-metodo}
+La búsqueda se hizo el 5 de octubre de 2026 con un buscador web general, en inglés y en
+español, por los ocho temas del encargo. Se aceptó una referencia solo si se pudo
+confirmar título, autores, año y medio en la ficha del editor, en un repositorio
+institucional o en un índice bibliográfico (PubMed, ADS, NTRS, DTIC, IEEE Xplore). El
+volumen, las páginas y el DOI se anotan solo cuando aparecieron en esas fichas; si no, se
+omiten.
+
+\begin{nota}[Limitación de acceso]
+El entorno de trabajo no permitió descargar los textos completos (los dominios de las
+editoriales estaban bloqueados). Los datos numéricos que se citan provienen de los
+resúmenes y de las fichas públicas. Antes de usarlos para dimensionar conviene leer el
+original. Las celdas vacías de las tablas significan ``no encontrado'', no ``cero''.
+\end{nota}
+
+La figura~\ref{fig:literatura-mapa} ubica en el tiempo las referencias de este capítulo y
+las del capítulo~\ref{cap:arte}. Se ven dos olas: la teoría clásica de rotores
+(1926--1966) y un crecimiento fuerte después de 2005, impulsado por los microvehículos,
+la biomecánica de semillas y la energía eólica. Los CanSat con autogiro son todos
+posteriores a 2017.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.108cm, y=0.6cm, every node/.style={font=\scriptsize}]
+  % ejes
+  \foreach \yr in {1920,1940,1960,1980,2000,2020}{
+    \draw[cgris!50] ({\yr-1920},0.4) -- ({\yr-1920},8.6);
+    \node[below] at ({\yr-1920},0.4) {\yr};}
+  \draw[-{Latex}] (0,0.4) -- (108,0.4) node[right] {año};
+  % filas
+  \foreach \row/\name in {8/{CanSat con autogiro},7/{Autorrotación pequeña},
+      6/{Sámaras y monocópteros},5/{Bajo Reynolds},4/{Desaceleradores rotativos},
+      3/{Anillo de vórtices},2/{BEMT y alta inducción},1/{Paracaídas}}{
+    \node[left, align=right] at (-1,\row) {\name};
+    \draw[cgris!30] (0,\row) -- (106,\row);}
+  % CanSat
+  \foreach \yr in {2017,2019,2019,2022,2022,2023,2025,2025}{\fill[cfijo] ({\yr-1920},8) circle (2.6pt);}
+  % autorrotación pequeña
+  \foreach \yr in {1979,1983,2005,2006,2007,2014,2014,2015,2022,2022}{\fill[crot] ({\yr-1920},7) circle (2.6pt);}
+  % sámaras
+  \foreach \yr in {1973,1989,1992,2007,2009,2010,2010,2012,2013,2014,2015,2016,2019,2022,2022,2024,2024,2026}{\fill[ccuerda] ({\yr-1920},6) circle (2.6pt);}
+  % bajo Re
+  \foreach \yr in {1942,1979,1983,1995,1996,1997,2000,2003,2008,2011}{\fill[cfreno] ({\yr-1920},5) circle (2.6pt);}
+  % desaceleradores
+  \foreach \yr in {1966,2004,2013,2024,2024,2024}{\fill[ccont] ({\yr-1920},4) circle (2.6pt);}
+  % VRS
+  \foreach \yr in {1926,1951,1951,1966,2004,2005,2005,2005,2011}{\fill[cfijo!60!black] ({\yr-1920},3) circle (2.6pt);}
+  % BEMT
+  \foreach \yr in {1926,1974,2005,2005,2005,2006,2014,2015,2024}{\fill[crot!70!black] ({\yr-1920},2) circle (2.6pt);}
+  % paracaídas
+  \foreach \yr in {1965,1971,1978,1987,1992,2005,2012,2023}{\fill[ccuerda!60!black] ({\yr-1920},1) circle (2.6pt);}
+  % etiquetas de hitos
+  \node[above=1pt] at (6,3) {Glauert};
+  \node[above=1pt] at (31,3) {Drees};
+  \node[above=1pt] at (87,7) {Brindejonc};
+  \node[above=1pt] at (89,6) {Lentink};
+  \node[above=1pt] at (77,5) {Laitone};
+  \node[above=1pt] at (85,2) {Buhl};
+  \node[above=1pt] at (46,4) {Barzda};
+\end{tikzpicture}
+\caption{Distribución temporal de las referencias revisadas (este capítulo y
+capítulo~\ref{cap:arte}). Cada punto es una publicación.}
+\label{fig:literatura-mapa}
+\end{figure}
+
+%=====================================================================
+\section{CanSat con autogiro}\label{sec:literatura-cansat}
+La literatura de CanSat con autogiro es escasa, reciente y casi toda descriptiva: ningún
+trabajo encontrado publica a la vez masa, diámetro del rotor, velocidad medida y rpm. La
+fuente principal de soluciones probadas siguen siendo las guías y los informes de diseño
+de la CanSat Competition~\cite{cansat2019,cansat2025}.
+
+\paragraph{Grupo de la PUCP (Perú).} Rivadeneira y colaboradores presentaron
+\emph{Run2Sat~I} en la conferencia IEEE C3 2023~\cite{literatura-rivadeneira2023}: un
+CanSat con autogiro que protege un huevo durante el vuelo y el aterrizaje, desarrollado
+para el Concurso Iberoamericano de Satélites Enlatados 2023. Informan una eficiencia de
+reducción de velocidad de \SI{84.21}{\percent}. En 2025 publicaron la versión de revista
+con telemetría por AWS IoT~\cite{literatura-rivadeneira2025}: las palas, inspiradas en
+sámaras, mantienen un ángulo de ataque de \ang{10}, y dos pares de palas giran en
+sentidos opuestos sobre el mismo eje, cada par sobre su rodamiento. Las palas quedan
+encerradas por una tapa en cruz que un servo gira para liberarlas. \emph{Aporte}: la
+traba por tapa girada con servo es análoga a la de este diseño (anillo con dientes girado
+\ang{15}); la solución contrarrotante evita que el cuerpo gire, a costa de duplicar el
+cubo.
+
+\paragraph{Villacorta y colaboradores (2025).} Proponen un autogiro de seis palas para
+aterrizar CanSat con cargas frágiles, con el objetivo explícito de reducir la fuerza de
+impacto~\cite{literatura-villacorta2025}. \emph{Aporte}: confirma que el criterio de
+diseño útil es la energía o la fuerza de impacto, no solo la velocidad media.
+
+\paragraph{Ventura y colaboradores (2022).} Con perfil NACA~6412 y CFD, buscan bajar de
+\SI{34.55}{m/s} a \SI{6}{m/s}; la caída libre de prueba fue desde \SI{39.4}{m} y midió
+una desaceleración máxima de \SI{4.94}{m/s^2} en \SI{0.37}{s}~\cite{ventura2022}.
+\emph{Advertencia}: una caída de \SI{39}{m} no alcanza para estabilizar la velocidad de
+un rotor que arranca a más de \SI{13}{m/s}; el plan de ensayos de este proyecto pide
+caídas de 80 a \SI{100}{m} (capítulo~\ref{cap:ensayos}).
+
+\paragraph{Ramadhan y colaboradores (2019) y Shukla y colaboradores (2022).} Ramadhan
+describe un CanSat de unos \SI{506}{g} con estructura de PLA con fibra de carbono para la
+misión 2019 (autogiro liberado a \SI{450}{m}, descenso de 10 a
+\SI{15}{m/s})~\cite{ramadhan2019}. Shukla diseña para la misión 2021 dos cargas
+autorrotantes con mecanismo de semilla de arce~\cite{literatura-shukla2022}. Kizilkaya y
+colaboradores~\cite{literatura-kizilkaya2017} tratan el control de descenso en la misión
+2016 (planeador), útil como referencia de método pero no de autogiro.
+
+\paragraph{Informes de equipos.} Los CDR de la misión 2019 son públicos. El del equipo
+SwifTurk~\cite{literatura-swifturk2019} describe ocho palas de \SI{270}{mm} liberadas con
+el mismo servo que abre la tapa inferior (giro de \ang{10} en un sentido para la tapa y
+\ang{30} en el otro para las palas) y un sensor Hall para las rpm. \emph{Aporte}: un solo
+actuador para dos funciones, y el sensor Hall como solución estándar de telemetría de
+giro, igual que aquí.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{CanSat con autogiro: datos publicados. ``---'' = no encontrado en las fuentes
+accesibles. Las velocidades de 2019 son el requisito de la misión, no una medición.}
+\label{tab:literatura-cansat}
+\begin{tabularx}{\textwidth}{@{}l c Y c c c c@{}}
+\toprule
+\textbf{Trabajo} & \textbf{Año} & \textbf{Configuración} & \textbf{Palas} &
+\textbf{Masa} & \textbf{$V$ objetivo} & \textbf{rpm}\\\midrule
+Ramadhan~\cite{ramadhan2019} & 2019 & Autogiro, misión CanSat 2019 & --- & \SI{506}{g} & 10--\SI{15}{m/s} & ---\\
+SwifTurk~\cite{literatura-swifturk2019} & 2019 & Palas de \SI{270}{mm}, un servo & 8 & --- & 10--\SI{15}{m/s} & ---\\
+Ventura~\cite{ventura2022} & 2022 & NACA~6412, CFD y caída de \SI{39}{m} & --- & --- & \SI{6}{m/s} & ---\\
+Shukla~\cite{literatura-shukla2022} & 2022 & Dos cargas tipo semilla de arce & 1 c/u & --- & --- & ---\\
+Run2Sat~\cite{literatura-rivadeneira2023,literatura-rivadeneira2025} & 2023--25 & Dos pares contrarrotantes, $\alpha=\ang{10}$ & 2+2 & --- & --- & ---\\
+Villacorta~\cite{literatura-villacorta2025} & 2025 & Rotor de seis palas & 6 & --- & --- & ---\\\midrule
+\textbf{Este diseño} & 2026 & Placa curvada \SI{7}{\percent}, bisagra, drogue atado & 4 & \SI{500}{g} & \SI{6.4}{m/s}\,$^{a}$ & \num{1150}\,$^{a}$\\
+\bottomrule
+\end{tabularx}
+
+\smallskip\raggedright\footnotesize $^{a}$ Estimación (capítulo~\ref{cap:dim}), no medida.
+\end{table}
+
+%=====================================================================
+\section{Autorrotación vertical de rotores pequeños}\label{sec:literatura-autorrot}
+La autorrotación de cuerpos pequeños tiene una teoría madura y pocos datos de rotores de
+menos de \SI{0.5}{m}. Los trabajos más útiles para este proyecto son el \emph{Autobody}
+de Maryland, que es casi el mismo problema a mayor escala, y la serie del pararrotor de
+la Universidad Politécnica de Madrid, que usa precisamente palas de placa curvada.
+
+\paragraph{Fundamentos.} Lugt (1983) revisa la autorrotación de placas y cuerpos libres y
+separa los mecanismos de par impulsor~\cite{literatura-lugt1983}. Iversen (1979) mostró
+que en placas planas autorrotantes la relación de velocidad de punta depende de la
+relación de aspecto, del espesor relativo y, si es pequeño, del momento de
+inercia~\cite{literatura-iversen1979}. Seter y Rosen (2014) dan un modelo simplificado
+de autorrotación axial de desaceleradores rotativos simples, con los parámetros que
+gobiernan el fenómeno, y lo contrastan con un modelo multicuerpo y con
+ensayos~\cite{literatura-seter2014}. \emph{Aporte}: el método de Seter y Rosen es el
+siguiente paso natural después del modelo de elemento de pala del
+capítulo~\ref{cap:teoria}.
+
+\paragraph{El Autobody (Maryland, 2007).} Brindejonc, Sirohi y Chopra diseñaron un
+sistema de entrega de cargas por autorrotación con rotor de cuatro palas de
+\SI{1.22}{m} de diámetro (\SI{4}{ft}) y masa total de \SI{2.27}{kg}, con requisito de
+velocidad máxima de \SI{4.57}{m/s}~\cite{literatura-brindejonc2007}. Lograron la
+transición pasiva a autorrotación con un cubo de acoplamiento paso--batimiento negativo
+($\delta_3=\ang{-41}$), paso colectivo fijo de \ang{-10} y preconicidad de \ang{-4}; en
+caída desde un globo midieron \SI{4.11}{m/s}. Jain, Sirohi y Cameron (2022) extendieron
+la idea a un decelerador de despliegue pasivo~\cite{literatura-jain2022}.
+\emph{Aporte}: es la validación más cercana de que un rotor libre de paso fijo negativo
+arranca solo y se estabiliza sin control activo.
+
+\paragraph{El pararrotor (UPM).} Nadal Mora, Sanz-Andrés y Cuerva estudiaron en túnel un
+desacelerador de alas autorrotantes de baja relación de aspecto y bajo
+Reynolds~\cite{literatura-nadal2005} y propusieron un modelo semiempírico de su
+comportamiento~\cite{literatura-nadal2006}. Piechocki y colaboradores definieron índices
+de estabilidad dinámica cuando el centro de masa está fuera del plano de
+palas~\cite{literatura-piechocki2014}, que es la situación de este diseño (cuerpo
+colgando bajo el rotor). Martiarena, Nadal Mora y Piechocki midieron en túnel el efecto
+de la \textbf{curvatura de placa} y de la relación de aspecto sobre el coeficiente de
+resistencia y la relación entre velocidad de caída y de
+giro~\cite{literatura-martiarena2015}. \emph{Aporte}: es el antecedente experimental más
+directo para elegir la curvatura del \SI{7}{\percent}; conviene leer sus curvas antes de
+fabricar.
+
+\paragraph{Rotores pequeños en descenso axial.} Veismann, Yos y Gharib (2022) hicieron un
+estudio paramétrico de rotores pequeños en descenso axial variando paso colectivo,
+cuerda, conicidad en planta, número de palas y forma de
+punta~\cite{literatura-veismann2022}. \emph{Aporte}: es la base de datos moderna más
+cercana para contrastar el efecto de $B=4$ y $\sigma=0{,}286$.
+
+\subsection{Comparación cuantitativa: carga de disco y velocidad}
+\label{sec:literatura-carga}
+Con la definición de la ecuación~\eqref{eq:CR}, cada decelerador queda caracterizado por
+su carga de disco $DL=T/A_R$ y su coeficiente equivalente:
+\begin{equation}
+  V=\sqrt{\frac{2\,DL}{\rho\,C_{\mathrm{eq}}}},\qquad
+  C_{\mathrm{eq}}=\frac{2\,DL}{\rho V^2}.
+  \label{eq:literatura-ceq}
+\end{equation}
+La tabla~\ref{tab:literatura-ceq} aplica esta relación a los únicos datos completos
+encontrados (el Autobody) y a este diseño. La figura~\ref{fig:literatura-dl} los ubica
+sobre las rectas de $C_{\mathrm{eq}}$ constante.
+
+\begin{table}[H]
+\centering\small
+\caption{Coeficiente equivalente con área del disco, ecuación~\eqref{eq:literatura-ceq},
+$\rho=\SI{1.225}{kg/m^3}$. Script: \texttt{analysis/literatura\_carga\_disco.py}.}
+\label{tab:literatura-ceq}
+\begin{tabularx}{\textwidth}{@{}Y c c c@{}}
+\toprule
+\textbf{Caso} & \textbf{$DL$ [\si{N/m^2}]} & \textbf{$V$ [\si{m/s}]} & \textbf{$C_{\mathrm{eq}}$}\\\midrule
+Autobody, requisito~\cite{literatura-brindejonc2007} & 19,1 & 4,57 & 1,49\\
+Autobody, medido en caída~\cite{literatura-brindejonc2007} & 19,1 & 4,11 & 1,84\\
+Este diseño, rotor con drogue ($T=\SI{3.78}{N}$, estimado) & 30,1 & 6,4 & 1,20\\
+Este diseño, peor caso sin drogue (estimado) & 39,0 & 7,8 & 1,05\\
+Este diseño, sin drogue y $V=\SI{5}{m/s}$ (necesario) & 39,0 & 5,0 & 2,55\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[width=0.86\textwidth, height=7.2cm,
+  xlabel={Carga de disco $DL$ [\si{N/m^2}]}, ylabel={Velocidad de descenso $V$ [\si{m/s}]},
+  xmin=5, xmax=120, ymin=1.5, ymax=15,
+  log basis x=10, log basis y=10,
+  xtick={5,10,20,50,100}, xticklabels={5,10,20,50,100},
+  ytick={2,3,5,7,10,15}, yticklabels={2,3,5,7,10,15},
+  grid=both, grid style={cgris!25},
+  legend columns=2, legend style={font=\scriptsize, cells={anchor=west},
+    at={(0.5,-0.2)}, anchor=north}]
+  \fill[ccuerda!12] (axis cs:5,2) rectangle (axis cs:120,8);
+  \node[font=\scriptsize, ccuerda!70!black, anchor=south east] at (axis cs:118,2.05) {banda \Req{C4}: \SIrange{2}{8}{m/s}};
+  \addplot[cgris, dashed, thick] table[x=DL, y=C08] {analysis/data/literatura_curvas.dat};
+  \addlegendentry{$C_{\mathrm{eq}}=0{,}8$ (paracaídas plano)}
+  \addplot[cfijo, thick] table[x=DL, y=C10] {analysis/data/literatura_curvas.dat};
+  \addlegendentry{$C_{\mathrm{eq}}=1{,}0$}
+  \addplot[crot, thick] table[x=DL, y=C12] {analysis/data/literatura_curvas.dat};
+  \addlegendentry{$C_{\mathrm{eq}}=1{,}2$}
+  \addplot[cfreno, thick, densely dotted] table[x=DL, y=C18] {analysis/data/literatura_curvas.dat};
+  \addlegendentry{$C_{\mathrm{eq}}=1{,}8$}
+  \addplot[only marks, mark=square*, mark size=2.6pt, ccont] coordinates {(19.075,4.11)};
+  \addlegendentry{Autobody medido}
+  \addplot[only marks, mark=square, mark size=2.6pt, ccont] coordinates {(19.075,4.57)};
+  \addlegendentry{Autobody requisito}
+  \addplot[only marks, mark=*, mark size=2.8pt, crot] coordinates {(30.07,6.4)};
+  \addlegendentry{Este diseño, con drogue (est.)}
+  \addplot[only marks, mark=o, mark size=2.8pt, cfijo] coordinates {(39.02,7.8)};
+  \addlegendentry{Este diseño, peor caso (est.)}
+  \addplot[only marks, mark=x, mark size=3.5pt, cfreno, thick] coordinates {(39.02,5.0)};
+  \addlegendentry{$V=\SI{5}{m/s}$ sin drogue}
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Velocidad de descenso frente a carga de disco. Las rectas son
+$C_{\mathrm{eq}}$ constante. Solo se grafican casos con datos publicados completos.}
+\label{fig:literatura-dl}
+\end{figure}
+
+La lectura es doble. Primero, el diseño propio está en la zona de $\CR\approx1{,}0$--$1{,}2$
+que la teoría considera normal para un rotor en autorrotación (capítulo~\ref{cap:teoria}).
+Segundo, el Autobody midió un coeficiente equivalente de \num{1.84}, por encima del
+límite de $\approx1{,}3$ que se suele atribuir al rotor
+solo~\cite{leishman2006,johnson1980}. La diferencia puede deberse a la resistencia del
+cuerpo (incluida en la medición, no en el área del disco), a la incertidumbre de la caída
+o a la alta solidez del rotor; con los datos accesibles no se puede separar.
+
+\begin{nota}[Qué significa para este diseño]
+El valor del Autobody no autoriza a suponer $\CR>1{,}2$ en el dimensionamiento. Sí indica
+que el ensayo E3 (capítulo~\ref{cap:ensayos}) puede encontrar un $\CR$ algo mayor que el
+supuesto, lo que bajaría $\Vr$. En sentido contrario, alcanzar \SI{5}{m/s} sin el drogue
+exigiría $C_{\mathrm{eq}}\approx2{,}55$, valor que ningún trabajo revisado alcanza: el
+drogue atado no es redundante, es parte del freno.
+\end{nota}
+
+%=====================================================================
+\section{Sámaras y robots inspirados en sámaras}\label{sec:literatura-samaras}
+Las sámaras demuestran que un rotor de paso fijo, muy fino y algo curvado arranca solo,
+se estabiliza solo y es poco sensible a perturbaciones. Las tres lecciones que se
+trasladan al diseño son el paso negativo pequeño, la conicidad moderada y la robustez
+frente a cambios de masa.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Sámaras y monocópteros: qué aporta cada trabajo a este proyecto.}
+\label{tab:literatura-samaras}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}Y >{\raggedright\arraybackslash}Y@{}}
+\toprule
+\textbf{Trabajo} & \textbf{Resultado} & \textbf{Uso en este proyecto}\\\midrule
+Jung y Rezgui 2024~\cite{literatura-jung2024} & Sámaras naturales operan con paso de \ang{-0.7} a \ang{-2.6}; conicidad de \ang{5} a \ang{15} aumenta el empuje vertical hasta \SI{9.6}{\percent}. & Respalda el paso de \ang{-2} a \ang{-4} y la conicidad de \ang{4.4} (dato).\\
+Jung y Rezgui 2016~\cite{literatura-jung2016} & El desempeño vertical del rotor tipo sámara empieza a degradarse a escala 8:1; las escaladas autorrotan hasta \ang{80} de ángulo de eje. & Advertencia: no extrapolar coeficientes de semillas a palas de \SI{156}{mm}.\\
+Lolli y col.\ 2026~\cite{literatura-lolli2026} & Simulación 6-GDL (OpenFOAM, malla superpuesta): la semilla a escala 2 rinde más que la natural; la de escala 0,5 baja más rápido. & Método: CFD de cuerpo libre acoplado como validación futura.\\
+Schaeffer y col.\ 2024~\cite{literatura-schaeffer2024} & Cambios de masa mayores al \SI{100}{\percent} cambian la velocidad menos de \SI{15}{\percent}; un modelo de arrastre clásico une las especies. & Contraste: la sámara se autoajusta; en este rotor de paso fijo $V\propto\sqrt{W}$, así que cada gramo de lastre sí sube $\Vr$.\\
+El Makdah y col.\ 2022~\cite{literatura-elmakdah2022} & Ante ráfagas, la relación de velocidad de punta varía como máximo \SI{11}{\percent}. & Advertencia moderada: el viento lateral no detiene el rotor, pero cambia rpm.\\
+Lentink y col.\ 2009~\cite{lentink2009}; Lee y col.\ 2014~\cite{literatura-lee2014}; Salcedo y col.\ 2013~\cite{literatura-salcedo2013} & Vórtice de borde de ataque estable en la parte interior de la pala; PIV estereoscópico del flujo 3D. & Explica la sustentación alta de la zona interna de baja velocidad.\\
+Varshney y col.\ 2012~\cite{literatura-varshney2012} & Cinemática de la transición de caída a hélice. & Método: modelo de arranque desde reposo.\\
+Ulrich y col.\ 2010~\cite{literatura-ulrich2010a,literatura-ulrich2010b}; Kellas 2007~\cite{literatura-kellas2007} & Sámaras robóticas: control de cabeceo y ascenso; sámara guiada para entrega de cargas. & Método: dinámica de vuelo de cuerpo rotante; opción de guiado futuro.\\
+Matič y col.\ 2015~\cite{literatura-matic2015} & Modelo de monocóptero con BEMT no estacionaria. & Método directamente aplicable a la dinámica de arranque.\\
+Bai y col.\ 2019, 2022~\cite{literatura-bai2019,literatura-bai2022} & Ala giratoria con estabilidad pasiva de actitud y vuelo eficiente. & Advertencia de diseño: la estabilidad depende de la distribución de masa.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Escala.} Una sámara de arce tiene envergadura del orden de centímetros y baja
+a velocidades de \SIrange{0.5}{1.5}{m/s} (capítulo~\ref{cap:arte}). El rotor de este
+proyecto tiene $R=\SI{0.2}{m}$ y baja unas cinco veces más rápido. Jung y Rezgui
+encontraron degradación del desempeño ya a escala 8:1~\cite{literatura-jung2016}, de
+modo que las sámaras sirven como guía cualitativa (paso, conicidad, estabilidad), no como
+fuente de coeficientes.
+
+%=====================================================================
+\section{Aerodinámica de placas curvadas a bajo número de Reynolds}
+\label{sec:literatura-lowre}
+La evidencia experimental favorece la placa fina curvada frente a perfiles gruesos en el
+rango $Re=\num{20000}$--\num{100000}. Ese es justamente el rango del rotor:
+$Re\approx\num{36000}$ a media pala y $\approx\num{72000}$ en la punta.
+
+\begin{itemize}
+  \item \textbf{Laitone (1997)} ensayó alas rectangulares hasta $Re=\num{20000}$. Para
+        todo $Re<\num{70000}$ la mejor sección fue la placa fina con \SI{5}{\percent} de
+        curvatura en arco circular: mayor $L/D$ y mayor $C_l$ a todo ángulo. Las placas
+        resultaron poco sensibles al número de Reynolds y a la turbulencia del túnel,
+        mientras que el NACA~0012 se degradó mucho por debajo de
+        $Re=\num{50000}$~\cite{literatura-laitone1997}. \emph{Aporte}: es el dato más
+        fuerte a favor de la placa de carbono curvada; también desaconseja el NACA~6412
+        grueso a este tamaño.
+  \item \textbf{Okamoto y Azuma (2011)} midieron el efecto de la forma en planta a bajo
+        Reynolds~\cite{literatura-okamoto2011}, complementando las mediciones de alas de
+        libélula~\cite{okamoto1996} y las de Pelletier y Mueller~\cite{pelletier2000}.
+  \item \textbf{Bruining (1979)} midió una placa curvada en arco circular a
+        $Re=\num{60000}$ y \num{100000} entre \ang{-10} y \ang{90} de ataque, en un túnel
+        de turbulencia muy baja~\cite{literatura-bruining1979}. \emph{Aporte}: es de los
+        pocos conjuntos que cubre ángulos grandes, que son los que ve la pala al
+        arrancar (capítulo~\ref{cap:teoria}, par de arranque).
+  \item \textbf{Shyy y colaboradores (2008)} sintetizan la física de transición, burbuja
+        de separación laminar y efectos no estacionarios en voladores de bajo
+        Reynolds~\cite{literatura-shyy2008}, junto con las revisiones de
+        Lissaman~\cite{lissaman1983} y Mueller y DeLaurier~\cite{mueller2003}.
+\end{itemize}
+
+\begin{nota}[Advertencia sobre las polares]
+Laitone midió con \SI{5}{\percent} de curvatura y Bruining con una placa más curvada; el
+diseño usa \SI{7}{\percent}. Las polares de la tabla~\ref{tab:polares} son
+interpolaciones y cálculos, no mediciones de esta placa. Además, todos esos datos son de
+alas que no giran: la rotación y el vórtice de borde de ataque (sección
+\ref{sec:literatura-samaras}) pueden aumentar el $C_l$ de la zona interna.
+\end{nota}
+
+%=====================================================================
+\section{Desaceleradores rotativos para entrada atmosférica y recuperación}
+\label{sec:literatura-decel}
+Los rotores como freno de reentrada o de recuperación se estudian desde los años 60 y
+reaparecen hoy para cohetes reutilizables y sondas planetarias. Su mensaje para este
+proyecto es que el rotor libre funciona y es liviano, pero la etapa crítica es el
+despliegue y el arranque.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Desaceleradores rotativos: resumen y aporte.}
+\label{tab:literatura-decel}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}Y >{\raggedright\arraybackslash}Y@{}}
+\toprule
+\textbf{Trabajo} & \textbf{Resultado} & \textbf{Uso en este proyecto}\\\midrule
+Barzda 1966~\cite{literatura-barzda1966} & Desarrollo del \emph{Rotochute} de Kaman para recuperación. & Antecedente histórico del rotor plegado que se abre en vuelo.\\
+Young y col.\ 2004~\cite{literatura-young2004} & Rotores desplegados en la parte trasera de una sonda, en autorrotación o como turbina, para el descenso en Venus. & Muestra que el rotor puede además generar energía (opción futura de telemetría).\\
+Diaz-Silva y col.\ 2013~\cite{literatura-diazsilva2013} & Revisión histórica y simulación; el sistema de recuperación por rotor pesaría menos del \SI{15}{\percent} del peso de aterrizaje. & Dato de referencia: aquí las cuatro palas con portapalas (\SI{\approx30}{g}) son el \SI{6}{\percent} de la masa, sin contar el cubo.\\
+Bergmann y col.\ 2024~\cite{literatura-bergmann2024} & \emph{Daedalus~2} en REXUS~29: rotor desacoplado del cuerpo con control activo de paso para la tasa de descenso y la velocidad de giro. & Muestra el siguiente nivel (paso variable) y el valor de medir rpm en vuelo.\\
+Marques y col.\ 2024~\cite{literatura-marques2024} & Modelo computacional del descenso de una etapa de cohete con rotor autorrotante, verificado contra la literatura. & Método de simulación de trayectoria aplicable a la transición.\\
+Patnala y col.\ 2024~\cite{literatura-patnala2024} & Descenso axial y helicoidal de un rotor no propulsado con optimización de trayectoria. & Método: puntos fijos de la autorrotación axial.\\
+Jain y col.\ 2022~\cite{literatura-jain2022} & Despliegue pasivo de palas y pruebas. & Despliegue sin actuadores de palas plegadas.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Anillo de vórtices y estado de estela turbulenta}\label{sec:literatura-vrs}
+Todo rotor libre que se suelta a \SI{13.4}{m/s} y termina a unos \SI{6}{m/s} cruza,
+durante el arranque, la zona entre el estado de estela turbulenta y el anillo de
+vórtices. La literatura coincide en que allí el empuje es inestable y que la teoría de
+cantidad de movimiento no vale.
+
+\begin{itemize}
+  \item \textbf{Glauert (1926)} analizó los estados de freno de molino y anillo de
+        vórtices de una hélice y propuso la curva empírica que todavía se usa como
+        base~\cite{literatura-glauert1926b}.
+  \item \textbf{Drees y Hendal (1951)} visualizaron con humo el flujo alrededor de un
+        rotor en túnel y fijaron la imagen clásica del anillo de
+        vórtices~\cite{literatura-drees1951}.
+  \item \textbf{Washizu y colaboradores (1966)} midieron en vía móvil un rotor de
+        \SI{1.1}{m} ($\sigma=\num{0.0573}$) y correlacionaron la amplitud de las
+        fluctuaciones de empuje con la tasa de descenso~\cite{literatura-washizu1966}.
+  \item \textbf{Green, Gillies y Brown (2005)} midieron con PIV el campo alrededor de un
+        rotor modelo que desciende en su propia estela~\cite{literatura-green2005}.
+  \item \textbf{Stack, Caradonna y Savaş (2005)} observaron en tanque de agua que en el
+        anillo de vórtices se desprenden anillos periódicamente, con fluctuaciones de
+        empuje de pico a pico de hasta \SI{95}{\percent} del valor medio cada 20 a 50
+        vueltas~\cite{literatura-stack2005}.
+  \item \textbf{Shetty y Selig (2011)} ensayaron 26 hélices pequeñas (9 a 11~pulgadas)
+        a bajo Reynolds en descenso vertical, con relación de avance de $-0{,}8$ a 0, y
+        registraron las fluctuaciones de empuje~\cite{literatura-shetty2011}.
+        \emph{Aporte}: es el único conjunto amplio a escala parecida a la de este rotor.
+\end{itemize}
+
+\paragraph{Consecuencia cuantitativa.} A \num{1150} rpm, 20 a 50 vueltas duran de
+\num{1.0} a \SI{2.6}{s}. Si el rotor cayera en anillo de vórtices, la carga del cubo
+podría oscilar con ese período. La estimación de diseño, $V_2/\vh=1{,}83$, ubica al rotor en
+el estado de estela turbulenta, cerca de la autorrotación ideal y del borde del anillo de
+vórtices que describen Leishman y colaboradores y Johnson~\cite{leishman2004,johnson2005};
+por eso el arranque a velocidad alta (\SI{13.4}{m/s}, $V/\vh\approx3{,}8$) es favorable:
+el rotor entra desde el estado de molino y no desde el vuelo estacionario.
+
+%=====================================================================
+\section{Elemento de pala y correcciones de alta inducción}\label{sec:literatura-bemt}
+La teoría combinada de elemento de pala y cantidad de movimiento (BEMT) de las turbinas
+eólicas es la herramienta natural para este rotor, que en descenso es un molino de
+viento libre. La literatura eólica aporta tres piezas que la teoría de helicópteros trata
+menos: corrección de alta inducción, corrección de punta y un método de solución que
+siempre converge.
+
+\paragraph{Corrección de alta inducción.} La teoría de cantidad de movimiento da
+$C_T=4a(1-a)$, con un máximo de 1 en $a=0{,}5$; las mediciones siguen subiendo. Glauert
+propuso una corrección empírica~\cite{literatura-glauert1926b} y Wilson y Lissaman la
+llevaron a la práctica de las turbinas~\cite{literatura-wilson1974}. Buhl (2005)
+reemplazó la curva por una parábola continua con la rama de cantidad de movimiento en
+$a_c=0{,}4$, incluida la pérdida de punta $F$~\cite{literatura-buhl2005}:
+\begin{equation}
+  C_T=\begin{cases}
+    4aF(1-a), & a\le0{,}4,\\[2pt]
+    \dfrac89+\left(4F-\dfrac{40}{9}\right)a+\left(\dfrac{50}{9}-4F\right)a^2, & a>0{,}4.
+  \end{cases}
+  \label{eq:literatura-buhl}
+\end{equation}
+CCBlade, el código de Ning~\cite{literatura-ning2014}, usa esta corrección; el
+manual teórico de AeroDyn~\cite{literatura-moriarty2005} describe el tratamiento del estado
+de estela turbulenta en ese código.
+
+\paragraph{Corrección de punta y solución.} Shen y colaboradores mostraron que las
+correcciones de punta derivadas de Prandtl son inconsistentes cerca de la punta y
+propusieron una nueva~\cite{literatura-shen2005}. Ning (2014) reformuló las ecuaciones
+BEMT como una sola ecuación en el ángulo de flujo $\phi$, con convergencia
+garantizada~\cite{literatura-ning2014}; esto es valioso aquí porque con paso negativo y
+alta inducción los métodos iterativos en $a$ suelen fallar. Hansen~\cite{literatura-hansen2015}
+es el texto de referencia. Liew, Heck y Howland (2024) propusieron un modelo de cantidad
+de movimiento unificado que predice el empuje con coeficientes altos sin correcciones
+empíricas~\cite{literatura-liew2024}.
+
+\paragraph{Contraste con la curva de helicópteros.} La relación empírica de este informe
+(ecuación~\eqref{eq:poly}) viene de rotores de helicóptero~\cite{castles1951,leishman2006}.
+Puede pasarse a la notación eólica con $a=\vi/V$ y $C_T=4(\vh/V)^2$. La
+figura~\ref{fig:literatura-ct} compara las tres curvas.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.84\textwidth, height=7cm,
+  xlabel={Factor de inducción axial $a=\vi/V$}, ylabel={$C_T=T/(\tfrac12\rho V^2A_R)$},
+  xmin=0, xmax=1.2, ymin=0, ymax=2.0, grid=both, grid style={cgris!25},
+  legend columns=2, legend style={font=\scriptsize, cells={anchor=west},
+    at={(0.5,-0.2)}, anchor=north}]
+  \addplot[cgris, thick, dashed] table[x=a, y=CTmom] {analysis/data/literatura_ct_a.dat};
+  \addlegendentry{Cantidad de movimiento $4a(1-a)$}
+  \addplot[cfijo, thick] table[x=a, y=CTbuhl] {analysis/data/literatura_ct_a.dat};
+  \addlegendentry{Buhl (2005), $F=1$}
+  \addplot[cfijo, thin, densely dotted] table[x=a, y=CTbuhl09] {analysis/data/literatura_ct_a.dat};
+  \addlegendentry{Buhl (2005), $F=0{,}9$}
+  \addplot[crot, thick] table[x=a, y=CT] {analysis/data/literatura_ct_leish.dat};
+  \addlegendentry{Polinomio de Leishman, ec.~\eqref{eq:poly}}
+  \draw[cfreno, thin] (axis cs:0,1.2) -- (axis cs:1.2,1.2);
+  \node[cfreno, font=\scriptsize, anchor=south west] at (axis cs:0.02,1.2) {$\CR=1{,}2$ (diseño)};
+  \addplot[only marks, mark=*, cfijo, mark size=2.4pt] coordinates {(0.612,1.2)};
+  \addplot[only marks, mark=*, crot, mark size=2.4pt] coordinates {(0.982,1.194)};
+  \node[font=\scriptsize, cfijo, anchor=north west] at (axis cs:0.62,1.18) {$a=0{,}61$};
+  \node[font=\scriptsize, crot, anchor=north west] at (axis cs:0.99,1.17) {$a=0{,}98$};
+\end{axis}
+\end{tikzpicture}
+\caption{Coeficiente de empuje frente a factor de inducción: dos curvas empíricas de
+origen distinto (turbinas y helicópteros) dan factores de inducción muy diferentes para el
+$\CR$ de diseño. Datos: \texttt{analysis/data/literatura\_ct\_*.dat}.}
+\label{fig:literatura-ct}
+\end{figure}
+
+\begin{resultado}[Consecuencia para el cálculo de rpm]
+Para $\CR=1{,}2$ la curva de Buhl da $a=0{,}61$: el aire atraviesa el disco a
+$V(1-a)\approx\SI{2.5}{m/s}$. El polinomio de Leishman da $a=0{,}98$: el flujo neto por el
+disco es casi nulo, que es la autorrotación ideal. En la pala, el ángulo de flujo
+$\phi=\arctan[V(1-a)/(\Omega r)]$ cambia en la misma proporción, y con él el par de la
+ecuación~\eqref{eq:dQ}. La estimación de \num{1150} rpm del capítulo~\ref{cap:dim}
+(ecuación~\eqref{eq:omega}) supone $U\approx\Omega r$ y $C_l\approx0{,}9$, lo que
+equivale a flujo axial casi nulo (el caso de Leishman); un modelo BEMT con la corrección
+de Buhl daría otro ángulo de flujo y otras rpm. La medición de rpm del ensayo E2 decide entre ambos.
+\end{resultado}
+
+%=====================================================================
+\section{Paracaídas pequeños y drogue atado}\label{sec:literatura-paracaidas}
+Para paracaídas pequeños los datos confirman $C_D\approx0{,}8$ del paracaídas plano
+circular y advierten sobre dos fenómenos que la estimación cuasi estática ignora: la
+``respiración'' de la campana y la oscilación pendular.
+
+\begin{itemize}
+  \item \textbf{Manuales.} Knacke~\cite{knacke1992}, la guía de Ewing, Bixby y
+        Knacke~\cite{literatura-ewing1978} y el AGARDograph de
+        Cockrell~\cite{literatura-cockrell1987} son la base de coeficientes, cargas de
+        apertura y estabilidad.
+  \item \textbf{Scher y Young (1971)} midieron en el túnel vertical de Langley
+        paracaídas planos circulares de \SI{1.07}{m}: con campana plenamente inflada,
+        $C_D\approx0{,}81$ para baja porosidad y $\approx0{,}78$ para alta porosidad; los de
+        baja porosidad resultaron inestables~\cite{literatura-scher1971}.
+        \emph{Aporte}: valida el $C_D=0{,}8$ del drogue y advierte que la tela sin
+        ventilación oscila.
+  \item \textbf{Johari y Desabrais (2005)} midieron en túnel de agua que la campana
+        ``respira'' con frecuencia adimensional $\approx0{,}55$ y desprende anillos de
+        vórtice a esa misma frecuencia; la masa añadida explica hasta el
+        \SI{40}{\percent} de las fluctuaciones de resistencia~\cite{literatura-johari2005}.
+        Si se escala con el diámetro, para el drogue de \SI{0.25}{m} eso es
+        $f\approx0{,}55\,V/D\approx\SI{14}{Hz}$ a \SI{6.4}{m/s} y \SI{29}{Hz} a
+        \SI{13.4}{m/s} (estimación).
+  \item \textbf{Mattei y colaboradores (2023)} encontraron en paracaídas a escala que a
+        bajo Reynolds la respiración tiene gran amplitud y baja frecuencia, con grandes
+        fluctuaciones de resistencia~\cite{literatura-mattei2023}. \emph{Advertencia}: el
+        drogue de este diseño es pequeño y lento; sus fluctuaciones relativas pueden ser
+        mayores que las de los manuales.
+  \item \textbf{Guglieri (2012)} da un modelo multicuerpo simple de paracaídas y carga
+        para simular trayectorias~\cite{literatura-guglieri2012}. \emph{Método}: sirve
+        para modelar el conjunto drogue--cuerda--rotor--cuerpo de la etapa 2.
+\end{itemize}
+
+\begin{nota}[Interacción drogue--rotor]
+No se encontró ningún trabajo que estudie un drogue atado por encima de un rotor
+autorrotante, con la cuerda pasando por el eje. En descenso el aire relativo sube: pasa
+primero por el cuerpo y el rotor y después llega al drogue, \SI{1.5}{m} (unos $3{,}75R$)
+más arriba. El drogue, de \SI{0.25}{m}, queda entonces dentro de la estela del rotor de
+\SI{0.4}{m}: un flujo frenado, con giro y turbulento. Con $a\approx0{,}6$--$1$
+(figura~\ref{fig:literatura-ct}) la velocidad de esa estela es mucho menor que $V$ y puede
+incluso recircular, de modo que la presión dinámica sobre el drogue, y su aporte al
+freno, son inciertos. Por eso el peor caso del diseño (\SI{7.8}{m/s}) supone drogue sin
+aporte. Medir $\Vr$ con y sin drogue es la única forma de cerrar esta duda.
+\end{nota}
+
+%=====================================================================
+\section{Síntesis: decisiones de diseño y fuerza de la evidencia}
+\label{sec:literatura-sintesis}
+La tabla~\ref{tab:literatura-trazab} vincula cada decisión del diseño con la evidencia
+publicada y califica su fuerza: \textbf{A}~=~medición directa en condiciones parecidas,
+\textbf{B}~=~medición en otra escala o configuración, \textbf{C}~=~solo teoría o
+analogía.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Trazabilidad de las decisiones de diseño a la literatura.}
+\label{tab:literatura-trazab}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}Y c@{}}
+\toprule
+\textbf{Decisión} & \textbf{Evidencia} & \textbf{Fuerza}\\\midrule
+Placa de carbono curvada \SI{7}{\percent} & Laitone~\cite{literatura-laitone1997}, Bruining~\cite{literatura-bruining1979}, Martiarena~\cite{literatura-martiarena2015}, Pelletier y Mueller~\cite{pelletier2000} & B\\
+Paso $-2$ a \ang{-4}, sin control & Jung y Rezgui~\cite{literatura-jung2024}, Brindejonc~\cite{literatura-brindejonc2007}, Seter y Rosen~\cite{literatura-seter2014} & B\\
+$\CR=1{,}2$ para dimensionar & Castles y Gray~\cite{castles1951}, Leishman~\cite{leishman2006}; el Autobody sugiere margen~\cite{literatura-brindejonc2007} & B\\
+Bisagra de batimiento y conicidad \ang{4.4} & Jung y Rezgui (conicidad \ang{5}--\ang{15})~\cite{literatura-jung2024}; teoría~\cite{johnson1980} & B\\
+Cuatro palas, $\sigma=0{,}286$ & Veismann y col.~\cite{literatura-veismann2022} (paramétrico); sin dato directo & C\\
+Drogue atado como freno adicional & Ningún antecedente directo; manuales~\cite{knacke1992,literatura-scher1971} & C\\
+Arranque desde \SI{13.4}{m/s} & Estela turbulenta y anillo de vórtices~\cite{literatura-stack2005,literatura-shetty2011,leishman2004} & B\\
+Traba con servo y pestañas & Run2Sat~\cite{literatura-rivadeneira2025}, SwifTurk~\cite{literatura-swifturk2019} & B\\
+Sensor Hall para rpm & CDR 2019~\cite{literatura-swifturk2019}, guía 2025~\cite{cansat2025} & A\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Vacíos de conocimiento que este proyecto puede cubrir}\label{sec:literatura-vacios}
+La revisión deja cinco vacíos concretos. Cada uno se puede cubrir con ensayos ya
+previstos en el capítulo~\ref{cap:ensayos}, sin costo adicional relevante.
+
+\begin{enumerate}
+  \item \textbf{Datos completos de un CanSat con autogiro.} Ningún trabajo publica masa,
+        diámetro, velocidad estabilizada medida y rpm del mismo vehículo. Publicar esas
+        cuatro cifras con su incertidumbre sería, por sí solo, un aporte.
+  \item \textbf{$\CR$ medido de un rotor de \SI{0.4}{m} de placa curvada a
+        $Re<\num{100000}$.} Los coeficientes disponibles son de helicópteros grandes o de
+        sámaras. La tabla~\ref{tab:literatura-ceq} muestra una dispersión de 1,0 a 1,8.
+  \item \textbf{Inducción en autorrotación axial a bajo Reynolds.} La
+        figura~\ref{fig:literatura-ct} muestra que las curvas empíricas de turbinas y de
+        helicópteros discrepan justo en el punto de operación. Medir rpm y $\Vr$ a la vez
+        permite deducir $a$ con la ecuación~\eqref{eq:dQ}.
+  \item \textbf{Arranque de un rotor plegado liberado a alta velocidad.} Hay estudios de
+        arranque de sámaras desde reposo~\cite{literatura-varshney2012} y de despliegue
+        pasivo~\cite{literatura-jain2022}, pero no del tiempo de arranque de un rotor
+        de cuatro palas con bisagra soltado a \SI{13}{m/s}. La cámara cenit y el sensor
+        Hall pueden medirlo.
+  \item \textbf{Drogue atado sobre un rotor.} No se encontró ningún estudio de esta
+        combinación. Un ensayo con y sin drogue (misma caída) separaría su aporte.
+\end{enumerate}
+
+\begin{nota}[Límites de esta revisión]
+La revisión es amplia pero no exhaustiva: no incluye literatura en turco, chino o ruso,
+donde hay muchos equipos de CanSat y de Teknofest, ni informes de equipos que no estén
+indexados. Varias fichas no muestran volumen o páginas; se dejaron sin ellos en vez de
+completarlos de memoria. Los números atribuidos a cada trabajo deben confirmarse en el
+texto completo antes de una entrega formal.
+\end{nota}

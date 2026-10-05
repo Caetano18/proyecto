@@ -14,7 +14,7 @@ de seguridad (FS) que siguen valen como orden de magnitud y como guía para los 
         cerca de \SI{1150}{rpm}, se tuerce $\approx\ang{+2.4}$ en la punta (nariz arriba) y
         diverge o flamea a $\approx2$ veces la velocidad de giro de diseño.
   \item Un laminado del mismo espesor con capas externas a $\pm\ang{45}$ y una varilla de
-        carbono Ø\,\SI{2}{mm} en el borde de ataque (configuración BV, $+\SI{0.85}{g}$ por
+        carbono Ø\,\SI{2}{mm} en el borde de ataque (configuración BV, $+\SI{0.76}{g}$ por
         pala) multiplica $GJ$ por 6,8, lleva la torsión a $\ge8$ veces por vuelta y aleja
         la divergencia a más de 6,6 veces la velocidad de diseño.
   \item El \textbf{golpe de la pala contra el tope de $\ang{+10}$} al abrirse es el caso
@@ -23,8 +23,8 @@ de seguridad (FS) que siguen valen como orden de magnitud y como guía para los 
   \item Con la distribución de masa real, la conicidad es $\approx\ang{6.1}$ (no
         \ang{4.4}) y una ráfaga lleva la pala a \ang{9.3}, casi contra el tope.
   \item Rodamientos, eje, pestañas, anillo y tubo tienen FS amplios; la fatiga no
-        gobierna. El aterrizaje sin amortiguador produce del orden de \SI{1000}{g} en suelo
-        duro; \SI{25}{mm} de espuma lo bajan a \SIrange{150}{220}{g}.
+        gobierna. El aterrizaje sin amortiguador produce entre \num{1300} y \SI{1900}{g} en
+        suelo duro; \SI{25}{mm} de espuma lo bajan a \SIrange{150}{220}{g}.
 \end{itemize}
 \end{resultado}
 
@@ -282,7 +282,7 @@ $\approx\ang{2.4}$ de giro estático); B y BV lo resuelven sin agregar masa de b
 
 \paragraph{Momento de cabeceo.} Una corrida de XFOIL~\cite{estructura-drela1989}
 (\texttt{estructura\_cm.py}, $Re=\num{36000}$, $N_{crit}=9$) da para la placa curvada al
-7\,\% $C_{m,c/4}=\numrange{-0.127}{-0.137}$ entre \ang{1} y \ang{5}; la teoría de perfil
+7\,\% $C_{m,c/4}$ entre \num{-0.137} y \num{-0.127} entre \ang{1} y \ang{5}; la teoría de perfil
 delgado da $-\pi f/c=-0{,}22$, que XFOIL no viscoso reproduce ($-0{,}226$). Se toma
 $C_{m0}=-0{,}13$ con el rango $-0{,}10$ a $-0{,}23$. Con $C_l\approx0{,}9$, el centro de
 presión está en $x_{cp}/c=0{,}25-C_{m0}/C_l\approx0{,}39$: delante del centro de corte
@@ -310,8 +310,10 @@ recorre $\Omega$ hasta que algún modo pierde amortiguamiento.
 
 \begin{table}[H]
 \centering\small
+\footnotesize
 \caption{Resultados aeroelásticos (diseño: \SI{1150}{rpm}). Los rangos corresponden a
 alabeo restringido y libre en el portapala.}\label{tab:estructura-aeroel}
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
  & \textbf{A} & \textbf{B} & \textbf{BV}\\\midrule
@@ -362,7 +364,7 @@ $0{,}441c$ y el flameo queda por encima de \SI{5700}{rpm}: no hace falta masa ad
 
 \begin{resultado}[Pala recomendada: BV]
 Laminado $[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm} con varilla pultruida Ø\,\SI{2}{mm}
-en el borde de ataque, del lado cóncavo: $+\SI{0.85}{g}$ por pala ($+\SI{3.4}{g}$ en el
+en el borde de ataque, del lado cóncavo: $+\SI{0.76}{g}$ por pala ($+\SI{3.0}{g}$ en el
 rotor, que salen del lastre). $GJ\times6{,}8$, $EI_\beta\times4{,}5$, torsión $\ge8$
 veces por vuelta, divergencia $\ge6{,}6\Omega$, flameo $>5\Omega$ y giro estático
 $<\ang{0.2}$. Si la varilla no se consigue, el laminado B solo ya da márgenes $\ge3{,}7$.
@@ -387,7 +389,7 @@ desde $\beta=\ang{-89}$ hasta $\ang{+10}$, con $C_{dc}=1{,}2$ (placa de alargami
 y 2,0 (placa bidimensional, cota superior)~\cite{hoerner1965}, $M_r=\SI{0.005}{N.m}$ el
 resorte y $S_b$ el momento estático de la pala. Se desprecia la desaceleración del cuerpo,
 que frenaría la apertura. La energía del golpe es
-$\frac12I_b\dot\beta_i^2=\SIrange{0.041}{0.061}{J}$. Tras el contacto, la pala se modela
+$\frac12I_b\dot\beta_i^2$, de 0,041 a \SI{0.061}{J}. Tras el contacto, la pala se modela
 con un resorte $k_s$ en la bisagra (el tope) y se superponen sus modos de batimiento con
 la velocidad inicial $\dot\beta_i x$. Si la pala fuera rígida, el momento máximo sería
 $M\approx\dot\beta_i\sqrt{I_b k_s}$.
@@ -395,18 +397,18 @@ $M\approx\dot\beta_i\sqrt{I_b k_s}$.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.49\textwidth, height=5.6cm, xmin=0, xmax=150, ymin=-95, ymax=15,
+\begin{axis}[width=0.47\textwidth, height=5.6cm, xmin=0, xmax=150, ymin=-95, ymax=15,
   xlabel={Tiempo [ms]}, ylabel={$\beta$ [grados]}, unbounded coords=jump,
-  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}, title={\small (a) Apertura (A)}]
+  legend style={font=\scriptsize, at={(0.03,0.80)}, anchor=north west}, title={\small (a) Apertura (A)}]
   \addplot[crot, very thick] table[x=t, y=beta12] {analysis/data/estructura_apertura.dat};
   \addlegendentry{$C_{dc}=1{,}2$}
   \addplot[cfreno, thick, dashed] table[x=t, y=beta20] {analysis/data/estructura_apertura.dat};
   \addlegendentry{$C_{dc}=2{,}0$}
-  \draw[black!60, dashed] (axis cs:0,10) -- (axis cs:150,10) node[pos=0.5, below, font=\scriptsize] {tope $+\ang{10}$};
+  \draw[black!60, dashed] (axis cs:0,10) -- (axis cs:150,10) node[pos=0.3, below, font=\scriptsize] {tope $+\ang{10}$};
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
-\begin{loglogaxis}[width=0.49\textwidth, height=5.6cm,
+\begin{loglogaxis}[width=0.47\textwidth, height=5.6cm,
   xmin=0.3, xmax=1000, ymin=0.03, ymax=10,
   xlabel={Rigidez del tope $k_s$ [N\,m/rad]}, ylabel={Momento máximo [N\,m]},
   legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}, title={\small (b) Golpe ($C_{dc}=2$)}]
@@ -417,10 +419,10 @@ $M\approx\dot\beta_i\sqrt{I_b k_s}$.
   \addlegendentry{raíz de pala, A}
   \addplot[cfijo, thick] table[x=ks, y=MhBV] {analysis/data/estructura_tope.dat};
   \addlegendentry{bisagra, BV}
-  \draw[black!70, dotted, thick] (axis cs:0.3,0.34) -- (axis cs:1000,0.34) node[pos=0.98, below left, font=\scriptsize] {$M^+$ pliegue};
+  \draw[black!70, dotted, thick] (axis cs:0.3,0.34) -- (axis cs:1000,0.34) node[pos=0.97, above left, font=\scriptsize] {$M^+$ pliegue};
   \node[font=\scriptsize, ccuerda!60!black, align=center] at (axis cs:4.5,6) {tope\\ blando};
-  \node[font=\scriptsize, align=center] at (axis cs:250,0.12) {PETG\\ rígido};
-  \draw[-{Latex[length=1.5mm]}] (axis cs:250,0.17) -- (axis cs:250,0.45);
+  \node[font=\scriptsize, align=center] at (axis cs:250,0.07) {PETG\\ rígido};
+  \draw[-{Latex[length=1.5mm]}] (axis cs:250,0.1) -- (axis cs:250,0.25);
 \end{loglogaxis}
 \end{tikzpicture}
 \caption{(a) Ángulo de batimiento durante la apertura: la pala recorre \ang{100} en
@@ -434,8 +436,8 @@ Con el tope rígido de los planos ($k_s\approx\SI{250}{N.m/rad}$, brazo \SI{4}{m
 momento en la bisagra llega a \SI{3.2}{N.m} y la fuerza de contacto a \SI{800}{N}: el
 pasador de Ø\,\SI{2}{mm} se flexiona a \SI{1400}{MPa} y las orejas se aplastan a
 \SI{80}{MPa}. La pala misma resiste ($\varepsilon=0{,}10$\,\%), pero su momento en la raíz
-(\SI{0.51}{N.m}) supera el momento de pliegue estacionario. Un tope blando de
-$k_s=\SIrange{2}{10}{N.m/rad}$ baja el momento en la bisagra a \SIrange{0.5}{1.0}{N.m} y en
+(\SI{0.51}{N.m}) supera el momento de pliegue estacionario. Un tope blando, con
+$k_s$ entre 2 y \SI{10}{N.m/rad}, baja el momento en la bisagra a \SIrange{0.5}{1.0}{N.m} y en
 la raíz a \SIrange{0.09}{0.20}{N.m}, a costa de \SIrange{6}{14}{\degree} de recorrido
 elástico.
 
@@ -548,6 +550,9 @@ Aterrizaje a \SI{500}{g} (suelo duro) & \multicolumn{2}{c}{368} & 184 & \multico
 \end{tabular}
 \end{table}
 
+Un aterrizaje sin amortiguador en suelo duro (\SIrange{1300}{1900}{g},
+sección~\ref{sec:estructura-impacto}) daría $s_0<1$: las bolas marcarían las pistas
+(\emph{brinelling}) y el rotor quedaría con juego. Es otra razón para el amortiguador.
 La velocidad de trabajo es el 2,6\,\% de la límite. El riesgo real es otro: con el anillo
 exterior girando y la carga de desbalance girando con él, el anillo interior ve una carga
 rotativa y puede deslizar sobre el eje fijo; se recomienda fijar los aros interiores con
@@ -570,7 +575,7 @@ inclinación de \ang{5} entre disco y eje (la pala la absorbe casi toda por la b
 \begin{table}[H]
 \centering\small
 \caption{Fatiga a \num{e6} ciclos (valores alternantes 1P).}\label{tab:estructura-fatiga}
-\begin{tabular}{@{}llccc@{}}
+\begin{tabularx}{\textwidth}{@{}lYccc@{}}
 \toprule
 \textbf{Componente} & \textbf{Fuente} & \textbf{Alternante} & \textbf{Admisible a \num{e6}} & \textbf{FS}\\\midrule
 Pala (carbono) & 1P de batimiento ($\pm50$\,\% del medio, supuesto) & $\varepsilon=\num{0.001}$\,\% & 0,58\,\% & $>500$\\
@@ -578,7 +583,7 @@ Brazo del cubo (PETG) & Inclinación de \ang{5} & \SI{0.20}{MPa} & \SI{11}{MPa} 
 Eje (Al) & Desbalance de \SI{1}{g}, 1P en el sistema fijo & \SI{0.35}{MPa} & \SI{96}{MPa} & 270\\
 Bisagra, tope & Golpes de apertura ($\approx50$, tope blando) & \SIrange{10}{16}{MPa} & $\approx\SI{30}{MPa}$ a \num{e2} & 2\\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \begin{nota}[Vida útil real]
@@ -641,7 +646,7 @@ deben dimensionarse para esas cargas, no para 30\,G.
 \begin{nota}[El rotor al tocar el suelo]
 El rotor llega girando con \SI{3.7}{J} y sin freno. Si el CanSat cae de costado, las palas
 golpean el suelo a \SI{24}{m/s} de punta: en el plano (arrastre) la pala se rompe o
-arranca la oreja; hacia abajo se pliega como cinta ($M^-=\SIrange{0.13}{0.30}{N.m}$). Es
+arranca la oreja; hacia abajo se pliega como cinta ($M^-$ de 0,13 a \SI{0.30}{N.m}). Es
 un daño esperable y aceptable después de \texttt{LANDED}, pero no debe dañar la
 electrónica: los fragmentos quedan fuera del cuerpo.
 \end{nota}
@@ -652,7 +657,7 @@ electrónica: los fragmentos quedan fuera del cuerpo.
 \begin{resultado}[Cambios recomendados]
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Pala BV}: laminado $[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm} y varilla
-        de carbono Ø\,2 en el borde de ataque (+\SI{3.4}{g} en el rotor). Resuelve torsión,
+        de carbono Ø\,2 en el borde de ataque (+\SI{3.0}{g} en el rotor). Resuelve torsión,
         divergencia, flameo y giro estático.
   \item \textbf{Tope de batimiento blando} ($k_s\approx\SI{5}{N.m/rad}$, brazo
         $\ge\SI{10}{mm}$) a \ang{+15}; pasador templado o Ø\,\SI{3}{mm}; distancia al

@@ -220,7 +220,9 @@ res = {}
 for top in ("TOP1", "TOP2"):
     cuts = mocus(top)
     pc = [(sorted(c, key=lambda s: int(s[1:])), float(np.prod([P0[e] for e in c]))) for c in cuts]
-    pc.sort(key=lambda t: -t[1])
+    # orden determinista: probabilidad, orden del corte y códigos (los empates no
+    # dependen del hash de frozenset)
+    pc.sort(key=lambda t: (-round(t[1], 12), len(t[0]), [int(x[1:]) for x in t[0]]))
     pe = p_top(top, P0)
     rare = sum(p for _, p in pc)
     mcub = 1 - np.prod([1 - p for _, p in pc])
@@ -275,16 +277,16 @@ with open(os.path.join(DATA, "confiabilidad_eventos.dat"), "w") as f:
                 f"{i2['FV']:.4g} {i2['RAW']:.4g}\n")
 top_fv = [e for e in codes if res["TOP1"]["imp"].get(e, {"FV": 0})["FV"] > 0][:12]
 with open(os.path.join(DATA, "confiabilidad_fv.dat"), "w") as f:
-    f.write("n code FV1 FV2\n")
+    f.write("n code lab FV1 FV2\n")
     for i, e in enumerate(reversed(top_fv)):
-        f.write(f"{i} {e} {res['TOP1']['imp'][e]['FV']:.4g} "
+        f.write(f"{i} {e} $x_{{{e[1:]}}}$ {res['TOP1']['imp'][e]['FV']:.4g} "
                 f"{res['TOP2']['imp'].get(e, dict(FV=0))['FV']:.4g}\n")
 top_fv2 = sorted([e for e in res["TOP2"]["imp"] if res["TOP2"]["imp"][e]["FV"] > 0.02],
                  key=lambda e: res["TOP2"]["imp"][e]["FV"])
 with open(os.path.join(DATA, "confiabilidad_fv2.dat"), "w") as f:
-    f.write("n code FV2\n")
+    f.write("n code lab FV2\n")
     for i, e in enumerate(top_fv2):
-        f.write(f"{i} {e} {res['TOP2']['imp'][e]['FV']:.4g}\n")
+        f.write(f"{i} {e} $x_{{{e[1:]}}}$ {res['TOP2']['imp'][e]['FV']:.4g}\n")
 with open(os.path.join(DATA, "confiabilidad_cortes.dat"), "w") as f:
     f.write("top orden cut P\n")
     for top in ("TOP1", "TOP2"):
