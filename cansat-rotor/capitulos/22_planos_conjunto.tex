@@ -26,10 +26,11 @@ movimiento del capítulo~\ref{cap:teoria}; ninguno es una medición.
         el cubo apoya \textbf{hacia abajo} sobre el hombro inferior del eje: la tuerca solo
         trabaja en la etapa 2.
   \item El diagrama N$^2$ identifica 31 interfaces (14 mecánicas, 7 eléctricas y 10 de
-        datos). La baliza no tiene interfaz eléctrica con el resto (\Req{E8}).
+        datos). La baliza no tiene interfaz eléctrica con el resto (\Req{C8}, \Req{E8}).
   \item Las palas plegadas definen hoy el Ø\,\SI{95}{mm}: sus bordes rozarían el tubo del
-        cohete. Se propone agregar cuatro patines guía de PETG que definan el Ø\,95 y
-        dejar las palas en Ø\,\SI{94}{mm}.
+        cohete. Se propone agregar cuatro patines guía de PETG que definan el Ø\,95, dejar
+        las palas en Ø\,\SI{94}{mm} y bajar el cuerpo a Ø\,\SI{87}{mm}: con el cuerpo de
+        Ø\,88, la cara interior de una pala de \SI{0.5}{mm} no cabe.
   \item El anexo no da el diámetro interior del tubo. Con la suposición de
         Ø\,\SI{98}{mm} la holgura diametral en el peor caso es de \SI{2.1}{mm}; se
         necesita Ø$_\text{int}\ge\SI{96.9}{mm}$ para conservar \SI{1}{mm}. Hay que
@@ -167,7 +168,7 @@ superior y de las dos palas delanteras.
   \coordinate (bR) at ({47.5*cos(115)},{47.5*sin(115)},{0});
   \coordinate (bL) at ({47.5*cos(-65)},{47.5*sin(-65)},{0});
 \end{scope}
-  \path (-76,0) coordinate (colL) (80,0) coordinate (colR);
+  \path (-66,0) coordinate (colL) (72,0) coordinate (colR);
   \plG{a1}{a1 -| colR}{1}
   \plG{a2}{$(a2 -| colR)+(0,4)$}{2}
   \plG{a4}{$(a4 -| colR)+(0,-6)$}{4}
@@ -179,8 +180,8 @@ superior y de las dos palas delanteras.
   \plG{a19}{$(a19 -| colL)+(0,-6)$}{19}
   \plG{a28}{$(a28 -| colL)+(0,6)$}{28}
   % cota de largo
-  \draw[cgris, line width=0.3pt] (b0) -- ++(-88,0) (b250) -- ++(-88,0);
-  \draw[cota] ($(b0)+(-84,0)$) -- ($(b250 -| b0)+(-84,0)$)
+  \draw[cgris, line width=0.3pt] (b0) -- ++(-96,0) (b250) -- ++(-96,0);
+  \draw[cota] ($(b0)+(-92,0)$) -- ($(b250 -| b0)+(-92,0)$)
      node[midway, fill=white, font=\scriptsize, rotate=90] {250 (\Req{S3})};
 \end{tikzpicture}
 \caption{Exterior, listo para integrar.}
@@ -255,7 +256,7 @@ superior y de las dos palas delanteras.
   \coordinate (c9) at ({43*cos(-20)},{43*sin(-20)},{120});
   \coordinate (c11) at ({28*cos(25)},{28*sin(25)},{196});
 \end{scope}
-  \path (-64,0) coordinate (colL) (80,0) coordinate (colR);
+  \path (-64,0) coordinate (colL) (72,0) coordinate (colR);
   \plG{c12}{$(c12 -| colR)+(0,22)$}{12}
   \plG{c23}{$(c23 -| colR)+(0,4)$}{23}
   \plG{c24}{$(c24 -| colR)+(0,-4)$}{24}
@@ -267,20 +268,21 @@ superior y de las dos palas delanteras.
   \plG{c18}{$(c18 -| colR)+(0,-14)$}{18}
   \plG{c9}{c9 -| colL}{9}
   \plG{c11}{$(c11 -| colL)+(0,10)$}{11}
-  \rotulo{$(current bounding box.south east)+(0,-30)$}{Plano 9 -- CanSat plegado}{1:2}{9}
+  \rotulo{$(current bounding box.south east)+(-20,-30)$}{Plano 9 -- CanSat plegado}{1:2}{9}
 \end{tikzpicture}
 \caption{Corte parcial: sector de \ang{90} retirado.}
 \end{subfigure}
 \caption{Plano 9: vistas isométricas del CanSat plegado, configuración A (escala 1:2;
 vista desde \ang{22} sobre el horizonte). Azul: piezas fijas; naranja: rotor; rojo: traba;
-verde: drogue, cuerda y placas de circuito. La cámara nadir (18) y la baliza (17) apoyan en
-la tapa inferior; el lastre (16) queda justo encima. Referencias en la
-tabla~\ref{tab:planos-piezas}.}
+verde: drogue, cuerda y placas de circuito. La cámara nadir (18) y la baliza (17, oculta
+bajo el lastre) apoyan en la tapa inferior; el lastre (16) queda justo encima. Se dibuja el
+diseño base, sin los patines guía ni el anillo de espuma propuestos más adelante.
+Referencias en la tabla~\ref{tab:planos-piezas}.}
 \label{fig:planos-iso-plegado}
 \end{figure}
 
-En la vista exterior se ve que los cuatro huecos de \ang{33.5} entre palas (azimut del
-observador) son el único acceso al cuerpo con el CanSat integrado: allí van los orificios
+En la vista exterior se ve que los cuatro huecos de \ang{33.5} entre palas (medidos
+desde el eje) son el único acceso al cuerpo con el CanSat integrado: allí van los orificios
 de los interruptores (19, \Req{E4}, \Req{E5}, \Req{E9}) y el indicador de encendido (28,
 \Req{E6}). El corte muestra el orden de la pila interna de abajo hacia arriba: baliza y
 cámara nadir, lastre, anillo de traba con su servo, batería vertical, tres placas sobre
@@ -290,9 +292,11 @@ cuerpo y ocupan la franja de \SIrange{57}{211}{mm}; ninguna pieza interna las cr
 %=====================================================================
 \section{Plano 10: vista isométrica del CanSat desplegado}\label{sec:planos-iso-desp}
 
-Desplegado, el rotor ocupa un disco de Ø\,\SI{400}{mm}, cuatro veces el diámetro del
-cuerpo; el drogue (Ø\,\SI{250}{mm}) queda \SI{1.5}{m} más arriba, fuera de la estela
-del rotor según la discusión del capítulo~\ref{cap:teoria}. La
+Desplegado, el rotor ocupa un disco de Ø\,\SI{400}{mm}, 4,2 veces el diámetro de la
+envolvente; el drogue (Ø\,\SI{250}{mm}) queda \SI{1.5}{m} más arriba ($7{,}5R$). En el
+descenso el aire atraviesa el rotor de abajo hacia arriba, de modo que el drogue vuela
+\textbf{dentro de la estela} del rotor, en aire ya frenado; por eso el caso pesimista
+del capítulo~\ref{cap:dim} no le asigna aporte ($V_2=\SI{7.8}{m/s}$). La
 figura~\ref{fig:planos-iso-desp} lo dibuja a escala 1:3,5, con la cuerda cortada.
 
 \newcommand{\plPala}[2]{% azimut, color
@@ -364,7 +368,7 @@ figura~\ref{fig:planos-iso-desp} lo dibuja a escala 1:3,5, con la cuerda cortada
 \end{scope}
   % rotura de la cuerda
   \draw[black, line width=0.4pt] ($(k1)+(-8,-3)$) -- ($(k1)+(8,3)$) ($(k2)+(-8,-3)$) -- ($(k2)+(8,3)$);
-  \node[font=\scriptsize, anchor=east, align=right] at ($(k1)!0.5!(k2)+(-10,0)$)
+  \node[font=\scriptsize, anchor=east, align=right] at ($(k1)!0.5!(k2)+(-30,0)$)
        {cuerda Dyneema, \SI{1.5}{m}\\ (cortada en el dibujo)};
   % cotas
   \draw[cota] ($(d0 |- h0)+(0,-40)$) -- ($(d1 |- h0)+(0,-40)$)
@@ -374,15 +378,15 @@ figura~\ref{fig:planos-iso-desp} lo dibuja a escala 1:3,5, con la cuerda cortada
   \node[font=\small, crot!80!black, anchor=south west] at ($(giro)+(8,8)$) {$\Omega$};
   \draw[ref] (dro) -- ++(-40,25) node[anchor=east, font=\scriptsize, align=right]
      {drogue Ø\,250, $C_D\approx0{,}8$\\ (sigue atado en la etapa 2)};
-  \draw[ref] (pala) -- ++(-60,-120) node[anchor=north east, font=\scriptsize, align=right]
+  \draw[ref] (pala) -- ++(-35,-120) node[anchor=north east, font=\scriptsize, align=right]
      {pala 156 × 45, conicidad $\beta_0\approx\ang{4.4}$\\ paso $\theta\approx\ang{-3}$};
-  \draw[ref] (ba) -- ++(40,-100) node[anchor=north west, font=\scriptsize, align=left]
+  \draw[ref] (ba) -- ++(30,-100) node[anchor=north west, font=\scriptsize, align=left]
      {borde de ataque\\ (línea gruesa)};
   \draw[ref] (cpo) -- ++(70,-60) node[anchor=west, font=\scriptsize, align=left]
      {cuerpo Ø\,88\\ $z_\text{cg}\approx\SI{107}{mm}$};
   \draw[flecha, cgris] ($(h0)+(-235,300)$) -- ++(0,-110)
      node[midway, left, font=\scriptsize, align=right] {$V_2\approx\SI{6.4}{m/s}$\\ (estimado)};
-  \rotulo{$(current bounding box.south east)+(-45,-60)$}{Plano 10 -- CanSat desplegado}{1:3,5}{10}
+  \rotulo{$(current bounding box.south east)+(-60,-60)$}{Plano 10 -- CanSat desplegado}{1:3,5}{10}
 \end{tikzpicture}
 \caption{Plano 10: CanSat desplegado en la etapa 2, vista isométrica a escala 1:3,5 (cuerda
 del drogue cortada). El rotor gira en sentido antihorario visto desde arriba ($\Omega\approx\SI{1150}{rpm}$,
@@ -399,11 +403,11 @@ cambia la envolvente.}
 La vista explosionada ordena el montaje en tres grupos que se arman por separado y se unen
 al final: la cabeza del rotor (grupo A), el cuerpo (grupo B) y el módulo interno con la
 electrónica y el lastre (grupo C). La figura~\ref{fig:planos-explo} los muestra a escala
-1:2,5 sobre sus ejes de montaje, y la tabla~\ref{tab:planos-piezas} lista las 30 piezas.
+1:3 sobre sus ejes de montaje, y la tabla~\ref{tab:planos-piezas} lista las 30 piezas.
 
 \begin{figure}[p]
 \centering
-\begin{tikzpicture}[scale=0.038]
+\begin{tikzpicture}[scale=0.03333]
 % ------------------------------------------------------------ grupo A: cabeza del rotor
 \begin{scope}[tdplot_main_coords]
   \draw[eje] (0,0,95) -- (0,0,490);
@@ -470,18 +474,18 @@ electrónica y el lastre (grupo C). La figura~\ref{fig:planos-explo} los muestra
   \plTubo{44}{42}{150}{355}{cfijo}
   % patines guía (propuestos), en los huecos entre palas
   \foreach \a in {25,115}{\plCaja{\a}{44}{47.5}{2}{150}{355}{ccont}}
-  % orificios
+  % orificios (a \ang{10} del patín, dentro del hueco entre palas) e indicador
   \foreach \zz in {250,270}{
   \draw[cfijo!70!black, fill=white, line width=0.3pt]
     plot[domain=0:360, samples=30, variable=\s]
-      ({44*cos(40+5.2*cos(\s))},{44*sin(40+5.2*cos(\s))},{\zz+4*sin(\s)});}
-  \fill[cfreno] ({44*cos(40)},{44*sin(40)},{290}) circle (1.6);
+      ({44*cos(35+5.2*cos(\s))},{44*sin(35+5.2*cos(\s))},{\zz+4*sin(\s)});}
+  \fill[cfreno] ({44*cos(15)},{44*sin(15)},{290}) circle (1.6);
   % ranuras de las pestañas a z = 60
   \foreach \a in {-20,70}{\fill[black] ({44*cos(\a)},{44*sin(\a)},{210}) circle (1.3);}
   \coordinate (e9) at ({44*cos(-50)},{44*sin(-50)},{300});
   \coordinate (e27) at ({47.5*cos(25)},{47.5*sin(25)},{200});
-  \coordinate (e19) at ({44*cos(40)},{44*sin(40)},{250});
-  \coordinate (e28) at ({44*cos(40)},{44*sin(40)},{290});
+  \coordinate (e19) at ({44*cos(35)},{44*sin(35)},{250});
+  \coordinate (e28) at ({44*cos(15)},{44*sin(15)},{290});
   \coordinate (r14) at ({44*cos(70)},{44*sin(70)},{210});
 \end{scope}
 \end{scope}
@@ -548,12 +552,13 @@ electrónica y el lastre (grupo C). La figura~\ref{fig:planos-explo} los muestra
   \plG{e25}{e25 -| cC}{25}
   \node[font=\small\bfseries] at (0,10) {A: cabeza del rotor};
   \node[font=\small\bfseries] at (165,10) {B: cuerpo};
-  \node[font=\small\bfseries] at (300,0) {C: módulo interno};
-  \rotulo{$(current bounding box.south east)+(-45,-40)$}{Plano 11 -- Vista explosionada}{1:2,5}{11}
+  \node[font=\small\bfseries] at (300,10) {C: módulo interno};
+  \rotulo{$(current bounding box.south east)+(-45,-40)$}{Plano 11 -- Vista explosionada}{1:3}{11}
 \end{tikzpicture}
-\caption{Plano 11: vista explosionada en tres grupos de montaje (escala 1:2,5, isométrica).
+\caption{Plano 11: vista explosionada en tres grupos de montaje (escala 1:3, isométrica).
 A: cabeza del rotor, sobre el eje fijo; B: cuerpo con los patines guía propuestos
-(violeta); C: módulo interno que entra por abajo. Una sola pala (8) se muestra separada
+(violeta) y los orificios de los interruptores corridos \ang{10} del patín para que queden
+dentro del hueco entre palas; C: módulo interno que entra por abajo. Una sola pala (8) se muestra separada
 de su brazo, con la pestaña de punta (14) abajo. El orden de montaje está en la
 tabla~\ref{tab:planos-montaje}.}
 \label{fig:planos-explo}
@@ -582,7 +587,7 @@ tabla~\ref{tab:masa} que contiene la pieza.}\label{tab:planos-piezas}\\
 6  & Pasador de bisagra & 4 & Acero Ø\,2 (templado, ISO 8734, cap.~\ref{cap:estructura}) & A / 24\\
 7  & Portapala & 4 & PETG impreso, paso \ang{-6} a \ang{0}, con llave & A / 30 (con 8)\\
 8  & Pala & 4 & Carbono \SI{0.5}{mm} curvado 7\,\%, $156\times45$ & A / 30\\
-9  & Cuerpo & 1 & PETG Ø\,88, pared \SI{2}{mm}, largo 205 & B / 141\\
+9  & Cuerpo & 1 & PETG Ø\,88 (Ø\,87 con los patines, sec.~\ref{sec:planos-tubo}), pared \SI{2}{mm}, largo 205 & B / 141\\
 10 & Sensor de rpm & 1+1 & Hall en la tapa + imán Ø\,3 en el cubo & A / 24\\
 11 & Cámara cenit & 1 & Módulo de cámara, fuera del eje & A / 20 (con 18)\\
 12 & Eje fijo hueco & 1 & Aluminio 6061, Ø\,8 × 5, largo 67 & A / 24\\
@@ -600,7 +605,7 @@ tabla~\ref{tab:masa} que contiene la pieza.}\label{tab:planos-piezas}\\
 24 & Travesaño de anclaje & 1 & PETG o aluminio, con argolla para la cuerda & A / 25\\
 25 & Pila de placas & 3 & PCB FR-4 Ø\,76 sobre separadores M2,5 & C / 47\\
 26 & Tapa inferior & 1 & PETG, apoyo axial en el cohete & C / 25\\
-27 & Patín guía (\textbf{propuesto}) & 4 & PETG, $4\times3{,}5$, define el Ø\,95 & B / $\approx$\,4 (nuevo)\\
+27 & Patín guía (\textbf{propuesto}) & 4 & PETG, $4\times4$, define el Ø\,95 & B / $\approx$\,17 (nuevo; 3 en tacos)\\
 28 & Indicador de encendido & 1 & LED (\Req{E6}) visible en un hueco & B / 25 (cables)\\
 29 & Resorte de torsión & 4 & \SI{0.005}{N.m} de apertura (no dibujado) & A / 24\\
 30 & Paneles solares & 2 & En los huecos traseros (\Req{E3}; no se ven) & B / 8\\
@@ -639,8 +644,9 @@ La secuencia completa tiene seis configuraciones mecánicas distintas, y en cada
 fuerza dominante es diferente: la reacción del cohete, el tirón del drogue, el arrastre
 del drogue, el aire que abre las palas, el par aerodinámico que acelera el rotor y,
 finalmente, el empuje del rotor. La figura~\ref{fig:planos-secuencia} dibuja las seis a
-escala 1:8 con las fuerzas a escala \SI{1}{N}\,$\widehat{=}$\,\SI{2.5}{mm}; las fuerzas
-mayores de \SI{6}{N} se dibujan cortadas y se indica su valor.
+escala 1:8 con las fuerzas a escala \SI{1}{N}\,$\widehat{=}$\,\SI{2.5}{mm}; el tirón de
+apertura de (b) y la centrífuga de (f) no caben a esa escala y se dibujan fuera de escala,
+con su valor.
 
 Las fuerzas de las configuraciones estables salen del equilibrio vertical
 (ecuación~\ref{eq:equilibrio}) con los coeficientes de la base:
@@ -653,7 +659,9 @@ Las fuerzas de las configuraciones estables salen del equilibrio vertical
   \label{eq:planos-eq2}
 \end{align}
 La tensión en la cuerda es el arrastre del drogue menos su propio peso ($\approx\SI{0.12}{N}$):
-\SI{4.17}{N} en la etapa 1 y \SI{0.87}{N} en la etapa 2. El arranque del rotor se estima con
+\SI{4.17}{N} en la etapa 1 y \SI{0.87}{N} en la etapa 2. En los cuadros de la
+figura~\ref{fig:planos-secuencia} el peso dibujado es el del CanSat sin el drogue,
+$W_c=\SI{4.79}{N}$, que es el que equilibran la cuerda, el rotor y el arrastre del cuerpo. El arranque del rotor se estima con
 un par que cae linealmente desde $Q_0=\SI{0.026}{N.m}$ (paso \ang{-2}, $\Omega=0$, ecuación~\ref{eq:Q0})
 hasta cero en $\Omega_f=\SI{120}{rad/s}$:
 \begin{equation}
@@ -727,7 +735,7 @@ arranque.
      .. controls (30,372) and (-30,372) .. (-60,400);
   \foreach \x in {-60,60}{\draw[ccuerda, line width=0.3pt] (\x,400) -- (0,330);}
   \draw[-{Latex[length=2.2mm]}, line width=1.1pt, cfreno] (0,300) -- ++(0,28);
-  \node[font=\scriptsize, cfreno, anchor=north west, align=left, inner sep=1pt] at (66,452)
+  \node[font=\scriptsize, cfreno, anchor=north west, align=left, inner sep=1pt] at (50,452)
      {tirón (fuera\\ de escala):\\ \SI{8}{N} a \SI{15}{m/s}\\ \SI{23}{N} a \SI{25}{m/s}\\
       \SI{44}{N} a \SI{35}{m/s}\\ diseño \SI{147}{N}\\ (30\,G)};
 \end{scope}
@@ -738,7 +746,7 @@ arranque.
   \plSqCuerpo\plSqPlegadas
   \plSqCuerda\plSqDrogue
   \plF{0,250}{4.17}{ccuerda!70!black}{$T_c=\SI{4.17}{N}$}
-  \plFl{-60,107}{-4.905}{black}{$W=$\\ \SI{4.91}{N}}
+  \plFl{-60,107}{-4.787}{black}{$W_c=$\\ \SI{4.79}{N}}
   \fill[black] (0,107) circle (5);
   \plF{60,-14}{0.62}{cfijo}{$D_\text{c}=\SI{0.62}{N}$}
 \end{scope}
@@ -757,7 +765,7 @@ arranque.
 \end{scope}
 % ---------------------------------------------------------------- (e)
 \begin{scope}[shift={(445,-760)}]
-  \plMarco{(e) Arranque del rotor}{PAYLOAD\_RELEASE}{$V$: 13,4 $\to$ \SI{6.4}{m/s} $\downarrow$}
+  \plMarco{(e) Arranque del rotor}{PROBE\_RELEASE $\rightarrow$ PAYLOAD\_RELEASE}{$V$: 13,4 $\to$ \SI{6.4}{m/s} $\downarrow$}
     {$Q_0=\SI{0.026}{N.m}$, $\tau\approx\SI{2.4}{s}$ \eqref{eq:planos-arranque}.\\
      $\Omega$: 0 $\to$ \SI{120}{rad/s} en $\approx\SI{5.5}{s}$.\\ El sensor hall confirma el giro.}
   \plSqCuerpo
@@ -777,26 +785,26 @@ arranque.
   \draw[crot!80!black, -{Latex[length=2mm]}, line width=0.8pt] (82,262) arc (70:110:240 and 30);
   \plF{0,302}{0.87}{ccuerda!70!black}{$T_c=\SI{0.87}{N}$}
   \plF{130,237}{3.78}{crot!80!black}{$T=$\\ \SI{3.78}{N}}
-  \plFl{-60,107}{-4.905}{black}{$W=$\\ \SI{4.91}{N}}
+  \plFl{-60,107}{-4.787}{black}{$W_c=$\\ \SI{4.79}{N}}
   \fill[black] (0,107) circle (5);
   \plF{60,-14}{0.5}{cfijo}{$D_\text{c}=\SI{0.14}{N}$}
   \draw[-{Latex[length=2mm]}, line width=0.9pt, crot!80!black] (-150,196) -- (-205,196)
      node[below right, font=\scriptsize] {$F_c\approx\SI{13}{N}$};
 \end{scope}
-  \rotulo{$(current bounding box.south east)+(0,-110)$}{Plano 12 -- Secuencia de despliegue}{1:8}{12}
+  \rotulo{$(current bounding box.south east)+(-40,-110)$}{Plano 12 -- Secuencia de despliegue}{1:8}{12}
 \end{tikzpicture}
 \caption{Plano 12: secuencia de despliegue a escala 1:8, cuerda del drogue cortada (largo
 real \SI{1.5}{m}). Fuerzas a escala \SI{1}{N}\,$\widehat{=}$\,\SI{2.5}{mm}, salvo el tirón
-de (b), que está fuera de escala, y $D_\text{c}$ de (f), agrandada para que se vea. Verde:
-tensión de la cuerda; naranja: rotor; azul: arrastre del cuerpo; negro: peso en el centro
-de masa ($z\approx\SI{107}{mm}$). Debajo de cada cuadro, el estado del software de vuelo
+de (b) y $F_c$ de (f), que están fuera de escala, y $D_\text{c}$ de (f), agrandada para que
+se vea. Verde: tensión de la cuerda; naranja: rotor; azul: arrastre del cuerpo; negro: peso
+sin el drogue en el centro de masa ($z\approx\SI{107}{mm}$). Debajo de cada cuadro, el estado del software de vuelo
 (anexo). Valores estimados, no medidos.}
 \label{fig:planos-secuencia}
 \end{figure}
 
 \begin{table}[H]
 \centering\small
-\caption{Secuencia de despliegue: disparador, duración y carga dominante. Duraciones para un
+\caption{Secuencia de despliegue: estado del software durante cada cuadro, disparador, duración y carga dominante. Duraciones para un
 apogeo de \SI{700}{m} (tabla de tiempos del capítulo~\ref{cap:dim}).}
 \label{tab:planos-secuencia}
 \begin{tabularx}{\textwidth}{@{}clYYc@{}}
@@ -806,8 +814,8 @@ a & \texttt{ASCENT} & Despegue (aceleración) & Inercia sobre la tapa inferior: 
 b & \texttt{APOGEE} & Carga de expulsión del cohete & Tirón del drogue en la argolla: 8--\SI{44}{N} & $<\SI{1}{s}$\\
 c & \texttt{DESCENT} & Drogue abierto & Tensión de cuerda \SI{4.2}{N} & $\approx\SI{10.5}{s}$\\
 d & \texttt{PROBE\_RELEASE} & Altura $\le80$\,\% del apogeo & Golpe de las palas en el tope (cap.~\ref{cap:estructura}) & 0,13--\SI{0.15}{s}\\
-e & \texttt{PAYLOAD\_RELEASE} & Hall: $\Omega$ supera un umbral & Par aerodinámico $Q_0=\SI{0.026}{N.m}$ & $\approx\SI{5.5}{s}$\\
-f & \texttt{LANDED} al tocar & Rotor en régimen & Empuje \SI{3.78}{N}; centrífuga \SI{13}{N} por pala & $\approx\SI{87}{s}$\\
+e & \texttt{PROBE\_RELEASE} & Palas abiertas; pasa a \texttt{PAYLOAD\_RELEASE} cuando el hall ve $\Omega$ sobre un umbral & Par aerodinámico $Q_0=\SI{0.026}{N.m}$ & $\approx\SI{5.5}{s}$\\
+f & \texttt{PAYLOAD\_RELEASE} & Rotor en régimen; pasa a \texttt{LANDED} al tocar el suelo & Empuje \SI{3.78}{N}; centrífuga \SI{13}{N} por pala & $\approx\SI{87}{s}$\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -927,7 +935,7 @@ desviada); esas están en el capítulo~\ref{cap:estructura}.
   \draw[plcam=ccuerda!80!black] (0,280) -- (0,186);
   \draw[plcam=cfreno] (8,178) -- (40,172) -- (43,160) -- (43,105) -- (12,105);
   \draw[ref] (-85,232) -- (-110,250) node[plvalr, anchor=east] {$T=\SI{3.78}{N}$};
-  \draw[ref] (70,219) -- (95,250) node[plval, anchor=west] {I3: $F_c\approx\SI{13}{N}$/pala\\ (se anula en el cubo)};
+  \draw[ref] (70,219) -- (95,250) node[plval, anchor=west] {I3: $F_c\approx\SIrange{11}{13}{N}$/pala\\ (se anula en el cubo)};
   \draw[ref] (5.5,223.5) -- (65,195) node[plval, anchor=west] {I4: \SI{3.25}{N}\\ contra la tuerca};
   \draw[ref] (0,262) -- (-40,280) node[plvalr, anchor=east] {I1: \SI{0.87}{N}};
   \draw[ref] (-15,178) -- (-65,170) node[plvalr, anchor=east] {I2: \SI{4.0}{N}};
@@ -952,22 +960,25 @@ desviada); esas están en el capítulo~\ref{cap:estructura}.
   \draw[ref] (-20,100) -- (-65,130) node[plvalr, anchor=east] {I8 batería:\\ \SI{108}{N}};
   \draw[ref] (-30,10) -- (-65,40) node[plvalr, anchor=east] {I9 lastre:\\ \SI{163}{N}};
 \end{scope}
-  \rotulo{$(current bounding box.south east)+(0,-60)$}{Plano 13 -- Recorrido de cargas}{1:4}{13}
+  \rotulo{$(current bounding box.south east)+(-40,-60)$}{Plano 13 -- Recorrido de cargas}{1:4}{13}
 \end{tikzpicture}
 \caption{Plano 13: recorrido de cargas en cuatro casos (corte simplificado a escala 1:4).
 Las franjas indican el camino de la carga y su sentido de transmisión; los números son
 fuerzas en cada interfaz (tabla~\ref{tab:planos-interfaces-cargas}). En (b), entre
 paréntesis, el caso de diseño de 30\,G (\Req{S5}). Palas desplegadas recortadas en (c) y
-(d). Valores estimados con \eqref{eq:planos-axial}.}
+(d). En (d) el anillo de espuma de \SI{25}{mm} del capítulo~\ref{cap:estructura} se dibuja
+bajo la tapa inferior; para respetar los \SI{250}{mm} de \Req{S3} ese capítulo lo ubica a
+costa del tramo de baliza y lastre, cambio que los planos 9, 11 y 15 todavía no reflejan.
+Valores estimados con \eqref{eq:planos-axial}.}
 \label{fig:planos-cargas}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.47\textwidth, height=7.2cm, xmin=-12, xmax=38, ymin=0, ymax=250,
+\begin{axis}[width=0.47\textwidth, height=6.2cm, xmin=-12, xmax=38, ymin=0, ymax=250,
   xlabel={$N(z)$ [N] (tracción $+$)}, ylabel={$z$ [mm]},
-  legend style={font=\scriptsize, at={(0.98,0.02)}, anchor=south east}, title={\small (a) Vuelo}]
+  legend style={font=\scriptsize, at={(0.5,-0.25)}, anchor=north, legend columns=2}, title={\small (a) Vuelo}]
   \addplot[cfreno, thick] table[x=dro35, y=z] {analysis/data/planos_axial.dat};
   \addlegendentry{apertura, \SI{35}{m/s}}
   \addplot[ccuerda!70!black, thick, dashed] table[x=eta1, y=z] {analysis/data/planos_axial.dat};
@@ -975,14 +986,14 @@ paréntesis, el caso de diseño de 30\,G (\Req{S5}). Palas desplegadas recortada
   \addplot[crot, very thick] table[x=eta2, y=z] {analysis/data/planos_axial.dat};
   \addlegendentry{etapa 2}
   \draw[black!50] (axis cs:0,0) -- (axis cs:0,250);
-  \draw[cgris, densely dotted] (axis cs:-12,178) -- (axis cs:38,178) node[pos=0.02, above right, font=\tiny] {argolla};
-  \draw[cgris, densely dotted] (axis cs:-12,213) -- (axis cs:38,213) node[pos=0.02, above right, font=\tiny] {cubo};
+  \draw[cgris, densely dotted] (axis cs:-12,178) -- (axis cs:38,178) node[pos=0.98, below left, font=\tiny] {argolla};
+  \draw[cgris, densely dotted] (axis cs:-12,213) -- (axis cs:38,213) node[pos=0.98, above left, font=\tiny] {cubo};
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
-\begin{axis}[width=0.47\textwidth, height=7.2cm, xmin=-110, xmax=130, ymin=0, ymax=250,
+\begin{axis}[width=0.47\textwidth, height=6.2cm, xmin=-110, xmax=130, ymin=0, ymax=250,
   xlabel={$N(z)$ [N] (tracción $+$)}, ylabel={$z$ [mm]},
-  legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}, title={\small (b) Diseño}]
+  legend style={font=\scriptsize, at={(0.5,-0.25)}, anchor=north, legend columns=2}, title={\small (b) Diseño}]
   \addplot[cgris, thick] table[x=asc15, y=z] {analysis/data/planos_axial.dat};
   \addlegendentry{ascenso 15\,G}
   \addplot[cfreno, thick] table[x=dro30G, y=z] {analysis/data/planos_axial.dat};
@@ -1004,14 +1015,18 @@ compresión al abrir el drogue: el cubo y la copa apoyan hacia abajo.}
 \centering\small
 \caption{Fuerzas en las interfaces principales [N], salida de
 \texttt{planos\_cargas.py}. Las de \SI{200}{g} coinciden con las del
-capítulo~\ref{cap:estructura}.}
+capítulo~\ref{cap:estructura}. Con las palas plegadas (15\,G y apertura) la inercia de la
+pala va según su envergadura; desplegadas, la carga según la envergadura es la centrífuga
+(\SI{13}{N} con la masa de la base; \SI{10.9}{N} con la distribución real del
+capítulo~\ref{cap:estructura}) y el aterrizaje carga la pala en batimiento (I3$'$).}
 \label{tab:planos-interfaces-cargas}
 \begin{tabularx}{\textwidth}{@{}lYrrrrr@{}}
 \toprule
 \textbf{Id.} & \textbf{Interfaz} & \textbf{15\,G} & \textbf{35\,m/s} & \textbf{30\,G} & \textbf{Etapa 2} & \textbf{200\,g}\\\midrule
 I1  & Cuerda -- argolla del travesaño        & 0    & 44,2 & 147  & 0,87 & 0\\
 I2  & Travesaño -- pared                      & 11,5 & 37,7 & 127  & 4,0  & 129\\
-I3  & Pasador de bisagra (axial de la pala)   & 1,1  & 0,7  & 2,2  & 13,0 & 14,5\\
+I3  & Pasador de bisagra, según la envergadura & 1,1  & 0,7  & 2,2  & 13,0 & 13,0\\
+I3$'$ & Pasador de bisagra, transversal (batimiento) & ---  & ---  & ---  & 0,9 & 14,5\\
 I4  & Cubo -- rodamientos -- eje (axial)      & 7,9  & 5,4  & 16,3 & 3,25 & 106\\
 I8  & Batería -- brida                       & 8,1  & 5,5  & 16,6 & 0,54 & 108\\
 I9  & Lastre -- tapa inferior                 & 12,2 & 8,2  & 25,0 & 0,81 & 163\\
@@ -1033,7 +1048,7 @@ I11 & Apoyo inferior (cohete o suelo)         & 73,6 & ---  & ---  & ---  & 957\
   \item \textbf{La pared trabaja en tracción} entre la tapa inferior y el travesaño durante
         la apertura del drogue: las uniones tapa--pared deben ser tornillos con insertos,
         no un simple encastre a presión.
-  \item La centrífuga (\SI{13}{N} por pala) es la mayor carga permanente del rotor, pero se
+  \item La centrífuga (\SIrange{11}{13}{N} por pala) es la mayor carga permanente del rotor, pero se
         anula dentro del cubo y no llega al cuerpo; solo un desbalance la transmite
         (\SIrange{0.17}{1.7}{N} para 0,1 a \SI{1}{g}, capítulo~\ref{cap:dim}).
 \end{enumerate}
@@ -1059,7 +1074,8 @@ la diagonal; la casilla de la fila $i$ y la columna $j$ contiene lo que $i$ entr
 (convención usual de la ingeniería de sistemas: salidas por las filas, entradas por las
 columnas). Las casillas vacías indican que no hay interfaz directa. La
 tabla~\ref{tab:planos-n2} da la magnitud de cada interfaz y cómo se verifica; es la tabla
-de referencias de este plano.
+de referencias de este plano. Los códigos llevan el prefijo I (IM, IE, ID) para no
+confundirlos con los requisitos del anexo, que también usan las letras M y E.
 
 Los subsistemas son diez. El cohete aparece como subsistema externo porque impone
 tres interfaces críticas: el apoyo, la expulsión y la holgura del tubo. Las piezas se agrupan
@@ -1084,27 +1100,27 @@ así: drogue y cuerda (1, 20, 21); rotor (3 a 8, 22, 29); traba (14, 15); estruc
 \centering
 \begin{tikzpicture}[x=1.48cm, y=-1.48cm]
   % casillas con interfaz
-  \plNc{1}{2}{M}{M2}  \plNc{1}{3}{M}{M3}  \plNc{1}{5}{M}{M1}  \plNc{1}{7}{D}{D6}
-  \plNc{2}{3}{M}{M6}  \plNc{2}{5}{M}{M4}
-  \plNc{3}{5}{M}{M7}  \plNc{3}{7}{D}{D1}  \plNc{3}{8}{D}{D7}  \plNc{3}{9}{D}{D10}
-  \plNc{4}{3}{M}{M9}
-  \plNc{5}{2}{M}{M5}  \plNc{5}{3}{M}{M8}  \plNc{5}{4}{M}{M10} \plNc{5}{6}{M}{M11}
-  \plNc{5}{8}{M}{M13} \plNc{5}{10}{M}{M14}
-  \plNc{6}{4}{E}{E2}  \plNc{6}{7}{E}{E1}  \plNc{6}{8}{E}{E3}  \plNc{6}{9}{E}{E4}
-  \plNc{7}{6}{E}{E5}  \plNc{7}{9}{D}{D2}
-  \plNc{9}{7}{D}{D3}  \plNc{10}{9}{D}{D8}
+  \plNc{1}{2}{M}{IM2}  \plNc{1}{3}{M}{IM3}  \plNc{1}{5}{M}{IM1}  \plNc{1}{7}{D}{ID6}
+  \plNc{2}{3}{M}{IM6}  \plNc{2}{5}{M}{IM4}
+  \plNc{3}{5}{M}{IM7}  \plNc{3}{7}{D}{ID1}  \plNc{3}{8}{D}{ID7}  \plNc{3}{9}{D}{ID10}
+  \plNc{4}{3}{M}{IM9}
+  \plNc{5}{2}{M}{IM5}  \plNc{5}{3}{M}{IM8}  \plNc{5}{4}{M}{IM10} \plNc{5}{6}{M}{IM11}
+  \plNc{5}{8}{M}{IM13} \plNc{5}{10}{M}{IM14}
+  \plNc{6}{4}{E}{IE2}  \plNc{6}{7}{E}{IE1}  \plNc{6}{8}{E}{IE3}  \plNc{6}{9}{E}{IE4}
+  \plNc{7}{6}{E}{IE5}  \plNc{7}{9}{D}{ID2}
+  \plNc{9}{7}{D}{ID3}  \plNc{10}{9}{D}{ID8}
   % casillas dobles (eléctrica + datos) y la interfaz de presión estática
   \fill[cfreno!12] (3.5,6.5) rectangle (4.5,7.5);
   \fill[ccont!12] (3.5,7) rectangle (4.5,7.5);
-  \node[font=\scriptsize\bfseries, text=cfreno!85!black] at (4,6.78) {E7};
-  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (4,7.25) {D4};
+  \node[font=\scriptsize\bfseries, text=cfreno!85!black] at (4,6.78) {IE7};
+  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (4,7.25) {ID4};
   \fill[cfreno!12] (7.5,6.5) rectangle (8.5,7.5);
   \fill[ccont!12] (7.5,7) rectangle (8.5,7.5);
-  \node[font=\scriptsize\bfseries, text=cfreno!85!black] at (8,6.78) {E6};
-  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (8,7.25) {D5};
+  \node[font=\scriptsize\bfseries, text=cfreno!85!black] at (8,6.78) {IE6};
+  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (8,7.25) {ID5};
   \fill[ccont!12] (6.5,4.5) rectangle (7.5,5.5);
-  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (7,4.78) {D9};
-  \node[font=\scriptsize\bfseries, text=cfijo!85!black] at (7,5.25) {M12};
+  \node[font=\scriptsize\bfseries, text=ccont!85!black] at (7,4.78) {ID9};
+  \node[font=\scriptsize\bfseries, text=cfijo!85!black] at (7,5.25) {IM12};
   % celda prohibida: potencia -> baliza
   \fill[pattern=north east lines, pattern color=cgris!70] (9.5,5.5) rectangle (10.5,6.5);
   \node[font=\tiny, fill=white, inner sep=1pt, align=center] at (10,6) {\Req{E8}\\ prohibida};
@@ -1134,19 +1150,19 @@ así: drogue y cuerda (1, 20, 21); rotor (3 a 8, 22, 29); traba (14, 15); estruc
   \node[font=\scriptsize, cgris, rotate=-90, anchor=west] at (0.2,2.3) {salidas por fila};
   % leyenda
   \begin{scope}[shift={(0.5,11.0)}]
-    \fill[cfijo!12] (0,-0.15) rectangle (0.3,0.15); \node[right, font=\scriptsize] at (0.35,0) {M: mecánica (14)};
-    \fill[cfreno!12] (2.7,-0.15) rectangle (3.0,0.15); \node[right, font=\scriptsize] at (3.05,0) {E: eléctrica (7)};
-    \fill[ccont!12] (5.1,-0.15) rectangle (5.4,0.15); \node[right, font=\scriptsize] at (5.45,0) {D: datos o señal (10)};
+    \fill[cfijo!12] (0,-0.15) rectangle (0.3,0.15); \node[right, font=\scriptsize] at (0.35,0) {IM: mecánica (14)};
+    \fill[cfreno!12] (2.7,-0.15) rectangle (3.0,0.15); \node[right, font=\scriptsize] at (3.05,0) {IE: eléctrica (7)};
+    \fill[ccont!12] (5.1,-0.15) rectangle (5.4,0.15); \node[right, font=\scriptsize] at (5.45,0) {ID: datos o señal (10)};
     \draw[cfreno, line width=2.4pt, opacity=0.35] (0,0.6) -- (0.3,0.6);
-    \node[right, font=\scriptsize] at (0.35,0.6) {cadena de liberación del rotor: D4/E7 $\to$ M9 $\to$ D1};
+    \node[right, font=\scriptsize] at (0.35,0.6) {cadena de liberación del rotor: ID4/IE7 $\to$ IM9 $\to$ ID1};
   \end{scope}
   \rotulo{10.5,12.0}{Plano 14 -- Diagrama N$^2$}{sin escala}{14}
 \end{tikzpicture}
 \caption{Plano 14: diagrama N$^2$ de interfaces. Fila $i$, columna $j$: lo que el
 subsistema $i$ entrega al $j$. La casilla rayada (potencia $\to$ baliza) es una interfaz
 que el anexo prohíbe (\Req{E8}). La banda roja sigue la cadena que libera el rotor: la
-aviónica ordena al servo (D4, E7), la traba suelta las palas (M9) y el sensor hall del
-rotor confirma el giro a la aviónica (D1). Códigos en la tabla~\ref{tab:planos-n2}.}
+aviónica ordena al servo (ID4, IE7), la traba suelta las palas (IM9) y el sensor hall del
+rotor confirma el giro a la aviónica (ID1). Códigos en la tabla~\ref{tab:planos-n2}.}
 \label{fig:planos-n2}
 \end{figure}
 
@@ -1166,66 +1182,67 @@ verificaciones son ensayos propuestos, no realizados.}\label{tab:planos-n2}\\
 \bottomrule
 \endlastfoot
 \multicolumn{4}{@{}l}{\textit{Mecánicas}}\\
-M1  & Cohete $\to$ estructura & Apoyo axial en la tapa inferior (26) y guía radial por los patines (27) & \SI{73.6}{N} a 15\,G (I11); fricción de extracción $\le\SI{0.21}{N}$. Calibre anillo Ø\,95,0\\
-M2  & Cohete $\to$ drogue & Expulsión: el viento relativo saca el drogue de la copa sin orden del software (\Req{C2}) & Ensayo de extracción en un tramo de tubo\\
-M3  & Cohete $\to$ rotor & Tubo frente a las palas plegadas & Holgura en los bordes $\ge\SI{0.2}{mm}$ con patines (sec.~\ref{sec:planos-tubo})\\
-M4  & Drogue $\to$ estructura & Cuerda por el eje hueco hasta la argolla del travesaño (24) & \SI{44}{N} a \SI{35}{m/s}; \SI{147}{N} de diseño (\Req{S5}). Tracción a $1{,}5\times\SI{147}{N}$\\
-M5  & Estructura $\to$ drogue & Copa (2) y eje hueco (12) alojan el drogue y guían la cuerda & Copa Ø\,41 interior × 25. Plegado repetible\\
-M6  & Drogue $\to$ rotor & La cuerda pasa por el eje fijo y no toca el cubo & Cuerda Ø\,1,5 en eje Ø\,5: \SI{1.75}{mm} radial. Cubo libre con cuerda tensa\\
-M7  & Rotor $\to$ estructura & Empuje por rodamientos (5) y tuerca (3); par de fricción & \SI{3.25}{N} en la tuerca (I4); $\approx\SI{2e-5}{N.m}$ más grasa. Giro libre $\ge\SI{10}{s}$\\
-M8  & Estructura $\to$ rotor & Hombro inferior del eje: apoyo del cubo en ascenso, apertura y aterrizaje & \SI{16}{N} a 30\,G; \SI{106}{N} a \SI{200}{g} (I4)\\
-M9  & Traba $\to$ rotor & Dientes del anillo (15) retienen las pestañas (14) & \SI{1.1}{N} lateral por pala a 15\,G (I3). Liberación repetida en banco\\
-M10 & Estructura $\to$ traba & Soporte del servo y del anillo; ranuras de las pestañas en la pared & Giro de \ang{15} sin trabarse con el cuerpo cargado\\
-M11 & Estructura $\to$ potencia & Brida de la batería (13); orificios de S1 y S2 (19) & \SI{8.1}{N} a 15\,G; \SI{108}{N} a \SI{200}{g} (I8). Acceso a S1 y S2 (\Req{E5})\\
-M12 & Estructura $\to$ aviónica & Pila de placas (25) sobre separadores M2,5 & \SI{6.9}{N} a 15\,G; \SI{92}{N} a \SI{200}{g} (\SI{47}{g})\\
-M13 & Estructura $\to$ cámaras & Soportes y ventanas de las cámaras (11, 18) & \SI{1.5}{N} a 15\,G; \SI{20}{N} a \SI{200}{g} cada una\\
-M14 & Estructura $\to$ baliza & Fijación en la tapa inferior; acceso a su interruptor & \SI{16}{N} a \SI{200}{g}. Interruptor accesible (\Req{E9})\\
+IM1  & Cohete $\to$ estructura & Apoyo axial en la tapa inferior (26) y guía radial por los patines (27) & \SI{73.6}{N} a 15\,G (I11); fricción de extracción $\le\SI{2.5}{N}$ (tubo horizontal). Calibre anillo Ø\,95,0\\
+IM2  & Cohete $\to$ drogue & Expulsión: el viento relativo saca el drogue de la copa sin orden del software (\Req{C2}, \Req{C3}) & Ensayo de extracción en un tramo de tubo\\
+IM3  & Cohete $\to$ rotor & Tubo frente a las palas plegadas & Holgura en los bordes $\ge\SI{0.2}{mm}$ con patines y cuerpo Ø\,87 (sec.~\ref{sec:planos-tubo})\\
+IM4  & Drogue $\to$ estructura & Cuerda por el eje hueco hasta la argolla del travesaño (24) & \SI{44}{N} a \SI{35}{m/s}; \SI{147}{N} de diseño (\Req{S5}). Tracción a $1{,}5\times\SI{147}{N}$\\
+IM5  & Estructura $\to$ drogue & Copa (2) y eje hueco (12) alojan el drogue y guían la cuerda & Copa Ø\,41 interior × 25. Plegado repetible\\
+IM6  & Drogue $\to$ rotor & La cuerda pasa por el eje fijo y no toca el cubo & Cuerda Ø\,1,5 en eje Ø\,5: \SI{1.75}{mm} radial. Cubo libre con cuerda tensa\\
+IM7  & Rotor $\to$ estructura & Empuje por rodamientos (5) y tuerca (3); par de fricción & \SI{3.25}{N} en la tuerca (I4); $\approx\SI{2e-5}{N.m}$ más grasa. Giro libre $\ge\SI{10}{s}$\\
+IM8  & Estructura $\to$ rotor & Hombro inferior del eje: apoyo del cubo en ascenso, apertura y aterrizaje & \SI{16}{N} a 30\,G; \SI{106}{N} a \SI{200}{g} (I4)\\
+IM9  & Traba $\to$ rotor & Dientes del anillo (15) retienen las pestañas (14) & $\le\SI{1.1}{N}$ por pala si los 15\,G son laterales (peso de la pala $\times15$, repartido entre bisagra y pestaña). Liberación repetida en banco\\
+IM10 & Estructura $\to$ traba & Soporte del servo y del anillo; ranuras de las pestañas en la pared & Giro de \ang{15} sin trabarse con el cuerpo cargado\\
+IM11 & Estructura $\to$ potencia & Brida de la batería (13); orificios de S1 y S2 (19) & \SI{8.1}{N} a 15\,G; \SI{108}{N} a \SI{200}{g} (I8). Acceso a S1 y S2 (\Req{E5})\\
+IM12 & Estructura $\to$ aviónica & Pila de placas (25) sobre separadores M2,5 & \SI{6.9}{N} a 15\,G; \SI{92}{N} a \SI{200}{g} (\SI{47}{g})\\
+IM13 & Estructura $\to$ cámaras & Soportes y ventanas de las cámaras (11, 18) & \SI{1.5}{N} a 15\,G; \SI{20}{N} a \SI{200}{g} cada una\\
+IM14 & Estructura $\to$ baliza & Fijación en la tapa inferior; acceso a su interruptor & \SI{16}{N} a \SI{200}{g}. Interruptor accesible (\Req{E9})\\
 \multicolumn{4}{@{}l}{\textit{Eléctricas}}\\
-E1  & Potencia $\to$ aviónica & \SIlist{3.3;5}{V} regulados & Caída de tensión con el servo activo\\
-E2  & Potencia $\to$ traba & \SI{5}{V} al servo MG90S & Picos de arranque: medir con osciloscopio\\
-E3  & Potencia $\to$ cámaras & Alimentación de las dos cámaras & Autonomía $\ge\SI{2}{h}$ en el cohete (\Req{E7})\\
-E4  & Potencia $\to$ radio & Alimentación de la radio & Picos de transmisión\\
-E5  & Aviónica $\to$ potencia & Medición de tensión y corriente & Telemetría (\Req{SN3}, \Req{SN8})\\
-E6  & Aviónica $\to$ cámaras & Habilitación de la alimentación & Encendido desde el software\\
-E7  & Aviónica $\to$ traba & Señal PWM del servo & \SI{50}{Hz}; posición de traba y de liberación\\
+IE1  & Potencia $\to$ aviónica & \SIlist{3.3;5}{V} regulados & Caída de tensión con el servo activo\\
+IE2  & Potencia $\to$ traba & \SI{5}{V} al servo MG90S & Picos de arranque: medir con osciloscopio\\
+IE3  & Potencia $\to$ cámaras & Alimentación de las dos cámaras & Autonomía $\ge\SI{2}{h}$ en el cohete (\Req{E7})\\
+IE4  & Potencia $\to$ radio & Alimentación de la radio & Picos de transmisión\\
+IE5  & Aviónica $\to$ potencia & Medición de tensión y corriente & Telemetría (\Req{SN3}, \Req{SN8})\\
+IE6  & Aviónica $\to$ cámaras & Habilitación de la alimentación & Encendido desde el software\\
+IE7  & Aviónica $\to$ traba & Señal PWM del servo & \SI{50}{Hz}; posición de traba y de liberación\\
 \multicolumn{4}{@{}l}{\textit{Datos y señales}}\\
-D1  & Rotor $\to$ aviónica & Imán del cubo frente al hall (10): rpm & 1 pulso por vuelta, $\approx\SI{19}{Hz}$ en régimen; confirma \texttt{PAYLOAD\_RELEASE}\\
-D2  & Aviónica $\to$ tierra & Telemetría & \SI{1}{Hz} (\Req{C5})\\
-D3  & Tierra $\to$ aviónica & Comandos del anexo & Prueba de enlace en tierra\\
-D4  & Aviónica $\to$ traba & Orden de liberación, estado \texttt{PROBE\_RELEASE} & Al \SI{80}{\%} de $h_\text{max}$ (\Req{C4})\\
-D5  & Aviónica $\to$ cámaras & Inicio y fin de grabación & Registro en la memoria de cada cámara\\
-D6  & Cohete $\to$ aviónica & Aceleración y presión del ascenso: detección de lanzamiento y apogeo & Barómetro a \SI{50}{Hz}; simulación con datos de vuelo\\
-D7  & Rotor $\to$ cámaras & Las palas cruzan el campo de la cámara cenit & Paso de palas \SI{76.5}{Hz}; alias de \SI{1.5}{Hz} a 25\,fps y \SI{13.5}{Hz} a 30\,fps\\
-D8  & Baliza $\to$ tierra & Señal audible para la recuperación & Alcance audible en campo\\
-D9  & Estructura $\to$ aviónica & Puerto estático del barómetro (orificio en la pared) & Lejos de la estela del rotor y de los orificios de S1 y S2\\
-D10 & Rotor $\to$ radio & Palas de carbono (conductoras) cerca de las antenas & Medir el enlace con las palas plegadas y abiertas\\
+ID1  & Rotor $\to$ aviónica & Imán del cubo frente al hall (10): rpm & 1 pulso por vuelta, $\approx\SI{19}{Hz}$ en régimen; confirma \texttt{PAYLOAD\_RELEASE}\\
+ID2  & Aviónica $\to$ tierra & Telemetría & \SI{1}{Hz} (\Req{C5})\\
+ID3  & Tierra $\to$ aviónica & Comandos del anexo & Prueba de enlace en tierra\\
+ID4  & Aviónica $\to$ traba & Orden de liberación, estado \texttt{PROBE\_RELEASE} & Al \SI{80}{\%} de $h_\text{max}$ (\Req{C4})\\
+ID5  & Aviónica $\to$ cámaras & Inicio y fin de grabación & Registro en la memoria de cada cámara\\
+ID6  & Cohete $\to$ aviónica & Aceleración y presión del ascenso: detección de lanzamiento y apogeo & Barómetro a \SI{50}{Hz}; simulación con datos de vuelo\\
+ID7  & Rotor $\to$ cámaras & Las palas cruzan el campo de la cámara cenit & Paso de palas \SI{76.5}{Hz}; alias de \SI{1.5}{Hz} a 25\,fps y \SI{13.5}{Hz} a 30\,fps\\
+ID8  & Baliza $\to$ tierra & Señal audible para la recuperación & Alcance audible en campo\\
+ID9  & Estructura $\to$ aviónica & Puerto estático del barómetro (orificio en la pared) & Lejos de la estela del rotor y de los orificios de S1 y S2\\
+ID10 & Rotor $\to$ radio & Palas de carbono (conductoras) cerca de las antenas & Medir el enlace con las palas plegadas y abiertas\\
 \end{longtable}}
 
 Tres observaciones salen directamente de la matriz.
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{La función principal atraviesa cuatro subsistemas.} La liberación del rotor
-        es la cadena aviónica $\to$ traba $\to$ rotor $\to$ aviónica (D4/E7, M9, D1). Es un
+        es la cadena aviónica $\to$ traba $\to$ rotor $\to$ aviónica (ID4/IE7, IM9, ID1). Es un
         lazo cerrado: si el hall no ve giro después de la orden, el software puede repetir
         la orden de liberación. Cualquier ensayo de liberación debe probar la cadena
         completa y no cada eslabón por separado.
   \item \textbf{La estructura es la fila más llena.} Entrega siete interfaces
         mecánicas y una de datos; casi todas las fuerzas de la tabla~\ref{tab:planos-interfaces-cargas}
-        pasan por ella. Cambiar la pared o las tapas obliga a revisar M1, M4, M8 y M10 a
-        M14.
-  \item \textbf{Hay interfaces no evidentes.} D7 (el rotor en el campo de la cámara
+        pasan por ella. Cambiar la pared o las tapas obliga a revisar IM1, IM4, IM8 y IM10 a
+        IM14.
+  \item \textbf{Hay interfaces no evidentes.} ID7 (el rotor en el campo de la cámara
         cenit) produce un efecto estroboscópico: con $\Omega\approx\SI{120}{rad/s}$ y
         cuatro palas el paso es de \SI{76.5}{Hz}, y a 25 cuadros por segundo las palas
-        parecerán girar a \SI{1.5}{Hz}. D10 (carbono cerca de las antenas) puede atenuar la
+        parecerán girar a \SI{1.5}{Hz}. ID10 (carbono cerca de las antenas) puede atenuar la
         radio y el GPS; la magnitud depende de dónde vayan las antenas, que aún no está
         definido. Ninguna de las dos aparece en los planos del capítulo~\ref{cap:planos}.
 \end{enumerate}
 
 \begin{nota}[Interfaz prohibida]
-La baliza no puede tomar energía de la batería principal (\Req{E8}) y su interruptor debe
-ser accesible desde afuera (\Req{E9}). En la matriz eso aparece como una casilla rayada en
-potencia $\to$ baliza y como la interfaz mecánica M14. Ningún cable debe unir la baliza al
-resto, ni siquiera una masa común.
+La baliza debe tener batería propia (\Req{E8}), ser independiente de la batería y de la
+electrónica del CanSat (\Req{C8}) y tener su interruptor accesible desde afuera
+(\Req{E9}). En la matriz eso aparece como una casilla rayada en potencia $\to$ baliza y
+como la interfaz mecánica IM14. Para cumplir \Req{C8} sin ambigüedad, se propone que
+ningún cable una la baliza al resto, ni siquiera una masa común.
 \end{nota}
 
 %=====================================================================
@@ -1233,9 +1250,10 @@ resto, ni siquiera una masa común.
 
 Con las palas tal como están en el capítulo~\ref{cap:planos}, sus bordes definen el
 Ø\,\SI{95}{mm} y son la primera pieza que toca el tubo del cohete: la holgura en los bordes
-después del contacto es exactamente cero. Con cuatro patines guía de Ø\,95 y las palas
-reducidas a Ø\,\SI{94}{mm} en los bordes, el contacto lo toman siempre los patines y a las
-palas les quedan al menos \SI{0.22}{mm}. Esta sección dibuja el conjunto dentro del tubo
+después del contacto es exactamente cero. Con cuatro patines guía de Ø\,95, las palas
+reducidas a Ø\,\SI{94}{mm} en los bordes y el cuerpo reducido a Ø\,\SI{87}{mm} para que
+quepa el espesor de la pala, el contacto lo toman siempre los patines y a las palas les
+quedan al menos \SI{0.22}{mm}. Esta sección dibuja el conjunto dentro del tubo
 (figuras~\ref{fig:planos-tubo-long} y~\ref{fig:planos-tubo-aa}) y calcula las holguras.
 
 \subsection{Datos y suposiciones}
@@ -1281,8 +1299,8 @@ confirmar con la organización:
   \foreach \x in {-30,0,30}{\draw[cfreno, -{Latex[length=2mm]}, line width=0.7pt] (\x,-56) -- (\x,-33);}
   \node[font=\scriptsize, cfreno, anchor=north] at (0,-56) {gases de la carga de expulsión (\Req{C2})};
   % CanSat
-  \filldraw[fijo] (-44,0) rectangle (44,205);
-  \filldraw[fill=cfijo!8, draw=cfijo!60, line width=0.3pt] (-42,2) rectangle (42,203);
+  \filldraw[fijo] (-43.5,0) rectangle (43.5,205);
+  \filldraw[fill=cfijo!8, draw=cfijo!60, line width=0.3pt] (-41.5,2) rectangle (41.5,203);
   \filldraw[fill=cfijo!30, draw=cfijo!70!black, line width=0.3pt] (-9.3,72) rectangle (9.3,137);
   \foreach \zz in {150,158,166}{\draw[ccuerda!70!black, line width=0.9pt] (-38,\zz) -- (38,\zz);}
   \filldraw[fill=cgris!50, draw=cgris!80!black, line width=0.3pt] (-38,18) rectangle (38,32);
@@ -1293,8 +1311,8 @@ confirmar con la organización:
   \draw[eje] (0,-48) -- (0,295);
   % palas plegadas en el plano de corte (8) y patines fuera del plano (27)
   \foreach \s in {-1,1}{
-    \fill[crot] ({\s*44.4},57) rectangle ({\s*45.2},211);
-    \draw[ccont, densely dashed, line width=0.4pt] ({\s*44},0) rectangle ({\s*47.5},205);}
+    \fill[crot] ({\s*43.92},57) rectangle ({\s*44.42},211);
+    \draw[ccont, densely dashed, line width=0.4pt] ({\s*43.5},0) rectangle ({\s*47.5},205);}
   % envolvente Ø95
   \draw[cgris, densely dashed, line width=0.3pt] (-47.5,-8) -- (-47.5,258) (47.5,-8) -- (47.5,258);
   % sección A-A
@@ -1317,9 +1335,9 @@ confirmar con la organización:
   \plC{(30,-7)}{80,-7}{33}
   \plC{(30,-22)}{80,-22}{34}
   \plC{(15,240)}{80,240}{2}
-  \plC{(45.2,190)}{80,200}{8}
+  \plC{(44.2,190)}{80,200}{8}
   \plC{(47.5,100)}{80,100}{27}
-  \plC{(42,60)}{80,60}{9}
+  \plC{(41.5,60)}{80,60}{9}
   \plC{(-35,25)}{-100,25}{16}
   \plC{(-6,110)}{-100,110}{13}
   \plC{(-30,158)}{-100,158}{25}
@@ -1345,8 +1363,8 @@ tabla~\ref{tab:planos-ref15}.}
   % envolvente Ø95
   \draw[cgris, densely dashed, line width=0.3pt] (0,0) circle (47.5);
   % cuerpo (9)
-  \filldraw[fill=ffijo, draw=cfijo, line width=0.5pt, even odd rule] (0,0) circle (44) (0,0) circle (42);
-  \fill[cfijo!5] (0,0) circle (42);
+  \filldraw[fill=ffijo, draw=cfijo, line width=0.5pt, even odd rule] (0,0) circle (43.5) (0,0) circle (41.5);
+  \fill[cfijo!5] (0,0) circle (41.5);
   % batería (13) y separadores de la pila de placas (25)
   \filldraw[fill=cfijo!30, draw=cfijo!70!black, line width=0.4pt] (0,0) circle (9.3);
   \foreach \a in {45,135,225,315}{\filldraw[fill=cgris!50, draw=cgris!80!black, line width=0.3pt] (\a:34) circle (1.6);}
@@ -1354,7 +1372,7 @@ tabla~\ref{tab:planos-ref15}.}
   % patines (27)
   \foreach \a in {45,135,225,315}{
     \begin{scope}[rotate=\a-90]
-      \filldraw[fill=ccont!30, draw=ccont!80!black, line width=0.4pt] (-2,43.9) rectangle (2,47.5);
+      \filldraw[fill=ccont!30, draw=ccont!80!black, line width=0.4pt] (-2,43.4) rectangle (2,47.5);
     \end{scope}}
   % palas plegadas (8), bordes en Ø94
   \foreach \a in {0,90,180,270}{
@@ -1370,34 +1388,34 @@ tabla~\ref{tab:planos-ref15}.}
   \draw[cota] (-47.5,-67) -- (47.5,-67) node[pos=0.5, fill=white, font=\scriptsize] {Ø\,95 patines};
   \draw[cgris, line width=0.3pt] ({47.5*cos(225)},{47.5*sin(225)}) -- (-47.5,-70)
                                  ({47.5*cos(315)},{47.5*sin(315)}) -- (47.5,-70);
-  \draw[cota] (-62,{-47*sin(28.3)}) -- (-62,{47*sin(28.3)});
-  \draw[cgris, line width=0.3pt] ({-47*cos(28.3)},{47*sin(28.3)}) -- (-65,{47*sin(28.3)})
-                                 ({-47*cos(28.3)},{-47*sin(28.3)}) -- (-65,{-47*sin(28.3)});
+  \draw[cota] (-62,{-47*sin(28.6)}) -- (-62,{47*sin(28.6)});
+  \draw[cgris, line width=0.3pt] ({-47*cos(28.6)},{47*sin(28.6)}) -- (-65,{47*sin(28.6)})
+                                 ({-47*cos(28.6)},{-47*sin(28.6)}) -- (-65,{-47*sin(28.6)});
   \node[font=\scriptsize, fill=white, rotate=90] at (-62,0) {cuerda 45};
   \draw[cota] (0,0) -- (45:30);
   \node[font=\scriptsize, fill=white, inner sep=1pt] at (45:20) {\ang{45}};
-  \draw[cota] (0:56) arc (0:28.3:56);
-  \node[font=\scriptsize, anchor=west] at (14:57) {\ang{28.3}};
-  \draw[cgris, line width=0.3pt] (0:44) -- (0:58) (28.3:47) -- (28.3:58);
-  \draw[cgris, line width=0.3pt] (0,0) -- (0:44);
+  \draw[cota] (0:56) arc (0:28.6:56);
+  \node[font=\scriptsize, anchor=west] at (14:57) {\ang{28.6}};
+  \draw[cgris, line width=0.3pt] (0:43.5) -- (0:58) (28.6:47) -- (28.6:58);
+  \draw[cgris, line width=0.3pt] (0,0) -- (0:43.5);
   % llamadas
   \plC{(100:50)}{-30,62}{31}
-  \plC{(125:43)}{-58,60}{9}
+  \plC{(125:42.5)}{-58,60}{9}
   \plC{(135:46)}{-72,40}{27}
   \plC{(-6:45.2)}{66,-18}{8}
   \plC{(-5,5)}{-25,25}{13}
   \plC{(225:34)}{-60,-45}{25}
   \node[font=\scriptsize, anchor=north west, align=left] at (54,-36)
-    {Ø\,94: bordes de pala\\ Ø\,88: cuerpo\\ pared \SI{2}{mm} (\Req{S6})};
+    {Ø\,94: bordes de pala\\ Ø\,87: cuerpo\\ pared \SI{2}{mm} (\Req{S6})};
 % ---------------------------------------------------------------- detalle X 3:1
 \begin{scope}[shift={(0,-112)}, x=3mm, y=3mm]
   \begin{scope}[shift={(0,-46.5)}, rotate=53]
     \clip (24:41) -- (24:52.5) arc (24:50:52.5) -- (50:41) arc (50:24:41) -- cycle;
     \filldraw[fill=cgris!15, draw=cgris!80!black, line width=0.4pt] (20:49) arc (20:54:49) -- (54:51) arc (54:20:51) -- cycle;
     \fill[pattern=north east lines, pattern color=cgris] (20:49) arc (20:54:49) -- (54:51) arc (54:20:51) -- cycle;
-    \filldraw[fill=ffijo, draw=cfijo, line width=0.5pt] (20:42) arc (20:54:42) -- (54:44) arc (54:20:44) -- cycle;
+    \filldraw[fill=ffijo, draw=cfijo, line width=0.5pt] (20:41.5) arc (20:54:41.5) -- (54:43.5) arc (54:20:43.5) -- cycle;
     \begin{scope}[rotate=-45]
-      \filldraw[fill=ccont!30, draw=ccont!80!black, line width=0.5pt] (-2,43.9) rectangle (2,47.5);
+      \filldraw[fill=ccont!30, draw=ccont!80!black, line width=0.5pt] (-2,43.4) rectangle (2,47.5);
     \end{scope}
     \begin{scope}[rotate=-90]
       \draw[crot, line width=1.5pt] (0,-37.48) ++(74.05:81.9) arc (74.05:105.95:81.9);
@@ -1405,11 +1423,11 @@ tabla~\ref{tab:planos-ref15}.}
     \draw[cgris, densely dashed, line width=0.3pt] (20:47.5) arc (20:54:47.5);
     % cotas radiales
     \draw[cota] (45:47.5) -- (45:49);
-    \draw[cota] (28.3:47.0) -- (28.3:49);
-    \coordinate (cP) at (45:48.25); \coordinate (cB) at (28.3:48);
+    \draw[cota] (28.6:47.0) -- (28.6:49);
+    \coordinate (cP) at (45:48.25); \coordinate (cB) at (28.6:48);
     \coordinate (pP) at (45:45.7); \coordinate (pB) at (27:46.4);
     \coordinate (pT) at (40:50); \coordinate (pC) at (40:43);
-    \coordinate (aA) at (28.3:42.5); \coordinate (aB) at (45:42.5);
+    \coordinate (aA) at (28.6:42.5); \coordinate (aB) at (45:42.5);
   \end{scope}
   \draw[cgris, line width=0.3pt] (aA) -- ++(0,0);
   \node[font=\scriptsize, anchor=south west, fill=white, inner sep=1pt] at ($(cP)+(1.2,1.5)$) {1,5};
@@ -1423,7 +1441,7 @@ tabla~\ref{tab:planos-ref15}.}
   \node[font=\small\bfseries, anchor=south] at (0,9) {Detalle X (sección A-A), 3:1};
   \node[font=\scriptsize, align=left, anchor=north west, text width=75mm] at (-27,-12)
     {Holguras radiales nominales con el cuerpo centrado: \SI{1.5}{mm} en los patines y
-     \SI{2.0}{mm} en los bordes de las palas. El borde de pala está a \ang{16.7} del
+     \SI{2.0}{mm} en los bordes de las palas. El borde de pala está a \ang{16.4} del
      patín.};
 \end{scope}
   \rotulo{80,-170}{Plano 15 -- Sección A-A (hoja 2)}{1:1 y 3:1}{15}
@@ -1431,8 +1449,8 @@ tabla~\ref{tab:planos-ref15}.}
 \caption{Plano 15, hoja 2: sección A-A a $z=\SI{130}{mm}$ (escala 1:1, mirando hacia abajo) y
 detalle X (escala 3:1).
 Cuatro patines de PETG (27) de $4\times\SI{3.5}{mm}$ a \ang{45} de las palas fijan el
-Ø\,95; las palas (8) quedan con los bordes en Ø\,94 y el centro a \SI{0.42}{mm} del
-cuerpo. Se ven la batería (13) y los separadores de la pila de placas (25). Abajo, el
+Ø\,95; las palas (8) quedan con los bordes en Ø\,94 y su cara interior a
+\SI{0.42}{mm} del cuerpo, que baja a Ø\,87 (pared de \SI{2}{mm}). Se ven la batería (13) y los separadores de la pila de placas (25). Abajo, el
 detalle X a escala 3:1 con las holguras radiales nominales.}
 \label{fig:planos-tubo-aa}
 \end{figure}
@@ -1448,11 +1466,11 @@ de una suposición de este capítulo.}
 2  & Copa del drogue & Ø\,44 × 25, hacia la ojiva & Diseño\\
 4  & Cubo & Ø\,44 × 16,5 & Diseño\\
 8  & Palas plegadas & Bordes en Ø\,94 (antes Ø\,95) & Diseño modificado\\
-9  & Cuerpo & Ø\,88, pared \SI{2}{mm} & Diseño (\Req{S6})\\
+9  & Cuerpo & Ø\,87 (antes Ø\,88), pared \SI{2}{mm} & Diseño modificado (\Req{S6})\\
 13 & Batería & 18650, Ø\,18,6 × 65 & Diseño\\
 16 & Lastre & Disco de acero & Diseño\\
 25 & Pila de placas & Ø\,76; separadores M2,5 (posición dibujada en Ø\,68) & Diseño\\
-27 & Patines guía & 4 × (4 × 3,5 × 205), Ø\,95 & Propuesto aquí\\
+27 & Patines guía & 4 × (4 × 4 × 205), Ø\,95; o tacos de 20 arriba y abajo & Propuesto aquí\\
 31 & Tubo del cohete & Ø\,98 interior \SI{\pm0.25}{mm}, pared 2 & \textbf{Supuesto}\\
 32 & Hombro de la ojiva & Holgura axial de \SI{15}{mm} & \textbf{Supuesto}\\
 33 & Protector de gases & Algodón o Nomex, \SI{14}{mm} & \textbf{Supuesto}\\
@@ -1493,7 +1511,9 @@ contorno toca la pared. El script \texttt{planos\_seccion.py} recorre todas las
 direcciones $\varphi$ de ese desplazamiento con el contorno real de la sección A-A
 (arcos de pala de radio \SI{81.9}{mm}, patines y cuerpo) y, para cada una, calcula el
 desplazamiento hasta el contacto y la holgura que queda en los bordes de las palas
-(figura~\ref{fig:planos-holgura}b):
+(figura~\ref{fig:planos-holgura}b y tabla~\ref{tab:planos-variantes}). Como en el
+capítulo~\ref{cap:dim}, el arco es la cara exterior de la pala y la cara interior está
+\SI{0.5}{mm} más adentro.
 
 \begin{itemize}[leftmargin=*]
   \item \textbf{Diseño base (sin patines):} el juego lateral es de \SIrange{1.5}{1.7}{mm} y
@@ -1505,11 +1525,44 @@ desplazamiento hasta el contacto y la holgura que queda en los bordes de las pal
         bordes de pala es de \SI{0.22}{mm} (tubo de Ø\,98) y \SI{0.31}{mm} (Ø\,97), en la
         dirección $\varphi=0$, cuando dos patines tocan a la vez. Es poca, pero se debe a
         la geometría y no a las tolerancias: el patín más cercano está a solo
-        \ang{16.7} del borde de la pala.
-  \item Para llevar los bordes de Ø\,95 a Ø\,94 basta con acercar la pala
-        \SI{0.56}{mm} al eje; el centro del arco queda a \SI{0.42}{mm} del cuerpo
-        (antes \SI{0.98}{mm}). No se puede bajar más sin que la pala toque la pared.
+        \ang{16.4} del borde de la pala.
+  \item \textbf{El cuerpo debe bajar a Ø\,87.} Para llevar los bordes de Ø\,95 a Ø\,94 la
+        pala se acerca \SI{0.56}{mm} al eje y su cara exterior queda a $r=\SI{44.42}{mm}$
+        en el centro de la cuerda. Con el espesor de \SI{0.5}{mm}, la cara interior queda
+        en $r=\SI{43.92}{mm}$: \SI{0.08}{mm} \emph{dentro} de un cuerpo de Ø\,88. Con el
+        cuerpo de Ø\,87 (pared de \SI{2}{mm}, interior Ø\,83, donde siguen cabiendo la
+        pila de placas de Ø\,76 y el lastre) el juego entre pala y cuerpo es de
+        \SI{0.42}{mm}, parecido a los \SI{0.48}{mm} de la base.
+  \item \textbf{Con el cuerpo de Ø\,88 no alcanza con correr las palas.} Si la pala
+        conserva \SI{0.2}{mm} de juego, sus bordes quedan en Ø\,94,5 y, con cuatro patines
+        a \ang{45}, un desplazamiento hacia una pala la hace tocar el tubo de Ø\,98
+        (holgura nula). La alternativa es poner dos patines por hueco, pegados a los
+        bordes de las palas (a \ang{\pm33} del centro de cada pala): la holgura mínima
+        vuelve a ser de \SI{0.22}{mm}, pero hacen falta ocho patines y quedan
+        \SI{15}{mm} libres en cada hueco para interruptores y paneles.
 \end{itemize}
+
+\begin{table}[H]
+\centering\small
+\caption{Variantes de guiado en el tubo, salida de \texttt{planos\_seccion.py}. Juego
+pala--cuerpo: entre la cara interior de la pala y la pared; holgura en los bordes: la
+mínima sobre todas las direcciones de desplazamiento, después del contacto. Masa de los
+patines macizos de PETG a todo lo largo; con dos tacos de \SI{20}{mm} por línea, unas
+5 veces menos.}
+\label{tab:planos-variantes}
+\begin{tabularx}{\textwidth}{@{}Ycccccc@{}}
+\toprule
+\textbf{Variante} & \textbf{Cuerpo} & \textbf{Bordes} & \textbf{Juego pala--cuerpo} &
+\multicolumn{2}{c}{\textbf{Holgura en los bordes} [mm]} & \textbf{Patines}\\
+ & Ø [mm] & Ø [mm] & [mm] & $D_t=98$ & $D_t=97$ & \\\midrule
+Base, sin patines & 88 & 95 & 0,48 & 0 & 0 & ---\\
+4 patines a \ang{45}, bordes Ø\,94 (versión anterior) & 88 & 94 & $-0{,}08$ (no cabe) & --- & --- & ---\\
+\textbf{4 patines a \ang{45} (propuesta)} & \textbf{87} & \textbf{94} & \textbf{0,42} & \textbf{0,22} & \textbf{0,31} & 4, \SI{17}{g}\\
+4 patines a \ang{45} & 88 & 94,5 & 0,20 & 0 & 0,06 & 4, \SI{15}{g}\\
+8 patines a \ang{\pm33} de cada pala & 88 & 94,5 & 0,20 & 0,22 & 0,23 & 8, \SI{29}{g}\\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \begin{figure}[H]
 \centering
@@ -1544,13 +1597,16 @@ desplazamiento hasta el contacto y la holgura que queda en los bordes de las pal
   \addlegendentry{patines, $D_t=97$}
   \addplot[cfreno, very thick] table[x=phi, y=g_base98] {analysis/data/planos_seccion.dat};
   \addlegendentry{base, sin patines}
+  \addplot[cfijo, thick, densely dotted] table[x=phi, y=g_alt98] {analysis/data/planos_seccion.dat};
+  \addlegendentry{8 patines, Ø\,88, $D_t=98$}
 \end{axis}
 \end{tikzpicture}
 \caption{(a) Holgura diametral con la ecuación~\eqref{eq:planos-holgura} (tubo de fibra de
 vidrio salvo indicación; datos en \texttt{planos\_holgura.dat}). (b) Holgura que queda en
 los bordes de las palas cuando el cuerpo, desplazado en la dirección $\varphi$ (medida
-desde el centro de una pala), toca el tubo (datos en \texttt{planos\_seccion.dat}). Sin
-patines la holgura es cero en todas las direcciones: el contacto es la pala.}
+desde el centro de una pala), toca el tubo (datos en \texttt{planos\_seccion.dat}). Las
+curvas «patines» son la propuesta con cuerpo Ø\,87. Sin patines la holgura es cero en
+todas las direcciones: el contacto es la pala.}
 \label{fig:planos-holgura}
 \end{figure}
 
@@ -1569,21 +1625,27 @@ CanSat (\SI{47.5}{mm}). Además, la inclinación máxima posible dentro del tubo
 \ang{0.69} (resolviendo $L\sin\gamma + D\cos\gamma = D_t$), de modo que el cuerpo no puede
 cruzarse.
 
-La fuerza para sacarlo es pequeña. Con el cohete inclinado \ang{5} y todo el peso
-apoyado en la pared, la fricción $\mu W\sin\ang{5}$ queda entre \SIlist{0.13;0.21}{N}. El drogue
-abierto a \SI{15}{m/s} tira con $\tfrac12\rho V^2 C_D A_\text{d}\approx\SI{5.4}{N}$, 25
-veces más; basta con que el drogue salga de la copa y se infle para que arrastre el
-CanSat fuera del tubo.
+La fuerza para sacarlo es pequeña. Cerca del apogeo el cohete está en vuelo balístico y
+el peso aparente del CanSat es casi nulo. Como cota estática, con el tubo a \ang{5} de la
+vertical la fricción $\mu W\sin\ang{5}$ queda entre \SIlist{0.13;0.21}{N}, y en el caso
+más desfavorable, con el tubo horizontal y todo el peso sobre la pared, $\mu W$ queda
+entre \SIlist{1.5;2.5}{N}. El drogue abierto a \SI{15}{m/s} tira con
+$\tfrac12\rho V^2 C_D A_\text{d}\approx\SI{5.4}{N}$, al menos el doble; basta con que el
+drogue salga de la copa y se infle para que arrastre el CanSat fuera del tubo.
 
 \begin{nota}[Puntos abiertos de la envolvente]
 \begin{itemize}[leftmargin=*]
   \item \textbf{Diámetro del tubo:} sin él, la holgura de \SI{2.1}{mm} es solo un
-        ejemplo. Si el tubo resultara de Ø\,\SI{96}{mm} o menos, el Ø\,95 del anexo deja
+        ejemplo. Si el tubo resultara menor que Ø\,\SI{96.9}{mm}, el Ø\,95 del anexo deja
         menos de \SI{1}{mm} en el peor caso y hay que ajustar los patines al tubo real.
   \item \textbf{Juego en la vibración:} el juego lateral de \SIrange{1.5}{2.0}{mm} deja
         que el CanSat golpee el tubo con la vibración de 15\,G (\Req{S4}). Los patines
         reciben esos golpes en lugar de las palas, pero conviene un ensayo de vibración
         dentro de un tramo de tubo y, después, uno de extracción.
+  \item \textbf{Espuma de aterrizaje:} el anillo de \SI{25}{mm} del
+        capítulo~\ref{cap:estructura} va en la base y sale del tramo de baliza y lastre;
+        los planos 9, 11 y 15 todavía muestran la pila sin él y deben actualizarse cuando
+        se defina.
   \item \textbf{Gases de expulsión:} la tapa inferior y la ventana de la cámara nadir
         miran a la carga de expulsión. El protector (33) es responsabilidad del cohete y
         debe acordarse con la organización.
@@ -1605,25 +1667,27 @@ cada uno fija para la fabricación y los ensayos.
 \textbf{Plano} & \textbf{Contenido} & \textbf{Escala} & \textbf{Qué fija}\\\midrule
 9  & Isométricas del plegado (fig.~\ref{fig:planos-iso-plegado}) & 1:2 & Orden de apilado y acceso a interruptores\\
 10 & Isométrica desplegada (fig.~\ref{fig:planos-iso-desp}) & 1:3,5 & Disco de Ø\,400 y posición del drogue\\
-11 & Vista explosionada (fig.~\ref{fig:planos-explo}) & 1:2,5 & 30 piezas en 3 grupos; orden de montaje\\
+11 & Vista explosionada (fig.~\ref{fig:planos-explo}) & 1:3 & 30 piezas en 3 grupos; orden de montaje\\
 12 & Secuencia de despliegue (fig.~\ref{fig:planos-secuencia}) & 1:8 & Fuerzas y estados de software en cada fase\\
 13 & Recorrido de cargas (fig.~\ref{fig:planos-cargas}) & 1:4 & Hombro inferior del eje; uniones atornilladas\\
 14 & Diagrama N$^2$ (fig.~\ref{fig:planos-n2}) & s/e & 31 interfaces; cadena de liberación\\
-15 & CanSat en el tubo (figs.~\ref{fig:planos-tubo-long} y~\ref{fig:planos-tubo-aa}) & 1:2, 1:1, 3:1 & Patines Ø\,95; palas a Ø\,94\\
+15 & CanSat en el tubo (figs.~\ref{fig:planos-tubo-long} y~\ref{fig:planos-tubo-aa}) & 1:2, 1:1, 3:1 & Patines Ø\,95; palas a Ø\,94; cuerpo Ø\,87\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{resultado}[Cambios al diseño que salen de estos planos]
 \begin{enumerate}[leftmargin=*]
-  \item Agregar cuatro \textbf{patines guía} (27) de Ø\,95 a \ang{45} de las palas y
-        llevar los bordes de las palas plegadas a Ø\,94. Sin ellos, las palas son lo
-        primero que toca el tubo.
+  \item Agregar cuatro \textbf{patines guía} (27) de Ø\,95 a \ang{45} de las palas,
+        llevar los bordes de las palas plegadas a Ø\,94 y bajar el cuerpo a Ø\,87 para
+        que quepa el espesor de la pala. Sin patines, las palas son lo primero que toca el
+        tubo. Si el cuerpo debe quedar en Ø\,88, hacen falta ocho patines junto a los
+        bordes de las palas (tabla~\ref{tab:planos-variantes}).
   \item Dar al eje fijo un \textbf{hombro inferior} que tome el cubo en ascenso, apertura
         y aterrizaje (hasta \SI{106}{N}); la tuerca solo trabaja en la etapa 2.
   \item Unir tapas y pared con \textbf{tornillos e insertos}: la pared trabaja en tracción
         al abrir el drogue (hasta \SI{116}{N} en el caso de diseño).
-  \item Ensayar la \textbf{cadena de liberación completa} (D4/E7 $\to$ M9 $\to$ D1) y
+  \item Ensayar la \textbf{cadena de liberación completa} (ID4/IE7 $\to$ IM9 $\to$ ID1) y
         definir dónde van las antenas, lejos de las palas de carbono.
   \item \textbf{Confirmar con la organización} el diámetro interior del tubo, el largo de
         la bahía y el protector de gases.

@@ -138,7 +138,11 @@ row("I1 cuerda-argolla", 0.0, F35, F30, D_d2, 0.0)
 row("I2 travesano-pared", (m_head + m_dro + m_trav) * g * 15,
     F35 - (m_head + m_trav) * g * nB, F30 - (m_head + m_trav) * g * nB2,
     D_d2 + T2 - (m_head + m_trav) * g, (m_head + m_trav) * g * 200)
-row("I3 pasador, axial por pala", mpala * g * 15, mpala * g * nB, mpala * g * nB2, Fc, mpala * g * 200)
+# I3: carga a lo largo de la pala. Plegada (15 G, apertura) la inercia va según la
+# envergadura; desplegada (etapa 2, aterrizaje) la carga axial es la centrífuga y la
+# inercia del aterrizaje es TRANSVERSAL a la pala (batimiento), no axial.
+row("I3 pasador, axial por pala", mpala * g * 15, mpala * g * nB, mpala * g * nB2, Fc, Fc)
+row("I3' pasador, transversal por pala", 0.0, 0.0, 0.0, T2 / 4, mpala * g * 200)
 row("I4 cubo-rodamientos (axial)", m_rot * g * 15, m_rot * g * nB, m_rot * g * nB2, T2 - m_rot * g, m_rot * g * 200)
 row("I8 bateria-brida", m_bat * g * 15, m_bat * g * nB, m_bat * g * nB2, m_bat * g, m_bat * g * 200)
 row("I9 lastre-tapa inf.", m_las * g * 15, m_las * g * nB, m_las * g * nB2, m_las * g, m_las * g * 200)
@@ -202,6 +206,14 @@ for Dt in (96.0, 97.0, 98.0, 99.0):
 for mu in (0.3, 0.5):
     print(f"mu={mu}: excentricidad crítica del empuje a = {L/(2*mu):.0f} mm (> radio 47,5: sin atasco)")
 
-# fricción de extracción con el peso apoyado en la pared (cohete inclinado 5 deg)
+# fricción de extracción con el peso apoyado en la pared. Cerca del apogeo el cohete
+# está en vuelo balístico (peso aparente ~0); como cota se toma el caso estático con el
+# tubo inclinado 5 deg respecto de la vertical y el caso más desfavorable, tubo horizontal.
 for mu in (0.3, 0.5):
-    print(f"fuerza de fricción con cohete a 5 deg, mu={mu}: {mu*W*np.sin(np.radians(5)):.3f} N")
+    print(f"fricción, mu={mu}: tubo a 5 deg de la vertical {mu*W*np.sin(np.radians(5)):.3f} N ; "
+          f"tubo horizontal {mu*W:.2f} N")
+F15 = 0.5 * rho * 0.8 * A_d * 15**2
+print(f"tirón del drogue abierto a 15 m/s (sin factor de choque): {F15:.2f} N")
+print(f"masa del CanSat sin drogue (vuelo): {body_mass(('drogue+cuerda',))*1000:.0f} g ; "
+      f"peso {body_mass(('drogue+cuerda',))*g:.3f} N ; z_cg = "
+      f"{sum(m*z for n,m,z in ALL if n!='drogue+cuerda')/body_mass(('drogue+cuerda',)):.1f} mm")

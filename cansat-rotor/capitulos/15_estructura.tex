@@ -22,8 +22,8 @@ de seguridad (FS) que siguen valen como orden de magnitud y como guía para los 
         pasador y las orejas. Se necesita un tope elastomérico con brazo $\ge\SI{10}{mm}$.
   \item Con la distribución de masa real, la conicidad es $\approx\ang{6.1}$ (no
         \ang{4.4}) y una ráfaga lleva la pala a \ang{9.3}, casi contra el tope.
-  \item Rodamientos, eje, pestañas, anillo y tubo tienen FS amplios; la fatiga no
-        gobierna. El aterrizaje sin amortiguador produce entre \num{1300} y \SI{1900}{g} en
+  \item Rodamientos, pestañas, anillo y tubo tienen FS amplios; el eje queda justo
+        (FS 1,6) si la cuerda tira a 30\,G desviada \ang{30}. La fatiga no gobierna. El aterrizaje sin amortiguador produce entre \num{1300} y \SI{1900}{g} en
         suelo duro; \SI{25}{mm} de espuma lo bajan a \SIrange{150}{220}{g}.
 \end{itemize}
 \end{resultado}
@@ -328,8 +328,8 @@ recorre $\Omega$ hasta que algún modo pierde amortiguamiento.
 \begin{table}[H]
 \centering\small
 \footnotesize
-\caption{Resultados aeroelásticos (diseño: \SI{1150}{rpm}). Los rangos corresponden a
-alabeo restringido y libre en el portapala.}\label{tab:estructura-aeroel}
+\caption{Resultados aeroelásticos (diseño: \SI{1150}{rpm}). En los rangos de divergencia,
+el valor bajo corresponde a alabeo libre en el portapala y el alto a alabeo restringido.}\label{tab:estructura-aeroel}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -337,7 +337,7 @@ alabeo restringido y libre en el portapala.}\label{tab:estructura-aeroel}
 $e_{ca}/c$ (c.\,c. detrás del c.\,a.) & 0,25 & 0,25 & 0,178\\
 $x_\alpha$ (c.\,m. detrás del c.\,c., en semicuerdas) & 0 & 0 & $+0{,}03$\\
 Divergencia [rpm] ($\Omega_D/\Omega$) & 1790--2400 (1,6--2,1) & 4280--4900 (3,7--4,3) & 7630--9220 (6,6--8,0)\\
-Flameo, p-k [rpm] ($\Omega_F/\Omega$) & 2320 (2,0) & 4570 (4,0) & $>5700$ ($>5$)\\
+Flameo, p-k [rpm] ($\Omega_F/\Omega$) & 2310 (2,0) & 4570 (4,0) & 6250 (5,4)\\
 Giro de punta, $C_{m0}=-0{,}13$ & $+\ang{2.4}$ & $+\ang{0.45}$ & $+\ang{0.14}$\\
 Ídem, $C_{m0}=-0{,}10$ a $-0{,}23$ & $+\ang{3.1}$ a $+\ang{0.1}$ & $+\ang{0.6}$ a $\ang{0.0}$ & $+\ang{0.2}$ a $\ang{-0.2}$\\
 \bottomrule
@@ -377,7 +377,7 @@ $m_{ba}=m\,(0{,}5-0{,}425)/(0{,}425-0{,}011)\approx\SI{6.2}{g/m}$, es decir un a
 acero Ø\,\SI{1}{mm} pegado en el borde de ataque ($+\SI{0.85}{g}$ por pala). Eso elimina
 el flameo pero \textbf{no la divergencia ni el giro estático}, que dependen de $GJ$ y de
 $e_{ca}$, no del centro de masa. En BV la varilla ya adelanta el centro de masa a
-$0{,}441c$ y el flameo queda por encima de \SI{5700}{rpm}: no hace falta masa adicional.
+$0{,}441c$ y el flameo sube a \SI{6250}{rpm} ($5{,}4\Omega$): no hace falta masa adicional.
 
 \begin{resultado}[Pala recomendada: BV]
 Laminado $[(\pm45)_T/0_2/(\pm45)_T]$ de \SI{0.5}{mm} con varilla pultruida Ø\,\SI{2}{mm}
@@ -461,7 +461,7 @@ elástico.
 
 \begin{resultado}[Tope de batimiento]
 Tope con almohadilla de silicona de $\approx\SI{400}{mm^3}$ (p.~ej. $8\times8\times\SI{6}{mm}$,
-60\,ShA; absorbe \SI{0.06}{J} con deformación $\le30$\,\%), $k_s\approx\SI{5}{N.m/rad}$, actuando a
+60\,ShA; almacena \SI{0.06}{J} con deformación $\le30$\,\%), $k_s\approx\SI{5}{N.m/rad}$, actuando a
 $\ge\SI{10}{mm}$ del pasador; tope a $\ang{+15}$ en lugar de \ang{+10} para no tocarlo en
 ráfagas (\ang{9.3}); pasador de acero templado (pasador cilíndrico ISO 8734) o Ø\,\SI{3}{mm}.
 El ensayo E1 debe filmar la apertura a alta velocidad para medir $\dot\beta_i$.
@@ -471,8 +471,11 @@ El ensayo E1 debe filmar la apertura a alta velocidad para medir $\dot\beta_i$.
 \section{Tensiones y factores de seguridad}\label{sec:estructura-fs}
 
 Con el tope blando, todos los componentes tienen FS $\ge1{,}6$; los más justos son el eje
-bajo el tirón de \SI{147}{N} de la cuerda (\Req{S5}) y el pasador si es de acero común.
-Para piezas impresas se exige FS $\ge2$ (dispersión de impresión) y para metales $\ge1{,}5$.
+bajo el tirón de \SI{147}{N} de la cuerda (\Req{S5}), el pasador si es de acero común y el
+cuello del portapala. Para piezas impresas se exige FS $\ge2$ (dispersión de impresión) y
+para metales $\ge1{,}5$. El cuello del portapala solo cumple si se imprime con las capas
+paralelas al eje de la pala, de modo que la flexión del golpe trabaje en el plano de capa
+(FS 2,8); con la flexión entre capas (Z) queda en 1,6, por debajo del criterio.
 
 \paragraph{Supuestos.} PETG impreso: $E=\SI{2.0}{GPa}$, resistencia \SI{45}{MPa} en el plano
 de capa (XY) y \SI{25}{MPa} entre capas (Z); la anisotropía de las piezas FDM está bien
@@ -515,7 +518,7 @@ Con las capas del tubo perpendiculares al eje, la carga axial tracciona entre ca
 eso se compara con la resistencia Z. La distancia $e$ de la oreja se mide desde el centro
 del agujero; el ligamento que resiste el desgarro es $e-d/2$.
 
-\begin{table}[H]
+\begin{table}[tp]
 \centering\footnotesize
 \caption{Tensiones y factores de seguridad (cálculo en \texttt{estructura\_cargas.py}).
 ``Golpe'' es el impacto contra el tope de la sección~\ref{sec:estructura-tope} con
@@ -568,14 +571,14 @@ Ráfaga ($n=1{,}5$)          & 5,7 & 9,1 & 18,2 & \num{3.9e5} & \num{5.7e6} h\\\
 \textbf{Carga estática} & \multicolumn{2}{c}{$F_a$ [N]} & $P_0$ [N] & \multicolumn{2}{c}{$s_0=C_0/P_0$}\\\midrule
 30\,G (rotor, copa y drogue, \SI{75}{g}) & \multicolumn{2}{c}{22} & 11 & \multicolumn{2}{c}{52}\\
 Aterrizaje a \SI{150}{g} & \multicolumn{2}{c}{110} & 55 & \multicolumn{2}{c}{10}\\
-Aterrizaje a \SI{500}{g} & \multicolumn{2}{c}{368} & 184 & \multicolumn{2}{c}{3,1}\\
+Cota de suelo blando, \SI{500}{g} & \multicolumn{2}{c}{368} & 184 & \multicolumn{2}{c}{3,1}\\
 Suelo duro, \SIrange{1300}{1900}{g} & \multicolumn{2}{c}{960--1400} & 480--700 & \multicolumn{2}{c}{1,2--0,8}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Un aterrizaje sin amortiguador en suelo duro (\SIrange{1300}{1900}{g},
-sección~\ref{sec:estructura-impacto}) daría $s_0\approx\numrange{0.8}{1.2}$: la carga
+sección~\ref{sec:estructura-impacto}) daría $s_0$ entre \num{0.8} y \num{1.2}: la carga
 iguala o supera $C_0$, que por definición produce una deformación permanente de una
 diezmilésima del diámetro de la bola. Las bolas pueden marcar las pistas
 (\emph{brinelling}) y el rotor quedaría con juego. Es otra razón para el amortiguador.
@@ -642,7 +645,7 @@ duro son solo un orden de magnitud.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{semilogyaxis}[width=0.86\textwidth, height=6.2cm, xmin=0, xmax=80, ymin=10, ymax=3000,
+\begin{semilogyaxis}[width=0.86\textwidth, height=7.4cm, xmin=0, xmax=80, ymin=10, ymax=3000,
   xlabel={Carrera de frenado $s$ [mm]}, ylabel={Desaceleración [g]},
   legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}]
   \addplot[cfreno, very thick, domain=1.5:80, samples=80] {7.8^2/(2*0.8*x/1000)/9.81};
@@ -652,10 +655,10 @@ duro son solo un orden de magnitud.
   \draw[black!60, dashed] (axis cs:0,30) -- (axis cs:80,30) node[pos=0.98, below left, font=\scriptsize, inner sep=1pt] {30\,G (\Req{S5})};
   \pgfplotsinvokeforeach{2,10,17.5,27.5}{
     \draw[cgris, densely dotted] (axis cs:#1,10) -- (axis cs:#1,3000);}
-  \node[font=\scriptsize, rotate=90, anchor=north west] at (axis cs:2,12) {suelo duro};
-  \node[font=\scriptsize, rotate=90, anchor=north east] at (axis cs:10,2700) {suelo blando};
-  \node[font=\scriptsize, rotate=90, anchor=north east] at (axis cs:17.5,2700) {espuma 25};
-  \node[font=\scriptsize, rotate=90, anchor=north east] at (axis cs:27.5,2700) {espuma + suelo};
+  \node[font=\scriptsize, rotate=90, anchor=north west, inner sep=1pt] at (axis cs:2.3,40) {suelo duro};
+  \node[font=\scriptsize, rotate=90, anchor=south west, inner sep=1pt] at (axis cs:9.8,33) {suelo blando};
+  \node[font=\scriptsize, rotate=90, anchor=south west, inner sep=1pt] at (axis cs:17.3,33) {espuma 25};
+  \node[font=\scriptsize, rotate=90, anchor=north east, inner sep=1pt] at (axis cs:27.8,2700) {espuma + suelo};
 \end{semilogyaxis}
 \end{tikzpicture}
 \caption{Desaceleración de aterrizaje según la carrera de frenado~\eqref{eq:estructura-impacto},
@@ -706,8 +709,8 @@ electrónica: los fragmentos quedan fuera del cuerpo.
 \begin{nota}[Incertidumbres y ensayos que las cierran]
 Las propiedades de lámina y de PETG son típicas ($\pm15$ a 30\,\%); $k_\zeta$, la
 restricción de alabeo, $C_{dc}$ y la rigidez del tope son estimaciones. Antes del vuelo:
-(1) medir la frecuencia torsional de una pala colgada con un martillo de impacto y un
-micrófono (A: \SIrange{69}{98}{Hz}; BV: \SIrange{151}{193}{Hz} a \SI{0}{rpm});
+(1) medir la frecuencia torsional de una pala montada en su portapala (sujeto en una
+morsa), golpeando el borde de fuga de la punta y registrando el sonido con un micrófono (A: \SIrange{69}{98}{Hz}; BV: \SIrange{151}{193}{Hz} a \SI{0}{rpm});
 (2) filmar la apertura en E1--E2 a $\ge\SI{240}{fps}$; (3) medir la conicidad en E2
 ($\approx\ang{6}$ esperados con A); (4) ensayo de compresión del amortiguador. Ningún
 valor de este capítulo proviene de un ensayo.

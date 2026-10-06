@@ -173,4 +173,5 @@ print('pala desigual ds=0,1/0,2/0,3 mm: ', rows3[[2, 4, 6]])
 print('pala desigual dth=0,2/0,5/1,0 deg: ', rows4[[2, 5, 10]])
 for lab in out:
     Om = out[lab][0]
-    print(f'[{lab}] fuerza por 0,1 g a r_g: {1e-4*rg*Om**2:.3f} N')
+    print(f'[{lab}] fuerza por 0,1 g a r_g: {1e-4*rg*Om**2:.3f} N; '
+          f'a 120 mm (criterio del cap. 5): {1e-4*0.120*Om**2:.3f} N')

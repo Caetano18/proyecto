@@ -50,8 +50,9 @@ def cargar(perfil, re_k, suf=""):
     return D if len(D) else None
 
 
-def bloques(a, salto=1.0):
-    """Índices de bloques contiguos (huecos de más de `salto` grados los separan)."""
+def bloques(a, salto=1.6):
+    """Índices de bloques contiguos (huecos de más de `salto` grados los separan; los
+    huecos menores, de hasta cinco ángulos sin solución, se interpolan)."""
     cortes = np.where(np.diff(a) > salto + 1e-6)[0]
     ini = np.r_[0, cortes + 1]
     fin = np.r_[cortes, len(a) - 1]

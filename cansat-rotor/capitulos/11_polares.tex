@@ -1,12 +1,47 @@
 \chapter{Polares aerodinámicas a bajo número de Reynolds}\label{cap:polares}
 
-%%RESUMEN%%
+La placa curvada al \SI{7}{\percent} es la mejor sección para el rotor también según
+XFOIL, pero el rotor no la usará en el $C_l\approx0{,}9$ supuesto en el
+capítulo~\ref{cap:dim}: con el paso recomendado la sección representativa trabaja a
+$C_l\approx0{,}42$--$0{,}53$, sobre una rama de la polar con separación laminar en la
+parte trasera del extradós y justo por encima de un segundo salto de $C_l$ causado por
+el intradós. Este capítulo calcula las polares de seis secciones a
+$Re=\num{20000}$--\num{100000} con XFOIL, analiza la burbuja de separación laminar, el
+efecto de $Re$ y de la turbulencia ambiente, discute la validez del método y entrega las
+polares extendidas a $\pm\ang{180}$ que necesita la teoría de elemento de pala (BEMT).
+
+\begin{resultado}[Resultados principales del capítulo]
+\begin{itemize}
+  \item A $Re=\num{50000}$ la placa al \SI{7}{\percent} tiene $C_{l,\max}=1{,}42$ (a
+        \ang{7}) y $(C_l/C_d)_{\max}=32$ con $N_{\text{crit}}=9$ (36 con
+        $N_{\text{crit}}=5$). El NACA~6412 llega a 19 (31 con $N_{\text{crit}}=5$), la
+        placa plana a 13 y la placa al \SI{4}{\percent} a 28 pero con $C_{l,\max}=1{,}09$.
+  \item Su polar tiene \textbf{dos saltos} ($Re=\num{50000}$, $N_{\text{crit}}=9$). El
+        superior, biestable entre \ang{3.25} y \ang{4}, separa una rama baja con
+        separación laminar abierta en el extradós desde $x/c\approx0{,}56$ ($C_l=0{,}72$,
+        $C_l/C_d=18$ a \ang{4}) de una rama alta con una burbuja corta en el borde de
+        ataque ($C_l=0{,}99$, $C_l/C_d=33$). El inferior, entre \ang{0.75} y \ang{1}, lo
+        produce una burbuja en el borde de ataque del intradós, que pasa de larga a corta;
+        $C_l$ sube de 0,17 a 0,40.
+  \item Con paso $\theta=\ang{-2}$ a \ang{-4}, la sección neutra en autorrotación
+        (ec.~\ref{eq:autorrot}) trabaja a $\alpha\approx\ang{1}$--\ang{2},
+        $C_l\approx0{,}42$--$0{,}53$ y $C_l/C_d\approx11$--15, justo por encima del salto
+        inferior. Según esta estimación de sección representativa, las rpm suben de
+        \num{1150} a unas \num{1500}--\num{1700}. Con la polar de $Re=\num{75000}$ y
+        $\theta\le\ang{-3}$ la sección neutra cae dentro del salto inferior, y las rpm
+        quedan entre \num{1600} y \num{1900}. La BEMT debe confirmar o corregir estos
+        valores.
+  \item Polar para la BEMT: \texttt{analysis/data/polares\_ext\_placa7\_Re50.dat} (caso
+        base), con \texttt{\_Re75} y la polar $N_{\text{crit}}=5$ como sensibilidad.
+\end{itemize}
+\end{resultado}
 
 %=====================================================================
 \section{Régimen de trabajo de la pala}\label{sec:polares-regimen}
 
-La pala trabaja entre $Re\approx\num{16000}$ en la raíz y $\num{72000}$ en la punta; el
-número de Reynolds que pesa en el empuje es $\approx\num{55000}$. Por eso las polares se
+Con la velocidad de giro base (\SI{120}{rad/s}), la pala trabaja entre
+$Re\approx\num{16000}$ en la raíz y $\num{72000}$ en la punta, y el número de Reynolds que
+pesa en el empuje es $\approx\num{56000}$. Por eso las polares se
 calculan a $Re=\num{20000}$, \num{35000}, \num{50000}, \num{75000} y \num{100000}.
 
 \subsection{Número de Reynolds local}
@@ -19,8 +54,11 @@ punto de trabajo $U_P\ll\Omega r$ (el ángulo de entrada es de pocos grados), y
 \end{equation}
 que con $\Omega=\SI{120}{rad/s}$, $c=\SI{45}{mm}$ y $\nu=\SI{1.5e-5}{m^2/s}$ da
 $Re=\num{360000}\,r$ ($r$ en metros). La figura~\ref{fig:polares-repala} muestra la
-distribución y la banda de $\pm\SI{20}{\percent}$ en $\Omega$, que cubre la incertidumbre
-de la estimación de rpm del capítulo~\ref{cap:dim}.
+distribución y la banda de $\pm\SI{20}{\percent}$ en $\Omega$, que es la incertidumbre
+que el capítulo~\ref{cap:dim} asigna a su estimación de rpm. La
+sección~\ref{sec:polares-trabajo} encuentra rpm entre un \SI{30}{\percent} y un
+\SI{65}{\percent} mayores, fuera de esa banda. En ese caso el $Re$ de la zona de empuje
+sube a \num{75000}--\num{95000}, y por eso el barrido llega a \num{100000}.
 
 El empuje de un elemento crece como $U^2\,dr\propto r^2\,dr$; el radio medio ponderado
 por el empuje entre $e$ y $R$ es
@@ -109,8 +147,10 @@ el primer panel y el acoplamiento viscoso no converge. Por eso el modelo usa:
           \label{eq:polares-espesor}
         \end{equation}
         Cerca de $x=0$ la nariz es la parábola $y_t^2\approx t^2x/(4a)$, de radio
-        $r_{BA}=t^2/(8a)=t/2$: una nariz semicircular, como la de una placa con el canto
-        lijado a radio completo. El factor $(1-\xi^2)$ afina el último \SI{15}{\percent}
+        $r_{BA}=t^2/(8a)=t/2$ en el vértice: una nariz casi semicircular, como la de una
+        placa con el canto lijado a radio completo. Sobre las coordenadas discretas, el
+        círculo que pasa por los tres puntos de la nariz da un radio algo menor,
+        $0{,}43\,t$ (tabla~\ref{tab:polares-geom}). El factor $(1-\xi^2)$ afina el último \SI{15}{\percent}
         hasta un borde de fuga de espesor nulo.
   \item \textbf{Espesor $t=\SI{1.5}{\percent}$}: es el menor con el que XFOIL converge en
         la mayor parte del barrido. El radio de nariz resultante,
@@ -127,9 +167,11 @@ como referencia de una pala recortada de chapa sin curvar.
 El borde de fuga real es romo (\SI{0.5}{mm}, $\SI{1.1}{\percent}$ de la cuerda) y no
 afilado: agrega una resistencia de base que el modelo no incluye. Con un coeficiente de
 presión de base $C_{p,b}\approx-0{,}1$ a $-0{,}2$ (valor supuesto),
-$\Delta C_d\approx-C_{p,b}\,t_{BF}/c\approx0{,}001$--$0{,}002$, entre el 5 y el
-\SI{10}{\percent} del $C_d$ de trabajo. El canto de ataque real depende del lijado: si queda a
-escuadra, la separación en el borde de ataque llega antes que en el modelo.
+$\Delta C_d\approx-C_{p,b}\,t_{BF}/c\approx0{,}001$--$0{,}002$, entre el 3 y el
+\SI{6}{\percent} del $C_d$ de trabajo ($\approx0{,}037$). El canto de ataque real depende
+del lijado: si queda a escuadra, la separación en el borde de ataque llega antes que en el
+modelo, en el extradós y también en el intradós (salto inferior de la
+sección~\ref{sec:polares-placa7}).
 \end{nota}
 
 \subsection{Perfiles de referencia}
@@ -168,7 +210,7 @@ de fuga), que es la referencia de $\alpha$ en XFOIL. Las coordenadas están en
   ymin=-0.012, ymax=0.026, xlabel={$x/c$}, ylabel={$y/c$}, title={\footnotesize Borde de ataque, placa 7\,\%},
   xtick={0,0.02,0.04,0.06}, ytick={-0.01,0,0.01,0.02}, scaled ticks=false, yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}, xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
   \addplot[crot, thick, fill=frot] table[x=x, y=y] {analysis/data/polares_geom_placa7_ba.dat};
-  \draw[cgris, dashed] (axis cs:0.0064,0.0) circle [radius=0.0064];
+  \draw[cgris, dashed] (axis cs:0.00615,0.00176) circle [radius=0.0064];
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
@@ -193,7 +235,14 @@ recibe XFOIL; $r_{BA}$ por ajuste de un círculo a tres puntos del borde de ataq
 \begin{tabular}{@{}lccccc@{}}
 \toprule
 \textbf{Sección} & $t_{\max}/c$ [\%] & $x_t/c$ & $f_{\max}/c$ [\%] & $x_f/c$ & $r_{BA}/c$ [\%]\\\midrule
-%%TABGEOM%%
+Placa curvada 7\,\% (base)  & 1,55  & 0,026 & 7,00 & 0,500 & 0,64\\
+Placa curvada 7\,\%, $t$ 1,1\,\% & 1,14 & 0,020 & 7,00 & 0,500 & 0,50\\
+Placa curvada 7\,\%, $t$ 2,0\,\% & 2,07 & 0,032 & 7,00 & 0,500 & 0,87\\
+Placa curvada 4\,\%         & 1,52  & 0,030 & 4,00 & 0,500 & 0,70\\
+Placa plana 3\,\%           & 3,00  & 0,278 & 0    & --    & 1,48\\
+Clark~Y (fondo plano)       & 11,70 & 0,296 & 3,58 & 0,419 & 1,21\\
+NACA~6412                   & 12,04 & 0,295 & 6,00 & 0,403 & 1,68\\
+NACA~0012                   & 12,00 & 0,299 & 0    & --    & 1,58\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -248,12 +297,123 @@ Los ángulos que no convergen en ninguna de las hasta 28 corridas se dejan vací
 interpolan en las tablas de XFOIL y aparecen como huecos en las figuras. La
 tabla~\ref{tab:polares-conv} resume la convergencia.
 
-%%CONV%%
+De los \num{3738} ángulos pedidos (42 casos de 89 ángulos) convergieron \num{3673}
+(\SI{98.3}{\percent}). Los 65 que faltan están donde la capa límite cambia de régimen:
+cerca de la pérdida, en el salto entre ramas de las secciones curvadas y, en las placas,
+en ángulos negativos chicos donde el intradós se separa en el borde de ataque. Hubo 251
+ángulos biestables; los casos con más son la placa al \SI{4}{\percent} a
+$Re=\num{75000}$ (37) y el NACA~0012 a \num{35000} (24). Dentro del intervalo de trabajo
+(\ang{0} a \ang{3}) solo faltan dos pares de ángulos consecutivos (placa al
+\SI{7}{\percent} y placa plana a \num{100000}); el hueco más largo de toda la tabla es de
+\ang{1.5} (NACA~6412 a \num{75000}). La polar extendida interpola linealmente los
+huecos.
+
+{\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrcl@{}}
+\caption{Convergencia de XFOIL por caso (89 ángulos de \ang{-6} a \ang{16}, paso
+\ang{0.25}). Biest.: ángulos con dos soluciones; atíp.: soluciones aisladas descartadas;
+resc.: se usaron las corridas de rescate.}\label{tab:polares-conv}\\
+\toprule
+\textbf{Sección} & $Re/10^3$ & $N_{\text{crit}}$ & \textbf{conv.} & \textbf{biest.} & \textbf{atíp.} & \textbf{resc.} & \textbf{Ángulos sin solución [\si{\degree}]}\\\midrule
+\endfirsthead
+\toprule
+\textbf{Sección} & $Re/10^3$ & $N_{\text{crit}}$ & \textbf{conv.} & \textbf{biest.} & \textbf{atíp.} & \textbf{resc.} & \textbf{Ángulos sin solución [\si{\degree}]}\\\midrule
+\endhead
+Placa 7\,\% & 20 & 9 & 88 & 22 & 4 & no & 11,25\\
+Placa 7\,\% & 35 & 9 & 86 & 7 & 1 & sí & -1,5; -1,25; 10\\
+Placa 7\,\% & 50 & 9 & 86 & 18 & 11 & sí & -0,75; 9; 9,25\\
+Placa 7\,\% & 75 & 9 & 89 & 4 & 2 & sí & --\\
+Placa 7\,\% & 100 & 9 & 86 & 18 & 8 & sí & 0,5; 0,75; 6,5\\
+\addlinespace[2pt]
+Placa 7\,\% & 20 & 5 & 89 & 4 & 8 & no & --\\
+Placa 7\,\% & 35 & 5 & 86 & 1 & 0 & no & -1; -0,75; 12,25\\
+Placa 7\,\% & 50 & 5 & 87 & 2 & 20 & sí & 10,25; 10,75\\
+Placa 7\,\% & 75 & 5 & 87 & 14 & 15 & sí & 7,5; 7,75\\
+Placa 7\,\% & 100 & 5 & 88 & 0 & 0 & no & 7,75\\
+\addlinespace[2pt]
+Placa 4\,\% & 20 & 9 & 89 & 2 & 0 & no & --\\
+Placa 4\,\% & 35 & 9 & 87 & 5 & 10 & no & 7,75; 8\\
+Placa 4\,\% & 50 & 9 & 84 & 4 & 32 & sí & -2,75; -2,5; -1,75; 6,75; 7\\
+Placa 4\,\% & 75 & 9 & 84 & 37 & 0 & sí & -1,75; -1,5; -1,25; 5,5; 6\\
+Placa 4\,\% & 100 & 9 & 84 & 3 & 1 & sí & -1,5; -1,25; -1; -0,75; 5,25\\
+\addlinespace[2pt]
+Plana 3\,\% & 20 & 9 & 89 & 0 & 0 & no & --\\
+Plana 3\,\% & 35 & 9 & 89 & 4 & 5 & no & --\\
+Plana 3\,\% & 50 & 9 & 89 & 6 & 36 & no & --\\
+Plana 3\,\% & 75 & 9 & 88 & 5 & 18 & sí & -3,75\\
+Plana 3\,\% & 100 & 9 & 87 & 5 & 0 & sí & 2,75; 3\\
+\addlinespace[2pt]
+Clark Y & 20 & 9 & 89 & 0 & 0 & no & --\\
+Clark Y & 35 & 9 & 85 & 0 & 0 & sí & 11; 11,25; 11,5; 11,75\\
+Clark Y & 50 & 9 & 86 & 3 & 2 & sí & 13; 13,25; 13,5\\
+Clark Y & 75 & 9 & 89 & 1 & 0 & no & --\\
+Clark Y & 100 & 9 & 89 & 0 & 0 & no & --\\
+\addlinespace[2pt]
+NACA 6412 & 20 & 9 & 89 & 0 & 0 & no & --\\
+NACA 6412 & 35 & 9 & 89 & 5 & 0 & no & --\\
+NACA 6412 & 50 & 9 & 88 & 18 & 4 & no & -2,75\\
+NACA 6412 & 75 & 9 & 84 & 12 & 4 & sí & 8; 8,25; 8,5; 8,75; 9\\
+NACA 6412 & 100 & 9 & 89 & 0 & 0 & no & --\\
+\addlinespace[2pt]
+NACA 6412 & 20 & 5 & 89 & 0 & 0 & no & --\\
+NACA 6412 & 35 & 5 & 89 & 0 & 0 & no & --\\
+NACA 6412 & 50 & 5 & 89 & 0 & 0 & no & --\\
+NACA 6412 & 75 & 5 & 89 & 0 & 0 & no & --\\
+NACA 6412 & 100 & 5 & 89 & 0 & 0 & no & --\\
+\addlinespace[2pt]
+NACA 0012 & 20 & 9 & 86 & 0 & 0 & no & 8,5; 8,75; 9\\
+NACA 0012 & 35 & 9 & 88 & 24 & 2 & no & 10\\
+NACA 0012 & 50 & 9 & 87 & 0 & 20 & no & 10,25; 10,5\\
+NACA 0012 & 75 & 9 & 88 & 17 & 1 & no & 11,5\\
+NACA 0012 & 100 & 9 & 88 & 1 & 3 & no & 12,25\\
+\addlinespace[2pt]
+Placa 7\,\%, $t$ 1,1\,\% & 50 & 9 & 86 & 4 & 0 & sí & 8,75; 9; 9,25\\
+\addlinespace[2pt]
+Placa 7\,\%, $t$ 2,0\,\% & 50 & 9 & 86 & 5 & 23 & sí & -0,25; 9,25; 9,75\\
+\bottomrule
+\end{longtable}
+}
 
 %=====================================================================
 \section{Polares de la placa curvada al 7\,\%}\label{sec:polares-placa7}
 
-%%TXT7%%
+La placa al \SI{7}{\percent} tiene un $C_{l,\max}$ de 1,40 a 1,43 casi independiente de
+$Re$, pero su eficiencia se duplica entre $Re=\num{20000}$ ($C_l/C_d=23$) y \num{100000}
+(48). La figura~\ref{fig:polares-placa7} muestra cinco tramos (valores a
+$Re=\num{50000}$):
+\begin{enumerate}
+  \item \textbf{Intradós con burbuja larga} ($\alpha\le\ang{0.75}$): cerca del ángulo
+        ideal de la línea media (\ang{0} en teoría de perfil delgado) y por debajo de él, el pico de succión pasa al intradós y
+        la capa laminar se separa en su borde de ataque ($x/c\approx0{,}006$). Esta burbuja
+        no se cierra hasta $x/c\approx0{,}84$, y como además el extradós está separado
+        desde $x/c\approx0{,}64$, el perfil queda muy descurvado: $C_l\le0{,}17$,
+        $C_m\approx-0{,}07$ y el cruce por $C_l=0$ ocurre en \ang{-1.3}.
+  \item \textbf{Salto inferior} (\ang{0.75} a \ang{1}): la burbuja del intradós
+        transiciona en $x/c\approx0{,}17$ y se reinserta en $x/c\approx0{,}27$. $C_l$ salta
+        de 0,17 a 0,40 y $C_m$ de $-0{,}07$ a $-0{,}12$. El salto aparece con
+        $N_{\text{crit}}=9$ en los cinco $Re$, entre \ang{-0.25} ($Re=\num{20000}$) y
+        \ang{1.5} ($Re=\num{75000}$). Con $N_{\text{crit}}=5$ la transición llega antes y
+        el salto baja a $\alpha<\ang{0}$.\footnote{Mecanismo verificado con volcados de
+        capa límite de XFOIL a \ang{0.75}, \ang{1.25} y \ang{2} (200 nodos, barrido
+        ascendente). Estas corridas no forman parte de las tablas de datos.}
+  \item \textbf{Rama baja} (\ang{1} a \ang{4}): $C_l$ crece casi lineal, con pendiente de
+        \SI{0.12}{\per\degree} (\SI{6.8}{\per\radian}) entre \ang{1} y \ang{3}. Extrapolado
+        con esa pendiente, su ángulo de sustentación nula es \ang{-2.4}. La capa límite del
+        extradós no transiciona y se separa en régimen laminar a $x/c\approx0{,}6$ sin
+        reinsertarse (sección~\ref{sec:polares-burbuja}). La región separada
+        \emph{descurva} el perfil: $C_d\approx0{,}037$--$0{,}040$ y $C_l/C_d\le18$.
+  \item \textbf{Salto superior} (\ang{4} a \ang{4.25}): la separación del extradós pasa
+        al borde de ataque, se forma una burbuja corta que dispara la transición y la capa
+        turbulenta se mantiene adherida hasta el borde de fuga. $C_l$ salta de 0,72 a
+        1,01. Entre \ang{3.25} y \ang{4} XFOIL encuentra las dos soluciones según de dónde
+        venga el barrido (rama alternativa en la figura~\ref{fig:polares-ncrit}).
+  \item \textbf{Rama alta} (\ang{4.25} a \ang{7}): es la zona de mejor eficiencia,
+        $(C_l/C_d)_{\max}=32{,}3$ a \ang{4.25} con $C_l=1{,}01$.
+  \item \textbf{Pérdida de borde de ataque} ($\alpha>\ang{7}$): la burbuja se alarga
+        (reinserción en $x/c=0{,}61$ a \ang{8}) y deja de cerrarse; $C_l$ cae de 1,42 a
+        1,11 a \ang{10}. Es la pérdida brusca típica de los perfiles finos.
+\end{enumerate}
 
 \pgfplotsset{polares/.style={width=0.5\textwidth, height=5.6cm, xmin=-6, xmax=16,
   xtick={-6,-3,0,3,6,9,12,15}, unbounded coords=jump, xlabel={$\alpha$ [\si{\degree}]},
@@ -328,16 +488,88 @@ $C_l$ de diseño usado para estimar las rpm (ec.~\ref{eq:omega}).}
 \label{fig:polares-placa7-polar}
 \end{figure}
 
+\subsection{Comparación con la teoría de perfil delgado}
+Para una línea media parabólica (el arco circular difiere en menos de
+\SI{1}{\percent} de la flecha) la teoría de perfil delgado da~\cite{anderson2017}
+\begin{equation}
+  C_l=2\pi\,(\alpha+2h),\qquad \alpha_{L0}=-2h=\ang{-8.0},\qquad
+  C_{m,c/4}=-\pi h=-0{,}22 .
+  \label{eq:polares-tpd}
+\end{equation}
+XFOIL da $C_l=0$ en \ang{-1.3} (con el intradós separado) y, en la rama baja, un
+ángulo de sustentación nula extrapolado de \ang{-2.4} y $C_{m,c/4}\approx-0{,}13$. La
+diferencia es la pérdida viscosa de curvatura efectiva. Con la separación trasera del
+extradós, el ángulo $\alpha_{L0}$ de la rama baja corresponde a una flecha de solo
+$\approx\SI{2}{\percent}$ y el momento a una de $\approx\SI{4}{\percent}$. Las dos
+estimaciones no coinciden porque la separación también cambia la pendiente, de modo que
+no hay un perfil delgado equivalente único. En la rama alta la diferencia es menor: a
+\ang{5} la teoría da $C_l=1{,}43$ y XFOIL 1,19 (\SI{83}{\percent}).
+Este es el primer resultado importante: \textbf{a bajo $Re$ la curvatura solo rinde lo
+que promete la teoría cuando la capa límite transiciona}.
+
+\subsection{Momento de picado}
+Por encima del salto inferior, $C_{m,c/4}$ es casi constante, entre \num{-0.13} y
+\num{-0.17}, y crece en módulo con $Re$ (figura~\ref{fig:polares-placa7}). Por debajo
+del salto baja a $\approx-0{,}07$. Integrado sobre la pala con
+$\Omega$ constante, el momento de torsión respecto de $c/4$ es
+\begin{equation}
+  M_{c/4}=C_{m,c/4}\,\tfrac12\rho\,\Omega^2c^2\,\frac{R^3-e^3}{3}
+  \approx\num{4.9e-7}\,\Omega^2\ \si{N.m},
+  \label{eq:polares-mt}
+\end{equation}
+con $C_{m,c/4}=-0{,}15$: \SI{0.007}{N.m} a \SI{120}{rad/s} y \SI{0.013}{N.m} a
+\SI{165}{rad/s}. Es un momento de picado que tiende a reducir el paso de la placa (hacia
+paso más negativo) y que debe resistir el portapala y la rigidez torsional de la placa de
+\SI{0.5}{mm}. Su magnitud es del orden del par del resorte de apertura
+(\SI{0.005}{N.m}), aunque actúa sobre otro eje (el de paso, no el de batimiento). No es
+despreciable en el diseño del portapala. La ec.~\eqref{eq:polares-mt} supone $C_m$
+uniforme y no incluye el momento de inercia de la pala curvada (efecto \emph{raqueta}),
+que también actúa sobre el paso.
+
+
 %=====================================================================
 \section{Comparación de secciones a $Re=\num{50000}$}\label{sec:polares-comp}
 
-%%TXTCOMP%%
+A $Re=\num{50000}$ la placa al \SI{7}{\percent} es la única sección que combina
+$C_{l,\max}>1{,}4$ con $C_l/C_d>30$; los perfiles gruesos solo se acercan cuando la
+transición se adelanta ($N_{\text{crit}}=5$) o a $Re\ge\num{75000}$
+(figura~\ref{fig:polares-comp} y tabla~\ref{tab:polares-res}).
+\begin{itemize}
+  \item \textbf{Placa al \SI{4}{\percent}}: menos resistencia mínima
+        ($C_{d,\min}=0{,}018$ contra 0,031) y eficiencia parecida (28), pero $C_l$ de máxima
+        eficiencia bajo (0,66) y $C_{l,\max}=1{,}09$: con la misma cuerda giraría más
+        rápido.
+        Su pérdida es suave, sin el salto de la placa al \SI{7}{\percent}.
+  \item \textbf{Placa plana}: $C_{d,\min}=0{,}011$, la menor de todas, pero
+        $C_l/C_d\le13$ y $C_{l,\max}=0{,}77$. Es el límite inferior de rendimiento y la
+        referencia de una pala sin molde. Entre \ang{3.5} y \ang{4.75} $C_l$ cae de 0,51
+        a 0,25 por separación laminar en el extradós, y a \ang{5.5} vuelve a 0,64: es un
+        comportamiento de XFOIL a bajo $Re$ que no debe tomarse como dato fino.
+  \item \textbf{Clark~Y}: a \num{50000} llega a 30, pero solo a \ang{9.25} y
+        $C_l=1{,}26$; a $Re\le\num{35000}$ su eficiencia cae a 5--10. Es el ejemplo más
+        claro de $Re$ crítico.
+  \item \textbf{NACA~6412}: con $N_{\text{crit}}=9$ la separación laminar no se
+        reinserta en todo el intervalo de trabajo ($C_d\ge0{,}047$) y la eficiencia
+        máxima (19) aparece recién a \ang{14}; con $N_{\text{crit}}=5$ sube a 31 a
+        \ang{5}. Es la sección más sensible a la turbulencia ambiente.
+  \item \textbf{NACA~0012}: eficiencia aceptable (26) pero $C_{l,\max}=0{,}87$; sin
+        curvatura no sirve para un rotor que necesita $C_l$ alto con rpm bajas. Entre
+        \ang{-1.4} y \ang{1.4} XFOIL le da pendiente de sustentación negativa, una
+        no linealidad típica de los perfiles gruesos simétricos a bajo $Re$.
+\end{itemize}
+Con $Re=\num{100000}$ el orden cambia: el NACA~6412 (54) y el Clark~Y (53) superan a la
+placa al \SI{7}{\percent} (48), como es esperable por encima del $Re$ crítico. La ventaja
+de la placa es propia del intervalo $Re<\num{75000}$, que es el del rotor.
+
+El momento de la placa al \SI{7}{\percent} es el mayor ($C_m\approx-0{,}15$, 1,6 veces
+el de la placa al \SI{4}{\percent}; la teoría de perfil delgado da 1,75); el de la placa
+plana y el NACA~0012 es casi nulo.
 
 \pgfplotsset{polaresperf/.style={cycle list={{crot, very thick},{crot!60!black, thick, dashed},{black, thick},{ccuerda, thick},{cfijo, thick},{cgris, thick, densely dashed}}}}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.8, ymax=1.6, legend pos=south east, legend style={font=\tiny}]
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.8, ymax=2.1, legend pos=north west, legend style={font=\tiny}]
   \addplot[crot, very thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
   \addplot[crot!60!black, thick, dashed, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_placa4_Re50.dat};
   \addplot[black, thick, no marks] table[x=alpha, y=cl] {analysis/data/polares_g_plana3_Re50.dat};
@@ -384,19 +616,83 @@ $C_l$ de diseño usado para estimar las rpm (ec.~\ref{eq:omega}).}
 \label{fig:polares-comp}
 \end{figure}
 
-%%TABRES%%
+\begin{table}[H]
+\centering\small
+\caption{Resumen de las polares a $Re=\num{50000}$ (bloque convergido). $\alpha_{0,9}$ y
+$(C_l/C_d)_{0,9}$: ángulo y eficiencia con $C_l=0{,}9$ (primer cruce). $C_m$ en el punto de
+eficiencia máxima.}
+\label{tab:polares-res}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+\textbf{Sección} & $N_{\text{crit}}$ & $\alpha_{L0}$ & $C_{l,\max}$ & $\alpha_{C_{l,\max}}$ & $(C_l/C_d)_{\max}$ & $\alpha$ / $C_l$ & $C_{d,\min}$ & $C_m$ & $\alpha_{0,9}$ / $(C_l/C_d)_{0,9}$\\
+ & & [\si{\degree}] & & [\si{\degree}] & & [\si{\degree}] / -- & & & [\si{\degree}] / --\\\midrule
+\textbf{Placa 7\,\%} & 9 & $-1{,}3^{\dagger}$ & \textbf{1,42} & 7,0 & \textbf{32,3} & 4,25 / 1,01 & 0,031 & $-0{,}15$ & 4,2 / 26\\
+Placa 7\,\%          & 5 & $-2{,}2$ & 1,38 & 8,0  & 36,4 & 3,00 / 0,92 & 0,025 & $-0{,}16$ & 3,0 / 35\\
+Placa 4\,\%          & 9 & $-0{,}9$ & 1,09 & 16$^{*}$ & 28,3 & 2,75 / 0,66 & 0,018 & $-0{,}09$ & 4,6 / 23\\
+Plana 3\,\%          & 9 & $0$      & 0,77 & 16$^{*}$ & 12,7 & 2,50 / 0,40 & 0,011 & $-0{,}01$ & --\\
+Clark~Y              & 9 & $-0{,}4$ & 1,36 & 11,0 & 29,8 & 9,25 / 1,26 & 0,027 & $-0{,}06$ & 6,0 / 22\\
+NACA~6412            & 9 & $-1{,}6$ & 1,49 & 15,3 & 19,3 & 14,0 / 1,46 & 0,047 & $-0{,}06$ & 11,3 / 6\\
+NACA~6412            & 5 & $-4{,}3$ & 1,35 & 13,0 & 30,5 & 5,00 / 1,05 & 0,027 & $-0{,}12$ & 3,5 / 29\\
+NACA~0012            & 9 & $0$      & 0,87 & 9,0  & 25,7 & 5,25 / 0,64 & 0,021 & $-0{,}01$ & --\\
+\bottomrule
+\multicolumn{10}{@{}l}{\footnotesize $^{*}$ máximo en el borde del barrido: la pérdida no se cerró dentro de \ang{16}.}\\
+\multicolumn{10}{@{}l}{\footnotesize $^{\dagger}$ cruce de $C_l=0$ con el intradós separado; extrapolando la rama baja (\ang{1}--\ang{3}) da \ang{-2.4}.}
+\end{tabular}
+\end{table}
 
 %=====================================================================
 \section{Efecto del número de Reynolds y de la turbulencia}\label{sec:polares-re}
 
-%%TXTRE%%
+Bajar $Re$ de \num{100000} a \num{20000} reduce a la mitad la eficiencia de las placas,
+pero a una quinta parte o menos la de los perfiles gruesos (figura~\ref{fig:polares-tend}).
+Las placas finas no tienen un $Re$ crítico marcado en este intervalo; el Clark~Y y el
+NACA~6412 sí, entre \num{35000} y \num{50000}.
+
+\subsection{Efecto de $Re$ en la placa al 7\,\%}
+\begin{itemize}
+  \item $(C_l/C_d)_{\max}$ crece con $Re$: 22,9, 27,1, 32,3, 41,6 y 48,1 para
+        $Re=\num{20000}$ a \num{100000} ($N_{\text{crit}}=9$). Entre los extremos,
+        $C_l/C_d\propto Re^{n}$ con $n\approx0{,}46$, cercano al exponente $0{,}5$ de la
+        fricción laminar.
+  \item $C_{d,\min}$ baja de 0,039 a 0,020; $C_{l,\max}$ casi no cambia (1,40 a 1,43),
+        porque la pérdida la fija la burbuja del borde de ataque.
+  \item El salto superior baja de \ang{5.5}--\ang{5.75} ($Re=\num{20000}$) a
+        \ang{2.5}--\ang{2.75} ($Re=\num{100000}$): a mayor $Re$ la transición llega
+        antes y la rama alta empieza a menor $\alpha$. El salto inferior, en cambio, no
+        sigue una tendencia monótona: está entre \ang{-0.25} y \ang{1.5} según $Re$. A
+        $Re=\num{75000}$ queda en \ang{1.25}--\ang{1.5}, justo donde trabaja la sección
+        neutra (sección~\ref{sec:polares-trabajo}).
+\end{itemize}
+
+\subsection{Efecto de la turbulencia ambiente ($N_{\text{crit}}$)}
+Bajar $N_{\text{crit}}$ de 9 a 5 mueve el salto entre ramas y el ángulo de $C_l=0{,}9$
+tanto como multiplicar $Re$ por 1,5 a 2 ($\alpha_{0,9}$: \ang{2.97} con $N_{\text{crit}}=5$
+a \num{50000}, contra \ang{3.19} y \ang{2.68} con $N_{\text{crit}}=9$ a \num{75000} y
+\num{100000}). En la placa al \SI{7}{\percent} a $Re=\num{50000}$
+(figura~\ref{fig:polares-ncrit}):
+\begin{itemize}
+  \item el salto superior pasa de \ang{4}--\ang{4.25} a \ang{2.75}--\ang{3} y
+        desaparece casi toda la histéresis (2 ángulos biestables contra 18);
+  \item el salto inferior baja a \ang{-0.5}--\ang{-0.25}. Entre \ang{1} y \ang{2.75}
+        $C_l$ sube unos 0,18 a igual $\alpha$, y entre \ang{0} y \ang{0.75}, donde con
+        $N_{\text{crit}}=9$ el intradós está separado, unos 0,35. El cruce por $C_l=0$
+        pasa de \ang{-1.3} a \ang{-2.2}. La transición llega antes en las dos caras: en
+        el extradós ocurre en $x/c\approx0{,}95$ y cierra la separación trasera, y en el
+        intradós en $x/c\approx0{,}06$;
+  \item $(C_l/C_d)_{\max}$ sube de 32 a 36 y $C_{l,\max}$ baja levemente (1,42 a 1,38).
+\end{itemize}
+El NACA~6412 es mucho más sensible: su eficiencia máxima a $Re=\num{35000}$ pasa de 6 a
+17 y a \num{50000} de 19 a 31. Para un rotor cuya turbulencia ambiente no se conoce, esa
+sensibilidad es un riesgo de diseño en sí mismo. \textbf{La placa al \SI{7}{\percent} es
+la sección más robusta frente a la incertidumbre de transición}.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.5\textwidth, height=5.8cm, xmode=log, xmin=18000, xmax=110000,
   xtick={20000,35000,50000,75000,100000}, xticklabels={20k,35k,50k,75k,100k},
-  xlabel={$Re$}, ylabel={$(C_l/C_d)_{\max}$}, ymin=0, ymax=65, legend style={font=\tiny, cells={anchor=west}}, legend pos=north west]
+  xlabel={$Re$}, ylabel={$(C_l/C_d)_{\max}$}, ymin=0, ymax=85, legend style={font=\tiny, cells={anchor=west}}, legend pos=north west]
   \addplot[crot, very thick, mark=*] table[x=Re, y=ld_placa7] {analysis/data/polares_tend.dat};
   \addplot[crot!60!black, thick, dashed, mark=square*] table[x=Re, y=ld_placa4] {analysis/data/polares_tend.dat};
   \addplot[black, thick, mark=triangle*] table[x=Re, y=ld_plana3] {analysis/data/polares_tend.dat};
@@ -430,12 +726,13 @@ $N_{\text{crit}}=9$; punteada con marcas huecas: $N_{\text{crit}}=5$.}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.6, ymax=1.7, legend pos=south east, legend style={font=\tiny}]
+\begin{axis}[polares, ylabel={$C_l$}, ymin=-0.6, ymax=2.3, legend pos=north west, legend style={font=\tiny}]
   \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50.dat};
   \addplot[crot, thick, densely dotted] table[x=alpha, y=cl] {analysis/data/polares_g_placa7_Re50_N5.dat};
   \addplot[cfijo, very thick] table[x=alpha, y=cl] {analysis/data/polares_g_naca6412_Re50.dat};
   \addplot[cfijo, thick, densely dotted] table[x=alpha, y=cl] {analysis/data/polares_g_naca6412_Re50_N5.dat};
-  \legend{placa 7\,\% $N$9, placa 7\,\% $N$5, NACA 6412 $N$9, NACA 6412 $N$5}
+  \addplot[only marks, mark=triangle*, mark size=1.6pt, crot!70!black] table[x=alpha, y=clalt] {analysis/data/polares_alt_placa7_Re50.dat};
+  \legend{placa 7\,\% $N$9, placa 7\,\% $N$5, NACA 6412 $N$9, NACA 6412 $N$5, placa 7\,\% $N$9 rama alt.}
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
@@ -446,19 +743,59 @@ $N_{\text{crit}}=9$; punteada con marcas huecas: $N_{\text{crit}}=5$.}
   \addplot[cfijo, thick, densely dotted] table[x=alpha, y=ld] {analysis/data/polares_g_naca6412_Re50_N5.dat};
 \end{axis}
 \end{tikzpicture}
-\caption{Sensibilidad a $N_{\text{crit}}$ a $Re=\num{50000}$.}
+\caption{Sensibilidad a $N_{\text{crit}}$ a $Re=\num{50000}$. Los triángulos son la
+segunda solución de los ángulos biestables de la placa al \SI{7}{\percent} con
+$N_{\text{crit}}=9$ (rama de $C_l$ alto, no incluida en la polar principal).}
 \label{fig:polares-ncrit}
 \end{figure}
 
 %=====================================================================
 \section{Burbuja de separación laminar}\label{sec:polares-burbuja}
 
-%%TXTBUR%%
+La forma de la separación laminar explica todas las diferencias entre ramas y
+perfiles: en la rama baja de la placa al \SI{7}{\percent} la capa laminar se separa
+en la parte trasera y no se reinserta; en la rama alta se forma una burbuja corta en el
+borde de ataque. La tabla~\ref{tab:polares-bur} resume los puntos característicos,
+detectados sobre el coeficiente de fricción $C_f$ del extradós (volcado \texttt{DUMP} de
+XFOIL): $x_s$ primera separación ($C_f<0$), $x_t$ transición y $x_r$ reinserción. El
+intradós, que causa el salto inferior, se describe en la
+sección~\ref{sec:polares-placa7}.
+
+\subsection{Mecanismo}
+Una capa límite laminar soporta muy poco gradiente adverso de presión. A bajo $Re$ se
+separa antes de transicionar; la capa de corte separada es inestable, transiciona en el
+aire y, si la turbulencia la acerca de nuevo a la pared, se reinserta y deja una
+\emph{burbuja de separación laminar}~\cite{lissaman1983,mueller2003}. Si la transición
+llega tarde (bajo $Re$, aire calmo) la capa no se reinserta y el perfil queda con una
+separación abierta: esa es la caída de rendimiento por debajo del $Re$ crítico.
+
+\subsection{Resultados}
+\begin{itemize}
+  \item \textbf{Placa 7\,\%, rama baja} (\ang{0}, \ang{2} y \ang{4} con
+        $N_{\text{crit}}=9$): separación laminar en $x/c=0{,}65$, 0,62 y 0,56 sin
+        transición ($x_t=1$). A \ang{4} hay además una pequeña separación laminar en la
+        nariz ($x/c=0{,}015$ a 0,036) que se reinserta sin transicionar. El pico de
+        succión de la figura~\ref{fig:polares-cf} es bajo y la meseta de presión del
+        último \SI{40}{\percent} indica la región separada.
+  \item \textbf{Placa 7\,\%, rama alta} (\ang{6}): separación en el borde de ataque
+        ($x/c=0{,}002$), transición en 0,14 y reinserción en 0,21: burbuja de
+        \SI{21}{\percent} de cuerda, con flujo turbulento adherido hasta el borde de fuga.
+  \item \textbf{Cerca de la pérdida} (\ang{8}): la burbuja se alarga hasta $x/c=0{,}61$ y
+        la capa turbulenta se separa en 0,97. A \ang{10} no se reinserta: pérdida de
+        borde de ataque por estallido de la burbuja.
+  \item \textbf{Efecto de $Re$ y de $N_{\text{crit}}$ a \ang{4}}: con $Re=\num{100000}$ o
+        con $N_{\text{crit}}=5$ la transición ocurre en $x/c\approx0{,}05$--$0{,}06$ y la
+        burbuja se cierra en 0,08--0,09: la sección está en la rama alta. Con
+        $Re=\num{20000}$ la separación queda en 0,60 sin transición.
+  \item \textbf{NACA~6412} ($Re=\num{50000}$, $N_{\text{crit}}=9$): separación laminar
+        entre $x/c=0{,}42$ (\ang{0}) y 0,17 (\ang{10}), transición entre 0,85 y 0,62 y
+        \emph{ninguna reinserción}. Esa separación abierta explica su $C_d\ge0{,}047$.
+\end{itemize}
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=0, xmax=1, ymin=-0.006, ymax=0.025,
+\begin{axis}[width=0.49\textwidth, height=5.8cm, xmin=0, xmax=1, ymin=-0.006, ymax=0.025,
   xlabel={$x/c$}, ylabel={$C_f$ (extradós)}, scaled y ticks=false,
   yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=3},
   legend style={font=\tiny, cells={anchor=west}}, legend pos=north east]
@@ -472,8 +809,8 @@ $N_{\text{crit}}=9$; punteada con marcas huecas: $N_{\text{crit}}=5$.}
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
-\begin{axis}[width=0.5\textwidth, height=5.8cm, xmin=0, xmax=1, y dir=reverse, ymin=-2.5, ymax=1.2,
-  xlabel={$x/c$}, ylabel={$C_p$}, legend style={font=\tiny, cells={anchor=west}}, legend pos=south east]
+\begin{axis}[width=0.49\textwidth, height=5.8cm, xmin=0, xmax=1, y dir=reverse, ymin=-2.5, ymax=1.2,
+  xlabel={$x/c$}, ylabel={$C_p$}, legend style={font=\tiny, cells={anchor=west}}, legend pos=north east]
   \addplot[ccuerda, thick] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re20_N9_a+04.dat};
   \addplot[crot, very thick] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re50_N9_a+04.dat};
   \addplot[crot, thick, densely dotted] table[x=x, y=cp] {analysis/data/polares_cp_placa7_Re50_N5_a+04.dat};
@@ -487,12 +824,48 @@ $\alpha=\ang{4}$ para varios $Re$ y $N_{\text{crit}}$.}
 \label{fig:polares-cf}
 \end{figure}
 
-%%TABBUR%%
+\begin{table}[H]
+\centering\small
+\caption{Puntos característicos de la capa límite del extradós según XFOIL
+(archivo \texttt{polares\_burbuja.dat}). --: no ocurre.}
+\label{tab:polares-bur}
+\begin{tabular}{@{}lccccccl@{}}
+\toprule
+\textbf{Sección} & $Re/10^3$ & $N_{\text{crit}}$ & $\alpha$ [\si{\degree}] & $x_s/c$ & $x_t/c$ & $x_r/c$ & \textbf{Estado}\\\midrule
+Placa 7\,\% & 50 & 9 & 0  & 0,655 & 1     & --    & separación laminar abierta\\
+Placa 7\,\% & 50 & 9 & 2  & 0,615 & 1     & --    & separación laminar abierta\\
+Placa 7\,\% & 50 & 9 & 4  & 0,015 & 1     & 0,036 & burbuja laminar y separación en 0,56\\
+Placa 7\,\% & 50 & 9 & 6  & 0,002 & 0,143 & 0,213 & burbuja corta, adherido\\
+Placa 7\,\% & 50 & 9 & 8  & 0,002 & 0,394 & 0,608 & burbuja larga, separa en 0,97\\
+Placa 7\,\% & 50 & 9 & 10 & 0,002 & 0,499 & --    & pérdida de borde de ataque\\
+Placa 7\,\% & 20 & 9 & 4  & 0,598 & 1     & --    & separación laminar abierta\\
+Placa 7\,\% & 100 & 9 & 4 & 0,004 & 0,059 & 0,091 & burbuja corta, adherido\\
+Placa 7\,\% & 50 & 5 & 4  & 0,006 & 0,053 & 0,077 & burbuja corta, adherido\\
+NACA~6412   & 50 & 9 & 0  & 0,423 & 0,850 & --    & separación abierta\\
+NACA~6412   & 50 & 9 & 4  & 0,345 & 0,735 & --    & separación abierta\\
+NACA~6412   & 50 & 9 & 8  & 0,224 & 0,717 & --    & separación abierta\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 %=====================================================================
 \section{Sensibilidad al espesor del modelo}\label{sec:polares-espesor}
 
-%%TXTESP%%
+El espesor del modelo cambia muy poco los resultados en el intervalo de trabajo: entre
+$t=\SI{1.1}{\percent}$ (el real) y \SI{2.0}{\percent}, $(C_l/C_d)_{\max}$ varía entre
+32,9 y 31,5 y $C_{l,\max}$ entre 1,425 y 1,416 (figura~\ref{fig:polares-espesor}).
+\begin{itemize}
+  \item El ángulo de $C_{l,\max}$ baja de \ang{7.25} ($t=\SI{2}{\percent}$) a \ang{6.5}
+        ($t=\SI{1.1}{\percent}$): la nariz más aguda tiene un pico de succión más alto y la
+        burbuja estalla antes. La pala real, con canto menos redondeado, puede entrar en
+        pérdida uno o dos grados antes que el modelo base.
+  \item $\alpha_{0,9}$ pasa de \ang{3.9} a \ang{4.4} y $C_m$ de $-0{,}154$ a $-0{,}136$: el
+        perfil más grueso es algo menos curvado en el extradós.
+  \item La convergencia es parecida en los tres casos (tabla~\ref{tab:polares-conv}).
+\end{itemize}
+La elección de $t=\SI{1.5}{\percent}$ es, por lo tanto, una aproximación razonable en el
+bloque adherido; la incertidumbre por espesor (unos \SI{4}{\percent} en eficiencia) es
+mucho menor que la de $N_{\text{crit}}$ (\SI{15}{\percent} o más).
 
 \begin{figure}[H]
 \centering
@@ -552,16 +925,27 @@ estimaciones con una incertidumbre de varias decenas por ciento.
 Los resultados reproducen las tendencias que muestran los ensayos a bajo $Re$:
 \begin{itemize}
   \item \textbf{Perfiles finos curvados frente a perfiles gruesos.} Laitone ensayó alas
-        rectangulares hasta $Re\approx\num{20000}$ en un túnel de baja turbulencia y
-        encontró que una placa fina curvada con borde de ataque afilado supera a un perfil
-        convencional como el NACA~0012~\cite{polares-laitone1997}. Sunada y colaboradores
-        compararon veinte secciones a $Re=\num{4000}$ y concluyeron que una curvatura del
-        orden del \SI{5}{\percent}, un borde de ataque afilado o una corrugación mejoran
-        la sección rectangular~\cite{polares-sunada1997,polares-sunada2002}. Winslow y
+        rectangulares a $Re$ de hasta \num{20000} en un túnel de baja turbulencia. Por
+        debajo de $Re=\num{70000}$, una placa fina con curvatura en arco circular del
+        \SI{5}{\percent} dio la mayor sustentación y la mayor $C_l/C_d$, y fue poco
+        sensible a $Re$ y a la turbulencia. El NACA~0012, en cambio, empeoró mucho por
+        debajo de \num{50000}~\cite{polares-laitone1997}. Sunada y colaboradores
+        midieron quince secciones a $Re=\num{4000}$ y obtuvieron el mejor resultado con
+        una placa fina curvada al \SI{5}{\percent} con la flecha cerca de media
+        cuerda~\cite{polares-sunada1997}. En veinte alas, también a $Re=\num{4000}$,
+        encontraron que una curvatura del \SI{5}{\percent}, un borde de ataque afilado o
+        una corrugación adecuada mejoran la sección rectangular~\cite{polares-sunada2002}. Winslow y
         colaboradores revisaron el intervalo $\num{e4}$--$\num{e5}$ y señalan la ventaja de
         las secciones finas~\cite{polares-winslow2018}. XFOIL reproduce lo mismo: a
         $Re\le\num{35000}$ la placa al \SI{7}{\percent} tiene una eficiencia varias veces
         mayor que el NACA~6412 y que el Clark~Y.
+  \item \textbf{Placa curvada sin $Re$ crítico.} Schmitz comparó en túnel una placa
+        plana, una placa fina curvada y un perfil grueso de modelismo (N60, de
+        \SI{12.4}{\percent} de espesor) entre $Re\approx\num{21000}$ y \num{168000}, y
+        mostró que la placa fina mantiene su rendimiento a bajo $Re$,
+        mientras los perfiles gruesos lo pierden bruscamente~\cite{schmitz1942}. Es el
+        mismo contraste entre la placa al \SI{7}{\percent} y el Clark~Y de la
+        figura~\ref{fig:polares-tend}.
   \item \textbf{Caída de los perfiles gruesos.} Lissaman describe un $Re$ crítico del orden
         de \num{e5} (más bajo para perfiles finos) por debajo del cual la capa laminar se
         separa sin reinsertarse y la eficiencia cae bruscamente~\cite{lissaman1983}; la
@@ -573,9 +957,12 @@ Los resultados reproducen las tendencias que muestran los ensayos a bajo $Re$:
         $Re=\num{6e4}$--\num{2e5}~\cite{pelletier2000}. Sus alas tienen resistencia
         inducida y no son comparables de forma directa con la sección 2D, pero confirman
         que la curvatura aumenta $C_l$ y $C_l/C_d$ y que las placas son poco sensibles a
-        $Re$ en ese intervalo. Los órdenes de magnitud de la tabla~\ref{tab:polares} del
-        capítulo de teoría (eficiencia 12--20 en alas) son coherentes con las eficiencias
-        de sección de XFOIL una vez agregada la resistencia inducida de un ala corta.
+        $Re$ en ese intervalo. La tabla~\ref{tab:polares} del capítulo de teoría, que
+        resume órdenes de magnitud de esa literatura, da para la placa al
+        \SI{7}{\percent} eficiencias máximas de 12--20. XFOIL da eficiencias de sección
+        bastante mayores (23--48), pero en el punto de trabajo del rotor
+        (sección~\ref{sec:polares-trabajo}) la eficiencia es de 11--15, dentro del
+        intervalo de la tabla.
 \end{itemize}
 
 \begin{nota}[Qué hacer con esta incertidumbre]
@@ -649,21 +1036,45 @@ sensibilidad.
 Las tablas extendidas tienen paso de \ang{0.5} y columnas \texttt{alpha cl cd cm fuente}
 (fuente: 0 XFOIL, 1 Viterna-Corrigan, 2 placa plana, 3 flujo invertido).
 
-%%TXTEXT%%
+Las polares extendidas reproducen XFOIL dentro del bloque de flujo adherido y la
+placa plana fuera de él; los parámetros de cada empalme están en la
+tabla~\ref{tab:polares-ext}. Los resultados que importan para la BEMT son:
+\begin{itemize}
+  \item \textbf{Post-pérdida.} Para la placa al \SI{7}{\percent} a $Re=\num{50000}$ el
+        empalme está en \ang{8} ($C_{l,s}=1{,}28$, $C_{d,s}=0{,}092$). El modelo da
+        $C_l=0{,}79$ y $C_d=0{,}20$ a \ang{20} y $C_l=0{,}70$, $C_d=0{,}64$ a \ang{45}.
+        XFOIL, en cambio, daba $C_l\approx1{,}0$--$1{,}2$ entre \ang{12} y \ang{16}
+        (dos ramas); esos valores se descartan por ser soluciones estacionarias de un
+        flujo que en la realidad es no estacionario.
+  \item \textbf{Arranque.} A $\alpha=\ang{87}$ ($\theta=\ang{-3}$, $\Omega=0$) todas las
+        extendidas dan $C_l\approx0{,}062$ y $C_d\approx1{,}17$, que son los términos de
+        placa plana de la ec.~\eqref{eq:polares-vc-cl}. El par de arranque depende sobre
+        todo de $C_{D,\max}$ y del paso, no del perfil, como en la ec.~\eqref{eq:Q0}.
+        \textbf{Pero la magnitud no coincide}: la ec.~\eqref{eq:Q0} usa $C_n\approx2\sin\alpha$
+        (placa bidimensional), es decir $C_l(\ang{90}+\theta)\approx-\sin2\theta$, y la
+        polar base da $-0{,}59\sin2\theta$. Con $V=\SI{13.4}{m/s}$ y $\theta=\ang{-2}$, la
+        polar base da $Q_0\approx\SI{0.015}{N.m}$, frente a \SI{0.026}{N.m} en la tabla
+        de arranque del capítulo~\ref{cap:dim}. La variante \texttt{\_2D}
+        ($C_{D,\max}=1{,}98$) reproduce ese valor. La polar base es, por lo tanto,
+        pesimista para el arranque: si el rotor arranca con ella, arranca con la otra.
+  \item \textbf{Empalme inferior.} A \ang{-10} la placa al \SI{7}{\percent} da
+        $C_l=-0{,}39$ y $C_d=0{,}105$. Este tramo solo aparece en la raíz durante
+        transitorios fuertes.
+\end{itemize}
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=\textwidth, height=6.3cm, xmin=-180, xmax=180, xtick={-180,-135,-90,-45,0,45,90,135,180},
+\begin{axis}[width=0.97\textwidth, height=6.3cm, xmin=-180, xmax=180, xtick={-180,-135,-90,-45,0,45,90,135,180},
   ymin=-1.5, ymax=2.1, xlabel={$\alpha$ [\si{\degree}]}, ylabel={$C_l$, $C_d$},
-  legend style={font=\scriptsize, cells={anchor=west}}, legend columns=3, legend pos=north west]
+  legend style={font=\tiny, cells={anchor=west}, at={(0.5,-0.2)}, anchor=north}, legend columns=3]
   \addplot[crot, very thick] table[x=alpha, y=cl] {analysis/data/polares_ext_placa7_Re50.dat};
   \addplot[crot, thick, dashed] table[x=alpha, y=cd] {analysis/data/polares_ext_placa7_Re50.dat};
   \addplot[crot!50, thick, densely dotted] table[x=alpha, y=cd] {analysis/data/polares_ext_placa7_Re50_2D.dat};
   \addplot[black, thick] table[x=alpha, y=cl] {analysis/data/polares_ext_plana3_Re50.dat};
   \addplot[black, thick, dashed] table[x=alpha, y=cd] {analysis/data/polares_ext_plana3_Re50.dat};
   \addplot[crot!50, thick, densely dotted, forget plot] table[x=alpha, y=cl] {analysis/data/polares_ext_placa7_Re50_2D.dat};
-  \legend{$C_l$ placa 7\,\%, $C_d$ placa 7\,\%, placa 7\,\% $C_{D,\max}{=}1{,}98$, $C_l$ plana 3\,\%, $C_d$ plana 3\,\%}
+  \legend{$C_l$ placa 7\,\%, $C_d$ placa 7\,\%, {$C_l$ y $C_d$ placa 7\,\%, $C_{D,\max}{=}1{,}98$}, $C_l$ plana 3\,\%, $C_d$ plana 3\,\%}
 \end{axis}
 \end{tikzpicture}
 
@@ -695,6 +1106,215 @@ post-pérdida que el modelo descarta).}
 \label{fig:polares-ext}
 \end{figure}
 
-%%TABEXT%%
+\begin{table}[H]
+\centering\small
+\caption{Parámetros de las polares extendidas ($N_{\text{crit}}=9$, $C_{D,\max}=1{,}172$).
+Bloque XFOIL usado y constantes de Viterna y Corrigan en el empalme superior. Archivos:
+\texttt{analysis/data/polares\_ext\_\ldots.dat}.}
+\label{tab:polares-ext}
+\begin{tabular}{@{}lccccccl@{}}
+\toprule
+\textbf{Sección} & $Re/10^3$ & \textbf{XFOIL} [\si{\degree}] & $C_{l,s}$ & $C_{d,s}$ & $A_2$ & $B_2$ & \textbf{Archivo} (\texttt{\ldots})\\\midrule
+Placa 7\,\% & 20  & $-6$ a 8,75 & 1,355 & 0,101 & 0,184 & 0,075 & \texttt{placa7\_Re20}\\
+Placa 7\,\% & 35  & $-6$ a 8,5  & 1,348 & 0,097 & 0,178 & 0,072 & \texttt{placa7\_Re35}\\
+\textbf{Placa 7\,\%} & \textbf{50} & $-6$ a 8,0 & 1,283 & 0,092 & 0,159 & 0,070 & \texttt{\textbf{placa7\_Re50}}\\
+Placa 7\,\% & 75  & $-6$ a 8,5  & 1,290 & 0,099 & 0,169 & 0,074 & \texttt{placa7\_Re75}\\
+Placa 7\,\% & 100 & $-6$ a 9,0  & 1,387 & 0,096 & 0,193 & 0,068 & \texttt{placa7\_Re100}\\
+Plana 3\,\% & 20--100 & $-6$ a 16 & 0,76--0,79 & 0,20--0,21 & 0,13--0,14 & 0,12--0,13 & \texttt{plana3\_Re*}\\
+Placa 4\,\% & 50  & $-6$ a 16   & 1,091 & 0,229 & 0,233 & 0,145 & \texttt{placa4\_Re50}\\
+NACA~6412   & 50  & $-6$ a 16   & 1,204 & 0,156 & 0,266 & 0,070 & \texttt{naca6412\_Re50}\\
+\bottomrule
+\end{tabular}
+\end{table}
+También se generaron las extendidas de la placa al \SI{4}{\percent} y del NACA~6412 para
+los cinco $Re$, y la variante \texttt{polares\_ext\_placa7\_Re50\_2D.dat} con
+$C_{D,\max}=1{,}98$.
 
-%%SECCIONES%%
+%=====================================================================
+\section{Punto de trabajo de la pala en autorrotación}\label{sec:polares-trabajo}
+
+Con el paso recomendado ($\theta=\ang{-2}$ a \ang{-4}) la sección representativa de la
+placa al \SI{7}{\percent} trabaja a $\alpha\approx\ang{1}$--\ang{2} y
+$C_l\approx0{,}42$--$0{,}53$, en la rama baja de la polar y justo por encima del salto
+inferior; no en $C_l\approx0{,}9$ como supuso la estimación de rpm del
+capítulo~\ref{cap:dim}.
+
+\subsection{Sección neutra}
+Una sección no aporta par cuando $\tan\phi=C_d/C_l$ (ec.~\ref{eq:autorrot}) y su ángulo
+de ataque es $\alpha=\phi+\theta$. Ambas condiciones juntas dan una ecuación en $\alpha$
+para cada paso:
+\begin{equation}
+  \alpha-\theta=\phi_n(\alpha)\equiv\arctan\frac{C_d(\alpha)}{C_l(\alpha)} .
+  \label{eq:polares-neutra}
+\end{equation}
+En un rotor real, la zona interior de la pala impulsa, la punta frena y el par se anula en
+el conjunto. En rotores de helicóptero en autorrotación vertical, la frontera entre la
+zona impulsora y la impulsada está cerca de $0{,}7\,R$~\cite{leishman2006}, próxima al
+radio de empuje $r_T=0{,}78\,R$ (ec.~\ref{eq:polares-rt}). Aquí se supone que la sección
+neutra del rotor del CanSat está en esa zona. La ec.~\eqref{eq:polares-neutra} da
+entonces una primera estimación del punto de trabajo sin necesidad de la BEMT, pero la
+posición real de la sección neutra depende de la distribución de $\phi$ y la debe dar la
+BEMT. Se resolvió
+sobre las polares fusionadas con el script \texttt{analysis/polares\_neutro.py}; la
+figura~\ref{fig:polares-neutra} muestra la construcción gráfica y el resultado.
+
+Con el $C_l$ de la solución, la ec.~\eqref{eq:omega} da
+$\Omega\approx\SI{120}{rad/s}\,\sqrt{0{,}9/C_l}$ (mismo empuje, mismo rotor).
+
+La ec.~\eqref{eq:polares-neutra} se resuelve buscando cambios de signo entre ángulos
+consecutivos de la polar. Si el cambio de signo cae en un salto de $C_l$ (más de 0,1 entre
+dos ángulos separados \ang{0.25}), el cruce interpolado es un artificio. En ese caso la
+sección queda \emph{clavada} en la discontinuidad y su $C_l$ solo se puede acotar entre
+los valores a ambos lados del salto. El script marca esas soluciones (columna
+\texttt{salto} de \texttt{polares\_neutro.dat}). Con la polar de $Re=\num{50000}$
+ocurre para $\theta\le\ang{-5}$, y con la de \num{75000} para
+$\ang{-5}\le\theta\le\ang{-3}$ (círculos rojos en la
+figura~\ref{fig:polares-neutra}).
+
+Hay un chequeo de coherencia. Con $C_l=0{,}47$ y $C_d=0{,}037$, la potencia de perfil del
+rotor, $P_0\approx\tfrac18\sigma C_d\,\rho A(\Omega R)^3\approx\SI{7}{W}$, exige
+un flujo neto a través del disco $V-v_i=P_0/T\approx\SI{2}{m/s}$. Es el mismo orden que
+$U_P=\Omega r_T\tan\phi\approx\SI{2}{m/s}$ que implica la solución
+($\phi=\ang{4.5}$, $\Omega r_T\approx\SI{26}{m/s}$). La estimación es, por lo tanto,
+coherente con un balance de energía simple.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=6cm, xmin=-3, xmax=8, ymin=0, ymax=10,
+  xlabel={$\alpha$ [\si{\degree}]}, ylabel={$\phi_n=\arctan(C_d/C_l)$ [\si{\degree}]},
+  unbounded coords=jump, legend style={font=\tiny, cells={anchor=west}, at={(0.5,1.03)}, anchor=south}, legend columns=2]
+  \addplot[crot, very thick] table[x=alpha, y=phin] {analysis/data/polares_neutro_phi_placa7_Re50.dat};
+  \addplot[crot, thick, densely dotted] table[x=alpha, y=phin] {analysis/data/polares_neutro_phi_placa7_Re50_N5.dat};
+  \addplot[cfijo, thick] table[x=alpha, y=phin] {analysis/data/polares_neutro_phi_naca6412_Re50.dat};
+  \addplot[black, thick] table[x=alpha, y=phin] {analysis/data/polares_neutro_phi_plana3_Re50.dat};
+  \foreach \th in {-4,-3,-2}{
+    \edef\temp{\noexpand\addplot[cgris, dashed, forget plot, domain=-3:8] {x-(\th)};}\temp}
+  \legend{placa 7\,\% $N$9, placa 7\,\% $N$5, NACA 6412 $N$9, plana 3\,\%}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth, height=6cm, xmin=-6, xmax=0, ymin=0.1, ymax=1.0,
+  xlabel={Paso $\theta$ [\si{\degree}]}, ylabel={$C_l$ de la sección neutra},
+  legend style={font=\tiny, cells={anchor=west}, at={(0.5,-0.25)}, anchor=north}, legend columns=2]
+  \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=cl_placa7_Re50] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[crot, thick, densely dotted, mark=o, mark size=1.2pt] table[x=theta, y=cl_placa7_Re50_N5] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[ccont, thick, mark=square*, mark size=1.2pt] table[x=theta, y=cl_placa7_Re75] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[crot!60!black, thick, dashed] table[x=theta, y=cl_placa4_Re50] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[cfijo, thick] table[x=theta, y=cl_naca6412_Re50_N5] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[only marks, mark=o, mark size=3pt, cfreno, thick] table[x=theta, y=sal_placa7_Re50] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[only marks, mark=o, mark size=3pt, cfreno, thick, forget plot] table[x=theta, y=sal_placa7_Re75] {analysis/data/polares_neutro_ancho.dat};
+  \addplot[cgris, densely dotted, domain=-6:0, forget plot] {0.9};
+  \node[font=\scriptsize, cgris, anchor=south west] at (axis cs:-5.9,0.9) {$C_l=0{,}9$ supuesto en el cap.~\ref{cap:dim}};
+  \fill[ccuerda, opacity=0.12] (axis cs:-4,0.1) rectangle (axis cs:-2,1.0);
+  \legend{placa 7\,\% $Re$ 50k, placa 7\,\% 50k $N$5, placa 7\,\% $Re$ 75k, placa 4\,\% 50k, NACA 6412 50k $N$5, en el salto inferior}
+\end{axis}
+\end{tikzpicture}
+\caption{Sección neutra en autorrotación (ec.~\ref{eq:polares-neutra}). Izquierda: la
+solución es el cruce de $\phi_n(\alpha)$ con la recta $\alpha-\theta$ (trazos grises; de arriba hacia abajo
+$\theta=\ang{-4}$, \ang{-3} y \ang{-2}). Derecha: $C_l$ de la solución en función del paso; la banda verde es
+el paso recomendado.}
+\label{fig:polares-neutra}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Sección neutra para el paso recomendado. $\Omega$ estimada con la
+ec.~\eqref{eq:omega} a partir del $C_l$ de la sección neutra (estimación).}
+\label{tab:polares-neutra}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Polar} & $\theta$ [\si{\degree}] & $\alpha$ [\si{\degree}] & $\phi$ [\si{\degree}] & $C_l$ & $C_l/C_d$ & \textbf{rpm est.}\\\midrule
+Placa 7\,\%, $Re$ 50k, $N$9 & $-2$ & 1,9 & 3,9 & 0,53 & 14,5 & \num{1490}\\
+                            & $-3$ & 1,5 & 4,5 & 0,47 & 12,7 & \num{1580}\\
+                            & $-4$ & 1,2 & 5,2 & 0,42 & 11,0 & \num{1680}\\\addlinespace[2pt]
+Placa 7\,\%, $Re$ 50k, $N$5 & $-3$ & 0,7 & 3,7 & 0,53 & 15,5 & \num{1490}\\
+Placa 7\,\%, $Re$ 75k, $N$9 & $-3$ & 1,5$^{\dagger}$ & 4,5 & 0,32--0,46 & 12,8 & \num{1610}--\num{1920}\\
+Placa 7\,\%, $Re$ 75k, $N$5 & $-3$ & 0,1 & 3,1 & 0,55 & 18,4 & \num{1470}\\
+Placa 4\,\%, $Re$ 50k, $N$9 & $-3$ & 0,8 & 3,8 & 0,32 & 15,2 & \num{1930}\\
+Plana 3\,\%, $Re$ 50k, $N$9 & $-3$ & 1,7$^{*}$ & 4,7 & 0,31 & 12,2 & \num{1950}\\
+NACA~6412, $Re$ 50k, $N$9  & $-3$ & 2,8$^{*}$ & 5,8 & 0,57 & 9,9 & \num{1440}\\
+NACA~6412, $Re$ 50k, $N$5  & $-3$ & 0,0 & 3,0 & 0,54 & 19,1 & \num{1480}\\
+\bottomrule
+\multicolumn{7}{@{}l}{\footnotesize $^{\dagger}$ solución dentro del salto inferior: $C_l$ acotado entre los valores a ambos lados.}\\
+\multicolumn{7}{@{}l}{\footnotesize $^{*}$ tres soluciones; se da la de menor $\alpha$ (la de mayor $\alpha$ está en \ang{5.4} y \ang{5.2}, respectivamente).}
+\end{tabular}
+\end{table}
+
+\subsection{Consecuencias}
+\begin{itemize}
+  \item \textbf{La rama alta no se usa.} El salto de la placa al \SI{7}{\percent} está
+        en \ang{4}--\ang{5} y la sección neutra está en \ang{1}--\ang{2}: la histéresis
+        no afecta al régimen estacionario con el paso recomendado. Para llegar a la rama
+        alta ($C_l\approx1$) habría que usar $\theta\approx\ang{+2}$, con el que el rotor
+        no arranca solo (capítulo~\ref{cap:dim}).
+  \item \textbf{El salto inferior sí afecta.} Con $\theta=\ang{-3}$ a \ang{-4} la sección
+        neutra queda a menos de \ang{0.5} del salto inferior a $Re=\num{50000}$, y dentro
+        de él a $Re=\num{75000}$, que es el $Re$ de trabajo si las rpm suben. Del lado de
+        abajo del salto, $C_l$ cae a 0,17--0,32 y las rpm subirían hasta unas \num{1900}.
+        La posición del salto depende de la nariz de la pala (radio del canto del
+        intradós), de $Re$ y de la turbulencia ($N_{\text{crit}}$), y es uno de los valores
+        menos confiables de XFOIL. Es un argumento más para el extremo $\theta=\ang{-2}$,
+        que deja un margen de unos \ang{1} sobre el salto.
+  \item \textbf{Las rpm serían mayores que las estimadas.} Con $C_l\approx0{,}47$ la
+        ec.~\eqref{eq:omega} da \SI{1580}{rpm} en lugar de \num{1150}, punta a
+        \SI{33}{m/s} y $Re$ en $r_T$ de unos \num{77000}. Esto sube la fuerza centrífuga
+        (de 13 a unos \SI{25}{N} por pala, $\propto\Omega^2$) y desplaza la polar de
+        trabajo hacia $Re=\num{75000}$. En el peor caso de la tabla ($C_l=0{,}32$,
+        \SI{1920}{rpm}) la punta llegaría a \SI{40}{m/s} y la fuerza centrífuga a unos
+        \SI{36}{N} por pala. Es una discrepancia con la estimación base que la
+        BEMT debe resolver; aquí se reporta sin corregir los datos de otros capítulos.
+  \item \textbf{El empuje no cambia.} $T$ lo fija el equilibrio vertical: un $C_l$ menor
+        se compensa con más rpm. La velocidad de descenso depende de $C_R$ y del drogue
+        (capítulo~\ref{cap:teoria}), no directamente de $C_l$; sí depende de $C_l/C_d$,
+        que en la rama baja es 11--15, inferior a la eficiencia máxima.
+  \item \textbf{Elección del paso.} Un paso menos negativo ($\theta=\ang{-2}$) sube $C_l$
+        y $C_l/C_d$ (0,53 y 14,5) y baja las rpm; el límite lo pone el par de arranque.
+        Desde el punto de vista aerodinámico de sección conviene el extremo
+        $\theta=\ang{-2}$ del intervalo recomendado. Ese paso da, sin embargo, el menor
+        par de arranque del intervalo (sección~\ref{sec:polares-ext}).
+  \item \textbf{Perfil.} Con el mismo paso, la placa al \SI{7}{\percent} da el $C_l$ más
+        alto de las placas (0,47 contra 0,31--0,32) y la eficiencia de trabajo es similar.
+        El NACA~6412 solo la supera con $N_{\text{crit}}=5$, y es mucho más sensible.
+\end{itemize}
+
+\begin{nota}[Límite de este análisis]
+La sección neutra es un modelo de un solo radio con $Re$ fijo; ignora la variación radial
+de $\phi$, la pérdida en la raíz, las pérdidas de punta y la solidez alta del rotor
+(0,286). El $C_l$ medio ponderado de la pala puede diferir del de $r_T$ en
+$\pm\SI{20}{\percent}$ (valor supuesto, no calculado). La conclusión robusta es
+cualitativa: con paso negativo la pala trabaja en la rama baja de la polar, a $C_l$
+bastante menor que 0,9, y cerca del salto inferior.
+\end{nota}
+
+%=====================================================================
+\section{Conclusiones y polares recomendadas}\label{sec:polares-concl}
+
+\begin{resultado}[Recomendaciones para el diseño y la BEMT]
+\begin{enumerate}
+  \item \textbf{Perfil}: mantener la placa curvada al \SI{7}{\percent}. Tiene el mayor
+        $C_{l,\max}$ (1,42), la mejor eficiencia de las secciones finas, y es la menos
+        sensible a $Re$ y a la turbulencia ambiente. Ninguno de los perfiles gruesos
+        justifica su mayor masa y su fabricación más compleja.
+  \item \textbf{Intervalo de $\alpha$}: en autorrotación estacionaria la sección trabaja
+        entre \ang{0} y \ang{3}; la pala debe operar por debajo de \ang{7}
+        ($C_{l,\max}$) con margen. La zona de \ang{3} a \ang{5} es biestable a
+        $Re\le\num{50000}$ con aire calmo.
+  \item \textbf{Paso}: preferir $\theta=\ang{-2}$ dentro del intervalo recomendado,
+        siempre que el par de arranque lo permita.
+  \item \textbf{Archivo base para la BEMT}:
+        \texttt{analysis/data/polares\_ext\_placa7\_Re50.dat} (columnas \texttt{alpha cl
+        cd cm fuente}, \ang{-180} a \ang{180}, paso \ang{0.5}). Si la BEMT interpola en
+        $Re$, usar la familia \texttt{polares\_ext\_placa7\_Re\{20,35,50,75,100\}.dat};
+        con las rpm estimadas en la sección~\ref{sec:polares-trabajo}, el $Re$ de la
+        zona de empuje está más cerca de \num{75000}.
+  \item \textbf{Sensibilidad}: correr además la polar $N_{\text{crit}}=5$
+        (\texttt{polares\_placa7\_Re50\_N5.dat} en el bloque adherido), la variante
+        \texttt{\_2D} ($C_{D,\max}=1{,}98$) para el arranque, y un caso pesimista con
+        $C_d\times1{,}2$.
+  \item \textbf{Ensayo}: las polares son estimaciones numéricas no validadas. Antes de
+        fijar el paso conviene medir las rpm de autorrotación del rotor en un ensayo
+        de caída o en túnel de viento (capítulo~\ref{cap:riesgos}), que es la
+        forma más directa de comprobar el $C_l$ de trabajo.
+\end{enumerate}
+\end{resultado}

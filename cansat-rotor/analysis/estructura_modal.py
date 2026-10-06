@@ -192,7 +192,7 @@ def pk_damping(s, Om, x_cg=None, r_ref=0.75 * R):
     return out
 
 
-def flutter_speed(s, x_cg=None, Om_max=600.0):
+def flutter_speed(s, x_cg=None, Om_max=800.0):
     Oms = np.linspace(20, Om_max, 300)
     prev = None
     for Om in Oms:

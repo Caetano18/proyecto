@@ -45,7 +45,7 @@ for m, (E, nu, al, Su) in mats.items():
         print(f'  {m}: Dout={Do}: p(0,05)={press(0.05, E, nu, Do)[0]:.2f} MPa')
 
 # ---- balanceo
-Mrot = 4*7.4 + 12.0 + 3.0        # g: palas, cubo con orejas, aros exteriores
+Mrot = 4*8.2 + 12.0 + 3.0        # g: palas con varilla y pestaña, cubo, aros exteriores
 for Om in (120., 136., 162.):
     for G in (6.3, 16., 40.):
         U = 1000*G*Mrot/1000/Om*1000/1000   # g mm  (U = G M / Omega)

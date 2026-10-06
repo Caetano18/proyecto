@@ -209,9 +209,17 @@ def caso_polar(caso):
 def caso_capa(c):
     """Converge hasta alfa y vuelca capa límite y Cp; prueba los tres panelados."""
     os.makedirs(c["dir"], exist_ok=True)
-    a_s = 2.0 if c["perfil"] in CURVOS else 0.0
-    for npan in PANELES:
-        pol = f"{c['tag']}_{npan}.pol"
+    a_s0 = 2.0 if c["perfil"] in CURVOS else 0.0
+    # se borran volcados viejos para no mezclar soluciones de otra corrida
+    for ext in (".bl", ".cp", ".pt"):
+        v = os.path.join(c["dir"], c["tag"] + ext)
+        if os.path.exists(v):
+            os.remove(v)
+    # varios ángulos de partida: la convergencia a bajo Re depende de la historia
+    intentos = [(npan, a_s) for a_s in (a_s0, c["alfa"] - 1.0, c["alfa"] + 1.0, 5.0)
+                for npan in PANELES]
+    for npan, a_s in intentos:
+        pol = f"{c['tag']}_{npan}_{a_s:+.0f}.pol"
         ruta = os.path.join(c["dir"], pol)
         if os.path.exists(ruta):
             os.remove(ruta)
@@ -226,7 +234,7 @@ def caso_capa(c):
         if not colgado and len(P) and abs(P[-1, 0] - c["alfa"]) < 1e-3:
             # fila del ángulo pedido (alpha cl cd cdp cm xtrs xtri ...) para el posproceso
             np.savetxt(os.path.join(c["dir"], c["tag"] + ".pt"), P[-1:], fmt="%.5f")
-            return dict(tag=c["tag"], npan=npan, ok=True)
+            return dict(tag=c["tag"], npan=npan, a_inicio=a_s, ok=True)
     return dict(tag=c["tag"], npan=None, ok=False)
 
 

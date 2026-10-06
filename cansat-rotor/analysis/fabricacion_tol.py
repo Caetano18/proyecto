@@ -34,36 +34,44 @@ def report(name, nom, wc_lo, wc_hi, rss, x, lim=None, sense='min'):
           f'MC 3s [{p1:7.3f},{p99:7.3f}]  P(falla) {100*fail if lim is not None else 0:.4f} %')
 
 # ---------------------------------------------------------------- A. cubo
-# Pila interior (fija, apretada por la tuerca): collar Lc, aro int. inferior B1,
-# separador interior Lsi, aro int. superior B2.  Pila exterior (cubo): nervio Lso entre
-# los aros exteriores; asiento inferior de profundidad ds desde la cara inferior del cubo.
-# Juego axial j = Lsi - Lso + (desplazamiento axial interno de los 2 rodamientos).
+# Disposición fijo-libre (corregida en la revisión): el rodamiento INFERIOR es el fijo
+# (aro exterior con interferencia y adhesivo, apoyado contra la cara inferior del nervio;
+# aro interior apretado entre collar y separador). El SUPERIOR es libre: aro exterior
+# deslizante en su asiento, sin adhesivo; aro interior apretado entre separador y tuerca.
+# Con los dos aros exteriores fijos al cubo y los dos interiores apretados por la tuerca el
+# conjunto sería hiperestático: cualquier diferencia Lsi-Lso mayor que el juego interno
+# precargaría los rodamientos (ver texto). Con el aro superior libre:
+#   juego axial del cubo      j = juego axial interno del rodamiento fijo (a1)
+#   luz nervio - aro libre    u = Lsi - Lso +- (a1+a2)/2   (u<0: el aro libre desliza, sin daño)
+#   huelgo cubo-tapa          g = Lc + B1 - ds - planitud -+ a1/2
 Lsi = (3.10, 0.02)    # separador de tubo de Al 10x8 refrentado en torno
-Lso = (3.00, 0.08)    # nervio impreso (eje Z, capa 0,1 mm, medido y lijado)
-ax = (0.010, 0.030)   # juego axial interno 688ZZ (C0) por rodamiento: uniforme [0,01;0,03]
-off = 0.010           # desalineación cara aro int./ext. (incluida en ax)
-j_nom = Lsi[0] - Lso[0] + 2*np.mean(ax)
-j_wc = (Lsi[0]-Lsi[1]-Lso[0]-Lso[1]+2*ax[0], Lsi[0]+Lsi[1]-Lso[0]+Lso[1]+2*ax[1])
-j_rss = np.sqrt(Lsi[1]**2 + Lso[1]**2 + 2*((ax[1]-ax[0])/2)**2*3/3)
-j = mc_norm(*Lsi) - mc_norm(*Lso) + mc_unif(*ax) + mc_unif(*ax)
-report('A1 juego axial j', j_nom, *j_wc, j_rss, j, lim=0.0, sense='min')
+Lso = (3.00, 0.08)    # nervio impreso (eje Z, capa 0,12 mm, medido y lijado)
+ax = (0.010, 0.050)   # juego axial interno 688ZZ por rodamiento: uniforme (valor supuesto)
+a1 = mc_unif(*ax); a2 = mc_unif(*ax)
+report('A1 juego axial j', np.mean(ax), ax[0], ax[1], (ax[1]-ax[0])/2, a1, lim=0.0, sense='min')
+u_nom = Lsi[0] - Lso[0]
+u_t = Lsi[1] + Lso[1] + ax[1]
+u = (mc_norm(*Lsi) - mc_norm(*Lso) + rng.uniform(-1, 1, N)*a1/2 + rng.uniform(-1, 1, N)*a2/2)
+report('A1b luz nervio-aro libre', u_nom, u_nom-u_t, u_nom+u_t,
+       np.sqrt(Lsi[1]**2+Lso[1]**2), u, lim=0.0, sense='min')
 
-# Huelgo cubo-tapa con el cubo abajo (en reposo): g = Lc + B1 - ds - planitud
+# Huelgo cubo-tapa (cubo sobre el rodamiento fijo): g = Lc + B1 - ds - planitud -+ a1/2
 Lc = (1.00, 0.03)     # collar (arandela de Al rectificada)
 B1 = (4.94, 0.06)     # ancho 688: 0/-0,12 (ISO 492 normal) -> 4,94 +- 0,06
 dsd = (5.30, 0.08)    # profundidad del asiento inferior del cubo
 fl = (0.0, 0.10)      # planitud/inclinación de la cara superior de la tapa impresa
 g_nom = Lc[0]+B1[0]-dsd[0]-fl[0]
 tols = [Lc[1], B1[1], dsd[1], fl[1]]
-g_wc = (g_nom - sum(tols), g_nom + sum(tols))
-g = mc_norm(*Lc) + mc_norm(*B1) - mc_norm(*dsd) - mc_norm(*fl)
+g_wc = (g_nom - sum(tols) - ax[1]/2, g_nom + sum(tols) + ax[1]/2)
+g = (mc_norm(*Lc) + mc_norm(*B1) - mc_norm(*dsd) - mc_norm(*fl)
+     + rng.uniform(-1, 1, N)*a1/2)
 report('A2 huelgo cubo-tapa', g_nom, *g_wc, np.sqrt(sum(t*t for t in tols)), g, lim=0.15)
 # entrehierro imán-hall: huelgo + rebaje del imán (0,3+-0,1) + tapa sobre el sensor (0,6+-0,1)
-h = g + mc_norm(0.30, 0.10) + mc_norm(0.60, 0.10) + np.clip(j, 0, None)
-h_nom = g_nom + 0.9 + j_nom
+h = g + mc_norm(0.30, 0.10) + mc_norm(0.60, 0.10)
+h_nom = g_nom + 0.9
 tols_h = tols + [0.1, 0.1]
-report('A3 entrehierro hall', h_nom, h_nom-sum(tols_h)-j_wc[1], h_nom+sum(tols_h)+j_wc[1],
-       np.sqrt(sum(t*t for t in tols_h)+j_rss**2), h, lim=3.0, sense='max')
+report('A3 entrehierro hall', h_nom, h_nom-sum(tols_h)-ax[1]/2, h_nom+sum(tols_h)+ax[1]/2,
+       np.sqrt(sum(t*t for t in tols_h)), h, lim=3.0, sense='max')
 
 # ---------------------------------------------------------------- B. envolvente
 def edge_and_gap(rmo, s, c, t, Rb):
@@ -140,11 +148,14 @@ np.savetxt(os.path.join(D, 'fabricacion_env_ts.dat'), np.array(rows), fmt='%.4f'
 # Posición radial del ojal: radio de la pala (cadena B, 0,19 RSS), plegado de la
 # pestaña (0,15), ojal respecto del pliegue (0,05, punzonado con plantilla),
 # radio del alambre en el anillo (0,10), excentricidad/juego del anillo en su asiento (0,15).
+# Corrección de la revisión: el peor caso usa la suma lineal de la cadena de posición
+# de la pala (bisagra 0,10 + pasador 0,05 + asiento 0,10 + ranura 0,10 = 0,35), no su RSS.
 cl_r = (1.70 - 1.00)/2
-tr = [0.19, 0.15, 0.05, 0.10, 0.15]
-xr = sum(mc_norm(0, t) for t in tr)
-report('C1 radial (desvío)', 0.0, -sum(tr), sum(tr), np.sqrt(sum(t*t for t in tr)), np.abs(xr),
-       lim=cl_r, sense='max')
+tr = [0.10, 0.10, 0.10, 0.15, 0.05, 0.10, 0.15]   # normales (3 sigma)
+xr = sum(mc_norm(0, t) for t in tr) + mc_unif(-0.05, 0.05)   # + juego del pasador
+wc_r = sum(tr) + 0.05
+report('C1 radial (desvío)', 0.0, -wc_r, wc_r, np.sqrt(sum(t*t for t in tr) + 0.05**2),
+       np.abs(xr), lim=cl_r, sense='max')
 # Axial: ojal colisado 2,6 con alambre Ø1,0 -> 0,80 por lado.
 # Largo de pala 156 (0,20), pegado de la pestaña con plantilla referida al pasador (0,15),
 # posición axial de la bisagra en el cubo (0,10), del anillo en el cuerpo (0,15),
