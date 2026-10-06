@@ -31,15 +31,15 @@
   \node[font=\scriptsize, cgris] at (0,-1.0) {\rotatebox{90}{CanSat Ø\,95}};
   % flecha de giro
   \draw[crot, -{Latex}, line width=0.8pt] (3.6,3.6) arc (60:120:3.2 and 0.9);
-  \node[crot, font=\small] at (4.7,3.4) {$\approx$\,1150 rpm};
-  \draw[flecha, cgris] (4.2,-1.5) -- (4.2,-3.5) node[midway, right, font=\small] {$\approx$\,6,4 m/s};
+  \node[crot, font=\small] at (4.7,3.4) {$\approx$\,1500 rpm};
+  \draw[flecha, cgris] (4.2,-1.5) -- (4.2,-3.5) node[midway, right, font=\small] {$\approx$\,6,9 m/s};
 \end{tikzpicture}
 
 \vfill
 \begin{tabular}{rl}
   \textbf{Rotor:} & 4 palas libres, $R=\SI{0.20}{m}$, placa curvada al 7\,\%, cuerda \SI{45}{mm}\\
   \textbf{Drogue:} & Ø\,\SI{25}{cm}, atado al CanSat por el eje hueco del rotor\\
-  \textbf{Velocidades:} & etapa 1 $\approx\SI{13.4}{m/s}$ · etapa 2 $\approx\SI{6.4}{m/s}$\\
+  \textbf{Velocidades:} & etapa 1 $\approx\SI{13.4}{m/s}$ · etapa 2 $\approx\SI{6.9}{m/s}$ (BEMT)\\
   \textbf{Masa:} & \SI{500 \pm 10}{g} · Ø\,\SI{95}{mm} · largo \SI{250}{mm}\\
 \end{tabular}
 \vspace{1cm}
@@ -62,10 +62,13 @@ al CanSat durante todo el vuelo.
 bisagra de batimiento y sin freno, combinado con un drogue de Ø\,\SI{25}{cm}, da:
 \begin{itemize}
   \item etapa 1 (drogue): $\Vd\approx\SI{13.4}{m/s}$, dentro de $15\pm3$ (\Req{C3});
-  \item etapa 2 (rotor + drogue): $\Vr\approx\SI{6.4}{m/s}$, dentro de $5\pm3$ (\Req{C4});
+  \item etapa 2 (rotor + drogue): $\Vr\approx\SI{6.4}{m/s}$ con la estimación base y
+        $\approx\SI{6.9}{m/s}$ con el modelo de elemento de pala (BEMT, cap.~\ref{cap:bemt}),
+        dentro de $5\pm3$ (\Req{C4});
         peor caso analizado, \SI{7.8}{m/s};
-  \item velocidad de giro $\approx\SI{1150}{rpm}$ (contra $\approx\SI{2250}{rpm}$ de una
-        placa plana), conicidad de equilibrio $\approx\ang{4.4}$, número de Lock $\approx 8$.
+  \item velocidad de giro $\approx\SI{1500}{rpm}$ según la BEMT (la estimación base daba
+        $\approx\SI{1150}{rpm}$), conicidad de equilibrio $\approx\ang{6.1}$ y número de Lock
+        $\approx11{,}5$ con la distribución de masa real (cap.~\ref{cap:estructura}).
 \end{itemize}
 
 \paragraph{Arquitectura.} Eje central hueco y fijo; la cuerda del drogue baja por su
