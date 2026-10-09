@@ -1,0 +1,1639 @@
+% =====================================================================
+%  Respuesta en frecuencia y compensación en frecuencia
+%  Apunte de estudio — Sistemas de Control
+%  Compilar con:  pdflatex apunte.tex  (dos pasadas)  o  latexmk -pdf apunte.tex
+%  Las figuras leen los datos de la carpeta datos/ (generar_datos.py)
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{icomma}
+\usepackage[a4paper,left=2.2cm,right=2.2cm,top=2.3cm,bottom=2.3cm,headheight=14pt]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs,array,tabularx}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.markings}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
+
+% ---------------------------------------------------------------- colores
+\definecolor{azul}{RGB}{31,78,121}
+\definecolor{verde}{RGB}{0,115,70}
+\definecolor{rojo}{RGB}{185,30,40}
+\definecolor{naranja}{RGB}{215,110,0}
+\definecolor{violeta}{RGB}{110,50,150}
+\definecolor{gris}{RGB}{95,95,95}
+
+% ---------------------------------------------------------------- títulos
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{azul}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt plus 3pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 2pt}{3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt}
+\setlist{itemsep=1pt,topsep=2pt,parsep=1pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{gris}Sistemas de Control}
+\rhead{\small\color{gris}Respuesta en frecuencia y compensación}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------- cajas
+\tcbset{base/.style={enhanced,breakable,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,
+  fonttitle=\bfseries\small,before skip=6pt,after skip=6pt}}
+\newtcolorbox{idea}[1][Idea clave]{base,colback=azul!5,colframe=azul,title={#1}}
+\newtcolorbox{receta}[1][Procedimiento]{base,colback=verde!5,colframe=verde,title={#1}}
+\newtcolorbox{cuidado}[1][Ojo]{base,colback=rojo!4,colframe=rojo,title={#1}}
+\newtcolorbox{formula}{base,colback=azul!4,colframe=azul!60,boxrule=0.5pt}
+\newcounter{ejemplo}
+\newtcolorbox{ejemplobox}[1]{base,colback=gris!4,colframe=gris,title={Ejemplo \theejemplo\ --- #1}}
+\newenvironment{ejemplo}[1]{\refstepcounter{ejemplo}\begin{ejemplobox}{#1}}{\end{ejemplobox}}
+\setcounter{tocdepth}{1}
+\setcounter{secnumdepth}{2}
+
+% ejercicios y soluciones
+\newcounter{ejer}
+\newcommand{\ejercicio}[1]{\par\medskip\needspace{5\baselineskip}\refstepcounter{ejer}\noindent{\color{azul}\bfseries Ejercicio \theejer\ \ }{\bfseries #1}\par\nopagebreak\smallskip}
+\newcommand{\solucion}[2]{\par\medskip\needspace{5\baselineskip}\noindent{\color{verde}\bfseries Solución \ref{#1}\ \ }{\bfseries #2}\par\nopagebreak\smallskip}
+\newcommand{\rta}[1]{\fbox{$\displaystyle #1$}}
+
+% partes
+\newcommand{\parte}[2]{\clearpage
+  \begin{tcolorbox}[enhanced,colback=azul,colframe=azul,arc=3pt,left=10pt,top=8pt,bottom=8pt]
+  \color{white}\Large\bfseries Parte #1\hfill\normalsize #2\end{tcolorbox}\vspace{2pt}}
+
+% ---------------------------------------------------------------- macros
+\newcommand{\pct}{\ensuremath{\,\mathchar"7025}}
+\newcommand{\dB}{\,\mathrm{dB}}
+\newcommand{\dBdec}{\,\mathrm{dB/dec}}
+\newcommand{\rads}{\,\mathrm{rad/s}}
+\newcommand{\jw}{j\omega}
+\newcommand{\MF}{\mathrm{MF}}
+\newcommand{\MG}{\mathrm{MG}}
+\newcommand{\wc}{\omega_c}
+\newcommand{\wf}{\omega_{-180}}
+
+% ---------------------------------------------------------------- pgfplots
+\pgfplotsset{
+  every axis/.append style={
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    legend style={font=\scriptsize,fill=white,fill opacity=0.9,text opacity=1,draw=gray!50},
+    grid=both, major grid style={gray!28}, minor grid style={gray!10}},
+  bode/.style={xmode=log, log basis x=10, minor x tick num=8},
+  exacta/.style={azul, thick},
+  asint/.style={rojo, thick, dashed},
+  antes/.style={gris, thick, dashed},
+  despues/.style={azul, thick},
+  comp/.style={naranja, thick, dash dot},
+}
+
+\pgfkeys{/pgf/number format/.cd,use comma,1000 sep={}}
+
+\begin{document}
+
+% =====================================================================
+%  PORTADA
+% =====================================================================
+\begin{center}
+{\color{azul}\Huge\bfseries Respuesta en frecuencia\\[2pt] y compensación en frecuencia}\\[8pt]
+{\large Apunte de estudio con ejemplos resueltos y ejercicios}\\[4pt]
+{\normalsize Sistemas de Control}
+\end{center}
+\vspace{2pt}
+
+\begin{idea}[Cómo usar este apunte]
+La \textbf{Parte I} desarrolla las curvas de respuesta en frecuencia: Bode, diagrama polar, Nyquist,
+Nichols, márgenes de estabilidad y la correlación con la respuesta temporal. La \textbf{Parte II} usa esas
+herramientas para diseñar compensadores de \textbf{adelanto}, \textbf{atraso} y \textbf{atraso-adelanto}.
+Cada tema tiene un ejemplo resuelto con números verificados por simulación.
+Los ejercicios están al final de cada parte y las \textbf{soluciones completas} en la sección~\ref{sec:soluciones}.
+Conviene intentarlos antes de mirar la solución. El formulario del Apéndice~\ref{ap:formulario} resume todo en una página
+y el Apéndice~\ref{ap:matlab} muestra cómo verificar cada resultado en MATLAB.
+\end{idea}
+
+{\small\tableofcontents}
+
+% =====================================================================
+\parte{I}{Curvas de respuesta en frecuencia}
+% =====================================================================
+
+\section{Qué es la respuesta en frecuencia}
+
+\subsection{Régimen senoidal permanente}
+Sea un sistema lineal, invariante y \textbf{estable} con transferencia $G(s)$. Si la entrada es
+$u(t)=A\sin(\omega t)$, una vez extinguido el transitorio la salida es otra senoide de la
+\emph{misma frecuencia}:
+\begin{formula}
+\[
+u(t)=A\sin(\omega t)\quad\Longrightarrow\quad y_{ss}(t)=A\,|G(\jw)|\,\sin\!\big(\omega t+\angle G(\jw)\big).
+\]
+\end{formula}
+La justificación es corta. $U(s)=A\omega/(s^2+\omega^2)$, y al expandir $Y(s)=G(s)U(s)$ en fracciones simples
+los términos de los polos de $G$ decaen (porque $G$ es estable). Solo sobreviven los términos de los polos $\pm\jw$
+de la entrada, cuyos residuos dependen de $G(\pm\jw)$. Al sumarlos queda la expresión de arriba.
+
+El número complejo $G(\jw)$ se llama \textbf{respuesta en frecuencia}. Para cada $\omega$, el módulo $|G(\jw)|$
+es la \textbf{ganancia} (cuánto se amplifica la senoide) y el argumento $\angle G(\jw)$ es el
+\textbf{desfasaje} (cuánto se adelanta o atrasa). Para obtenerla alcanza con reemplazar $s\to\jw$.
+
+\subsection{Por qué conviene trabajar en frecuencia}
+\begin{itemize}
+\item \textbf{Se puede medir.} Con un generador de senoides y un osciloscopio se obtiene $G(\jw)$
+      aunque no se conozca el modelo. Es la base de la identificación experimental.
+\item \textbf{Se diseña sin calcular raíces.} La estabilidad y el amortiguamiento del lazo cerrado se leen
+      sobre la respuesta del \emph{lazo abierto} $L(\jw)=G_c(\jw)G(\jw)H(\jw)$.
+\item \textbf{Los productos se vuelven sumas.} En escala logarítmica, conectar bloques en serie es sumar
+      curvas. Por eso agregar un compensador se entiende y se diseña gráficamente.
+\item \textbf{Retardos, ruido y robustez.} Un retardo puro $e^{-Ts}$ no es racional y complica el lugar de raíces,
+      pero en frecuencia es solo un término de fase. El ruido de medición y la dinámica no modelada viven en alta
+      frecuencia, y ahí se los ve directamente.
+\end{itemize}
+
+\subsection{Tres maneras de dibujar $G(\jw)$}
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Gráfico & Ejes & Uso principal\\
+\midrule
+Bode (logarítmico) & $20\log|G|$ y $\angle G$ vs.\ $\log\omega$ (dos curvas) & Trazado a mano, diseño de compensadores\\
+Polar / Nyquist & $\mathrm{Re}\,G$ vs.\ $\mathrm{Im}\,G$, con $\omega$ como parámetro & Criterio de estabilidad de Nyquist\\
+Nichols (mag.--fase) & $20\log|G|$ vs.\ $\angle G$ & Leer el lazo cerrado sobre el lazo abierto\\
+\bottomrule
+\end{tabular}
+\end{center}
+Las tres muestran la misma información. Cambia qué propiedad se lee más fácil en cada una.
+
+% ---------------------------------------------------------------------
+\section{Diagrama de Bode}
+
+\subsection{Decibeles, décadas y octavas}
+La magnitud se expresa en decibeles: $|G|_{\mathrm{dB}}=20\log_{10}|G|$. La frecuencia va en escala logarítmica.
+Una \textbf{década} es un factor 10 en $\omega$ y una \textbf{octava} es un factor 2.
+\begin{center}
+\small
+\begin{tabular}{@{}l*{9}{c}@{}}
+\toprule
+$|G|$ & 0,01 & 0,1 & 0,5 & $1/\sqrt2$ & 1 & $\sqrt2$ & 2 & 10 & 100\\
+dB & $-40$ & $-20$ & $-6{,}02$ & $-3{,}01$ & 0 & $+3{,}01$ & $+6{,}02$ & $+20$ & $+40$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Una pendiente de $-20\dBdec$ equivale a $-6\,\mathrm{dB/octava}$. Las magnitudes se multiplican, así que
+sus dB \textbf{se suman}. Las fases también se suman.
+
+\subsection{Forma de Bode (de constantes de tiempo)}
+Antes de graficar, se reescribe la transferencia de modo que cada factor valga 1 en baja frecuencia:
+\begin{formula}
+\[
+G(s)=\frac{K_B\displaystyle\prod_i\Big(1+\frac{s}{z_i}\Big)\prod_l\Big(\frac{s^2}{\omega_{nl}'^2}+\frac{2\zeta_l'}{\omega_{nl}'}s+1\Big)}
+{s^N\displaystyle\prod_k\Big(1+\frac{s}{p_k}\Big)\prod_m\Big(\frac{s^2}{\omega_{nm}^2}+\frac{2\zeta_m}{\omega_{nm}}s+1\Big)}
+\qquad\text{con}\quad K_B=\lim_{s\to0}s^N G(s).
+\]
+\end{formula}
+$N$ es el número de integradores (\textbf{tipo} del sistema) y $K_B$ es la \textbf{ganancia de Bode}.
+Para pasar de la forma polo-cero a esta forma se saca factor común el término independiente de cada factor.
+Por ejemplo, $\frac{10(s+2)}{s(s+5)}=\frac{10\cdot2}{5}\,\frac{(1+s/2)}{s(1+s/5)}$, de modo que $K_B=4$.
+
+\subsection{Factores elementales}
+
+\subsubsection{a) Ganancia constante $K_B$}
+Magnitud plana en $20\log|K_B|$. La fase es $0^\circ$ si $K_B>0$ y $-180^\circ$ si $K_B<0$.
+
+\subsubsection{b) Polos y ceros en el origen: $(\jw)^{\mp N}$}
+La magnitud es $\mp 20N\log\omega$, una recta de pendiente $\mp20N\dBdec$ que pasa por $0\dB$ en $\omega=1$.
+La fase es constante, $\mp90^\circ N$.
+
+\subsubsection{c) Factor de primer orden: $(1+\jw/\omega_b)^{\mp1}$}
+Para el polo $1/(1+\jw/\omega_b)$:
+\[
+|G|_{\mathrm{dB}}=-10\log\!\big(1+(\omega/\omega_b)^2\big),\qquad \angle G=-\arctan(\omega/\omega_b).
+\]
+\begin{itemize}
+\item \textbf{Asíntotas.} Para $\omega\ll\omega_b$ la magnitud es $0\dB$; para $\omega\gg\omega_b$ es una recta de
+      $-20\dBdec$. Se cortan en la \textbf{frecuencia de quiebre} $\omega_b$.
+\item \textbf{Error.} El error de la asíntota es máximo en el quiebre ($-3\dB$) y vale $-1\dB$ una octava antes o después.
+\item \textbf{Fase.} Vale $-45^\circ$ en $\omega_b$. Se aproxima por una recta que va de $0^\circ$ en
+      $\omega_b/10$ a $-90^\circ$ en $10\,\omega_b$, con error máximo de $5{,}7^\circ$.
+\item \textbf{Cero.} El cero $(1+\jw/\omega_b)$ es la imagen especular: $+20\dBdec$ y fase de $0^\circ$ a $+90^\circ$.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},
+  bode,width=0.48\linewidth,height=4.6cm,xmin=0.01,xmax=100,xlabel={$\omega/\omega_b$}]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-42,ymax=5,ytick={-40,-30,-20,-10,-3,0},
+  legend pos=south west]
+\addplot[exacta] table[x=u,y=mag]{datos/primer_orden.dat};
+\addplot[asint] table[x=u,y=asin]{datos/primer_orden.dat};
+\legend{Exacta,Asintótica}
+\node[font=\scriptsize,anchor=south west] at (axis cs:1.1,-3) {$-3\dB$};
+\node[font=\scriptsize,rotate=-27] at (axis cs:4,-24) {$-20\dBdec$};
+\nextgroupplot[ylabel={Fase [$^\circ$]},ymin=-95,ymax=5,ytick={-90,-45,0}]
+\addplot[exacta] table[x=u,y=fase]{datos/primer_orden.dat};
+\addplot[asint] table[x=u,y=fasin]{datos/primer_orden.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Polo de primer orden $1/(1+\jw/\omega_b)$: curva exacta y aproximación por rectas.}
+\label{fig:primer}
+\end{figure}
+
+\subsubsection{d) Factor de segundo orden: $\big[1-(\omega/\omega_n)^2+j2\zeta\,\omega/\omega_n\big]^{-1}$}
+Las asíntotas son $0\dB$ hasta $\omega_n$ y $-40\dBdec$ después. La curva real depende mucho de $\zeta$:
+\[
+|G(j\omega_n)|=\frac{1}{2\zeta}\ \Rightarrow\ \text{error en el quiebre}=-20\log(2\zeta),\qquad \angle G(j\omega_n)=-90^\circ.
+\]
+Si $\zeta<1/\sqrt2\approx0{,}707$ aparece un pico de \textbf{resonancia}:
+\begin{formula}
+\[
+M_r=\frac{1}{2\zeta\sqrt{1-\zeta^2}},\qquad \omega_r=\omega_n\sqrt{1-2\zeta^2}.
+\]
+\end{formula}
+La fase va de $0^\circ$ a $-180^\circ$, y la transición es más abrupta cuanto menor es $\zeta$ (figura~\ref{fig:segundo}).
+La aproximación asintótica es razonable para $0{,}4\lesssim\zeta\le1$. Fuera de ese rango hay que corregir
+el pico a mano con $-20\log(2\zeta)$.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},
+  bode,width=0.48\linewidth,height=5cm,xmin=0.1,xmax=10,xlabel={$\omega/\omega_n$}]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-40,ymax=22,legend pos=south west,legend columns=2]
+\addplot[violeta,thick] table[x=u,y=m005]{datos/segundo_orden.dat};
+\addplot[rojo,thick] table[x=u,y=m01]{datos/segundo_orden.dat};
+\addplot[naranja,thick] table[x=u,y=m02]{datos/segundo_orden.dat};
+\addplot[verde,thick] table[x=u,y=m03]{datos/segundo_orden.dat};
+\addplot[azul,thick] table[x=u,y=m05]{datos/segundo_orden.dat};
+\addplot[cyan!70!black,thick] table[x=u,y=m0707]{datos/segundo_orden.dat};
+\addplot[black,thick] table[x=u,y=m1]{datos/segundo_orden.dat};
+\addplot[black,dashed] table[x=u,y=asin]{datos/segundo_orden.dat};
+\legend{$\zeta{=}0{,}05$,$0{,}1$,$0{,}2$,$0{,}3$,$0{,}5$,$0{,}707$,$1$}
+\nextgroupplot[ylabel={Fase [$^\circ$]},ymin=-185,ymax=5,ytick={-180,-135,-90,-45,0}]
+\addplot[violeta,thick] table[x=u,y=f005]{datos/segundo_orden.dat};
+\addplot[rojo,thick] table[x=u,y=f01]{datos/segundo_orden.dat};
+\addplot[naranja,thick] table[x=u,y=f02]{datos/segundo_orden.dat};
+\addplot[verde,thick] table[x=u,y=f03]{datos/segundo_orden.dat};
+\addplot[azul,thick] table[x=u,y=f05]{datos/segundo_orden.dat};
+\addplot[cyan!70!black,thick] table[x=u,y=f0707]{datos/segundo_orden.dat};
+\addplot[black,thick] table[x=u,y=f1]{datos/segundo_orden.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Factor de segundo orden para distintos $\zeta$. La línea negra discontinua es la asíntota.}
+\label{fig:segundo}
+\end{figure}
+
+\subsubsection{e) Retardo puro: $e^{-\jw T}$}
+$|e^{-\jw T}|=1$, es decir $0\dB$: \textbf{no modifica la magnitud}. Su fase es $-\omega T$ (en radianes), o sea
+$-57{,}3\,\omega T$ grados. Crece linealmente con $\omega$, y en el eje logarítmico se ve como una caída cada
+vez más pronunciada. Es el peor enemigo de la estabilidad: resta fase sin dar ninguna señal en la magnitud.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Factor & Quiebre & Cambio de pendiente & Fase aportada (total)\\
+\midrule
+$K_B$ & --- & --- & $0^\circ$ ($-180^\circ$ si $K_B<0$)\\
+$1/s^N$ & --- & $-20N\dBdec$ en todo $\omega$ & $-90^\circ N$\\
+Polo real $1/(1+s/p)$ & $p$ & $-20\dBdec$ & $0\to-90^\circ$\\
+Cero real $(1+s/z)$ & $z$ & $+20\dBdec$ & $0\to+90^\circ$\\
+Par de polos complejos & $\omega_n$ & $-40\dBdec$ & $0\to-180^\circ$\\
+Cero de fase no mínima $(1-s/z)$ & $z$ & $+20\dBdec$ & $0\to-90^\circ$\\
+Retardo $e^{-Ts}$ & --- & ninguno & $-\omega T$ (sin límite)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Receta para trazar el Bode asintótico}
+\begin{receta}[Trazado a mano en 6 pasos]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Escribir $G$ en forma de Bode y anotar $K_B$, $N$ y las frecuencias de quiebre ordenadas de menor a mayor.
+\item \textbf{Tramo inicial.} La recta $20\log K_B-20N\log\omega$, que vale $20\log K_B$ en $\omega=1$
+      y tiene pendiente $-20N\dBdec$.
+\item Recorrer los quiebres de izquierda a derecha. En cada uno la pendiente cambia: $\pm20\dBdec$ en cada cero o polo
+      real y $\pm40\dBdec$ en cada par complejo. Un quiebre doble cuenta dos veces.
+\item Verificar: la pendiente final es $-20(n-m)\dBdec$ y la fase final es $-90^\circ(n-m)$, si el sistema es de fase mínima.
+\item Corregir la curva: $\pm3\dB$ en los quiebres simples y $-20\log(2\zeta)$ en los pares complejos.
+\item \textbf{Fase.} Sumar las contribuciones de cada factor en algunos puntos clave (los quiebres, $\wc$)
+      con $\arctan$, o con las aproximaciones por rectas.
+\end{enumerate}
+\end{receta}
+
+\begin{ejemplo}{Trazado completo}
+\label{ej:bode}
+Trazar el Bode de $\displaystyle G(s)=\frac{16000\,(s+1)}{s\,(s+5)\,(s^2+16s+1600)}$.
+
+\textbf{Forma de Bode.} $s^2+16s+1600=1600\big[(s/40)^2+0{,}01s+1\big]$, de modo que $\omega_n=40$ y
+$2\zeta/\omega_n=0{,}01$, con lo cual $\zeta=0{,}2$. Sacando factor común:
+\[
+G(s)=\frac{16000\cdot1}{5\cdot1600}\cdot\frac{(1+s)}{s\,(1+s/5)\big[(s/40)^2+0{,}4\,(s/40)+1\big]}
+=\frac{2\,(1+s)}{s\,(1+s/5)\big[(s/40)^2+0{,}4\,(s/40)+1\big]}.
+\]
+$K_B=2$, $N=1$. Quiebres: cero en 1, polo en 5 y par complejo en 40 con $\zeta=0{,}2$.
+
+\textbf{Asíntotas.}
+\begin{itemize}
+\item $\omega<1$: recta $20\log(2/\omega)$, de $-20\dBdec$. En $\omega=1$ vale $6{,}02\dB$.
+\item $1<\omega<5$: el cero lleva la pendiente a $0\dBdec$ y la curva queda plana en $6{,}02\dB$.
+\item $5<\omega<40$: el polo la lleva a $-20\dBdec$. En $\omega=40$ vale $6{,}02-20\log 8=-12{,}0\dB$.
+      Cruza $0\dB$ en $6{,}02-20\log(\omega/5)=0$, es decir en $\omega=10\rads$.
+\item $\omega>40$: el par complejo agrega $-40$ y la pendiente final es $-60\dBdec$. Verificación: $n-m=4-1=3$.
+\end{itemize}
+\textbf{Correcciones.} $+3\dB$ en $\omega=1$, $-3\dB$ en $\omega=5$ y $-20\log(0{,}4)=+8\dB$ en $\omega=40$. El pico real
+queda cerca de $-4\dB$. La simulación da $-3{,}4\dB$ en $\omega=36{,}3\rads$, desplazado por la caída de $-20\dBdec$ que lo precede.
+
+\textbf{Fase.} Arranca en $-90^\circ$ (integrador), sube por el cero, baja por el polo, cae bruscamente cerca de 40
+y termina en $-90^\circ\cdot3=-270^\circ$. En $\omega=10$:
+$-90+\arctan10-\arctan2-\arctan\frac{0{,}4\cdot0{,}25}{1-0{,}25^2}=-90+84{,}3-63{,}4-6{,}1=-75{,}2^\circ$.
+
+\textbf{Dato curioso.} El cruce exacto es $\wc=9{,}33\rads$ con fase $\approx-73{,}6^\circ$, así que el margen de fase es enorme ($106^\circ$).
+Sin embargo, el pico resonante queda a solo $4{,}5\dB$ de $0\dB$ justo donde la fase pasa por $-180^\circ$
+($\omega=40{,}8\rads$). El margen de ganancia es apenas $4{,}5\dB$: \emph{un margen bueno no garantiza el otro}.
+\end{ejemplo}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.35cm,xticklabels at=edge bottom},
+  bode,width=0.92\linewidth,height=4.6cm,xmin=0.01,xmax=1000]
+\nextgroupplot[ylabel={$|G|$ [dB]},ymin=-110,ymax=50,ytick={-100,-80,-60,-40,-20,0,20,40},legend pos=south west]
+\addplot[exacta] table[x=w,y=mag]{datos/bode_ejemplo.dat};
+\addplot[asint] table[x=w,y=asin]{datos/bode_ejemplo.dat};
+\legend{Exacta,Asintótica}
+\draw[gris,densely dotted] (axis cs:1,-110)--(axis cs:1,50) (axis cs:5,-110)--(axis cs:5,50) (axis cs:40,-110)--(axis cs:40,50);
+\node[font=\scriptsize,rojo] at (axis cs:0.06,36) {$-20$};
+\node[font=\scriptsize,rojo] at (axis cs:2.2,14) {$0$};
+\node[font=\scriptsize,rojo] at (axis cs:12,4) {$-20$};
+\node[font=\scriptsize,rojo] at (axis cs:250,-50) {$-60\dBdec$};
+\nextgroupplot[ylabel={$\angle G$ [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-280,ymax=0,ytick={-270,-180,-90,0}]
+\addplot[exacta] table[x=w,y=fase]{datos/bode_ejemplo.dat};
+\draw[gris,densely dotted] (axis cs:1,-280)--(axis cs:1,0) (axis cs:5,-280)--(axis cs:5,0) (axis cs:40,-280)--(axis cs:40,0);
+\draw[black,dashed] (axis cs:0.01,-180)--(axis cs:1000,-180);
+\end{groupplot}
+\end{tikzpicture}
+\caption{Bode del ejemplo~\ref{ej:bode}. Las líneas punteadas marcan los quiebres (1, 5 y 40~rad/s).}
+\label{fig:bodeej}
+\end{figure}
+
+\subsection{Tipo del sistema y constantes de error leídas del Bode}
+El tramo de baja frecuencia del Bode de lazo abierto dice cuánto error tendrá el lazo cerrado en régimen permanente:
+\begin{center}
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Tipo & Pendiente & Constante & Cómo leerla en el Bode & Error (realim.\ unitaria)\\
+\midrule
+0 & $0\dBdec$ & $K_p=\lim_{s\to0}L(s)$ & altura del tramo plano: $20\log K_p$ & escalón: $1/(1+K_p)$\\
+1 & $-20\dBdec$ & $K_v=\lim_{s\to0}sL(s)$ & asíntota inicial en $0\dB$: $\omega=K_v$ & rampa: $1/K_v$\\
+2 & $-40\dBdec$ & $K_a=\lim_{s\to0}s^2L(s)$ & asíntota inicial en $0\dB$: $\omega=\sqrt{K_a}$ & parábola: $1/K_a$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{cuidado}
+La constante se lee sobre la \textbf{prolongación de la asíntota inicial}, no sobre la curva real. Si hay un
+cero o un polo antes de $\omega=K_v$, la curva real ya se separó de la asíntota.
+En el ejemplo~\ref{ej:bode}, $K_v=K_B=2$: la asíntota $2/\omega$ corta $0\dB$ en $\omega=2$, aunque la curva real cruce en 9,33.
+\end{cuidado}
+
+\subsection{Fase mínima, fase no mínima e identificación}
+Un sistema es de \textbf{fase mínima} si no tiene polos ni ceros en el semiplano derecho y no tiene retardos.
+Para estos sistemas, Bode demostró que \emph{la magnitud determina la fase}. En un tramo de pendiente constante
+$-20k\dBdec$ que se extiende alrededor de una década, la fase se acerca a $-90^\circ k$.
+
+Un cero $(1-s/z)$ tiene \emph{la misma magnitud} que $(1+s/z)$ pero resta fase en lugar de sumarla.
+En el Bode, un sistema de fase no mínima se reconoce porque tiene más atraso de fase del que su pendiente justifica.
+Estos sistemas son más difíciles de controlar: la respuesta al escalón arranca para el lado contrario (subestimación)
+y el cruce no puede llevarse muy alto.
+
+\begin{receta}[Identificar $G(s)$ a partir de un Bode medido]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Trazar rectas de pendientes múltiplos de $\pm20\dBdec$ que se ajusten a la curva medida.
+\item La pendiente inicial da el tipo $N$. La altura del tramo inicial da $K_B$ (tabla anterior).
+\item Cada cambio de pendiente es un quiebre: $-20$ indica un polo, $+20$ un cero y $-40$ un par de polos
+      (o un polo doble).
+\item En un cambio de $-40$, la distancia de la curva real a la asíntota en el quiebre indica el tipo de par:
+      unos $-6\dB$ corresponden a un polo real doble ($\zeta=1$) y un pico corresponde a $\zeta=10^{-\Delta/20}/2$.
+\item Comparar la fase medida con la que predice el modelo. Si sobra atraso, hay un retardo o un cero de fase no mínima.
+\end{enumerate}
+\end{receta}
+
+% ---------------------------------------------------------------------
+\section{Diagrama polar y criterio de Nyquist}
+
+\subsection{Diagrama polar}
+Es la curva que recorre $G(\jw)$ en el plano complejo cuando $\omega$ va de $0$ a $\infty$. Su forma
+general se deduce del comportamiento en los dos extremos:
+\begin{itemize}
+\item $\omega\to0$: lo determina el tipo. Un sistema tipo 0 arranca en $K_p$ sobre el eje real positivo.
+      Uno tipo 1 arranca en el infinito en dirección $-90^\circ$, con una asíntota vertical en
+      $\mathrm{Re}=-K_v\sum T_i$ ($T_i$: constantes de tiempo de los polos menos las de los ceros).
+      Uno tipo 2 arranca en el infinito en dirección $-180^\circ$.
+\item $\omega\to\infty$: si $n>m$, llega al origen tangente a la dirección $-90^\circ(n-m)$.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1,horizontal sep=1.1cm},
+  width=0.36\linewidth,height=0.36\linewidth,axis equal image,grid=major,
+  xlabel={Re},ylabel={Im},title style={font=\footnotesize}]
+\nextgroupplot[title={Tipo 0: $\frac{1}{(s+1)(0{,}5s+1)(0{,}2s+1)}$},xmin=-0.6,xmax=1.2,ymin=-1,ymax=0.6]
+\addplot[exacta] table[x=re,y=im]{datos/polar_t0.dat};
+\addplot[only marks,mark=*,mark size=1.3pt] coordinates {(1,0)};
+\node[font=\scriptsize,anchor=south] at (axis cs:1,0.02) {$\omega{=}0$};
+\nextgroupplot[title={Tipo 1: $\frac{1}{s(s+1)(0{,}5s+1)}$},xmin=-2.4,xmax=0.6,ymin=-3,ymax=0.6]
+\addplot[exacta] table[x=re,y=im]{datos/polar_t1.dat};
+\draw[rojo,dashed] (axis cs:-1.5,-3)--(axis cs:-1.5,0.6);
+\node[font=\scriptsize,rojo,anchor=west] at (axis cs:-1.45,-2.6) {$-1{,}5$};
+\nextgroupplot[title={Tipo 2: $\frac{1}{s^2(s+1)}$},xmin=-3,xmax=0.5,ymin=-0.5,ymax=3]
+\addplot[exacta] table[x=re,y=im]{datos/polar_t2.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Formas típicas del diagrama polar ($\omega$ de 0 a $\infty$). Todas terminan en el origen con dirección $-270^\circ$ porque $n-m=3$.}
+\label{fig:polar}
+\end{figure}
+
+Los cruces con los ejes se calculan igualando a cero la parte real o la imaginaria.
+\textbf{El cruce con el eje real negativo es el dato más importante}, porque decide la estabilidad.
+
+\subsection{El criterio de Nyquist}
+En un lazo con realimentación negativa, los polos de lazo cerrado son las raíces de $1+L(s)=0$.
+El criterio cuenta cuántas de esas raíces están en el semiplano derecho (SPD) sin calcularlas.
+
+\textbf{Principio del argumento.} Si un contorno cerrado del plano $s$ encierra en sentido horario $Z$ ceros y $P$
+polos de una función $F(s)$, la imagen $F(s)$ rodea al origen $N=Z-P$ veces en sentido horario.
+
+\textbf{Aplicación.} Se toma $F=1+L$ y como contorno el \textbf{contorno de Nyquist}, que encierra todo el SPD:
+el eje imaginario completo más un semicírculo de radio infinito. Los polos de $1+L$ son los de $L$, y los ceros de $1+L$
+son los polos de lazo cerrado. Rodear el origen con $1+L$ equivale a rodear el punto $-1$ con $L$.
+
+\begin{formula}
+\[
+\boxed{Z=N+P}\qquad
+\begin{array}{l}
+Z:\ \text{polos de lazo cerrado en el SPD (se busca }Z=0)\\
+P:\ \text{polos de lazo abierto }L(s)\text{ en el SPD (dato)}\\
+N:\ \text{rodeos de }L(\jw)\text{ al punto }-1\text{ (horario }+,\ \text{antihorario }-)
+\end{array}
+\]
+\end{formula}
+
+\begin{receta}[Aplicar Nyquist]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Contar $P$, los polos de $L(s)$ con parte real positiva.
+\item Trazar $L(\jw)$ para $\omega:0\to\infty$ y su espejo respecto del eje real ($\omega<0$).
+\item Si $L$ tiene polos sobre el eje imaginario (integradores), el contorno los esquiva por la derecha con un semicírculo
+      de radio $\varepsilon\to0$. Cada integrador se transforma en una semicircunferencia de radio infinito
+      recorrida en \emph{sentido horario}: $q$ integradores dan $q\times180^\circ$.
+\item Contar $N$: trazar una semirrecta desde $-1$ hacia cualquier lado y sumar los cruces de la curva
+      ($+1$ horario, $-1$ antihorario).
+\item $Z=N+P$. El lazo cerrado es estable si y solo si $Z=0$.
+\end{enumerate}
+\end{receta}
+
+\begin{idea}[Caso más común: lazo abierto estable ($P=0$)]
+Si $L(s)$ no tiene polos en el SPD, el lazo cerrado es estable si y solo si \textbf{la curva de Nyquist no rodea al punto $-1$}.
+Para sistemas de fase mínima esto equivale a pedir que, en la frecuencia donde la fase vale $-180^\circ$, el módulo sea menor que 1.
+De ahí salen los márgenes de la sección~\ref{sec:margenes}.
+\end{idea}
+
+\begin{ejemplo}{Nyquist y ganancia crítica}
+\label{ej:nyq}
+Sea $L(s)=\dfrac{K}{s(s+1)(s+2)}$, con $K>0$ y $P=0$. ¿Para qué $K$ el lazo cerrado es estable?
+
+\textbf{Cruce con el eje real.} El denominador de $L(\jw)$ es $\jw(\jw+1)(\jw+2)=-3\omega^2+j\omega(2-\omega^2)$.
+Es real cuando $2-\omega^2=0$, en $\omega=\sqrt2\rads$. Allí $L=K/(-3\cdot2)=-K/6$.
+
+\textbf{Baja frecuencia.} $\mathrm{Re}\,L\to-K(1+0{,}5)/2=-0{,}75K$ y $\mathrm{Im}\,L\to-\infty$ (tipo 1). El integrador cierra
+la curva con un semicírculo infinito por la derecha.
+
+\textbf{Conclusión.} Si $K/6<1$, el punto $-1$ queda afuera: $N=0$, $Z=0$ y el lazo es \textbf{estable}.
+Si $K>6$, la curva rodea dos veces al $-1$ en sentido horario: $N=2$ y $Z=2$, \textbf{inestable}.
+La ganancia crítica es $K_c=6$. Routh da lo mismo: $s^3+3s^2+2s+K$ es estable si $3\cdot2>K$.
+\end{ejemplo}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.6\linewidth,axis equal image,xmin=-3,xmax=1,ymin=-2.2,ymax=2.2,
+  xlabel={Re $L(\jw)$},ylabel={Im $L(\jw)$},legend pos=outer north east]
+\addplot[azul,thick] table[x=re,y=im]{datos/nyquist_k2.dat};
+\addplot[rojo,thick] table[x=re,y=im]{datos/nyquist_k8.dat};
+\addplot[azul,thick,dashed,forget plot] table[x=re,y=imneg]{datos/nyquist_k2.dat};
+\addplot[rojo,thick,dashed,forget plot] table[x=re,y=imneg]{datos/nyquist_k8.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,black] coordinates{(-1,0)};
+\legend{$K=2$ (estable),$K=8$ (inestable),$-1$}
+\node[font=\scriptsize,azul,anchor=north] at (axis cs:-0.33,-0.05) {$-\tfrac13$};
+\node[font=\scriptsize,rojo,anchor=north] at (axis cs:-1.45,-0.05) {$-\tfrac43$};
+\end{axis}
+\end{tikzpicture}
+\caption{Nyquist del ejemplo~\ref{ej:nyq}. En línea llena $\omega>0$ y en línea discontinua $\omega<0$. Con $K=8$ el cruce cae a la izquierda de $-1$.}
+\label{fig:nyq}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\section{Estabilidad relativa: márgenes de ganancia y de fase}
+\label{sec:margenes}
+
+Saber que el sistema es estable no alcanza: interesa \emph{cuán lejos} está de volverse inestable. Esa distancia
+mide la robustez frente a errores de modelo y anticipa el amortiguamiento. Se definen dos frecuencias:
+\begin{itemize}
+\item $\wc$, \textbf{frecuencia de cruce de ganancia}: $|L(j\wc)|=1$ ($0\dB$).
+\item $\wf$, \textbf{frecuencia de cruce de fase}: $\angle L(j\wf)=-180^\circ$.
+\end{itemize}
+\begin{formula}
+\[
+\MF=180^\circ+\angle L(j\wc),\qquad\qquad \MG=\frac{1}{|L(j\wf)|}\quad\Longleftrightarrow\quad \MG_{\mathrm{dB}}=-20\log|L(j\wf)|.
+\]
+\end{formula}
+\begin{itemize}
+\item El \textbf{MF} es el atraso de fase adicional que el lazo tolera en $\wc$ antes de llegar a la inestabilidad.
+\item El \textbf{MG} es el factor por el que se puede multiplicar la ganancia antes de llegar a la inestabilidad.
+      De ahí sale la \textbf{ganancia crítica}: $K_c=K\cdot10^{\MG_{\mathrm{dB}}/20}$.
+\item En el diagrama polar, el MF es el ángulo entre el punto donde $L$ corta el círculo unitario y el semieje real negativo.
+      $1/\MG$ es la distancia del cruce con el eje real al origen (figura~\ref{fig:margenes}).
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  bode,width=0.56\linewidth,height=4.1cm,xmin=0.1,xmax=30]
+\nextgroupplot[ylabel={$|L|$ [dB]},ymin=-60,ymax=30,ytick={-60,-40,-20,0,20}]
+\addplot[exacta] table[x=w,y=mag]{datos/margenes.dat};
+\draw[black] (axis cs:0.1,0)--(axis cs:30,0);
+\draw[verde,dashed] (axis cs:0.749,-60)--(axis cs:0.749,30);
+\draw[rojo,dashed] (axis cs:1.414,-60)--(axis cs:1.414,30);
+\draw[rojo,thick,-{Stealth[length=4pt]}] (axis cs:1.414,0)--(axis cs:1.414,-9.54);
+\node[font=\scriptsize,rojo,anchor=west] at (axis cs:1.5,-6) {$\MG=9{,}54\dB$};
+\nextgroupplot[ylabel={$\angle L$ [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-270,ymax=-90,ytick={-270,-225,-180,-135,-90}]
+\addplot[exacta] table[x=w,y=fase]{datos/margenes.dat};
+\draw[black] (axis cs:0.1,-180)--(axis cs:30,-180);
+\draw[verde,dashed] (axis cs:0.749,-270)--(axis cs:0.749,-90);
+\draw[rojo,dashed] (axis cs:1.414,-270)--(axis cs:1.414,-90);
+\draw[verde,thick,{Stealth[length=4pt]}-] (axis cs:0.749,-147.4)--(axis cs:0.749,-180);
+\node[font=\scriptsize,verde,anchor=east] at (axis cs:0.72,-160) {$\MF=32{,}6^\circ$};
+\node[font=\scriptsize,verde,anchor=north east] at (axis cs:0.74,-232) {$\wc$};
+\node[font=\scriptsize,rojo,anchor=north west] at (axis cs:1.45,-232) {$\wf$};
+\end{groupplot}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.42\linewidth,height=0.42\linewidth,axis equal image,xmin=-1.6,xmax=0.6,ymin=-1.6,ymax=0.6,
+  xlabel={Re},ylabel={Im}]
+\addplot[gris,densely dotted] table[x=x,y=y]{datos/circulo.dat};
+\addplot[azul,thick] table[x=re,y=im]{datos/nyquist_k2.dat};
+\addplot[only marks,mark=x,mark size=3pt,very thick] coordinates{(-1,0)};
+\draw[verde,thick] (axis cs:0,0)--(axis cs:-0.843,-0.539);
+\draw[verde,thick,-{Stealth[length=4pt]}] (axis cs:-0.6,0) arc[start angle=180,end angle=212.6,radius=0.6];
+\node[font=\scriptsize,verde] at (axis cs:-0.45,-0.16) {MF};
+\draw[rojo,thick,{Stealth[length=4pt]}-{Stealth[length=4pt]}] (axis cs:-0.333,0.1)--(axis cs:0,0.1);
+\node[font=\scriptsize,rojo,anchor=south] at (axis cs:-0.17,0.1) {$1/\MG$};
+\end{axis}
+\end{tikzpicture}
+\caption{Márgenes de $L(s)=2/[s(s+1)(s+2)]$ sobre el Bode (izquierda) y sobre el diagrama polar, junto al círculo unitario (derecha).}
+\label{fig:margenes}
+\end{figure}
+
+\subsection{Valores de diseño y margen de retardo}
+Valores habituales de diseño: $\MF$ entre $30^\circ$ y $60^\circ$ (típicamente $45^\circ$--$50^\circ$) y $\MG\ge6\dB$ (típicamente $10$--$12\dB$).
+Con $\MF<30^\circ$ la respuesta es muy oscilatoria. Con $\MF>70^\circ$ suele ser lenta.
+
+Un retardo $\tau$ no cambia $|L|$ pero resta $\omega\tau$ radianes de fase. Si se le resta a $\wc$ todo el MF, el sistema
+queda al borde de la inestabilidad. Por eso el \textbf{margen de retardo} es
+\begin{formula}
+\[
+\tau_{\max}=\frac{\MF\ [\mathrm{rad}]}{\wc}=\frac{\MF[^\circ]}{57{,}3\,\wc}.
+\]
+\end{formula}
+Para la figura~\ref{fig:margenes}: $\tau_{\max}=(32{,}6/57{,}3)/0{,}749=0{,}76\,$s.
+
+\begin{cuidado}[Cuándo los márgenes engañan]
+\begin{itemize}
+\item \textbf{Varios cruces.} Si $|L|$ cruza $0\dB$ varias veces (por ejemplo, por una resonancia), hay varios MF y vale el menor.
+\item \textbf{Lazo abierto inestable ($P\ne0$).} El MG puede salir negativo en dB aunque el sistema sea estable. Hay que usar Nyquist completo.
+\item \textbf{Un margen solo no alcanza.} El ejemplo~\ref{ej:bode} tiene $\MF=106^\circ$ y $\MG=4{,}5\dB$. Una medida que resume ambos es la
+      distancia mínima de la curva al punto $-1$: $\min_\omega|1+L(\jw)|=1/M_s$, donde $M_s$ es el pico de la sensibilidad. Se busca $M_s\lesssim2$ ($6\dB$).
+\end{itemize}
+\end{cuidado}
+
+% ---------------------------------------------------------------------
+\section{Respuesta en frecuencia de lazo cerrado}
+
+\subsection{De $L$ a $T$}
+Con realimentación unitaria, $T(\jw)=\dfrac{L(\jw)}{1+L(\jw)}$. Hay dos regiones sencillas:
+\begin{itemize}
+\item Donde $|L|\gg1$ (baja frecuencia), $T\approx1$: la salida sigue a la referencia.
+\item Donde $|L|\ll1$ (alta frecuencia), $T\approx L$: el lazo cerrado filtra igual que el lazo abierto.
+\end{itemize}
+Entre ambas regiones, cerca de $\wc$, el comportamiento depende de la fase: si el MF es chico, $|1+L|$ es chico y $T$ presenta un pico.
+Para caracterizar $T$ se usan:
+\begin{itemize}
+\item \textbf{Pico de resonancia} $M_r=\max|T(\jw)|$ y su frecuencia $\omega_r$. Un $M_r$ grande indica poco amortiguamiento.
+      Valores buenos: $1{,}0<M_r<1{,}4$ ($0$--$3\dB$).
+\item \textbf{Ancho de banda} $\omega_{BW}$: frecuencia donde $|T|$ cae $3\dB$ por debajo de su valor en $\omega=0$. Mide la rapidez: $t_r\cdot\omega_{BW}\approx$ cte.
+      En la práctica, $\wc\lesssim\omega_{BW}\lesssim2\wc$.
+\end{itemize}
+
+\subsection{Carta de Nichols}
+En el plano magnitud [dB] vs.\ fase [$^\circ$] se dibujan los \textbf{contornos M}, que son las curvas de $|T|=$ cte.
+Al superponer $L(\jw)$, se lee $M_r$ como el contorno de mayor valor al que la curva queda tangente, y $\omega_{BW}$ donde la curva corta el contorno de $-3\dB$.
+El punto crítico $-1$ es $(-180^\circ,\ 0\dB)$. El MF es la distancia horizontal del cruce de $0\dB$ a $-180^\circ$, y el MG es la distancia vertical
+del cruce de $-180^\circ$ a $0\dB$. Su gran ventaja: \textbf{cambiar la ganancia desplaza la curva verticalmente sin deformarla}.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.78\linewidth,height=6.6cm,xmin=-265,xmax=-90,ymin=-28,ymax=22,
+  xtick={-270,-225,-180,-135,-90},xlabel={$\angle L$ [$^\circ$]},ylabel={$|L|$ [dB]},grid=major]
+\addplot[gris!70,thin] table[x=fase,y=mag,empty line=jump]{datos/nichols_M.dat};
+\addplot[only marks,mark=none,nodes near coords,point meta=explicit symbolic,
+  every node near coord/.style={font=\tiny,gris,anchor=south}] table[x=fase,y=mag,meta=lab]{datos/nichols_lab.dat};
+\addplot[azul,very thick] table[x=fase,y=mag]{datos/nichols_L.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,rojo] coordinates{(-180,0)};
+\node[font=\scriptsize,azul,anchor=west] at (axis cs:-118,15) {$L(\jw)$, $\omega\uparrow$};
+\end{axis}
+\end{tikzpicture}
+\caption{Carta de Nichols con $L=2/[s(s+1)(s+2)]$. Los contornos grises son $|T|$ constante en dB. La curva queda tangente a un contorno
+intermedio entre los de $3$ y $6\dB$: $M_r=5{,}3\dB$ en $\omega_r=0{,}82\rads$, coherente con su $\MF=32{,}6^\circ$.}
+\label{fig:nichols}
+\end{figure}
+
+\subsection{Correlación tiempo--frecuencia}
+Para el lazo de segundo orden estándar
+\[
+L(s)=\frac{\omega_n^2}{s(s+2\zeta\omega_n)}\qquad\Longrightarrow\qquad T(s)=\frac{\omega_n^2}{s^2+2\zeta\omega_n s+\omega_n^2}
+\]
+se obtienen relaciones exactas:
+\begin{formula}
+\[
+\MF=\arctan\frac{2\zeta}{\sqrt{\sqrt{1+4\zeta^4}-2\zeta^2}}\approx100\,\zeta\quad(\zeta<0{,}7),
+\]
+\[
+M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}},\qquad M_r=\frac{1}{2\zeta\sqrt{1-\zeta^2}},\qquad t_s(2\pct{})\approx\frac{4}{\zeta\omega_n},
+\]
+\[
+\wc=\omega_n\sqrt{\sqrt{1+4\zeta^4}-2\zeta^2},\qquad
+\omega_{BW}=\omega_n\sqrt{1-2\zeta^2+\sqrt{4\zeta^4-4\zeta^2+2}}.
+\]
+\end{formula}
+La regla práctica es \textbf{$\zeta\approx\MF/100$} (con el MF en grados). A partir de ella se estima el sobrepico.
+Si el sistema tiene polos dominantes, las relaciones valen aproximadamente para sistemas de orden mayor.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},width=0.48\linewidth,height=4.8cm,xmin=0,xmax=1,xlabel={$\zeta$}]
+\nextgroupplot[ylabel={MF [$^\circ$]},ymin=0,ymax=80,legend pos=south east]
+\addplot[azul,thick] table[x=z,y=mf]{datos/correlacion.dat};
+\addplot[rojo,dashed,thick] table[x=z,y=aprox]{datos/correlacion.dat};
+\legend{Exacta,$100\zeta$}
+\nextgroupplot[ylabel={$M_p$ [\%]},ymin=0,ymax=100]
+\addplot[azul,thick] table[x=z,y=mp]{datos/correlacion.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Margen de fase y sobrepico en función de $\zeta$ para el segundo orden estándar.}
+\label{fig:correl}
+\end{figure}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+$\zeta$ & 0,2 & 0,3 & 0,4 & 0,5 & 0,6 & 0,7\\
+\midrule
+MF & $22{,}6^\circ$ & $33{,}3^\circ$ & $43{,}1^\circ$ & $51{,}8^\circ$ & $59{,}2^\circ$ & $65{,}2^\circ$\\
+$M_p$ & 52,7\pct{} & 37,2\pct{} & 25,4\pct{} & 16,3\pct{} & 9,5\pct{} & 4,6\pct{}\\
+$M_r$ [dB] & 8,14 & 4,85 & 2,70 & 1,25 & 0,35 & 0,00\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ---------------------------------------------------------------------
+\section{Ejercicios de la Parte I}
+\label{sec:ejI}
+
+\ejercicio{Trazado asintótico}\label{e:bode}
+Sea $G(s)=\dfrac{500\,(s+2)}{s\,(s+10)\,(s+20)}$.
+(a)~Llevarla a forma de Bode y armar la tabla de quiebres.
+(b)~Trazar la magnitud asintótica y dar su valor en $\omega=1$, 2, 10 y 20~rad/s.
+(c)~Estimar $\wc$ con las asíntotas y comparar con el valor exacto, $16{,}6\rads$.
+(d)~Calcular la fase en $\omega=10\rads$.
+(e)~Dar $K_v$ y el error ante rampa unitaria.
+
+\ejercicio{Segundo orden}\label{e:2do}
+Para $G(s)=\dfrac{100}{s^2+4s+100}$, calcular $\zeta$, $\omega_n$, $M_r$ (en dB), $\omega_r$, el error de la asíntota en
+$\omega_n$, la fase en $\omega_n$ y el ancho de banda.
+
+\ejercicio{Identificación}\label{e:ident}
+Un Bode medido de un sistema de fase mínima tiene asíntotas de $-20\dBdec$ hasta $\omega=2$, de $0\dBdec$ entre 2 y
+20, y de $-40\dBdec$ de ahí en adelante. La prolongación del tramo inicial corta $0\dB$ en $\omega=10\rads$. En
+$\omega=20$, la curva real está $6\dB$ \emph{por debajo} de la asíntota. Encontrar $G(s)$.
+¿Cómo cambiaría la respuesta si la curva real estuviera $8\dB$ \emph{por encima}?
+
+\ejercicio{Fase no mínima y retardo}\label{e:fnm}
+Comparar $G_1(s)=\dfrac{s+1}{s+5}$, $G_2(s)=\dfrac{1-s}{s+5}$ y $G_3(s)=\dfrac{e^{-0{,}2s}}{s+5}$.
+(a)~¿Qué tienen en común sus magnitudes?
+(b)~Calcular la fase de $G_1$ y de $G_2$ en $\omega=1$, en $\omega=5$ y para $\omega\to\infty$.
+(c)~¿Cuánto atrasa el retardo en $\omega=5$?
+(d)~¿Cuáles son de fase mínima?
+
+\ejercicio{Nyquist, sistema tipo 0}\label{e:nyq0}
+Para $L(s)=\dfrac{K}{(s+1)^3}$ con $K>0$:
+(a)~esbozar el diagrama polar indicando el punto inicial, el cruce con el eje real y la dirección de llegada;
+(b)~encontrar el rango de $K$ que da estabilidad;
+(c)~calcular el MG para $K=2$.
+
+\ejercicio{Nyquist con lazo abierto inestable}\label{e:nyqP}
+Sea $L(s)=\dfrac{K\,(s+3)}{s\,(s-1)}$ con $K>0$.
+(a)~¿Cuánto vale $P$?
+(b)~Encontrar el cruce con el eje real.
+(c)~Usar $Z=N+P$ para obtener el rango de $K$ estable y verificar con el polinomio característico.
+(d)~¿Qué significa que MATLAB informe $\MG=-6\dB$ para $K=2$?
+
+\ejercicio{Márgenes y retardo}\label{e:marg}
+Para $L(s)=\dfrac{10}{s\,(1+s/5)\,(1+s/50)}$ calcular $\wf$, MG, $K_c$, $\wc$, MF y el margen de retardo.
+
+\ejercicio{Correlación}\label{e:corr}
+En un ensayo de lazo cerrado se midió $M_r=3\dB$ en $\omega_r=5\rads$. Suponiendo polos dominantes de segundo orden,
+estimar $\zeta$, $\omega_n$, $M_p$, $t_s$ (2\pct{}) y el MF del lazo abierto.
+
+% =====================================================================
+\parte{II}{Compensación en frecuencia}
+% =====================================================================
+
+\section{Planteo del problema}
+
+\subsection{Compensación serie y especificaciones}
+Se agrega un compensador $G_c(s)$ en serie con la planta $G(s)$, de modo que el lazo abierto es $L=G_cG$:
+\begin{center}
+\begin{tikzpicture}[>=Stealth,node distance=1.4cm,
+  blk/.style={draw,thick,minimum height=8mm,minimum width=14mm,fill=azul!6},
+  sum/.style={draw,thick,circle,inner sep=2pt}]
+\node (r) {$R(s)$};
+\node[sum,right=1cm of r] (s) {};
+\node[blk,right=1cm of s] (gc) {$G_c(s)$};
+\node[blk,right=1.2cm of gc] (g) {$G(s)$};
+\node[right=1.2cm of g] (y) {$Y(s)$};
+\draw[->,thick] (r)--(s) node[pos=0.85,above]{\scriptsize$+$};
+\draw[->,thick] (s)--node[above]{\small$E$}(gc);
+\draw[->,thick] (gc)--node[above]{\small$U$}(g);
+\draw[->,thick] (g)--coordinate[pos=0.4](a)(y);
+\draw[->,thick] (a)--++(0,-1.1)-|(s) node[pos=0.95,right]{\scriptsize$-$};
+\end{tikzpicture}
+\end{center}
+Las especificaciones típicas en frecuencia, y lo que cada una controla, son:
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Especificación & Región de $|L|$ & Se relaciona con\\
+\midrule
+$K_p$, $K_v$, $K_a$ & baja frecuencia & error en régimen, rechazo de perturbaciones lentas\\
+MF, MG ($M_r$) & cerca de $\wc$ & amortiguamiento, sobrepico, robustez\\
+$\wc$, $\omega_{BW}$ & cerca de $\wc$ & velocidad ($t_r$, $t_s$)\\
+Atenuación en alta frecuencia & $\omega\gg\wc$ & ruido de medición, dinámica no modelada\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{La forma ideal del lazo}
+\begin{idea}[Moldeo del lazo (\emph{loop shaping})]
+Un buen $|L(\jw)|$ tiene:
+\begin{itemize}
+\item \textbf{ganancia alta en baja frecuencia} para que el error sea chico;
+\item \textbf{cruce de $0\dB$ con pendiente de alrededor de $-20\dBdec$}, mantenida un tramo de casi una década. Por la relación de Bode,
+      esto da una fase cercana a $-90^\circ$ más el atraso de los polos vecinos, es decir, un MF sano. Si cruza con $-40\dBdec$,
+      la fase está cerca de $-180^\circ$ y el MF es casi nulo;
+\item \textbf{caída rápida en alta frecuencia} para no amplificar ruido.
+\end{itemize}
+Compensar es \textbf{deformar} $|L|$ y $\angle L$ para que se parezcan a esta forma.
+\end{idea}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.045cm]
+\fill[verde!10] (0,0) rectangle (3,60);
+\fill[rojo!8] (6.2,-80) rectangle (9.4,0);
+\draw[->] (0,0)--(9.6,0) node[right]{\small$\log\omega$};
+\draw[->] (0,-80)--(0,62) node[above]{\small$|L|$ [dB]};
+\draw[azul,very thick] (0.2,55)--(3,30)--(4.2,8)--(5.4,-8)--(6.2,-20)--(9.2,-75);
+\node[verde!50!black,font=\small,align=center] at (1.6,15) {ganancia alta:\\ error chico};
+\node[rojo,font=\small,align=center] at (7.9,-12) {ganancia baja:\\ ruido rechazado};
+\draw[dashed,gris] (4.8,62)--(4.8,-80) node[below]{\small$\wc$};
+\node[azul,font=\small,anchor=west] at (5.0,24) {pendiente $\approx-20\dBdec$ en el cruce};
+\node[gris,font=\scriptsize,anchor=north] at (1.6,-5) {(especificación de $K_v$)};
+\node[gris,font=\scriptsize,anchor=north] at (7.9,-30) {(especificación de ruido)};
+\end{tikzpicture}
+\caption{Esquema de la forma deseada de $|L(\jw)|$. La curva debe esquivar las dos zonas sombreadas y cruzar $0\dB$ suavemente.}
+\label{fig:shape}
+\end{figure}
+
+\subsection{Lo que no puede hacer la ganancia sola}
+Un compensador puramente proporcional, $G_c=K$, sube o baja toda la curva de magnitud sin tocar la fase. Al subir $K$
+para cumplir el error, $\wc$ se corre a la derecha, donde la fase es peor, y el MF cae. Al bajar $K$ para recuperar MF,
+se pierde precisión. \textbf{Para cumplir ambas especificaciones hace falta modificar la forma de la curva, y eso
+requiere polos y ceros.} Ese es el trabajo de las redes de adelanto, de atraso y de atraso-adelanto.
+
+\begin{receta}[Primer paso, común a los tres diseños]
+Fijar la ganancia $K$ que cumple la especificación de error (por ejemplo, $K_v=\lim_{s\to0}sKG(s)$) y estudiar el Bode de
+$L_0=KG$, \emph{el sistema ya ajustado en ganancia pero sin compensar}. Todos los compensadores de este apunte tienen
+ganancia unitaria en $\omega=0$, así que no alteran el $K$ fijado.
+\end{receta}
+
+% ---------------------------------------------------------------------
+\section{Compensador de adelanto de fase}
+
+\subsection{Estructura y diagrama de Bode}
+\begin{formula}
+\[
+G_c(s)=K\,\frac{Ts+1}{\alpha Ts+1}=\frac{K}{\alpha}\cdot\frac{s+1/T}{s+1/(\alpha T)},\qquad 0<\alpha<1.
+\]
+\end{formula}
+El cero ($1/T$) está más cerca del origen que el polo ($1/(\alpha T)$). Entre ambos, la red se comporta como un derivador:
+\textbf{sube la magnitud} $20\log(1/\alpha)\dB$ en total y \textbf{aporta fase positiva}, con un máximo $\phi_m$ a mitad de camino
+en escala logarítmica (figura~\ref{fig:leadnorm}).
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},
+  bode,width=0.48\linewidth,height=4.8cm,xmin=0.01,xmax=1000,xlabel={$\omega T$}]
+\nextgroupplot[ylabel={$|\frac{\jw T+1}{\jw\alpha T+1}|$ [dB]},ymin=-1,ymax=21,ytick={0,6,12,20},legend pos=north west]
+\addplot[verde,thick] table[x=x,y=m05]{datos/adelanto_norm.dat};
+\addplot[naranja,thick] table[x=x,y=m025]{datos/adelanto_norm.dat};
+\addplot[rojo,thick] table[x=x,y=m01]{datos/adelanto_norm.dat};
+\legend{$\alpha=0{,}5$,$\alpha=0{,}25$,$\alpha=0{,}1$}
+\nextgroupplot[ylabel={Fase [$^\circ$]},ymin=0,ymax=60,ytick={0,19.5,36.9,54.9}]
+\addplot[verde,thick] table[x=x,y=f05]{datos/adelanto_norm.dat};
+\addplot[naranja,thick] table[x=x,y=f025]{datos/adelanto_norm.dat};
+\addplot[rojo,thick] table[x=x,y=f01]{datos/adelanto_norm.dat};
+\draw[gris,densely dotted] (axis cs:3.162,0)--(axis cs:3.162,54.9);
+\node[font=\scriptsize,gris,anchor=south] at (axis cs:3.162,55.5) {$\omega_m T=1/\sqrt{\alpha}$};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Red de adelanto normalizada. La fase máxima se da en la media geométrica del cero y el polo.}
+\label{fig:leadnorm}
+\end{figure}
+
+\subsection{Fórmulas de diseño}
+La fase de la red es $\phi(\omega)=\arctan(\omega T)-\arctan(\alpha\omega T)$. Derivando e igualando a cero:
+\begin{formula}
+\[
+\omega_m=\frac{1}{T\sqrt\alpha}=\sqrt{\frac1T\cdot\frac{1}{\alpha T}},\qquad
+\sin\phi_m=\frac{1-\alpha}{1+\alpha}\ \Longleftrightarrow\ \alpha=\frac{1-\sin\phi_m}{1+\sin\phi_m},
+\]
+\[
+\left|\frac{j\omega_mT+1}{j\omega_m\alpha T+1}\right|=\frac{1}{\sqrt\alpha}\quad\Longleftrightarrow\quad+10\log\frac1\alpha\ \mathrm{dB}.
+\]
+\end{formula}
+Para la última igualdad: $\big|\frac{j/\sqrt\alpha+1}{j\sqrt\alpha+1}\big|^2=\frac{1+1/\alpha}{1+\alpha}=\frac1\alpha$.
+En $\omega_m$ la red aporta \emph{la mitad} (en dB) de su ganancia total de alta frecuencia.
+\begin{center}
+\small
+\begin{tabular}{@{}l*{8}{c}@{}}
+\toprule
+$\phi_m$ & $20^\circ$ & $30^\circ$ & $35^\circ$ & $40^\circ$ & $45^\circ$ & $50^\circ$ & $55^\circ$ & $60^\circ$\\
+$\alpha$ & 0,490 & 0,333 & 0,271 & 0,217 & 0,172 & 0,132 & 0,0994 & 0,0718\\
+$10\log(1/\alpha)$ [dB] & 3,1 & 4,8 & 5,7 & 6,6 & 7,7 & 8,8 & 10,0 & 11,4\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Qué hace y qué no hace}
+\begin{itemize}
+\item \textbf{Mejora:} aumenta el MF, aumenta $\wc$ y el ancho de banda (respuesta \textbf{más rápida}) y reduce el sobrepico.
+\item \textbf{Costo:} aumenta la ganancia de alta frecuencia en $1/\alpha$, por lo que amplifica el ruido de medición y exige
+      mayor esfuerzo de control (posible saturación del actuador).
+\item \textbf{Limitaciones:} en la práctica $\phi_m\lesssim60^\circ$ por etapa ($\alpha\gtrsim0{,}07$). Si hace falta más, se ponen
+      dos redes en cascada. Si la fase de la planta cae muy rápido cerca del cruce (polos cercanos, retardo), el adelanto
+      corre $\wc$ hacia donde la fase es todavía peor y la ganancia de fase se pierde. En ese caso conviene el atraso.
+\end{itemize}
+
+\subsection{Procedimiento de diseño}
+\begin{receta}[Diseño de adelanto por Bode]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Elegir $K$ para cumplir el error en régimen. Trazar el Bode de $L_0=KG$ y obtener $\MF_0$ y $\omega_{c0}$.
+\item Fase a agregar: $\phi_m=\MF_{\text{req}}-\MF_0+\delta$, con $\delta\approx5^\circ$--$12^\circ$. El $\delta$ compensa que el cruce
+      se corre a la derecha, donde $L_0$ tiene menos fase. Usar un $\delta$ mayor cuanto más rápido cae la fase de $L_0$.
+\item Calcular $\alpha=\dfrac{1-\sin\phi_m}{1+\sin\phi_m}$.
+\item \textbf{Nuevo cruce:} buscar la frecuencia en la que $|L_0(\jw)|_{\mathrm{dB}}=-10\log(1/\alpha)$. Esa frecuencia es $\omega_m$
+      y será el nuevo $\wc$, porque ahí la red suma justo $+10\log(1/\alpha)$ y la magnitud total da $0\dB$.
+      Así se aprovecha el máximo de fase exactamente en el cruce.
+\item Ubicar la red: $1/T=\omega_m\sqrt\alpha$ (cero) y $1/(\alpha T)=\omega_m/\sqrt\alpha$ (polo).
+\item Armar $G_c(s)=K\dfrac{Ts+1}{\alpha Ts+1}$ y \textbf{verificar} MF y MG con el Bode compensado.
+      Si no se cumple, volver al paso 2 con un $\delta$ mayor.
+\end{enumerate}
+\end{receta}
+
+\begin{ejemplo}{Diseño de adelanto (con iteración)}
+\label{ej:lead}
+Planta: $G(s)=\dfrac{1}{s\,(s+1)\,(0{,}05s+1)}$. Especificaciones: $K_v=10\,\mathrm{s^{-1}}$, $\MF\ge45^\circ$ y $\MG\ge10\dB$.
+
+\textbf{1. Ganancia.} $K_v=\lim sKG=K$, así que $K=10$. Para $L_0=10G$ se obtiene $\omega_{c0}=3{,}07\rads$,
+$\MF_0=9{,}4^\circ$ y $\MG_0=6{,}4\dB$. El sistema es estable pero muy oscilatorio ($M_p\approx77\pct{}$).
+
+\textbf{2--4. Primer intento, con $\delta=5^\circ$.} $\phi_m=45-9{,}4+5=40{,}6^\circ$, de donde $\alpha=0{,}211$ y $10\log(1/\alpha)=6{,}8\dB$.
+$|L_0|=-6{,}8\dB$ en $\omega_m=4{,}55\rads$. Al verificar, $\MF=40{,}2^\circ$: \textbf{no cumple}.
+La causa es que entre 3,07 y 4,55~rad/s la fase de $L_0$ cayó casi $10^\circ$ (el polo en 1 y el polo en 20 siguen restando),
+más que los $5^\circ$ de reserva.
+
+\textbf{2--4. Segundo intento, con $\delta=12^\circ$.} $\phi_m=47{,}6^\circ$, de donde $\alpha=0{,}15$ y $10\log(1/\alpha)=8{,}2\dB$.
+$|L_0(\jw)|=-8{,}2\dB$ en $\omega_m=4{,}96\rads$. Verificación de fase: $\angle L_0(j4{,}96)=-90-\arctan4{,}96-\arctan0{,}248=-182{,}5^\circ$,
+y al sumarle la red, $-182{,}5+47{,}6=-134{,}9^\circ$. Resulta $\MF\approx45{,}1^\circ$. \checkmark
+
+\textbf{5. Ubicación.} Cero en $1/T=4{,}96\sqrt{0{,}15}=1{,}92\rads$ y polo en $1/(\alpha T)=4{,}96/\sqrt{0{,}15}=12{,}8\rads$.
+\[
+\boxed{G_c(s)=10\,\frac{0{,}521\,s+1}{0{,}0781\,s+1}=66{,}7\,\frac{s+1{,}92}{s+12{,}8}}
+\]
+\textbf{6. Verificación (simulación).} $\MF=45{,}2^\circ$, $\MG=14{,}9\dB$ y $\wc=4{,}95\rads$. $K_v=10$ se mantiene. El sobrepico baja de
+77\pct{} a 27\pct{}, el tiempo de establecimiento de 15,3~s a 1,0~s, y el ancho de banda sube de 4,8 a 8,9~rad/s
+(figura~\ref{fig:leadej}).
+\end{ejemplo}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  bode,width=0.56\linewidth,height=4.2cm,xmin=0.1,xmax=300]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-80,ymax=45,legend pos=south west,legend columns=1]
+\addplot[antes] table[x=w,y=m0]{datos/adelanto_ej.dat};
+\addplot[despues] table[x=w,y=m1]{datos/adelanto_ej.dat};
+\addplot[comp] table[x=w,y=mc]{datos/adelanto_ej.dat};
+\legend{$L_0=10G$,$L=G_cG$,$G_c/K$}
+\draw[black] (axis cs:0.1,0)--(axis cs:300,0);
+\nextgroupplot[ylabel={Fase [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-270,ymax=60,ytick={-270,-180,-135,-90,0,45}]
+\addplot[antes] table[x=w,y=f0]{datos/adelanto_ej.dat};
+\addplot[despues] table[x=w,y=f1]{datos/adelanto_ej.dat};
+\addplot[comp] table[x=w,y=fc]{datos/adelanto_ej.dat};
+\draw[black] (axis cs:0.1,-180)--(axis cs:300,-180);
+\draw[verde,dashed] (axis cs:4.95,-270)--(axis cs:4.95,60);
+\end{groupplot}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.41\linewidth,height=6.6cm,xmin=0,xmax=8,ymin=0,ymax=1.85,xlabel={$t$ [s]},ylabel={$y(t)$},legend pos=north east]
+\addplot[antes] table[x=t,y=y0]{datos/adelanto_ej_step.dat};
+\addplot[despues] table[x=t,y=y1]{datos/adelanto_ej_step.dat};
+\legend{Sin comp.,Adelanto}
+\end{axis}
+\end{tikzpicture}
+\caption{Ejemplo~\ref{ej:lead}. Izquierda: el adelanto suma fase justo en el nuevo cruce (línea verde). Derecha: respuesta al escalón de lazo cerrado.}
+\label{fig:leadej}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\section{Compensador de atraso de fase}
+
+\subsection{Estructura y diagrama de Bode}
+\begin{formula}
+\[
+G_c(s)=K\,\frac{Ts+1}{\beta Ts+1}=\frac{K}{\beta}\cdot\frac{s+1/T}{s+1/(\beta T)},\qquad \beta>1.
+\]
+\end{formula}
+Ahora el \textbf{polo} ($1/(\beta T)$) está más cerca del origen que el cero ($1/T$). En baja frecuencia la red vale 1 (0 dB),
+y en alta frecuencia vale $1/\beta$, es decir, \textbf{atenúa} $20\log\beta\dB$. Su fase es negativa, que es justamente lo que \emph{no} se quiere,
+así que se la ubica \textbf{lejos, a la izquierda de $\wc$}, donde ese atraso ya no molesta.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},
+  bode,width=0.48\linewidth,height=4.4cm,xmin=0.001,xmax=100,xlabel={$\omega T$}]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-22,ymax=2,ytick={-20,-10,0}]
+\addplot[azul,thick] table[x=x,y=mag]{datos/atraso_norm.dat};
+\draw[gris,densely dotted] (axis cs:0.1,-22)--(axis cs:0.1,2) (axis cs:1,-22)--(axis cs:1,2);
+\node[font=\scriptsize,anchor=north west] at (axis cs:0.11,1.5) {$\frac{1}{\beta T}$};
+\node[font=\scriptsize,anchor=north west] at (axis cs:1.1,1.5) {$\frac{1}{T}$};
+\node[font=\scriptsize,azul,anchor=south] at (axis cs:15,-19.5) {$-20\log\beta$};
+\nextgroupplot[ylabel={Fase [$^\circ$]},ymin=-60,ymax=2,ytick={-54.9,-40,-20,-5.1,0}]
+\addplot[azul,thick] table[x=x,y=fase]{datos/atraso_norm.dat};
+\draw[rojo,dashed] (axis cs:10,-60)--(axis cs:10,2);
+\node[font=\scriptsize,rojo,anchor=north east,align=right] at (axis cs:9,-30) {en $\omega=10/T$\\ solo $-5^\circ$};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Red de atraso normalizada con $\beta=10$. Una década por encima del cero ya atenúa casi los $20\dB$ completos y atrasa apenas $5^\circ$.}
+\label{fig:lagnorm}
+\end{figure}
+
+\subsection{La idea}
+El atraso no se usa por su fase: \textbf{se usa por su atenuación}. Se busca la frecuencia donde $L_0$ tiene la fase que
+daría el MF pedido. En general esa frecuencia está a la izquierda del cruce actual, y $L_0$ tiene ahí una magnitud de
+$A\dB>0$. Con $\beta=10^{A/20}$, la red baja la curva justo $A\dB$ en esa zona, y esa frecuencia pasa a ser el nuevo cruce.
+Como el cero se ubica una década antes, el atraso que la red aporta en el cruce es de solo $\approx5^\circ$, que se reservan
+de antemano. La ganancia de baja frecuencia (el $K_v$) no cambia.
+
+\subsection{Procedimiento de diseño}
+\begin{receta}[Diseño de atraso por Bode]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Elegir $K$ para cumplir el error. Trazar el Bode de $L_0=KG$.
+\item Buscar la frecuencia $\wc'$ en la que $\angle L_0(j\wc')=-180^\circ+\MF_{\text{req}}+\delta$, con $\delta\approx5^\circ$--$12^\circ$
+      (típicamente $6^\circ$). Será el nuevo cruce. Se la puede redondear hacia abajo, que es el lado seguro.
+\item Leer $A=|L_0(j\wc')|_{\mathrm{dB}}$ y tomar $\beta=10^{A/20}$.
+\item Cero una década antes del nuevo cruce: $1/T=\wc'/10$ (entre $\wc'/10$ y $\wc'/5$).
+\item Polo en $1/(\beta T)$.
+\item Armar $G_c(s)=K\dfrac{Ts+1}{\beta Ts+1}$ y verificar MF y MG.
+\end{enumerate}
+\end{receta}
+
+\begin{ejemplo}{Diseño de atraso}
+\label{ej:lag}
+Planta: $G(s)=\dfrac{1}{s\,(s+2)\,(s+5)}$. Especificaciones: $K_v=10\,\mathrm{s^{-1}}$, $\MF\ge45^\circ$ y $\MG\ge10\dB$.
+
+\textbf{1. Ganancia.} $K_v=K/(2\cdot5)=10$, así que $K=100$. Con $L_0=100G$ se obtiene $\MF_0=-8{,}9^\circ$ y $\MG_0=-3{,}1\dB$:
+\textbf{inestable} ($K_c=70$ según Routh). Un adelanto tendría que aportar más de $60^\circ$ en una zona donde la fase cae rápido, así que se elige atraso.
+
+\textbf{2. Nuevo cruce.} Se busca $\angle L_0=-180+45+6=-129^\circ$:
+$-90^\circ-\arctan(\omega/2)-\arctan(\omega/5)=-129^\circ$, que da $\omega\approx1{,}03$. Se redondea a $\wc'=1\rads$.
+Ahí $\angle L_0(j1)=-90-26{,}6-11{,}3=-127{,}9^\circ$: hay $52{,}1^\circ$ disponibles antes de la red.
+
+\textbf{3. Atenuación.} $|L_0(j1)|=\dfrac{100}{1\cdot\sqrt5\cdot\sqrt{26}}=8{,}77$, o sea $A=18{,}9\dB$. Se toma $\beta=9$, redondeando hacia arriba.
+
+\textbf{4--5. Ubicación.} Cero en $1/T=0{,}1\rads$ ($T=10$\,s) y polo en $1/(\beta T)=0{,}0111\rads$.
+\[
+\boxed{G_c(s)=100\,\frac{10\,s+1}{90\,s+1}=11{,}1\,\frac{s+0{,}1}{s+0{,}0111}}
+\]
+\textbf{6. Verificación.} $\MF=47{,}5^\circ$, $\MG=15{,}4\dB$ y $\wc=0{,}98\rads$, con $K_v=10$. \checkmark
+
+\textbf{Comparación con la ganancia sola.} Para tener $\MF=45^\circ$ bajando solo la ganancia, haría falta $K=14{,}7$, o sea $K_v=1{,}47$,
+con un error de rampa de 0,68 contra 0,10 del atraso. Las dos respuestas al escalón se parecen, pero el atraso sigue la rampa
+casi siete veces mejor (figura~\ref{fig:lagej}).
+\end{ejemplo}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  bode,width=0.92\linewidth,height=4cm,xmin=0.001,xmax=100]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-80,ymax=80,ytick={-80,-40,0,40,80},legend pos=south west]
+\addplot[antes] table[x=w,y=m0]{datos/atraso_ej.dat};
+\addplot[despues] table[x=w,y=m1]{datos/atraso_ej.dat};
+\addplot[comp] table[x=w,y=mc]{datos/atraso_ej.dat};
+\legend{$L_0=100G$,$L=G_cG$,$G_c/K$}
+\draw[black] (axis cs:0.001,0)--(axis cs:100,0);
+\draw[gris,densely dotted] (axis cs:0.0111,-80)--(axis cs:0.0111,80) (axis cs:0.1,-80)--(axis cs:0.1,80);
+\nextgroupplot[ylabel={Fase [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-270,ymax=0,ytick={-270,-180,-135,-90,0}]
+\addplot[antes] table[x=w,y=f0]{datos/atraso_ej.dat};
+\addplot[despues] table[x=w,y=f1]{datos/atraso_ej.dat};
+\addplot[comp] table[x=w,y=fc]{datos/atraso_ej.dat};
+\draw[black] (axis cs:0.001,-180)--(axis cs:100,-180);
+\draw[verde,dashed] (axis cs:0.98,-270)--(axis cs:0.98,0);
+\end{groupplot}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},width=0.49\linewidth,height=4.4cm,xmin=0,xmax=25,xlabel={$t$ [s]}]
+\nextgroupplot[ylabel={$y(t)$ (escalón)},ymin=0,ymax=1.4,legend pos=south east]
+\addplot[despues] table[x=t,y=y1]{datos/atraso_ej_step.dat};
+\addplot[naranja,thick,dashed] table[x=t,y=yg]{datos/atraso_ej_step.dat};
+\legend{Atraso ($K_v=10$),Solo ganancia ($K_v=1{,}47$)}
+\nextgroupplot[ylabel={$e(t)$ (rampa)},ymin=0,ymax=1]
+\addplot[despues] table[x=t,y=e1]{datos/atraso_ej_rampa.dat};
+\addplot[naranja,thick,dashed] table[x=t,y=eg]{datos/atraso_ej_rampa.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Ejemplo~\ref{ej:lag}. Arriba: el atraso baja la curva $19\dB$ sin tocar la baja frecuencia. El lazo cruza en $\approx1\rads$,
+donde todavía hay fase. Abajo: escalón y error ante rampa contra el ajuste por ganancia sola.}
+\label{fig:lagej}
+\end{figure}
+
+\subsection{Efectos y precauciones}
+\begin{itemize}
+\item \textbf{Mejora} el error en régimen sin sacrificar el MF y \textbf{atenúa el ruido} de alta frecuencia.
+\item \textbf{Reduce} $\wc$ y el ancho de banda: la respuesta es \textbf{más lenta}.
+\item El par polo-cero cerca del origen (un \textbf{dipolo}) deja un polo lento de lazo cerrado con residuo chico. Eso produce
+      una \emph{cola} que tarda en asentarse, y por eso el $t_s$ del ejemplo es de unos 15~s aunque el sobrepico sea moderado.
+      Cuanto más cerca del origen está el dipolo, más larga es la cola.
+\item Si $\beta$ resulta enorme (más de 20 o 30) o el nuevo cruce queda demasiado bajo para la velocidad pedida, conviene pasar al atraso-adelanto.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\section{Compensador de atraso-adelanto}
+
+\subsection{Estructura}
+Es el producto de una red de atraso y una de adelanto:
+\begin{formula}
+\[
+G_c(s)=K\,\underbrace{\frac{T_1s+1}{\alpha T_1s+1}}_{\text{adelanto}}\cdot\underbrace{\frac{T_2s+1}{\beta T_2s+1}}_{\text{atraso}},\qquad
+\alpha<1<\beta,\qquad \frac{1}{\beta T_2}<\frac1{T_2}<\frac1{T_1}<\frac1{\alpha T_1}.
+\]
+\end{formula}
+Se reparte el trabajo: la parte de \textbf{adelanto} aporta fase en el cruce (MF y velocidad), y la de \textbf{atraso} aporta la
+atenuación que hace falta para que el cruce caiga donde se quiere, sin tocar la ganancia de baja frecuencia (error).
+Se usa cuando se piden a la vez precisión, buen MF y una velocidad que el atraso solo no logra,
+o cuando el adelanto solo necesitaría una fase imposible.
+
+\subsection{Procedimiento de diseño}
+\begin{receta}[Diseño de atraso-adelanto por Bode]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Elegir $K$ para cumplir el error. Trazar el Bode de $L_0=KG$.
+\item Elegir el nuevo cruce $\wc'$. Una elección clásica es $\wc'\approx\wf$ de $L_0$ (o una especificación de ancho de banda),
+      con lo que la fase de $L_0$ ahí es $\approx-180^\circ$.
+\item \textbf{Adelanto:} $\phi_m=\MF_{\text{req}}-\big(180^\circ+\angle L_0(j\wc')\big)+\delta$, con $\delta\approx6^\circ$, que es el atraso que
+      luego mete la otra red. Calcular $\alpha$ y centrar la red en $\wc'$: $1/T_1=\wc'\sqrt\alpha$ y $1/(\alpha T_1)=\wc'/\sqrt\alpha$.
+\item \textbf{Atraso:} calcular $A=|L_0(j\wc')|_{\mathrm{dB}}+10\log(1/\alpha)$, que es lo que sobra en $\wc'$ después del adelanto,
+      y tomar $\beta=10^{A/20}$. Cero en $1/T_2=\wc'/10$ y polo en $1/(\beta T_2)$.
+\item Verificar MF, MG y la respuesta temporal.
+\end{enumerate}
+\end{receta}
+
+\begin{ejemplo}{Diseño de atraso-adelanto}
+\label{ej:laglead}
+Planta: $G(s)=\dfrac{1}{s\,(s+1)\,(s+4)}$. Especificaciones: $K_v=10\,\mathrm{s^{-1}}$, $\MF\ge50^\circ$ y $\MG\ge10\dB$.
+
+\textbf{1.} $K_v=K/4=10$, así que $K=40$. $L_0=40G$ es \textbf{inestable}: $\MF_0=-15^\circ$ y $\MG_0=-6\dB$. Su $\wf$ es 2~rad/s,
+porque $\arctan\omega+\arctan(\omega/4)=90^\circ$ cuando $\omega^2=4$.
+
+\textbf{2.} Se elige $\wc'=2\rads$. Ahí $\angle L_0=-180^\circ$ y $|L_0(j2)|=\dfrac{40}{2\sqrt5\sqrt{20}}=2$, es decir $6{,}02\dB$.
+
+\textbf{3. Adelanto.} $\phi_m=50-0+6=56^\circ$, de donde $\alpha=\dfrac{1-\sin56^\circ}{1+\sin56^\circ}=0{,}0935$ y $10\log(1/\alpha)=10{,}3\dB$.
+Cero en $2\sqrt{0{,}0935}=0{,}611$ y polo en $2/\sqrt{0{,}0935}=6{,}54$.
+
+\textbf{4. Atraso.} $A=6{,}02+10{,}3=16{,}3\dB$, de donde $\beta=6{,}54$. Cero en $2/10=0{,}2$ y polo en $0{,}2/6{,}54=0{,}0306$.
+\[
+\boxed{G_c(s)=40\,\frac{(s/0{,}611+1)\,(s/0{,}2+1)}{(s/6{,}54+1)\,(s/0{,}0306+1)}=65{,}5\,\frac{(s+0{,}611)(s+0{,}2)}{(s+6{,}54)(s+0{,}0306)}}
+\]
+\textbf{5. Verificación.} $\MF=51{,}0^\circ$, $\MG=13{,}3\dB$ y $\wc=2{,}01\rads$, con $K_v=10$. $M_p=18\pct{}$ y ancho de banda de 3,6~rad/s. \checkmark
+
+\textbf{¿Por qué no uno solo?} Con atraso solo, el cruce caería donde $\angle L_0=-124^\circ$, cerca de 0,5~rad/s: cuatro veces más lento.
+Con adelanto solo, harían falta más de $70^\circ$ de fase.
+\end{ejemplo}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  bode,width=0.56\linewidth,height=4.1cm,xmin=0.001,xmax=100]
+\nextgroupplot[ylabel={Magnitud [dB]},ymin=-80,ymax=80,ytick={-80,-40,0,40,80},legend pos=south west]
+\addplot[antes] table[x=w,y=m0]{datos/ad_at_ej.dat};
+\addplot[despues] table[x=w,y=m1]{datos/ad_at_ej.dat};
+\addplot[comp] table[x=w,y=mc]{datos/ad_at_ej.dat};
+\legend{$L_0$,$L$,$G_c/K$}
+\draw[black] (axis cs:0.001,0)--(axis cs:100,0);
+\nextgroupplot[ylabel={Fase [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-270,ymax=60,ytick={-270,-180,-130,-90,0,45}]
+\addplot[antes] table[x=w,y=f0]{datos/ad_at_ej.dat};
+\addplot[despues] table[x=w,y=f1]{datos/ad_at_ej.dat};
+\addplot[comp] table[x=w,y=fc]{datos/ad_at_ej.dat};
+\draw[black] (axis cs:0.001,-180)--(axis cs:100,-180);
+\draw[verde,dashed] (axis cs:2.01,-270)--(axis cs:2.01,60);
+\end{groupplot}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.41\linewidth,height=6.4cm,xmin=0,xmax=20,ymin=0,ymax=1.3,xlabel={$t$ [s]},ylabel={$y(t)$}]
+\addplot[despues] table[x=t,y=y1]{datos/ad_at_ej_step.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Ejemplo~\ref{ej:laglead}. La red combinada atenúa en la zona media (atraso) y suma fase alrededor de 2~rad/s (adelanto).}
+\label{fig:lagleadej}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\section{Comparación, relación con el PID y criterios de elección}
+
+\subsection{Misma planta, dos soluciones}
+Para $G(s)=1/[s(s+1)]$ con $K_v=10$ y $\MF\ge45^\circ$, el sistema solo con ganancia tiene $\MF=18^\circ$ y $M_p=60\pct{}$.
+Se lo puede compensar de las dos maneras:
+\begin{itemize}
+\item \textbf{Adelanto:} $\alpha=0{,}307$, cero en 2,32 y polo en 7,57. Resulta $\wc=4{,}19$, $\MF=45{,}5^\circ$, $M_p=27\pct{}$ y $t_s=1{,}7$\,s.
+\item \textbf{Atraso:} $\beta=9{,}6$, cero en 0,081 y polo en 0,0084. Resulta $\wc=0{,}81$, $\MF=45{,}8^\circ$, $M_p=26\pct{}$ y $t_s=15{,}5$\,s.
+\end{itemize}
+Ambos cumplen las especificaciones, con sobrepicos casi iguales porque los MF son iguales. \textbf{La diferencia es la velocidad}:
+el adelanto cruza cinco veces más arriba (figura~\ref{fig:comp}).
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.6cm},width=0.49\linewidth,height=5cm]
+\nextgroupplot[xmode=log,minor x tick num=8,xmin=0.001,xmax=100,ymin=-60,ymax=80,xlabel={$\omega$ [rad/s]},ylabel={$|L|$ [dB]},legend pos=south west]
+\addplot[antes] table[x=w,y=m0]{datos/comparacion.dat};
+\addplot[rojo,thick] table[x=w,y=mad]{datos/comparacion.dat};
+\addplot[azul,thick] table[x=w,y=mat]{datos/comparacion.dat};
+\legend{Solo $K$,Adelanto,Atraso}
+\draw[black] (axis cs:0.001,0)--(axis cs:100,0);
+\nextgroupplot[xmin=0,xmax=15,ymin=0,ymax=1.7,xlabel={$t$ [s]},ylabel={$y(t)$}]
+\addplot[antes] table[x=t,y=y0]{datos/comparacion_step.dat};
+\addplot[rojo,thick] table[x=t,y=yad]{datos/comparacion_step.dat};
+\addplot[azul,thick] table[x=t,y=yat]{datos/comparacion_step.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Adelanto contra atraso sobre $G=1/[s(s+1)]$ con $K_v=10$. El adelanto sube $\wc$ y el atraso lo baja.}
+\label{fig:comp}
+\end{figure}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+ & Adelanto & Atraso & Atraso-adelanto\\
+\midrule
+Mecanismo & suma fase cerca de $\wc$ & atenúa en media y alta frecuencia & ambos\\
+$\wc$, ancho de banda & aumentan (más rápido) & disminuyen (más lento) & según el diseño\\
+MF & aumenta & aumenta (cruza donde hay fase) & aumenta\\
+Error en régimen & lo fija $K$ & lo fija $K$ (se puede subir sin perder MF) & lo fija $K$\\
+Ruido de alta frecuencia & lo amplifica ($\times1/\alpha$) & lo atenúa ($\times1/\beta$) & intermedio\\
+Esfuerzo de control & mayor & menor & intermedio\\
+Respuesta & rápida, mayor $u(t)$ inicial & cola lenta por el dipolo & cola lenta leve\\
+Equivalente PID & PD con filtro & PI aproximado & PID aproximado\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Relación con PD, PI y PID}
+\begin{itemize}
+\item \textbf{PD:} $G_c=K_p(1+T_ds)$ es un adelanto con $\alpha\to0$: suma hasta $+90^\circ$ pero su ganancia crece sin límite
+      ($+20\dBdec$). En la práctica se le agrega un polo, $\frac{1+T_ds}{1+T_ds/N}$, y queda un adelanto con $\alpha=1/N$.
+\item \textbf{PI:} $G_c=K_p\Big(1+\dfrac{1}{T_is}\Big)=K_p\dfrac{T_is+1}{T_is}$ es un atraso con $\beta\to\infty$: el polo va al origen.
+      Sube el tipo en uno (error nulo al escalón si la planta era tipo 0). Se diseña como el atraso: cero en $1/T_i\approx\wc/10$,
+      lo que cuesta unos $5{,}7^\circ$ de fase en el cruce.
+\item \textbf{PID:} combina ambos: $G_c=K_p\dfrac{T_iT_ds^2+T_is+1}{T_is}$. Los dos ceros cumplen el papel de los ceros del atraso-adelanto.
+\end{itemize}
+
+\subsection{Cómo elegir}
+\begin{receta}[Árbol de decisión rápido]
+\begin{enumerate}[label=\textbf{\arabic*.}]
+\item Con $K$ fijado por el error: ¿el MF ya alcanza? Entonces no hace falta compensador.
+\item ¿Falta poco MF (menos de $50^\circ$--$60^\circ$), la fase de $L_0$ no cae abruptamente cerca de $\wc$ y se quiere más velocidad (o no molesta)?
+      Usar \textbf{adelanto}.
+\item ¿La velocidad actual sobra, hay ruido o la fase cae muy rápido cerca del cruce? Usar \textbf{atraso}.
+\item ¿Hacen falta precisión, MF y velocidad a la vez, o el adelanto solo pide más de $60^\circ$? Usar \textbf{atraso-adelanto} (o dos adelantos).
+\end{enumerate}
+\end{receta}
+
+\begin{cuidado}[Errores frecuentes]
+\begin{itemize}
+\item Diseñar sobre $G$ en lugar de sobre $L_0=KG$. \textbf{Primero se fija la ganancia y después se compensa}.
+\item Ubicar el máximo de fase del adelanto en el cruce \emph{viejo}: el cruce se mueve a $\omega_m$.
+\item Olvidar la reserva $\delta$, o no volver a verificar. Siempre hay que recalcular el MF con el lazo completo.
+\item En el atraso, poner el cero demasiado cerca de $\wc'$: resta mucha fase. Una década antes es lo seguro.
+\item Confundir $\alpha$ con $\beta$, o el cero con el polo. En el adelanto el \emph{cero} está más cerca del origen; en el atraso, el \emph{polo}.
+\item Leer $K_v$ sobre la curva real en lugar de la asíntota.
+\end{itemize}
+\end{cuidado}
+
+% ---------------------------------------------------------------------
+\section{Ejercicios de la Parte II}
+\label{sec:ejII}
+
+\ejercicio{Adelanto}\label{p:lead}
+Para $G(s)=\dfrac{1}{s\,(s+4)}$, diseñar un adelanto que dé $K_v=20\,\mathrm{s^{-1}}$ y $\MF\ge50^\circ$. Probar primero con $\delta=5^\circ$.
+
+\ejercicio{Atraso en un sistema tipo 0}\label{p:lag}
+Para $G(s)=\dfrac{1}{(s+1)(s+2)(s+5)}$, se pide error al escalón $\le2\pct{}$ y $\MF\ge40^\circ$.
+(a)~Calcular $K$ y mostrar que el lazo resulta inestable.
+(b)~Diseñar un atraso con $\delta=6^\circ$, redondeando el nuevo cruce a un valor entero.
+(c)~Verificar que el error sigue siendo del 2\pct{}.
+
+\ejercicio{Atraso-adelanto}\label{p:laglead}
+Para $G(s)=\dfrac{1}{s\,(s+1)\,(s+2)}$, se pide $K_v=10\,\mathrm{s^{-1}}$, $\MF\ge50^\circ$ y $\MG\ge10\dB$.
+Diseñar un atraso-adelanto tomando $\wc'=\wf$ de $L_0$ y $\delta=6^\circ$.
+
+\ejercicio{Elegir el compensador}\label{p:elegir}
+Para cada caso, indicar si conviene adelanto, atraso o atraso-adelanto, y por qué.
+(a)~Cumple $K_v$ con $\MF=30^\circ$, la fase de $L_0$ cae suavemente y se quiere bajar el tiempo de establecimiento.
+(b)~Cumple MF y velocidad, pero el error de rampa es 5 veces mayor que el permitido.
+(c)~Con la $K$ requerida, $\MF=-20^\circ$, y el sensor tiene mucho ruido de alta frecuencia.
+(d)~Con la $K$ requerida, $\MF=-15^\circ$, y se pide además que $\wc$ no baje.
+
+\ejercicio{Retardo}\label{p:retardo}
+El lazo $L(s)=\dfrac{K\,e^{-\tau s}}{s\,(s+1)}$ se ajustó con $K=2$ y $\tau=0$.
+(a)~Calcular $\wc$, el MF y el retardo máximo admisible.
+(b)~Si en la práctica hay un retardo $\tau=0{,}2$\,s, ¿cuál es el nuevo MF?
+(c)~¿Qué $K$ hace falta para tener $\MF=30^\circ$ con ese retardo? ¿Cuánto vale $K_v$?
+
+\ejercicio{PI como atraso}\label{p:pi}
+La planta $G(s)=\dfrac{10}{(s+1)(0{,}1s+1)}$ con control proporcional unitario tiene un error al escalón de $1/11$.
+Diseñar un PI $G_c=K_p\frac{T_is+1}{T_is}$ con $K_p=1$ que anule ese error y no reste más de $6^\circ$ de MF.
+Calcular el MF antes y después.
+
+\ejercicio{Problema integrador: la aeronave de la UT05}\label{p:avion}
+Se retoma el caso de estudio de la UT05, el cabeceo de una aeronave con fuselaje flexible:
+\[
+L(s)=K\,G_aG_\theta G_f,\qquad G_a=\frac{50}{s+50},\quad G_\theta=\frac{18(s+1)}{s(s^2+4{,}2s+9)},\quad G_f=\frac{400}{s^2+s+400}.
+\]
+$G_f$ es el modo elástico del fuselaje: $\omega_f=20\rads$ y $\zeta_f=0{,}025$.
+Con $K=1$ se obtiene $K_v=2$, $\MF=45{,}8^\circ$, $\MG=14{,}3\dB$ y un pico elástico de $-1{,}5\dB$ en $|L|$.
+Se quiere \textbf{duplicar la precisión ante rampa} ($K_v=4$), con $\MF\ge45^\circ$ y con el pico elástico de $|L|$
+\textbf{por lo menos $6\dB$ por debajo de $0\dB$}, para que ese modo no cruce $0\dB$ aunque $\zeta_f$ sea menor que la nominal.
+\begin{enumerate}[label=(\alph*)]
+\item Con $K=2$ y sin compensar: ¿cuánto vale el pico elástico? ¿Por qué ya no alcanza con mirar el MF que informa \texttt{margin}?
+\item Intentar un adelanto para $\MF=45^\circ$ con $\delta=10^\circ$. ¿Qué le pasa al modo elástico?
+\item Diseñar un atraso. ¿Qué especificación manda: el MF o el pico elástico?
+\item Verificar y comparar con el diseño nominal ($K=1$).
+\end{enumerate}
+
+% =====================================================================
+\section{Soluciones}
+\label{sec:soluciones}
+\subsection*{Parte I}
+
+\solucion{e:bode}{Trazado asintótico}
+(a)~$G=\dfrac{500\cdot2}{10\cdot20}\cdot\dfrac{1+s/2}{s(1+s/10)(1+s/20)}=\dfrac{5(1+s/2)}{s(1+s/10)(1+s/20)}$, con $K_B=5$ y tipo 1.
+Quiebres: cero en 2 ($+20$), polo en 10 ($-20$) y polo en 20 ($-20$). Pendiente final: $-40\dBdec$ ($n-m=2$).
+
+(b)~$\omega<2$: $20\log(5/\omega)$, que en $\omega=1$ vale $\mathbf{13{,}98\dB}$ y en $\omega=2$ vale $\mathbf{7{,}96\dB}$.
+Entre 2 y 10 la curva es plana en $7{,}96\dB$, así que en $\omega=10$ vale $\mathbf{7{,}96\dB}$.
+Entre 10 y 20 baja a $-20\dBdec$: $7{,}96-20\log2=\mathbf{1{,}94\dB}$ en $\omega=20$. De ahí en adelante, $-40\dBdec$.
+Los valores exactos son 14,9, 10,8, 4,1 y $-2{,}0\dB$: la asíntota falla en unos 3~dB cerca de cada quiebre.
+
+(c)~La asíntota de $-40$ cruza $0\dB$ en $20\cdot10^{1{,}94/40}=22{,}4\rads$. El exacto es 16,6: la asíntota sobreestima porque en 10 y en 20
+la curva real ya está unos $3\dB$ por debajo. Con varios quiebres cercanos, hay que usar la expresión exacta.
+
+(d)~$\angle G(j10)=-90+\arctan5-\arctan1-\arctan0{,}5=-90+78{,}7-45-26{,}6=\rta{-82{,}9^\circ}$.
+
+(e)~$K_v=K_B=5\,\mathrm{s^{-1}}$ y $e_{ss}=1/K_v=0{,}2$.
+
+\solucion{e:2do}{Segundo orden}
+$\omega_n=10\rads$ y $2\zeta\omega_n=4$, así que $\zeta=0{,}2$.
+$M_r=\dfrac{1}{2(0{,}2)\sqrt{1-0{,}04}}=2{,}55$, es decir $\rta{8{,}14\dB}$, en $\omega_r=10\sqrt{1-0{,}08}=\rta{9{,}59\rads}$.
+En $\omega_n$: $|G|=1/(2\zeta)=2{,}5$, o sea $7{,}96\dB$ por encima de la asíntota. La fase es $-90^\circ$.
+$\omega_{BW}=10\sqrt{1-0{,}08+\sqrt{0{,}0064-0{,}16+2}}=10\sqrt{0{,}92+1{,}359}=\rta{15{,}1\rads}$.
+
+\solucion{e:ident}{Identificación}
+Tipo 1 (pendiente inicial $-20$), con la asíntota en $0\dB$ en $\omega=10$, así que $K_B=10$.
+De 2 a 20 la pendiente sube 20: cero en 2. En 20 baja 40: dos polos.
+Una diferencia de $-6\dB=-20\log2$ en el quiebre indica un polo real doble ($\zeta=1$, porque $-20\log(2\cdot1)=-6$).
+\[
+G(s)=\frac{10\,(1+s/2)}{s\,(1+s/20)^2}=\rta{\frac{2000\,(s+2)}{s\,(s+20)^2}}
+\]
+Si la curva estuviera $8\dB$ \emph{por encima}: $-20\log(2\zeta)=8$, de donde $\zeta=0{,}2$, y el denominador tendría $(s^2+8s+400)$ en lugar de $(s+20)^2$.
+
+\solucion{e:fnm}{Fase no mínima y retardo}
+(a)~Como $|1-\jw|=|1+\jw|$, $G_1$ y $G_2$ tienen magnitudes \textbf{idénticas}: $\sqrt{1+\omega^2}/\sqrt{25+\omega^2}$.
+Como $|e^{-0{,}2\jw}|=1$, $G_3$ tiene la misma magnitud que $1/(s+5)$. En los tres casos el Bode de magnitud no muestra nada raro.
+
+(b)~$\angle G_1=\arctan\omega-\arctan(\omega/5)$ y $\angle G_2=-\arctan\omega-\arctan(\omega/5)$.
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & $\omega=1$ & $\omega=5$ & $\omega\to\infty$\\
+\midrule
+$G_1$ & $45-11{,}3=33{,}7^\circ$ & $78{,}7-45=33{,}7^\circ$ & $0^\circ$\\
+$G_2$ & $-45-11{,}3=-56{,}3^\circ$ & $-78{,}7-45=-123{,}7^\circ$ & $-180^\circ$\\
+\bottomrule
+\end{tabular}
+\end{center}
+(c)~$-0{,}2\cdot5=-1\,$rad, es decir $\rta{-57{,}3^\circ}$ sin cambio de magnitud.
+(d)~Solo $G_1$. $G_2$ tiene un cero en $s=+1$ y $G_3$ un retardo. Ambos agregan atraso de fase sin que la magnitud lo delate.
+
+\solucion{e:nyq0}{Nyquist, sistema tipo 0}
+(a)~Arranca en $L(0)=K$ sobre el eje real positivo. La fase es $-3\arctan\omega$: cruza el eje imaginario negativo ($-90^\circ$)
+en $\omega=\tan30^\circ=1/\sqrt3$ y el eje real negativo ($-180^\circ$) en $\omega=\tan60^\circ=\sqrt3$.
+Allí $|L|=K/(\sqrt{1+3})^3=K/8$. La curva llega al origen tangente a $-270^\circ$ (la dirección $+j$).
+
+(b)~$P=0$. Para no rodear $-1$ hace falta $K/8<1$: $\rta{0<K<8}$.
+
+(c)~Con $K=2$ el cruce está en $-1/4$: $\MG=4$, es decir $\rta{12{,}0\dB}$. (El MF es $67{,}6^\circ$ en $\wc=0{,}77\rads$.)
+
+\solucion{e:nyqP}{Nyquist con lazo abierto inestable}
+(a)~El polo en $s=+1$ está en el SPD: $P=1$. El polo en $s=0$ se esquiva con la indentación.
+
+(b)~$L(\jw)=\dfrac{K(3+\jw)}{-\omega^2-\jw}=\dfrac{-K\big[4\omega+j(\omega^2-3)\big]}{\omega(\omega^2+1)}$. La parte imaginaria se anula en $\omega=\sqrt3$,
+y ahí $L=-\dfrac{4\sqrt3K}{\sqrt3\cdot4}=-K$. Para $\omega\to0^+$, $\mathrm{Re}\to-4K$ e $\mathrm{Im}\to+\infty$.
+
+(c)~La curva para $\omega>0$ baja desde $(-4K,+j\infty)$, cruza en $-K$ y llega al origen por el semiplano inferior.
+Con el espejo y el semicírculo infinito (horario, por la izquierda), el lazo chico entre $-K$ y el origen se recorre en sentido
+\textbf{antihorario}. Si $K>1$, el $-1$ queda adentro del lazo chico: $N=-1$ y $Z=N+P=0$, estable.
+Si $K<1$, el $-1$ queda en el lazo grande, recorrido en sentido horario: $N=+1$ y $Z=2$, inestable.
+Polinomio característico: $s^2+(K-1)s+3K$, estable si y solo si $\rta{K>1}$. \checkmark
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.62\linewidth,axis equal image,xmin=-9,xmax=1,ymin=-4.2,ymax=4.2,
+  xlabel={Re},ylabel={Im},grid=major,legend pos=outer north east,legend style={font=\scriptsize}]
+\addplot[azul,thick,postaction={decorate},decoration={markings,
+  mark=at position 0.25 with {\arrow{Stealth[length=5pt]}},mark=at position 0.75 with {\arrow{Stealth[length=5pt]}}}]
+  table[x=re,y=im]{datos/nyquist_inest.dat};
+\addplot[azul,thick,dashed,postaction={decorate},decoration={markings,
+  mark=at position 0.25 with {\arrowreversed{Stealth[length=5pt]}},mark=at position 0.75 with {\arrowreversed{Stealth[length=5pt]}}}]
+  table[x=re,y=imneg]{datos/nyquist_inest.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,rojo] coordinates{(-1,0)};
+\legend{$\omega>0$,$\omega<0$,$-1$}
+\node[font=\scriptsize,anchor=north] at (axis cs:-2,-0.15) {$-K$};
+\node[font=\scriptsize,gris,align=center] at (axis cs:-5.6,0) {cierre por $\infty$\\(horario, por la izq.)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\vspace{-4pt}
+{\small Nyquist para $K=2$: el lazo chico entre $-2$ y $0$ se recorre en sentido antihorario y encierra al $-1$.}
+
+(d)~Con $K=2$ el cruce está en $-2$. Para llegar a la inestabilidad hay que \emph{reducir} la ganancia a la mitad, hasta $K=1$.
+El MG es entonces un margen de \emph{reducción} de ganancia: $20\log(1/2)=-6\dB$. No indica inestabilidad, lo cual confirma que con $P\ne0$ los márgenes se interpretan con Nyquist.
+
+\solucion{e:marg}{Márgenes y retardo}
+$\angle L=-90-\arctan(\omega/5)-\arctan(\omega/50)=-180$, de donde $\frac{\omega}{5}\cdot\frac{\omega}{50}=1$ y $\wf=\sqrt{250}=\rta{15{,}8\rads}$.
+$|L(j\wf)|=\dfrac{10}{15{,}81\cdot\sqrt{11}\cdot\sqrt{1{,}1}}=\dfrac{10}{55}$, así que $\MG=5{,}5$, es decir $\rta{14{,}8\dB}$, y $K_c=10\cdot5{,}5=\rta{55}$.
+Routh sobre $s^3+55s^2+250s+250K$ da $55\cdot250>250K$, o sea $K<55$. \checkmark
+Cruce de ganancia (numérico): $\wc=\rta{6{,}22\rads}$, con $\angle L=-90-51{,}2-7{,}1=-148{,}3^\circ$, así que $\MF=\rta{31{,}7^\circ}$.
+Margen de retardo: $\tau_{\max}=(31{,}7/57{,}3)/6{,}22=\rta{0{,}089\,\mathrm{s}}$.
+
+\solucion{e:corr}{Correlación}
+$M_r=10^{3/20}=1{,}413$. De $\frac{1}{2\zeta\sqrt{1-\zeta^2}}=1{,}413$ sale $\zeta^2(1-\zeta^2)=0{,}1253$, cuya raíz útil es $\zeta^2=0{,}1469$, o sea $\rta{\zeta=0{,}383}$.
+$\omega_n=\omega_r/\sqrt{1-2\zeta^2}=5/0{,}840=\rta{5{,}95\rads}$.
+$M_p=e^{-\pi(0{,}383)/0{,}924}=\rta{27\pct{}}$ y $t_s\approx4/(0{,}383\cdot5{,}95)=\rta{1{,}75\,\mathrm{s}}$.
+$\MF=\arctan\dfrac{0{,}767}{\sqrt{1{,}0423-0{,}2938}}=\rta{41{,}5^\circ}$. La regla $100\zeta$ da $38^\circ$.
+
+\subsection*{Parte II}
+
+\solucion{p:lead}{Adelanto}
+$K_v=K/4=20$, así que $K=80$. $L_0=80/[s(s+4)]$: $\omega_{c0}=8{,}51\rads$ y $\MF_0=90-\arctan(8{,}51/4)=25{,}2^\circ$.
+
+\emph{Con $\delta=5^\circ$:} $\phi_m=29{,}8^\circ$, de donde $\alpha=0{,}336$ y $4{,}7\dB$. $|L_0|=-4{,}7\dB$ en $\omega_m=11{,}4$. MF obtenido: $49{,}1^\circ$. \textbf{No alcanza por poco.}
+
+\emph{Con $\delta=7^\circ$:} $\phi_m=31{,}8^\circ$, de donde $\alpha=0{,}31$ y $5{,}1\dB$. $\omega_m=11{,}66\rads$.
+El cero queda en $11{,}66\sqrt{0{,}31}=6{,}49$ y el polo en $11{,}66/\sqrt{0{,}31}=20{,}96$.
+\[
+G_c(s)=80\,\frac{s/6{,}49+1}{s/20{,}96+1}=\rta{258\,\frac{s+6{,}49}{s+20{,}96}}
+\]
+Resulta $\MF=50{,}8^\circ$ y $\wc=11{,}7\rads$. El MG es infinito porque la fase nunca llega a $-180^\circ$. $M_p\approx20\pct{}$.
+
+\solucion{p:lag}{Atraso en un sistema tipo 0}
+(a)~$K_p=K/10$ y $e_{ss}=1/(1+K_p)\le0{,}02$, así que $K_p=49$ y $K=490$.
+$L_0=490G$ tiene $\MF=-32{,}3^\circ$ y $\MG=-11{,}8\dB$: \textbf{inestable}. Routh da $K_c=126$.
+
+(b)~Fase objetivo: $-180+40+6=-134^\circ$, que ocurre en $\omega\approx2{,}2$. Se redondea a $\wc'=2\rads$, donde $\angle L_0=-63{,}4-45-21{,}8=-130{,}2^\circ$.
+$|L_0(j2)|=\dfrac{490}{\sqrt5\sqrt8\sqrt{29}}=14{,}4$, o sea $23{,}2\dB$, y por lo tanto $\beta=14{,}4$. Cero en $0{,}2$ y polo en $0{,}2/14{,}4=0{,}0139$.
+\[
+G_c(s)=490\,\frac{5s+1}{72s+1}=\rta{34{,}0\,\frac{s+0{,}2}{s+0{,}0139}}
+\]
+Verificación: $\MF=44{,}2^\circ$, $\MG=10{,}6\dB$ y $\wc=2{,}0\rads$.
+
+(c)~$G_c(0)=490$, así que $K_p$ sigue siendo 49 y el error sigue siendo del 2\pct{}. El atraso no toca la ganancia estática.
+
+\solucion{p:laglead}{Atraso-adelanto}
+$K=20$. $\wf=\sqrt2=1{,}414\rads$, donde $|L_0|=20/(\sqrt2\cdot\sqrt3\cdot\sqrt6)=3{,}33$, es decir $10{,}5\dB$.
+Adelanto: $\phi_m=50+6=56^\circ$, así que $\alpha=0{,}0935$ ($+10{,}3\dB$). Cero en $1{,}414\sqrt{0{,}0935}=0{,}432$ y polo en $4{,}63$.
+Atraso: $A=10{,}5+10{,}3=20{,}8\dB$, así que $\beta=10{,}9$. Cero en $0{,}141$ y polo en $0{,}0130$.
+\[
+G_c(s)=20\,\frac{(s/0{,}432+1)(s/0{,}141+1)}{(s/4{,}63+1)(s/0{,}013+1)}
+\]
+Verificación: $\MF=50{,}6^\circ$, $\MG=12{,}5\dB$, $\wc=1{,}42\rads$ y $M_p\approx18\pct{}$. \checkmark
+
+\solucion{p:elegir}{Elegir el compensador}
+(a)~\textbf{Adelanto}: falta poca fase, la fase no cae abruptamente y además se quiere más velocidad. El adelanto da ambas cosas.
+(b)~\textbf{Atraso}, o un PI: hay que multiplicar por 5 la ganancia de baja frecuencia sin mover el cruce. Con $\beta=5$ y el cero una década antes de $\wc$,
+el MF cae unos $5^\circ$ y la velocidad casi no cambia.
+(c)~\textbf{Atraso}: hay que bajar mucho la magnitud para recuperar fase, y el ruido aconseja no levantar la alta frecuencia.
+(d)~\textbf{Atraso-adelanto}: con $\MF=-15^\circ$ el adelanto solo pediría más de $60^\circ$, y el atraso solo bajaría $\wc$.
+
+\solucion{p:retardo}{Retardo}
+(a)~$\omega\sqrt{1+\omega^2}=2$ lleva a $\omega^4+\omega^2-4=0$, de donde $\omega^2=1{,}562$ y $\wc=\rta{1{,}25\rads}$.
+$\MF=90-\arctan1{,}25=\rta{38{,}7^\circ}$ y $\tau_{\max}=0{,}675/1{,}25=\rta{0{,}54\,\mathrm{s}}$.
+
+(b)~El retardo resta $0{,}2\cdot1{,}25=0{,}25\,$rad, es decir $14{,}3^\circ$: el MF baja a $\rta{24{,}3^\circ}$. El retardo no cambia $\wc$.
+
+(c)~Se pide $90-\arctan\wc-11{,}46\,\wc=30$, con la fase del retardo en grados. Resolviendo numéricamente, $\wc=1{,}09\rads$, y de $|L|=1$ sale
+$K=\wc\sqrt{1+\wc^2}=\rta{1{,}62}$. Entonces $K_v=1{,}62$: \textbf{el retardo obliga a resignar precisión}, salvo que se compense.
+
+\solucion{p:pi}{PI como atraso}
+Con P unitario, $|L|=1$ cuando $(1+\omega^2)(1+0{,}01\omega^2)=100$, es decir $\omega^4+101\omega^2-9900=0$. De ahí $\omega^2=61{,}1$ y $\wc=7{,}82\rads$.
+$\MF=180-\arctan7{,}82-\arctan0{,}782=180-82{,}7-38{,}0=59{,}3^\circ$.
+El PI aporta $-\arctan\frac{1}{\wc T_i}$ en el cruce. Con $T_i=10/\wc=1{,}28$\,s el aporte es $-\arctan0{,}1=-5{,}7^\circ$, y la magnitud
+apenas sube ($\times1{,}005$), así que el cruce casi no se mueve.
+\[
+G_c(s)=\frac{1{,}28\,s+1}{1{,}28\,s}\qquad\Rightarrow\qquad \MF\approx59{,}3-5{,}7=\rta{53{,}6^\circ},\quad e_{ss}=0.
+\]
+La simulación da $\MF=53{,}5^\circ$. El PI hizo el sistema tipo 1 a cambio de menos de $6^\circ$ de fase.
+
+\solucion{p:avion}{Problema integrador: la aeronave de la UT05}
+(a)~$K=2$ sube toda la curva $6{,}02\dB$ y el pico elástico pasa de $-1{,}5$ a $\rta{+4{,}5\dB}$. Ahora $|L|$ cruza $0\dB$
+\textbf{tres veces}: en 6,27, en 19,2 y en 20,6~rad/s. \texttt{margin} informa el MF del primer cruce ($23{,}8^\circ$), pero en los otros dos
+la fase está muy lejos de $-180^\circ$ (\texttt{allmargin} da ``MF'' de $-43^\circ$ y $-153^\circ$). El lazo cerrado es estable (polos elásticos en
+$-0{,}78\pm j19{,}1$, con $\zeta\approx0{,}04$), pero el modo elástico queda estabilizado \emph{solo por la fase}: si $\zeta_f$ o $\omega_f$ cambian un poco,
+puede desestabilizarse. Además, $\MF=23{,}8^\circ$ tampoco cumple.
+
+(b)~$\phi_m=45-23{,}8+10=31{,}2^\circ$, de donde $\alpha=0{,}318$, $\omega_m=8{,}85\rads$, cero en 4,99 y polo en 15,7. En 20~rad/s la red ya da casi toda su
+ganancia de alta frecuencia: $+8{,}1\dB$. El pico elástico sube a $+12{,}6\dB$ y el lazo cerrado resulta \textbf{inestable}:
+aparecen polos en $+0{,}61\pm j17{,}4$, es decir, el fuselaje oscila con amplitud creciente. \textbf{El adelanto levanta la ganancia justo donde vive la resonancia.}
+
+(c)~Hay dos condiciones sobre la atenuación de la red:
+\begin{itemize}
+\item \emph{Por MF:} $\angle L_0=-180+45+6=-129^\circ$ en $\omega=3{,}83$, donde $|L_0|=7{,}1\dB$. Alcanza con $\beta=2{,}26$, pero el pico quedaría en
+      $4{,}5-7{,}1=-2{,}6\dB$: \textbf{no cumple}.
+\item \emph{Por el pico:} hace falta atenuar $4{,}5+6=10{,}5\dB$ en 20~rad/s, o sea $\beta\ge10^{10{,}5/20}=3{,}35$.
+\end{itemize}
+\textbf{Manda el pico elástico.} Con $\beta\ge3{,}35$, el nuevo cruce tiene que estar donde $|L_0|\ge10{,}5\dB$, es decir en $\omega\le2{,}75$.
+Se elige $\wc'=2{,}5\rads$, donde $|L_0|=11{,}2\dB$ y $\angle L_0=-100{,}4^\circ$. Entonces $\beta=3{,}62$, el cero va en $0{,}25$ ($T=4$\,s) y el polo en $0{,}069$:
+\[
+G_c(s)=2\,\frac{4s+1}{14{,}5s+1}=\rta{0{,}552\,\frac{s+0{,}25}{s+0{,}069}}
+\]
+(d)~Resultados verificados por simulación:
+\begin{center}
+\small
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+Diseño & $K_v$ & MF & MG & $\wc$ [rad/s] & Pico elástico & $M_p$ & $t_s$ [s]\\
+\midrule
+Nominal $K=1$ & 2 & $45{,}8^\circ$ & $14{,}3\dB$ & 4,15 & $-1{,}5\dB$ & 12,9\pct{} & 3,8\\
+$K=2$ sin compensar & 4 & $23{,}8^\circ$ & $8{,}3\dB$ & 6,27 & $+4{,}5\dB$ & 36\pct{} & 3,0\\
+$K=2$ + adelanto & 4 & \multicolumn{6}{c}{\textbf{inestable} (modo elástico)}\\
+$K=2$ + atraso & 4 & $75{,}1^\circ$ & $19{,}2\dB$ & 2,52 & $-6{,}7\dB$ & 5,3\pct{} & 10,6\\
+\bottomrule
+\end{tabular}
+\end{center}
+El atraso duplica la precisión ante rampa y deja el modo elástico bien por debajo de $0\dB$. A cambio, el lazo es más lento
+($\wc$ baja de 4,15 a 2,5) y aparece la cola del dipolo. Moraleja: \textbf{con un modo resonante cerca del cruce, el adelanto lo empeora;
+el atraso (o un filtro \emph{notch} centrado en $\omega_f$) lo controla.}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[xmode=log,minor x tick num=8,width=0.8\linewidth,height=5.2cm,xmin=0.1,xmax=100,ymin=-50,ymax=40,
+  xlabel={$\omega$ [rad/s]},ylabel={$|L|$ [dB]},legend pos=south west,legend columns=2]
+\addplot[gris,thick,densely dotted] table[x=w,y=m1]{datos/avion.dat};
+\addplot[antes] table[x=w,y=m0]{datos/avion.dat};
+\addplot[rojo,thick] table[x=w,y=mlead]{datos/avion.dat};
+\addplot[azul,thick] table[x=w,y=mlag]{datos/avion.dat};
+\legend{$K=1$,$K=2$,$K=2$ + adelanto,$K=2$ + atraso}
+\draw[black] (axis cs:0.1,0)--(axis cs:100,0);
+\draw[verde,dashed] (axis cs:0.1,-6)--(axis cs:100,-6);
+\node[font=\scriptsize,verde,anchor=south west] at (axis cs:0.11,-6) {límite del pico elástico: $-6\dB$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+% =====================================================================
+\appendix
+\section{Formulario}
+\label{ap:formulario}
+{\small
+\begin{tcolorbox}[base,colback=white,colframe=azul,title={Bode}]
+$|G|_{\mathrm{dB}}=20\log|G|$. Forma de Bode: $K_B=\lim s^NG$. Primer orden: $\pm20\dBdec$, error de $\pm3\dB$ en el quiebre, fase de $\pm45^\circ$ en el quiebre.
+Segundo orden: $\pm40\dBdec$, error de $-20\log(2\zeta)$ en $\omega_n$, $M_r=\frac{1}{2\zeta\sqrt{1-\zeta^2}}$ y $\omega_r=\omega_n\sqrt{1-2\zeta^2}$ ($\zeta<0{,}707$).
+Retardo: $0\dB$ y fase $-\omega T$ rad. Constantes de error: tipo 0, $20\log K_p$; tipo 1, la asíntota corta $0\dB$ en $K_v$; tipo 2, en $\sqrt{K_a}$.
+\end{tcolorbox}
+\begin{tcolorbox}[base,colback=white,colframe=azul,title={Nyquist y márgenes}]
+$Z=N+P$ (rodeos al $-1$, horario positivo). $\MF=180^\circ+\angle L(j\wc)$ con $|L(j\wc)|=1$.
+$\MG=1/|L(j\wf)|$ con $\angle L(j\wf)=-180^\circ$. $K_c=K\cdot10^{\MG_{\mathrm{dB}}/20}$. $\tau_{\max}=\MF[\mathrm{rad}]/\wc$.
+Diseño: $\MF$ de $45^\circ$ a $60^\circ$ y $\MG\ge6$--$10\dB$.
+\end{tcolorbox}
+\begin{tcolorbox}[base,colback=white,colframe=azul,title={Lazo cerrado y correlación (2.º orden)}]
+$\zeta\approx\MF/100$. $M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$. $t_s\approx4/(\zeta\omega_n)$. $\wc\lesssim\omega_{BW}\lesssim2\wc$.
+$\MF=\arctan\frac{2\zeta}{\sqrt{\sqrt{1+4\zeta^4}-2\zeta^2}}$. $\omega_{BW}=\omega_n\sqrt{1-2\zeta^2+\sqrt{4\zeta^4-4\zeta^2+2}}$.
+\end{tcolorbox}
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Adelanto: $G_c=K\frac{Ts+1}{\alpha Ts+1}$\,,\ $\alpha<1$}]
+$\phi_m=\MF_{\text{req}}-\MF_0+\delta$ ($\delta$ de $5^\circ$ a $12^\circ$). $\alpha=\frac{1-\sin\phi_m}{1+\sin\phi_m}$.
+$\omega_m$: frecuencia donde $|L_0|=-10\log(1/\alpha)$ dB, que es el nuevo $\wc$. $1/T=\omega_m\sqrt\alpha$ y $1/(\alpha T)=\omega_m/\sqrt\alpha$. Verificar.
+\end{tcolorbox}
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Atraso: $G_c=K\frac{Ts+1}{\beta Ts+1}$\,,\ $\beta>1$}]
+$\wc'$: frecuencia donde $\angle L_0=-180+\MF_{\text{req}}+\delta$ ($\delta\approx6^\circ$). $\beta=10^{|L_0(j\wc')|_{\mathrm{dB}}/20}$.
+$1/T=\wc'/10$ y $1/(\beta T)=\wc'/(10\beta)$. Verificar.
+\end{tcolorbox}
+\begin{tcolorbox}[base,colback=white,colframe=verde,title={Atraso-adelanto}]
+Elegir $\wc'$ (por ejemplo, $\wf$). Adelanto centrado en $\wc'$ con $\phi_m=\MF_{\text{req}}-\MF_0(\wc')+6^\circ$.
+Atraso con $\beta=10^{A/20}$, donde $A=|L_0(j\wc')|_{\mathrm{dB}}+10\log(1/\alpha)$, y cero en $\wc'/10$.
+\end{tcolorbox}
+}
+
+\section{Verificación con MATLAB}
+\label{ap:matlab}
+Las funciones de la \emph{Control System Toolbox} que cubren todo el apunte son:
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\texttt{bode(L)}, \texttt{bode(L1,L2)} & Diagrama de Bode (superpone varios sistemas)\\
+\texttt{margin(L)}, \texttt{[Gm,Pm,Wpc,Wgc]=margin(L)} & Bode con márgenes / valores numéricos ($G_m$ en veces)\\
+\texttt{allmargin(L)} & Todos los cruces, márgenes de retardo y estabilidad\\
+\texttt{nyquist(L)}, \texttt{nichols(L)}; \texttt{ngrid} & Nyquist y Nichols (con contornos M)\\
+\texttt{T=feedback(L,1)} & Lazo cerrado con realimentación unitaria\\
+\texttt{bandwidth(T)}, \texttt{getPeakGain(T)} & Ancho de banda y $M_r$\\
+\texttt{step(T)}, \texttt{stepinfo(T)}, \texttt{lsim(T,u,t)} & Respuestas temporales\\
+\texttt{dcgain(minreal(s*L))} & $K_v$\\
+\texttt{controlSystemDesigner(G)} & Diseño interactivo arrastrando polos y ceros sobre el Bode\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Diseño completo del ejemplo~\ref{ej:lead} (adelanto). El archivo \texttt{compensacion.m} reproduce todos los ejemplos:
+\begin{tcolorbox}[base,colback=gris!4,colframe=gris,boxrule=0.4pt]
+\small
+\begin{verbatim}
+s  = tf('s');
+G  = 1/(s*(s+1)*(0.05*s+1));
+K  = 10;  L0 = K*G;                      % 1. ganancia por Kv
+[~,MF0,~,wc0] = margin(L0);
+phim  = 45 - MF0 + 12;                   % 2. fase a agregar (delta = 12)
+alfa  = (1-sind(phim))/(1+sind(phim));   % 3.
+magdB = @(x) 20*log10(abs(evalfr(L0,1j*x)));   % 4. |L0| = -10 log(1/alfa)
+wm    = fzero(@(x) magdB(x) + 10*log10(1/alfa), [wc0 100]);
+T     = 1/(wm*sqrt(alfa));               % 5.
+Gc    = K*(T*s+1)/(alfa*T*s+1);
+L     = Gc*G;                            % 6. verificar
+figure; margin(L); figure; step(feedback(L0,1), feedback(L,1), 8)
+\end{verbatim}
+\end{tcolorbox}
+
+\end{document}
