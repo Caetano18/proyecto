@@ -237,6 +237,16 @@ w = np.logspace(-1, 2, 1500)
 guardar("avion.dat", {"w": w, "m1": mag_db(Gav, w), "m0": mag_db(L0, w), "mlead": mag_db(Llead, w),
                       "mlag": mag_db(Llag, w)})
 
+# 17. Estabilidad condicional: L = 200 (1+s)^2 / (s (1+10s)^2 (1+0.1s)^2)
+Lcond = 200 * (1 + s)**2 / (s * (1 + 10 * s)**2 * (1 + 0.1 * s)**2)
+w = np.logspace(-2, 2, 800)
+guardar("condicional.dat", {"w": w, "mag": mag_db(Lcond, w), "fase": fase(Lcond, w)})
+
+# 18. Bode "impreso" para el ejercicio de lectura: G = 5/(s(1+s/2)(1+s/20))
+Gimp = 5 / (s * (1 + s / 2) * (1 + s / 20))
+w = np.logspace(-1, 2, 600)
+guardar("bode_impreso.dat", {"w": w, "mag": mag_db(Gimp, w), "fase": fase(Gimp, w)})
+
 # ---------------------------------------------------------------- resumen
 def resumen(nombre, L):
     gm, pm, wpc, wgc = ct.margin(L)
@@ -267,3 +277,5 @@ if __name__ == "__main__":
     resumen("avion K=2", L0)
     resumen("avion adelanto", Llead)
     resumen("avion atraso", Llag)
+    resumen("condicional K=200", Lcond)
+    resumen("Bode impreso", Gimp)
