@@ -449,7 +449,7 @@ general se deduce del comportamiento en los dos extremos:
       $\mathrm{Re}=-K_v\sum T_i$ ($T_i$: constantes de tiempo de los polos menos las de los ceros).
       Uno tipo 2 arranca en el infinito en dirección $-180^\circ$.
 \item $\omega\to\infty$: si $n>m$ y el sistema es de fase mínima, llega al origen tangente a la dirección $-90^\circ(n-m)$.
-      Un cero en el SPD agrega $-90^\circ$ más. Con un retardo, la fase decrece sin límite y la curva se enrolla hacia el origen en \textbf{espiral}.
+      Cada cero en el SPD resta $180^\circ$ a esa dirección, porque aporta $-90^\circ$ en lugar de $+90^\circ$. Con un retardo, la fase decrece sin límite y la curva se enrolla hacia el origen en \textbf{espiral}.
 \end{itemize}
 
 \begin{figure}[ht]
@@ -574,12 +574,13 @@ L(s)=\frac{K(1+s)^2}{s(1+10s)^2(1+0{,}1s)^2},\qquad P=0.
 \]
 Su fase cruza $-180^\circ$ \textbf{tres veces} (figura~\ref{fig:condicional}). En $\omega=0{,}125$, $1$ y $7{,}97\rads$, el módulo de $L/K$ vale
 3,148, 0,0196 y 0,000778. Por lo tanto, la curva corta el semieje real negativo en $-3{,}148K$, $-0{,}0196K$ y $-0{,}000778K$.
-En los cruces primero y tercero la curva sube, y en el segundo baja. Cada cruce a la izquierda de $-1$ suma un rodeo, con signo según el sentido:
+En los cruces primero y tercero la curva sube, y en el segundo baja. Cada corte del tramo $\omega>0$ a la izquierda de $-1$ se repite en su
+espejo ($\omega<0$) con el mismo sentido, así que aporta \textbf{dos} rodeos: $+2$ si sube (horario) y $-2$ si baja (antihorario).
 \begin{itemize}
 \item $K<0{,}318$: ningún cruce queda a la izquierda de $-1$. $N=0$, \textbf{estable}.
 \item $0{,}318<K<51$: solo el primero queda a la izquierda. $N=2$, inestable.
-\item $51<K<1285$: quedan los dos primeros, que se cancelan. $N=0$, \textbf{estable}.
-\item $K>1285$: quedan los tres. $N=2$, inestable.
+\item $51<K<1285$: quedan los dos primeros, que se cancelan. $N=2-2=0$, \textbf{estable}.
+\item $K>1285$: quedan los tres. $N=2-2+2=2$, inestable.
 \end{itemize}
 Con $K=200$: $\MF=21{,}9^\circ$ en $\wc=2{,}27\rads$. La ganancia se puede \emph{aumentar} 6,42 veces ($+16{,}2\dB$, cruce en 7,97~rad/s)
 o \emph{reducir} hasta 0,255 veces ($-11{,}9\dB$, cruce en 1~rad/s) antes de llegar a la inestabilidad.
@@ -690,7 +691,9 @@ Sin el retardo, la fase nunca llegaría a $-180^\circ$ y el MG sería infinito.
 
 \begin{cuidado}[Cuándo los márgenes engañan]
 \begin{itemize}
-\item \textbf{Varios cruces de $0\dB$.} Si $|L|$ cruza $0\dB$ varias veces (por ejemplo, por una resonancia), hay varios MF y vale el menor.
+\item \textbf{Varios cruces de $0\dB$.} Si $|L|$ cruza $0\dB$ varias veces (por ejemplo, por una resonancia), hay varios MF. Se toma el de menor valor
+      absoluto, midiendo la fase respecto del $-180^\circ+k\cdot360^\circ$ más cercano. Un ``MF'' negativo en un cruce secundario no implica inestabilidad
+      (ejercicio~\ref{p:avion}): con varios cruces hay que contar rodeos.
 \item \textbf{Varios cruces de $-180^\circ$.} Pasa en lazos condicionalmente estables (sección~\ref{sec:condicional}). Puede haber un margen de
       \emph{reducción} de ganancia además del de aumento.
 \item \textbf{Lazo abierto inestable ($P\ne0$).} El MG puede salir negativo en dB aunque el sistema sea estable. Hay que usar Nyquist completo.
@@ -731,7 +734,8 @@ Para caracterizar $T$ se usan:
 \item \textbf{Ancho de banda} $\omega_{BW}$: frecuencia donde $|T|$ cae $3\dB$ por debajo de su valor en $\omega=0$. Mide la rapidez:
       a mayor ancho de banda, menores $t_r$ y $t_s$. En lazos típicos ($|L|\gg1$ por debajo del cruce, pendiente cercana a $-20\dBdec$ en $\wc$
       y MF entre $30^\circ$ y $60^\circ$) vale $\wc\lesssim\omega_{BW}\lesssim2\wc$. No vale si $|L|$ es apenas mayor que 1 en una banda ancha:
-      en el ejemplo~\ref{ej:bode}, $\omega_{BW}=3{,}0$ con $\wc=9{,}3\rads$.
+      en el ejemplo~\ref{ej:bode}, $\omega_{BW}=3{,}0$ con $\wc=9{,}3\rads$. Además, en ese lazo $|T|$ vuelve a subir hasta $+4{,}3\dB$ cerca de
+      39~rad/s, por la misma resonancia que deja $\MG=4{,}5\dB$: un único número de ancho de banda no lo describe bien.
 \end{itemize}
 
 \textbf{Sensibilidad.} La otra transferencia importante es $S=\dfrac{1}{1+L}$, que va de la referencia al error y de una perturbación
@@ -1444,7 +1448,8 @@ PID & $0{,}6\,K_u$ & $P_u/2$ & $P_u/8$\\
 \end{tabular}
 \end{center}
 \textbf{Lectura en frecuencia.} En $\wf$, el PID de Z-N vale $1{,}10\,K_p\angle{+25^\circ}$. Lleva el punto $L(j\wf)$ desde $-1$ hasta $-0{,}60-j0{,}28$,
-y por eso deja un MF de unos $25^\circ$ a $30^\circ$: una respuesta agresiva, con sobrepicos del 40\pct{} al 50\pct{}.
+que queda a solo $0{,}49$ del $-1$ ($M_s\gtrsim2$). En plantas típicas eso da un MF de unos $25^\circ$ a $30^\circ$: una respuesta agresiva, con sobrepicos
+del 40\pct{} al 50\pct{}. El PI de Z-N, en cambio, \emph{atrasa} unos $11^\circ$ en $\wf$ y deja márgenes menores ($\MF=15^\circ$ en el ejemplo siguiente).
 \textbf{Z-N da un punto de partida que después se afina sobre el Bode}.
 
 \textbf{Ejemplo.} Para $G=1/(s+1)^3$ (ejercicio~\ref{e:nyq0}): $K_u=8$, $\wf=\sqrt3$ y $P_u=3{,}63$\,s. El PID queda $K_p=4{,}8$, $T_i=1{,}81$\,s y $T_d=0{,}45$\,s.
@@ -1826,15 +1831,18 @@ La simulación da $\MF=53{,}5^\circ$. El PI hizo el sistema tipo 1 a cambio de m
 
 \solucion{p:avion}{Problema integrador: la aeronave de la UT05}
 (a)~$K=2$ sube toda la curva $6{,}02\dB$ y el pico elástico pasa de $-1{,}5$ a $\rta{+4{,}5\dB}$. Ahora $|L|$ cruza $0\dB$
-\textbf{tres veces}: en 6,27, en 19,2 y en 20,6~rad/s. \texttt{margin} informa un solo MF, el peor de todos los cruces, que acá es el del primero ($23{,}8^\circ$); pero en los otros dos
-la fase está muy lejos de $-180^\circ$ (\texttt{allmargin} da ``MF'' de $-43^\circ$ y $-153^\circ$). El lazo cerrado es estable (polos elásticos en
-$-0{,}78\pm j19{,}1$, con $\zeta\approx0{,}04$), pero el modo elástico queda estabilizado \emph{solo por la fase}: donde $|L|>1$, la fase va de $-223^\circ$ a $-333^\circ$, a unos $43^\circ$ de $-180^\circ$.
-Bajar $\zeta_f$ no lo desestabiliza (agranda el pico, pero no cambia esa fase). Sí lo desestabilizan un adelanto de fase de unos $43^\circ$ cerca
-de 19~rad/s (justo lo que hace la red del punto b), más ganancia, o una baja grande de $\omega_f$ (por debajo de unos 13~rad/s).
+\textbf{tres veces}: en 6,27, en 19,2 y en 20,6~rad/s. \texttt{margin} informa un solo MF, el peor de todos los cruces, que acá es el del primero ($23{,}8^\circ$); en los otros dos
+la fase está más lejos de $-180^\circ$ (\texttt{allmargin} da ``MF'' de $-43^\circ$ y $-153^\circ$). El lazo cerrado es estable (polos elásticos en
+$-0{,}78\pm j19{,}1$, con $\zeta\approx0{,}04$), pero el modo elástico queda estabilizado \emph{solo por la fase}: donde $|L|>1$, la fase va de $-223^\circ$ a $-333^\circ$.
+Cerca de $\omega_f$ la fase del cuerpo rígido ya vale $\approx-191^\circ$, y el modo solo resta hasta $180^\circ$ más, así que bajar $\zeta_f$ no lo desestabiliza.
+Pero sí achica la holgura: el borde de esa banda queda a $43^\circ$ de $-180^\circ$ con $\zeta_f=0{,}025$, a $23^\circ$ con $0{,}01$ y a unos $12^\circ$ si $\zeta_f\to0$.
+Lo desestabilizan un adelanto de fase cerca de 19~rad/s, sobre todo si viene con ganancia (punto b), o una baja grande de $\omega_f$ (por debajo de unos 12,6~rad/s).
+Subir $K$, en cambio, desestabiliza primero el cruce de cuerpo rígido ($K=5{,}19$, en 11,84~rad/s), no el modo elástico.
 Como esa fase es incierta, se prefiere estabilizar el modo \emph{por ganancia}, con el pico de $|L|$ por debajo de $-6\dB$. Además, $\MF=23{,}8^\circ$ tampoco cumple.
 
 (b)~$\phi_m=45-23{,}8+10=31{,}2^\circ$, de donde $\alpha=0{,}318$, $\omega_m=8{,}85\rads$, cero en 4,99 y polo en 15,7. En 20~rad/s la red ya da casi toda su
-ganancia de alta frecuencia: $+8{,}1\dB$. El pico elástico sube a $+12{,}6\dB$ y el lazo cerrado resulta \textbf{inestable}:
+ganancia de alta frecuencia ($+8{,}1\dB$) y unos $+24^\circ$ de fase. El tramo con $|L|>1$ se extiende hacia abajo hasta 16,9~rad/s, donde la fase
+ya está por encima de $-180^\circ$. El pico elástico sube a $+12{,}6\dB$ y el lazo cerrado resulta \textbf{inestable}:
 aparecen polos en $+0{,}61\pm j17{,}4$, es decir, el fuselaje oscila con amplitud creciente. \textbf{El adelanto levanta la ganancia justo donde vive la resonancia.}
 
 (c)~Hay dos condiciones sobre la atenuación de la red:
@@ -1864,8 +1872,9 @@ $K=2$ + atraso & 4 & $75{,}1^\circ$ & $19{,}2\dB$ & 2,52 & $-6{,}7\dB$ & 5,3\pct
 \end{center}
 El atraso duplica la precisión ante rampa y deja el modo elástico bien por debajo de $0\dB$. A cambio, el lazo es más lento
 ($\wc$ baja de 4,15 a 2,5) y aparece la cola del dipolo. Moraleja: \textbf{con un modo resonante cerca del cruce, el adelanto lo empeora;
-el atraso lo controla.} Un filtro \emph{notch} centrado en $\omega_f$ también baja el pico, pero resta fase en el cruce (acá, entre $11^\circ$ y $25^\circ$ según su ancho),
-no arregla el MF del cuerpo rígido y exige conocer bien $\omega_f$. Por eso se lo usa combinado con un atraso.
+el atraso lo controla.} Un filtro \emph{notch} centrado en $\omega_f$ también baja el pico, pero no arregla el MF del cuerpo rígido y exige conocer bien $\omega_f$, así que
+siempre va junto con otro compensador. Lo habitual es notch más adelanto: el notch neutraliza el pico que el adelanto levantaría y se conserva el ancho
+de banda, rediseñando el adelanto con la fase que resta el notch ($11^\circ$ a $25^\circ$ en $\wc\approx6{,}3\rads$, según su ancho).
 
 \begin{center}
 \begin{tikzpicture}
@@ -1947,7 +1956,8 @@ Elegir $\wc'$ (por ejemplo, $\wf$). Adelanto centrado en $\wc'$ con $\phi_m=\MF_
 Atraso con $\beta=10^{A/20}$, donde $A=|L_0(j\wc')|_{\mathrm{dB}}+10\log(1/\alpha)$, y cero en $\wc'/10$.
 \end{tcolorbox}
 \begin{tcolorbox}[base,colback=white,colframe=verde,title={Ziegler-Nichols (ganancia última)}]
-$K_u=K_c$ y $P_u=2\pi/\wf$. P: $0{,}5K_u$. PI: $0{,}45K_u$ y $T_i=P_u/1{,}2$. PID: $0{,}6K_u$, $T_i=P_u/2$ y $T_d=P_u/8$. Deja un MF de unos $25^\circ$--$30^\circ$.
+$K_u=K_c$ y $P_u=2\pi/\wf$. P: $0{,}5K_u$. PI: $0{,}45K_u$ y $T_i=P_u/1{,}2$. PID: $0{,}6K_u$, $T_i=P_u/2$ y $T_d=P_u/8$.
+El PID lleva $L(j\wf)$ a $-0{,}60-j0{,}28$ y suele dejar un MF de $25^\circ$--$30^\circ$; el PI atrasa $11^\circ$ en $\wf$ y deja márgenes menores.
 \end{tcolorbox}
 }
 
