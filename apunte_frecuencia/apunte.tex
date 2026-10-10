@@ -118,7 +118,8 @@
 \begin{idea}[Cómo usar este apunte]
 La \textbf{Parte I} desarrolla las curvas de respuesta en frecuencia: Bode, diagrama polar, Nyquist,
 Nichols, márgenes de estabilidad y la correlación con la respuesta temporal. La \textbf{Parte II} usa esas
-herramientas para diseñar compensadores de \textbf{adelanto}, \textbf{atraso} y \textbf{atraso-adelanto}.
+herramientas para diseñar compensadores de \textbf{adelanto}, \textbf{atraso} y \textbf{atraso-adelanto}, y los relaciona con el PID
+(incluida la sintonía de Ziegler-Nichols) y con la realimentación tacométrica.
 Cada tema tiene un ejemplo resuelto con números verificados por simulación.
 Los ejercicios están al final de cada parte y las \textbf{soluciones completas} en la sección~\ref{sec:soluciones}.
 Conviene intentarlos antes de mirar la solución. El formulario del Apéndice~\ref{ap:formulario} resume todo en una página
@@ -604,8 +605,8 @@ o \emph{reducir} hasta 0,255 veces ($-11{,}9\dB$, cruce en 1~rad/s) antes de lle
 \draw[rojo,dashed] (axis cs:0.1254,-280)--(axis cs:0.1254,-80) (axis cs:1,-280)--(axis cs:1,-80) (axis cs:7.975,-280)--(axis cs:7.975,-80);
 \end{groupplot}
 \end{tikzpicture}
-\caption{Lazo condicionalmente estable con $K=200$. La fase cruza $-180^\circ$ tres veces (líneas rojas). En el segundo cruce $|L|>0\dB$, y aun así
-el lazo es estable: el margen de ese cruce es de \emph{reducción} de ganancia.}
+\caption{Lazo condicionalmente estable con $K=200$. La fase cruza $-180^\circ$ tres veces (líneas rojas). En los dos primeros cruces $|L|>0\dB$, y aun así
+el lazo es estable porque sus rodeos se cancelan. El margen del segundo cruce es de \emph{reducción} de ganancia.}
 \label{fig:condicional}
 \end{figure}
 
@@ -734,7 +735,7 @@ Para caracterizar $T$ se usan:
 \item \textbf{Ancho de banda} $\omega_{BW}$: frecuencia donde $|T|$ cae $3\dB$ por debajo de su valor en $\omega=0$. Mide la rapidez:
       a mayor ancho de banda, menores $t_r$ y $t_s$. En lazos típicos ($|L|\gg1$ por debajo del cruce, pendiente cercana a $-20\dBdec$ en $\wc$
       y MF entre $30^\circ$ y $60^\circ$) vale $\wc\lesssim\omega_{BW}\lesssim2\wc$. No vale si $|L|$ es apenas mayor que 1 en una banda ancha:
-      en el ejemplo~\ref{ej:bode}, $\omega_{BW}=3{,}0$ con $\wc=9{,}3\rads$. Además, en ese lazo $|T|$ vuelve a subir hasta $+4{,}3\dB$ cerca de
+      en el ejemplo~\ref{ej:bode}, $\omega_{BW}=3{,}1$ con $\wc=9{,}3\rads$. Además, en ese lazo $|T|$ vuelve a subir hasta $+4{,}3\dB$ cerca de
       39~rad/s, por la misma resonancia que deja $\MG=4{,}5\dB$: un único número de ancho de banda no lo describe bien.
 \end{itemize}
 
@@ -755,7 +756,7 @@ El punto crítico $-1$ es $(-180^\circ,\ 0\dB)$. El MF es la distancia horizonta
 del cruce de $-180^\circ$ a $0\dB$. Su gran ventaja: \textbf{cambiar la ganancia desplaza la curva verticalmente sin deformarla}.
 
 \textbf{Círculos M y elección de $K$ para un $M_r$.} En el plano polar, el lugar $|T|=M$ es una circunferencia de centro
-$\big(-\tfrac{M^2}{M^2-1},\,0\big)$ y radio $\tfrac{M}{|M^2-1|}$. $M=1$ es la recta $\mathrm{Re}=-\tfrac12$, y $M=1{,}3$ tiene centro en $-2{,}45$ y radio $1{,}88$.
+$\big(-\tfrac{M^2}{M^2-1},\,0\big)$ y radio $\tfrac{M}{|M^2-1|}$. $M=1$ es la recta $\mathrm{Re}=-\tfrac12$, y $M=1{,}4$ tiene centro en $-2{,}04$ y radio $1{,}46$.
 $M_r$ es el mayor $M$ cuyo círculo toca la curva $L(\jw)$; la carta de Nichols es el mismo dibujo pasado a dB y grados.
 Para lograr un $M_r$ pedido, se \textbf{desplaza la curva verticalmente hasta que quede tangente a ese contorno}. El desplazamiento en dB es
 $20\log$ de la relación de ganancias. En la figura~\ref{fig:nichols}, $K=2$ da $M_r=5{,}3\dB$. Para $M_r=1{,}3$ ($2{,}3\dB$) hay que bajar
@@ -780,6 +781,7 @@ intermedio entre los de $3$ y $6\dB$: $M_r=5{,}3\dB$ en $\omega_r=0{,}82\rads$, 
 \end{figure}
 
 \subsection{Correlación tiempo--frecuencia}
+\label{sec:correl}
 Para el lazo de segundo orden estándar
 \[
 L(s)=\frac{\omega_n^2}{s(s+2\zeta\omega_n)}\qquad\Longrightarrow\qquad T(s)=\frac{\omega_n^2}{s^2+2\zeta\omega_n s+\omega_n^2}
@@ -811,7 +813,7 @@ reservar $5^\circ$ a $10^\circ$ más de MF.
 \item $t_s\ \Rightarrow\ \wc\ge\dfrac{8}{t_s\tan\MF}$. Equivale a $\omega_n=4/(\zeta t_s)$ y $\wc=\omega_n\sqrt{\sqrt{1+4\zeta^4}-2\zeta^2}$.
 \item Si hace falta, $\omega_{BW}$ con su fórmula.
 \end{enumerate}
-\textbf{Ejemplo.} $M_p\le20\pct{}$ y $t_s\le2$\,s. Resulta $\zeta=0{,}456$, de donde $\MF\ge48{,}2^\circ$, y
+\textbf{Ejemplo.} $M_p\le20\pct{}$ y $t_s\le2$\,s. Resulta $\zeta=0{,}456$, de donde $\MF\ge48{,}2^\circ$ (redondeado hacia arriba, el lado seguro), y
 $\wc\ge8/(2\tan48{,}2^\circ)=3{,}58\rads$ (con $\omega_n=4{,}39$ y $\omega_{BW}=5{,}79\rads$). El diseño correspondiente está en el ejemplo~\ref{ej:specs}.
 \end{receta}
 
@@ -886,28 +888,28 @@ Sea $L(s)=\dfrac{K\,(s+3)}{s\,(s-1)}$ con $K>0$.
 (c)~Usar $Z=N+P$ para obtener el rango de $K$ estable y verificar con el polinomio característico.
 (d)~¿Qué significa que MATLAB informe $\MG=-6\dB$ para $K=2$?
 
+\ejercicio{Tipo 2 y estabilidad condicional}\label{e:tipo2}
+(a)~Para $L(s)=\dfrac{K(1+2s)}{s^2(1+0{,}5s)}$, mostrar con Nyquist y con Routh que el lazo es estable para todo $K>0$.
+(b)~¿En qué frecuencia la fase está más lejos de $-180^\circ$? ¿Qué $K$ hace que el cruce caiga ahí, y cuánto vale entonces el MF?
+(c)~Para el lazo condicionalmente estable de la sección~\ref{sec:condicional}, decidir si es estable con $K=0{,}2$, con $K=20$ y con $K=2000$.
+
 \ejercicio{Márgenes y retardo}\label{e:marg}
 Para $L(s)=\dfrac{10}{s\,(1+s/5)\,(1+s/50)}$ calcular $\wf$, MG, $K_c$, $\wc$, MF y el margen de retardo.
-
-\ejercicio{Correlación}\label{e:corr}
-En un ensayo de lazo cerrado se midió $M_r=3\dB$ en $\omega_r=5\rads$. Suponiendo polos dominantes de segundo orden,
-estimar $\zeta$, $\omega_n$, $M_p$, $t_s$ (2\pct{}) y el MF del lazo abierto.
 
 \ejercicio{Régimen senoidal y sensibilidad}\label{e:sens}
 Con $L(s)=\dfrac{2}{s(s+1)}$ y realimentación unitaria:
 (a)~si $r(t)=\sin t$, hallar $y_{ss}(t)$ y $e_{ss}(t)$;
 (b)~si actúa una perturbación en la salida $d(t)=\sin(0{,}1t)$, ¿qué fracción de su amplitud queda en la salida? Comparar con $1/|L|$.
 
-\ejercicio{Tipo 2 y estabilidad condicional}\label{e:tipo2}
-(a)~Para $L(s)=\dfrac{K(1+2s)}{s^2(1+0{,}5s)}$, mostrar con Nyquist y con Routh que el lazo es estable para todo $K>0$.
-(b)~¿En qué frecuencia la fase está más lejos de $-180^\circ$? ¿Qué $K$ hace que el cruce caiga ahí, y cuánto vale entonces el MF?
-(c)~Para el lazo condicionalmente estable de la sección~\ref{sec:condicional}, decidir si es estable con $K=0{,}2$, con $K=20$ y con $K=2000$.
-
 \ejercicio{Ganancia para un $M_r$}\label{e:Mr}
 Sea $L(s)=\dfrac{K}{s(s+1)(s+5)}$.
 (a)~Dar el centro y el radio del círculo $M=1{,}3$.
 (b)~Con una carta de Nichols (o \texttt{getPeakGain}), hallar $K$ para $M_r=1{,}3$ y compararlo con el $K=4{,}67$ que da $\MF=45^\circ$ (sección~\ref{sec:margenes}).
 (c)~Estimar $\omega_{BW}$.
+
+\ejercicio{Correlación}\label{e:corr}
+En un ensayo de lazo cerrado se midió $M_r=3\dB$ en $\omega_r=5\rads$. Suponiendo polos dominantes de segundo orden,
+estimar $\zeta$, $\omega_n$, $M_p$, $t_s$ (2\pct{}) y el MF del lazo abierto.
 
 % =====================================================================
 \parte{II}{Compensación en frecuencia}
@@ -1135,25 +1137,26 @@ y al sumarle la red, $-182{,}5+47{,}6=-134{,}9^\circ$. Resulta $\MF\approx45{,}1
 \end{figure}
 
 \subsection{Variante: cruce impuesto por la velocidad}
-Muchas veces la especificación no es $K_v$ sino $M_p$ y $t_s$. Con la receta de la sección~\ref{sec:LaT} se pasa a un MF y a un $\wc$ mínimos.
+Muchas veces la especificación no es $K_v$ sino $M_p$ y $t_s$. Con la receta de la sección~\ref{sec:correl} se pasa a un MF y a un $\wc$ mínimos.
 Si además no hay especificación de error, $K$ queda libre y el procedimiento se invierte: \textbf{se fija el cruce y se centra la red en él}.
 \begin{enumerate}[label=\textbf{\arabic*.}]
-\item $\phi_m=\MF_{\text{req}}-\big(180^\circ+\angle G(j\wc)\big)+\delta$, con $\delta\approx5^\circ$ por el cero del adelanto.
+\item $\phi_m=\MF_{\text{req}}-\big(180^\circ+\angle G(j\wc)\big)+\delta$, con $\delta\approx5^\circ$--$10^\circ$ por el cero del adelanto
+      (verificar $M_p$ por simulación; ver el ejercicio~\ref{p:specs}).
 \item $\alpha=\dfrac{1-\sin\phi_m}{1+\sin\phi_m}$, y la red se centra en $\omega_m=\wc$: $1/T=\wc\sqrt\alpha$ y $1/(\alpha T)=\wc/\sqrt\alpha$.
 \item En $\wc$ la red aporta $1/\sqrt\alpha$, así que, para que $|G_cG|=1$ ahí, hace falta $K=\sqrt\alpha/|G(j\wc)|$.
 \end{enumerate}
 
 \begin{ejemplo}{Adelanto a partir de $M_p$ y $t_s$}
 \label{ej:specs}
-Planta $G(s)=\dfrac{1}{s(s+1)}$, con $M_p\le20\pct{}$ y $t_s\le2$\,s. Según la receta de la sección~\ref{sec:LaT}: $\MF\ge48{,}2^\circ$ y $\wc\ge3{,}58\rads$.
+Planta $G(s)=\dfrac{1}{s(s+1)}$, con $M_p\le20\pct{}$ y $t_s\le2$\,s. Según la receta de la sección~\ref{sec:correl}: $\MF\ge48{,}2^\circ$ y $\wc\ge3{,}58\rads$.
 
 $\angle G(j3{,}58)=-90-\arctan3{,}58=-164{,}4^\circ$, de modo que hay $15{,}6^\circ$ de MF disponibles.
-Entonces $\phi_m=48{,}2-15{,}6+5=37{,}6^\circ$, de donde $\alpha=0{,}243$. Cero en $3{,}58\sqrt{0{,}243}=1{,}77$ y polo en $3{,}58/\sqrt{0{,}243}=7{,}27$.
-$|G(j3{,}58)|=0{,}0750$, así que $K=\sqrt{0{,}243}/0{,}0750=6{,}57$.
+Entonces $\phi_m=48{,}2-15{,}6+5=37{,}6^\circ$, de donde $\alpha=0{,}242$. Cero en $3{,}58\sqrt{0{,}242}=1{,}76$ y polo en $3{,}58/\sqrt{0{,}242}=7{,}28$.
+$|G(j3{,}58)|=0{,}0751$, así que $K=\sqrt{0{,}242}/0{,}0751=6{,}55$.
 \[
-\boxed{G_c(s)=6{,}57\,\frac{s/1{,}77+1}{s/7{,}27+1}}
+\boxed{G_c(s)=6{,}55\,\frac{s/1{,}76+1}{s/7{,}28+1}}
 \]
-Verificación: $\MF=53{,}1^\circ$, $\wc=3{,}58\rads$, $M_p=18\pct{}$ y $t_s=1{,}5$\,s. \checkmark\ (Resulta $K_v=6{,}57$.)
+Verificación: $\MF=53{,}2^\circ$, $\wc=3{,}58\rads$, $M_p=18\pct{}$ y $t_s=1{,}5$\,s. \checkmark\ (Resulta $K_v=6{,}55$.)
 
 \textbf{Sin la reserva de $5^\circ$} ($\alpha=0{,}300$ y $K=7{,}30$), el MF queda justo en $48{,}2^\circ$, pero $M_p=23\pct{}$: \textbf{no cumple}.
 El cero de lazo cerrado que agrega el adelanto sube el sobrepico por encima de la predicción del segundo orden.
@@ -1235,7 +1238,7 @@ Ahí $\angle L_0(j1)=-90-26{,}6-11{,}3=-127{,}9^\circ$: hay $52{,}1^\circ$ dispo
 \textbf{Comparación con la ganancia sola.} Para tener $\MF=45^\circ$ bajando solo la ganancia, haría falta $K=14{,}7$, o sea $K_v=1{,}47$.
 Los sobrepicos son parecidos (25\pct{} contra 24\pct{}), pero el atraso tarda más en establecerse (14,6~s contra 5,4~s) por la cola del dipolo.
 A cambio, en régimen permanente sigue la rampa casi siete veces mejor: error de 0,10 contra 0,68. En la figura~\ref{fig:lagej}, a los 25~s,
-todavía va 0,16 contra 0,68.
+el error todavía vale 0,16 contra 0,68.
 \end{ejemplo}
 
 \begin{figure}[ht]
@@ -1366,7 +1369,7 @@ Con adelanto solo, harían falta más de $70^\circ$ de fase.
 \end{figure}
 
 % ---------------------------------------------------------------------
-\section{Comparación, relación con el PID y criterios de elección}
+\section{Comparación, PID, otras estructuras y criterios de elección}
 
 \subsection{Misma planta, dos soluciones}
 Para $G(s)=1/[s(s+1)]$ con $K_v=10$ y $\MF\ge45^\circ$, el sistema solo con ganancia tiene $\MF=18^\circ$ y $M_p=60\pct{}$.
@@ -1449,12 +1452,12 @@ PID & $0{,}6\,K_u$ & $P_u/2$ & $P_u/8$\\
 \end{center}
 \textbf{Lectura en frecuencia.} En $\wf$, el PID de Z-N vale $1{,}10\,K_p\angle{+25^\circ}$. Lleva el punto $L(j\wf)$ desde $-1$ hasta $-0{,}60-j0{,}28$,
 que queda a solo $0{,}49$ del $-1$ ($M_s\gtrsim2$). En plantas típicas eso da un MF de unos $25^\circ$ a $30^\circ$: una respuesta agresiva, con sobrepicos
-del 40\pct{} al 50\pct{}. El PI de Z-N, en cambio, \emph{atrasa} unos $11^\circ$ en $\wf$ y deja márgenes menores ($\MF=15^\circ$ en el ejemplo siguiente).
+del 40\pct{} al 50\pct{}. El PI de Z-N, en cambio, \emph{atrasa} unos $11^\circ$ en $\wf$ y deja márgenes menores (ver el ejemplo siguiente).
 \textbf{Z-N da un punto de partida que después se afina sobre el Bode}.
 
 \textbf{Ejemplo.} Para $G=1/(s+1)^3$ (ejercicio~\ref{e:nyq0}): $K_u=8$, $\wf=\sqrt3$ y $P_u=3{,}63$\,s. El PID queda $K_p=4{,}8$, $T_i=1{,}81$\,s y $T_d=0{,}45$\,s.
-Con filtro $N=10$ se obtiene $\MF=29{,}4^\circ$, $\MG=19{,}1\dB$, $M_p=43\pct{}$ y $t_s=9{,}2$\,s. Con el P solo ($K_p=4$): $\MF=27{,}1^\circ$, $\MG=6{,}0\dB$ y $M_p=54\pct{}$,
-además de un error al escalón de $1/5$.
+Con filtro $N=10$ se obtiene $\MF=29{,}4^\circ$, $\MG=19{,}1\dB$, $M_p=43\pct{}$ y $t_s=9{,}2$\,s. Con el PI ($K_p=3{,}6$, $T_i=3{,}02$\,s): $\MF=14{,}8^\circ$, $\MG=3{,}7\dB$ y $M_p=56\pct{}$. Con el P solo ($K_p=4$): $\MF=27{,}1^\circ$,
+$\MG=6{,}0\dB$ y $M_p=54\pct{}$, además de un error al escalón de $1/5$.
 
 \subsection{Compensación por realimentación tacométrica}
 En vez de poner la red en serie, se puede realimentar una señal interna. El caso clásico es realimentar la \textbf{velocidad} con un tacómetro,
@@ -1480,7 +1483,8 @@ El costo es un sensor de velocidad y más esfuerzo de control. En aeronaves es l
 
 \begin{cuidado}[Errores frecuentes]
 \begin{itemize}
-\item Diseñar sobre $G$ en lugar de sobre $L_0=KG$. \textbf{Primero se fija la ganancia y después se compensa}.
+\item Diseñar sobre $G$ en lugar de sobre $L_0=KG$. \textbf{Primero se fija la ganancia y después se compensa} (salvo que no haya
+      especificación de error: entonces $K$ se calcula al final, como en la variante con $\wc$ impuesto).
 \item Ubicar el máximo de fase del adelanto en el cruce \emph{viejo}: el cruce se mueve a $\omega_m$.
 \item Olvidar la reserva $\delta$, o no volver a verificar. Siempre hay que recalcular el MF con el lazo completo.
 \item En el atraso, poner el cero demasiado cerca de $\wc'$: resta mucha fase. Una década antes es lo seguro.
@@ -1571,7 +1575,8 @@ Se quiere \textbf{duplicar la precisión ante rampa} ($K_v=4$), con $\MF\ge45^\c
 \end{enumerate}
 
 \ejercicio{Ziegler-Nichols sobre la aeronave}\label{p:zn}
-Con los datos de la UT05 para la aeronave ($K_c=5{,}19$ y $\wf=11{,}84\rads$, con $K=1$), calcular los controladores P, PI y PID de Ziegler-Nichols
+Con los datos de la UT05 para la aeronave ($K_u=K_c=5{,}19$ y $\wf=11{,}84\rads$, con $K=1$), calcular los controladores P, PI y PID de Ziegler-Nichols
+(sección~\ref{sec:zn})
 (con filtro derivativo $N=10$) y evaluarlos con MATLAB. ¿Qué conclusión se saca?
 
 \ejercicio{Verdadero o falso}\label{p:vf}
@@ -1689,25 +1694,6 @@ Polinomio característico: $s^2+(K-1)s+3K$, estable si y solo si $\rta{K>1}$. \c
 (d)~Con $K=2$ el cruce está en $-2$. Para llegar a la inestabilidad hay que \emph{reducir} la ganancia a la mitad, hasta $K=1$.
 El MG es entonces un margen de \emph{reducción} de ganancia: $20\log(1/2)=-6\dB$. No indica inestabilidad, lo cual confirma que con $P\ne0$ los márgenes se interpretan con Nyquist.
 
-\solucion{e:marg}{Márgenes y retardo}
-$\angle L=-90-\arctan(\omega/5)-\arctan(\omega/50)=-180$, de donde $\frac{\omega}{5}\cdot\frac{\omega}{50}=1$ y $\wf=\sqrt{250}=\rta{15{,}8\rads}$.
-$|L(j\wf)|=\dfrac{10}{15{,}81\cdot\sqrt{11}\cdot\sqrt{1{,}1}}=\dfrac{10}{55}$, así que $\MG=5{,}5$, es decir $\rta{14{,}8\dB}$, y $K_c=10\cdot5{,}5=\rta{55}$.
-Routh sobre $s^3+55s^2+250s+250K$ da $55\cdot250>250K$, o sea $K<55$. \checkmark
-Cruce de ganancia (numérico): $\wc=\rta{6{,}22\rads}$, con $\angle L=-90-51{,}2-7{,}1=-148{,}3^\circ$, así que $\MF=\rta{31{,}7^\circ}$.
-Margen de retardo: $\tau_{\max}=(31{,}7/57{,}3)/6{,}22=\rta{0{,}089\,\mathrm{s}}$.
-
-\solucion{e:corr}{Correlación}
-$M_r=10^{3/20}=1{,}413$. De $\frac{1}{2\zeta\sqrt{1-\zeta^2}}=1{,}413$ sale $\zeta^2(1-\zeta^2)=0{,}1253$, cuya raíz útil es $\zeta^2=0{,}1469$, o sea $\rta{\zeta=0{,}383}$.
-$\omega_n=\omega_r/\sqrt{1-2\zeta^2}=5/0{,}840=\rta{5{,}95\rads}$.
-$M_p=e^{-\pi(0{,}383)/0{,}924}=\rta{27\pct{}}$ y $t_s\approx4/(0{,}383\cdot5{,}95)=\rta{1{,}75\,\mathrm{s}}$.
-$\MF=\arctan\dfrac{0{,}767}{\sqrt{1{,}0423-0{,}2938}}=\rta{41{,}5^\circ}$. La regla $100\zeta$ da $38^\circ$.
-
-\solucion{e:sens}{Régimen senoidal y sensibilidad}
-(a)~$L(j1)=\dfrac{2}{j(1+j)}=-1-j$, así que $1+L(j1)=-j$. Entonces $T(j1)=\dfrac{-1-j}{-j}=1-j$, con $|T|=\sqrt2$ y $\angle T=-45^\circ$:
-$y_{ss}=\rta{1{,}41\sin(t-45^\circ)}$. Además $S(j1)=1/(-j)=j$, con $|S|=1$ y $\angle S=+90^\circ$: $e_{ss}=\rta{\cos t}$.
-Que $|T|>1$ indica que $\omega=1$ está cerca de la resonancia del lazo cerrado ($\MF=38{,}7^\circ$).
-(b)~$|S(j0{,}1)|=0{,}0504$: queda un $\rta{5\pct{}}$ de la perturbación. Como $|L(j0{,}1)|=19{,}9\gg1$, la aproximación $|S|\approx1/|L|=0{,}0502$ es excelente.
-
 \solucion{e:tipo2}{Tipo 2 y estabilidad condicional}
 (a)~El cero (en $0{,}5$) está antes que el polo (en $2$): $T_2=2>T_1=0{,}5$. La fase $-180^\circ+\arctan2\omega-\arctan0{,}5\omega$ queda siempre por encima
 de $-180^\circ$, la curva no corta el semieje real negativo y $N=0$. Routh sobre $0{,}5s^3+s^2+2Ks+K$: hace falta $1\cdot2K>0{,}5K$, que vale para todo $K>0$.
@@ -1716,11 +1702,30 @@ Como $|L(j1)|=K\sqrt5/\sqrt{1{,}25}=2K$, el cruce cae ahí con $\rta{K=0{,}5}$, 
 (c)~$K=0{,}2<0{,}318$: \textbf{estable} ($\MF=10^\circ$, $\MG=+4{,}0\dB$). $K=20$ está en la banda $0{,}318<K<51$: \textbf{inestable}.
 $K=2000>1285$: \textbf{inestable}.
 
+\solucion{e:marg}{Márgenes y retardo}
+$\angle L=-90-\arctan(\omega/5)-\arctan(\omega/50)=-180$, de donde $\frac{\omega}{5}\cdot\frac{\omega}{50}=1$ y $\wf=\sqrt{250}=\rta{15{,}8\rads}$.
+$|L(j\wf)|=\dfrac{10}{15{,}81\cdot\sqrt{11}\cdot\sqrt{1{,}1}}=\dfrac{10}{55}$, así que $\MG=5{,}5$, es decir $\rta{14{,}8\dB}$, y $K_c=10\cdot5{,}5=\rta{55}$.
+Routh sobre $s^3+55s^2+250s+250K$ da $55\cdot250>250K$, o sea $K<55$. \checkmark
+Cruce de ganancia (numérico): $\wc=\rta{6{,}22\rads}$, con $\angle L=-90-51{,}2-7{,}1=-148{,}3^\circ$, así que $\MF=\rta{31{,}7^\circ}$.
+Margen de retardo: $\tau_{\max}=(31{,}7/57{,}3)/6{,}22=\rta{0{,}089\,\mathrm{s}}$.
+
+\solucion{e:sens}{Régimen senoidal y sensibilidad}
+(a)~$L(j1)=\dfrac{2}{j(1+j)}=-1-j$, así que $1+L(j1)=-j$. Entonces $T(j1)=\dfrac{-1-j}{-j}=1-j$, con $|T|=\sqrt2$ y $\angle T=-45^\circ$:
+$y_{ss}=\rta{1{,}41\sin(t-45^\circ)}$. Además $S(j1)=1/(-j)=j$, con $|S|=1$ y $\angle S=+90^\circ$: $e_{ss}=\rta{\cos t}$.
+Que $|T|>1$ indica que $\omega=1$ está cerca de la resonancia del lazo cerrado ($\MF=38{,}7^\circ$).
+(b)~$|S(j0{,}1)|=0{,}0504$: queda un $\rta{5\pct{}}$ de la perturbación. Como $|L(j0{,}1)|=19{,}9\gg1$, la aproximación $|S|\approx1/|L|=0{,}0502$ es excelente.
+
 \solucion{e:Mr}{Ganancia para un $M_r$}
 (a)~Centro $-\dfrac{1{,}69}{0{,}69}=\rta{-2{,}45}$ y radio $\dfrac{1{,}3}{0{,}69}=\rta{1{,}88}$.
 (b)~$\rta{K=4{,}62}$ ($\MF=45{,}3^\circ$, $M_p=23\pct{}$), prácticamente igual al $K=4{,}67$ de $\MF=45^\circ$. Es coherente:
 $M_r=1{,}3$ corresponde a $\zeta\approx0{,}425$, y eso a $\MF\approx45^\circ$.
 (c)~$\omega_{BW}=\rta{1{,}26\rads}$, unas 1,7 veces $\wc=0{,}74\rads$: dentro del rango habitual de $\wc$ a $2\wc$.
+
+\solucion{e:corr}{Correlación}
+$M_r=10^{3/20}=1{,}413$. De $\frac{1}{2\zeta\sqrt{1-\zeta^2}}=1{,}413$ sale $\zeta^2(1-\zeta^2)=0{,}1253$, cuya raíz útil es $\zeta^2=0{,}1469$, o sea $\rta{\zeta=0{,}383}$.
+$\omega_n=\omega_r/\sqrt{1-2\zeta^2}=5/0{,}840=\rta{5{,}95\rads}$.
+$M_p=e^{-\pi(0{,}383)/0{,}924}=\rta{27\pct{}}$ y $t_s\approx4/(0{,}383\cdot5{,}95)=\rta{1{,}75\,\mathrm{s}}$.
+$\MF=\arctan\dfrac{0{,}767}{\sqrt{1{,}0423-0{,}2938}}=\rta{41{,}5^\circ}$. La regla $100\zeta$ da $38^\circ$.
 
 \subsection*{Parte II}
 
@@ -1737,8 +1742,8 @@ G_c(s)=80\,\frac{s/6{,}49+1}{s/20{,}96+1}=\rta{258\,\frac{s+6{,}49}{s+20{,}96}}
 Resulta $\MF=50{,}8^\circ$ y $\wc=11{,}7\rads$. El MG es infinito porque la fase nunca llega a $-180^\circ$. $M_p\approx20\pct{}$.
 
 \solucion{p:specs}{Adelanto a partir de $M_p$ y $t_s$}
-(a)~$M_p=0{,}2$ da $\zeta=0{,}456$, y de ahí $\MF\ge48{,}2^\circ$. Además $\wc\ge8/(1\cdot\tan48{,}2^\circ)=\rta{7{,}17\rads}$.
-(b)~$K=10$ por $K_v$. $L_0=40/[s(s+2)]$ tiene $\MF_0=18{,}0^\circ$ en $6{,}17\rads$ (ya es casi rápido, pero muy oscilatorio).
+(a)~$M_p=0{,}2$ da $\zeta=0{,}456$, y de ahí $\MF\ge48{,}2^\circ$ (redondeado hacia arriba). Además $\wc\ge8/(1\cdot\tan48{,}2^\circ)=\rta{7{,}15\rads}$.
+(b)~$K=10$ por $K_v$. $L_0=40/[s(s+2)]$ tiene $\MF_0=18{,}0^\circ$ en $6{,}17\rads$: el cruce ya está cerca del mínimo pedido, pero el MF es muy bajo.
 \begin{center}
 \small
 \begin{tabular}{@{}cccccc@{}}
@@ -1747,15 +1752,15 @@ $\delta$ & $\phi_m$ & $\alpha$ & $\omega_m=\wc$ & MF & $M_p$\\
 \midrule
 $5^\circ$ & $35{,}2^\circ$ & 0,269 & 8,67 & $48{,}2^\circ$ & 24,0\pct{} \ (no cumple)\\
 $8^\circ$ & $38{,}2^\circ$ & 0,236 & 8,97 & $50{,}8^\circ$ & 21,4\pct{} \ (no cumple)\\
-$10^\circ$ & $40{,}2^\circ$ & 0,216 & 9,17 & $52{,}5^\circ$ & 19,7\pct{} \ \checkmark\\
+$10^\circ$ & $40{,}2^\circ$ & 0,215 & 9,18 & $52{,}5^\circ$ & 19,7\pct{} \ \checkmark\\
 \bottomrule
 \end{tabular}
 \end{center}
-Con $\delta=10^\circ$: cero en $9{,}17\sqrt{0{,}216}=4{,}26$ y polo en $9{,}17/\sqrt{0{,}216}=19{,}8$.
+Con $\delta=10^\circ$: cero en $9{,}18\sqrt{0{,}215}=4{,}26$ y polo en $9{,}18/\sqrt{0{,}215}=19{,}8$.
 \[
 G_c(s)=10\,\frac{s/4{,}26+1}{s/19{,}8+1}=\rta{46{,}5\,\frac{s+4{,}26}{s+19{,}8}}
 \]
-$t_s=0{,}63$\,s y $\wc=9{,}17\ge7{,}17$. Con $\delta=5^\circ$ el MF ya alcanzaba los $48{,}2^\circ$, pero el cero sube el sobrepico:
+$t_s=0{,}63$\,s y $\wc=9{,}18\ge7{,}15$. Con $\delta=5^\circ$ el MF ya alcanzaba los $48{,}2^\circ$, pero el cero sube el sobrepico:
 \textbf{con especificaciones de $M_p$ hay que verificar en el tiempo}.
 
 \solucion{p:lag}{Atraso en un sistema tipo 0}
@@ -1835,7 +1840,7 @@ La simulación da $\MF=53{,}5^\circ$. El PI hizo el sistema tipo 1 a cambio de m
 la fase está más lejos de $-180^\circ$ (\texttt{allmargin} da ``MF'' de $-43^\circ$ y $-153^\circ$). El lazo cerrado es estable (polos elásticos en
 $-0{,}78\pm j19{,}1$, con $\zeta\approx0{,}04$), pero el modo elástico queda estabilizado \emph{solo por la fase}: donde $|L|>1$, la fase va de $-223^\circ$ a $-333^\circ$.
 Cerca de $\omega_f$ la fase del cuerpo rígido ya vale $\approx-191^\circ$, y el modo solo resta hasta $180^\circ$ más, así que bajar $\zeta_f$ no lo desestabiliza.
-Pero sí achica la holgura: el borde de esa banda queda a $43^\circ$ de $-180^\circ$ con $\zeta_f=0{,}025$, a $23^\circ$ con $0{,}01$ y a unos $12^\circ$ si $\zeta_f\to0$.
+Pero sí achica la holgura: el borde de esa banda queda a $43^\circ$ de $-180^\circ$ con $\zeta_f=0{,}025$, a $23^\circ$ con $0{,}01$ y a unos $11^\circ$ si $\zeta_f\to0$.
 Lo desestabilizan un adelanto de fase cerca de 19~rad/s, sobre todo si viene con ganancia (punto b), o una baja grande de $\omega_f$ (por debajo de unos 12,6~rad/s).
 Subir $K$, en cambio, desestabiliza primero el cruce de cuerpo rígido ($K=5{,}19$, en 11,84~rad/s), no el modo elástico.
 Como esa fase es incierta, se prefiere estabilizar el modo \emph{por ganancia}, con el pico de $|L|$ por debajo de $-6\dB$. Además, $\MF=23{,}8^\circ$ tampoco cumple.
@@ -1991,8 +1996,8 @@ K  = 10;  L0 = K*G;                      % 1. ganancia por Kv
 [~,MF0,~,wc0] = margin(L0);
 phim  = 45 - MF0 + 12;                   % 2. fase a agregar (delta = 12)
 alfa  = (1-sind(phim))/(1+sind(phim));   % 3.
-magdB = @(x) 20*log10(abs(evalfr(L0,1j*x)));   % 4. |L0| = -10 log(1/alfa)
-wm    = fzero(@(x) magdB(x) + 10*log10(1/alfa), [wc0 100]);
+magdB = @(L,x) 20*log10(abs(evalfr(L,1j*x))); % 4. |L0| = -10 log(1/alfa)
+wm    = fzero(@(x) magdB(L0,x) + 10*log10(1/alfa), [wc0 100]);
 T     = 1/(wm*sqrt(alfa));               % 5.
 Gc    = K*(T*s+1)/(alfa*T*s+1);
 L     = Gc*G;                            % 6. verificar

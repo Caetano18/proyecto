@@ -17,7 +17,7 @@ T2 = feedback(2*G2,1);
 Mr_dB = 20*log10(getPeakGain(T2))           % 5.3 dB
 wBW = bandwidth(T2)                         % 1.26 rad/s
 
-%% Ejemplo 3: adelanto
+%% Ejemplo 3: adelanto (con iteracion)
 G  = 1/(s*(s+1)*(0.05*s+1));
 K  = 10;  L0 = K*G;                         % 1. ganancia por Kv
 [~,MF0,~,wc0] = margin(L0)                  % MF0 = 9.4 en 3.07 rad/s
@@ -27,11 +27,11 @@ wm   = fzero(@(x) magdB(L0,x) + 10*log10(1/alfa), [wc0 100])   % 4. 4.96
 T    = 1/(wm*sqrt(alfa));                   % 5.
 Gc   = K*(T*s+1)/(alfa*T*s+1)
 L    = Gc*G;
-[Gm,Pm,Wpc,Wgc] = margin(L)                 % 6. MF = 45.2, Gm = 5.54 (14.9 dB)
+[Gm,Pm,Wpc,Wgc] = margin(L)                 % 6. MF = 45.1, Gm = 5.54 (14.9 dB), wc = 4.96
 figure; bode(L0, L, Gc/K); grid on; legend('L_0','L','G_c/K');
 figure; step(feedback(L0,1), feedback(L,1), 8); legend('sin comp.','adelanto');
 
-%% Ejemplo 4: atraso
+%% Ejemplo 5: atraso
 G  = 1/(s*(s+2)*(s+5));
 K  = 100; L0 = K*G;                         % inestable: MF0 = -8.9
 wt   = fzero(@(x) fase(L0,x) - (-180+45+6), [0.1 3])   % 1.03 rad/s
@@ -47,7 +47,7 @@ t  = 0:0.01:25;
 figure; step(feedback(L,1), feedback(Kg*G,1), 25); legend('atraso','solo ganancia');
 figure; lsim(feedback(L,1), feedback(Kg*G,1), t, t); legend('atraso','solo ganancia');
 
-%% Ejemplo 5: atraso-adelanto
+%% Ejemplo 6: atraso-adelanto
 G   = 1/(s*(s+1)*(s+4));
 K   = 40; L0 = K*G;
 [~,~,w180] = margin(L0);                    % 2 rad/s
@@ -75,7 +75,7 @@ Lat = 10*(s/0.081+1)/(s/0.00844+1)*G;
 figure; step(feedback(10*G,1), feedback(Lad,1), feedback(Lat,1), 15);
 legend('solo K','adelanto','atraso');
 
-%% Ejercicio 15: aeronave de la UT05
+%% Problema integrador: aeronave de la UT05
 Ga  = 50/(s+50); Gt = 18*(s+1)/(s*(s^2+4.2*s+9)); Gf = 400/(s^2+s+400);
 Gav = Ga*Gt*Gf;
 L0  = 2*Gav;
@@ -94,23 +94,23 @@ Lc = (1+s)^2/(s*(1+10*s)^2*(1+0.1*s)^2);
 for Kx = [0.2 20 200 2000]
     fprintf('K = %6.1f  estable = %d\n', Kx, isstable(feedback(Kx*Lc,1)));
 end
-allmargin(200*Lc)                           % margen de aumento 6.42 y de reduccion 0.255
+allmargin(200*Lc)   % GainMargin = [0.0016 0.255 6.42] en [0.125 1 7.97] rad/s (K = 0.318, 51 y 1285); PM = 21.9 en 2.27
 
 %% K para un Mr pedido (L = K/(s(s+1)(s+2)), Mr = 1.3)
 G3 = 1/(s*(s+1)*(s+2));
-KMr = fzero(@(k) getPeakGain(feedback(k*G3,1)) - 1.3, [0.5 2])   % 1.315
+KMr = fzero(@(k) getPeakGain(feedback(k*G3,1),1e-6) - 1.3, [0.5 2])   % 1.315
 
-%% Adelanto con wc impuesto (ejemplo de Mp y ts)
+%% Ejemplo 4: adelanto con wc impuesto (Mp y ts)
 G  = 1/(s*(s+1));
 z  = -log(0.2)/sqrt(pi^2+log(0.2)^2);       % 0.456
-MFr = atand(2*z/sqrt(sqrt(1+4*z^4)-2*z^2))  % 48.2
+MFr = atand(2*z/sqrt(sqrt(1+4*z^4)-2*z^2))  % 48.15
 wc = 8/(2*tand(MFr))                        % 3.58
 phim = MFr - (180 + fase(G,wc)) + 5;
 alfa = (1-sind(phim))/(1+sind(phim));
 T  = 1/(wc*sqrt(alfa));
-K  = sqrt(alfa)/abs(evalfr(G,1j*wc))        % 6.57
+K  = sqrt(alfa)/abs(evalfr(G,1j*wc))        % 6.57 (6.55 con valores redondeados)
 L  = K*(T*s+1)/(alfa*T*s+1)*G;
-[~,Pm] = margin(L), stepinfo(feedback(L,1)) % MF = 53.1, Mp = 18 %
+[~,Pm] = margin(L), stepinfo(feedback(L,1)) % MF = 53.2, Mp = 18 %
 
 %% Ziegler-Nichols sobre 1/(s+1)^3
 G  = 1/(s+1)^3;
