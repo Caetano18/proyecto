@@ -1,0 +1,597 @@
+% =====================================================================
+%  Resolución paso a paso: compensación en frecuencia (dos ejercicios)
+%  Compilar con:  pdflatex resolucion_parciales.tex  (dos pasadas)
+%  Las figuras leen datos/parc1_*.dat y datos/parc2_*.dat, generados por
+%  generar_datos_parciales.py, y datos/nichols_M.dat (contornos M, generar_datos.py).
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{icomma}
+\usepackage[a4paper,left=2.2cm,right=2.2cm,top=2.3cm,bottom=2.3cm,headheight=14pt]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs,array,tabularx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
+
+% ---------------------------------------------------------------- colores
+\definecolor{azul}{RGB}{31,78,121}
+\definecolor{verde}{RGB}{0,115,70}
+\definecolor{rojo}{RGB}{185,30,40}
+\definecolor{naranja}{RGB}{215,110,0}
+\definecolor{gris}{RGB}{95,95,95}
+
+% ---------------------------------------------------------------- títulos
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{14pt plus 3pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt}{4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt}
+\setlist{itemsep=1pt,topsep=2pt,parsep=1pt}
+\newcommand{\pct}{\ensuremath{\,\mathchar"7025}}
+\newcommand{\rads}{\,\mathrm{rad/s}}
+\newcommand{\dB}{\,\mathrm{dB}}
+\newcommand{\dBdec}{\,\mathrm{dB/dec}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{gris}Sistemas de Control}
+\rhead{\small\color{gris}Resolución paso a paso}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------- cajas
+\tcbset{base/.style={enhanced,breakable,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,
+  fonttitle=\bfseries\small,before skip=6pt,after skip=6pt}}
+\newtcolorbox{enunciado}{base,colback=gris!5,colframe=gris!70,title={Enunciado}}
+\newtcolorbox{resultado}{base,colback=verde!5,colframe=verde,title={Resultado}}
+\newtcolorbox{nota}{base,colback=naranja!5,colframe=naranja,title={Nota}}
+\newtcolorbox{idea}{base,colback=azul!5,colframe=azul,title={Idea clave}}
+
+% pasos (numerados dentro de cada subseccion)
+\newcounter{paso}[subsection]
+\newcommand{\paso}[1]{\par\medskip\needspace{5\baselineskip}\refstepcounter{paso}%
+  \noindent{\color{azul}\bfseries Paso \thepaso.\ #1}\par\nopagebreak\smallskip}
+
+% ---------------------------------------------------------------- pgfplots
+\pgfkeys{/pgf/number format/.cd,use comma,1000 sep={}}
+\pgfplotsset{
+  every axis/.append style={
+    tick label style={font=\scriptsize}, label style={font=\footnotesize},
+    legend style={font=\scriptsize,fill=white,fill opacity=0.9,text opacity=1,draw=gray!50},
+    grid=both, major grid style={gray!28}, minor grid style={gray!10}},
+}
+\pgfplotsset{
+  exacta/.style={azul, thick},
+  comp/.style={rojo, thick},
+  sin/.style={gris, thick, dashed},
+  ref/.style={naranja, thick, dash dot},
+  contorno/.style={gris!60, thin},
+}
+
+\begin{document}
+
+% =====================================================================
+%  PORTADA
+% =====================================================================
+\begin{center}
+{\color{azul}\Huge\bfseries Resolución paso a paso}\\[4pt]
+{\Large Compensación en frecuencia: dos ejercicios de parcial}\\[4pt]
+{\normalsize Sistemas de Control}
+\end{center}
+
+\begin{idea}[Cómo leer esta resolución]
+Cada ejercicio se resuelve en pasos cortos. En cada paso se dice qué se busca, se hace el cálculo y se escribe el resultado.
+Los números se verificaron con simulación y con los márgenes calculados por computadora. Las figuras salen de los mismos datos.
+\end{idea}
+
+\begin{nota}
+Se toma \emph{margen de ganancia $>5$} y \emph{$>40$} como cocientes (en veces, no en dB). Si el enunciado lo quiso en dB,
+los diseños también cumplen, porque el margen de ganancia obtenido es de $33\dB$ en el ejercicio~1 y de $45{,}8\dB$ en el ejercicio~2.
+\end{nota}
+
+% =====================================================================
+\section{Ejercicio 1: $G(s)=\dfrac{K}{s^3+10s^2+5s}$}
+% =====================================================================
+\begin{enunciado}
+Se desea controlar por frecuencia el sistema $G=\dfrac{K}{s^3+10s^2+5s}$ con realimentación unitaria.
+\begin{enumerate}[label=\alph*)]
+\item Usando el criterio de Nyquist, determinar para qué valores de $K$ el sistema es estable. Analizar al menos tres condiciones de $K$ con respuestas de distinta naturaleza.
+\item Compensar en frecuencia para lograr $K_v=20\,\mathrm{s^{-1}}$, margen de ganancia $>5$ y margen de fase $>50^\circ$.
+\item Encontrar el máximo sobreimpulso en lazo cerrado con la carta de Nichols, para la función compensada y para la sin compensar, y compararlo con la respuesta en frecuencia.
+\end{enumerate}
+\end{enunciado}
+
+% ---------------------------------------------------------------------
+\subsection{Parte a: estabilidad con Nyquist}
+
+\paso{Estructura de $L(s)$.}
+Con realimentación unitaria, $L(s)=G(s)=\dfrac{K}{s(s^2+10s+5)}$. Las raíces de $s^2+10s+5$ son $s=-5\pm\sqrt{20}$, es decir $-0{,}528$ y $-9{,}472$.
+Ninguna cae en el semiplano derecho, así que $P=0$. Como hay un polo en el origen, el sistema es \textbf{tipo 1}.
+
+\paso{Comienzo y final del diagrama.}
+Para $\omega\to0$, $L(j\omega)\approx\dfrac{K}{5j\omega}=-j\dfrac{K}{5\omega}\to-j\infty$. Para $\omega\to\infty$, $L\to0$ con fase de $-270^\circ$.
+
+\paso{Cruce con el eje real negativo.}
+La parte imaginaria se anula cuando $\omega(5-\omega^2)=0$, es decir en $\omega=\sqrt5\approx2{,}24\rads$. Allí, en el denominador queda $-50$ (la parte imaginaria también se anula):
+\[
+L(j\sqrt5)=\frac{K}{(j\sqrt5)^3+10(j\sqrt5)^2+5j\sqrt5}=\frac{K}{-50}=-\frac{K}{50}.
+\]
+
+\paso{Aplicar el criterio de Nyquist.}
+El punto $-1$ queda \emph{a la izquierda} del cruce si $-K/50<-1$, es decir si $K>50$. Entonces:
+\begin{itemize}
+\item Si $K<50$: el cruce queda entre $-1$ y $0$, $N=0$ y $Z=N+P=0$. El lazo es \textbf{estable}.
+\item Si $K>50$: el punto $-1$ queda encerrado con $N=2$ (sentido horario), $Z=2$. El lazo es \textbf{inestable}.
+\item Si $K=50$: la curva pasa por $-1$. El lazo es \textbf{marginal}, con oscilación sostenida a $\sqrt5\rads$.
+\end{itemize}
+
+\paso{Verificar con Routh.}
+El polinomio característico es $s^3+10s^2+5s+K=0$. La tabla de Routh es:
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Fila & Columna 1 & Columna 2\\
+\midrule
+$s^3$ & $1$ & $5$\\
+$s^2$ & $10$ & $K$\\
+$s^1$ & $\dfrac{50-K}{10}$ & $0$\\
+$s^0$ & $K$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+Para que no haya cambios de signo en la primera columna hace falta $K>0$ y $50-K>0$. Routh da lo mismo que Nyquist: \textbf{$0<K<50$}.
+
+\paso{Analizar casos con respuestas distintas.}
+Para cada valor de $K$ se calculan los polos de lazo cerrado (raíces de $s^3+10s^2+5s+K$):
+\begin{center}
+\small
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+$K$ & Polos de lazo cerrado & Comportamiento\\
+\midrule
+$-20$ & $-9{,}22$; $-1{,}91$; $+1{,}13$ & inestable: un polo en el semiplano derecho\\
+$10$ & $-9{,}59$; $-0{,}21\pm j1{,}00$ & estable, oscilación amortiguada que se apaga despacio\\
+$30$ & $-9{,}80$; $-0{,}10\pm j1{,}75$ & estable, casi sin amortiguamiento ($\zeta\approx0{,}06$)\\
+$50$ & $-10$; $\pm j2{,}24$ & marginal: oscilación sostenida a $\sqrt5\rads$\\
+$100$ & $-10{,}44$; $+0{,}22\pm j3{,}09$ & inestable: oscilación creciente\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.4cm},width=0.48\linewidth,height=5.4cm]
+\nextgroupplot[xlabel={Re $L(j\omega)$},ylabel={Im $L(j\omega)$},xmin=-6,xmax=1,ymin=-6,ymax=6,grid=major,
+  legend pos=north west,legend style={font=\scriptsize}]
+\addplot[exacta] table[x=re,y=im]{datos/parc1_nyq_k10.dat};
+\addplot[exacta,dashed,forget plot] table[x=re,y=imn]{datos/parc1_nyq_k10.dat};
+\addplot[comp] table[x=re,y=im]{datos/parc1_nyq_k100.dat};
+\addplot[comp,dashed,forget plot] table[x=re,y=imn]{datos/parc1_nyq_k100.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,black] coordinates{(-1,0)};
+\legend{$K=10$,$K=100$,$-1$}
+\nextgroupplot[xlabel={$t$ [s]},ylabel={$y(t)$ (escalón)},xmin=0,xmax=40,ymin=-0.5,ymax=2.2,legend pos=north east]
+\addplot[exacta] table[x=t,y=y]{datos/parc1_step_k10.dat};
+\addplot[ref] table[x=t,y=y]{datos/parc1_step_k30.dat};
+\addplot[comp] table[x=t,y=y]{datos/parc1_step_k50.dat};
+\legend{$K=10$,$K=30$,$K=50$}
+\end{groupplot}
+\end{tikzpicture}
+\caption{Izquierda: Nyquist para $K=10$ (estable) y $K=100$ (inestable), con línea discontinua para $\omega<0$. Derecha: respuesta al escalón para $K=10$, $30$ y $50$.}
+\label{fig:p1nyq}
+\end{figure}
+
+\begin{resultado}
+Estable para $0<K<50$. En $K=50$ el lazo es marginal y para $K>50$ es inestable. Con $K<0$ también es inestable.
+\end{resultado}
+
+% ---------------------------------------------------------------------
+\subsection{Parte b: compensación para $K_v=20$, $\mathrm{GM}>5$ y $\mathrm{MF}>50^\circ$}
+
+\paso{Ganancia necesaria.}
+Para una planta tipo 1, $K_v=\lim_{s\to0}s\,L(s)=\dfrac{K}{5}$. Entonces $K_v=20$ exige $K=100$.
+
+\paso{Diagnóstico sin compensar.}
+Con $K=100$, $L_0(s)=\dfrac{100}{s^3+10s^2+5s}$. En $\omega=\sqrt5$ el módulo es $|L_0|=\dfrac{100}{50}=2$ ($+6\dB$), con fase de $-180^\circ$. Por eso
+\[
+\mathrm{GM}=\frac{1}{2}=-6\dB,\qquad \text{y en el cruce de }0\dB\ (\omega_c=3{,}14\rads):\quad \mathrm{MF}=-8{,}8^\circ.
+\]
+Con $K=100$ el lazo es inestable (polos $0{,}22\pm j3{,}09$). Hace falta compensar.
+
+\paso{Elegir qué hacer con la ganancia.}
+Para tener $\mathrm{MF}>50^\circ$ el cruce tiene que ocurrir donde la fase de la planta sea mejor que $-130^\circ$. Pero ahí la ganancia es muy alta: en $\omega=\sqrt5$ hay que bajar $|L_0|$ de $2$ a menos de $0{,}2$ (factor $10$, es decir $20\dB$) para que $\mathrm{GM}>5$.
+Por eso conviene una red de \textbf{atraso}: con ganancia unitaria en continua no cambia $K_v$, baja la curva donde hace falta y en baja frecuencia casi no resta fase.
+\begin{center}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+$\omega$ [rad/s] & $|L_0|$ [dB] & $\angle L_0$ [$^\circ$]\\
+\midrule
+$0{,}2$ & $39{,}4$ & $-112{,}0$\\
+$0{,}3$ & $35{,}3$ & $-121{,}4$\\
+$0{,}5$ & $29{,}3$ & $-136{,}4$\\
+$1$ & $19{,}4$ & $-158{,}2$\\
+$\sqrt5\approx2{,}24$ & $6{,}0$ & $-180{,}0$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paso{Elegir el nuevo cruce $\omega_c'$.}
+Se elige $\omega_c'=0{,}2\rads$, donde la fase de la planta es $-112{,}0^\circ$. Tiene un margen de fase de $68^\circ$ antes del compensador, del que el atraso consume unos $6^\circ$.
+
+\paso{Calcular la red de atraso.}
+En $\omega_c'$ hay que bajar $|L_0|$ de $39{,}4\dB$ a $0\dB$. Entonces $\beta\approx10^{39{,}4/20}\approx94$. Con el cero una década abajo de $\omega_c'$:
+\[
+T=\frac{10}{\omega_c'}=50\,\mathrm{s},\qquad \beta T=4700\,\mathrm{s}.
+\]
+\[
+\boxed{G_c(s)=\frac{50s+1}{4700s+1}}\qquad(\text{ganancia unitaria en }s=0)
+\]
+
+\paso{Verificar.}
+\begin{center}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & Sin compensar ($K=100$) & Compensada\\
+\midrule
+$K_v$ [s$^{-1}$] & $20$ & $20$\\
+Margen de ganancia & $-6{,}0\dB$ (inestable) & $33{,}1\dB$ ($\times45{,}1$)\\
+Margen de fase & $-8{,}8^\circ$ & $62{,}4^\circ$ (en $\omega_c=0{,}200\rads$)\\
+Estabilidad & inestable & estable\\
+\bottomrule
+\end{tabular}
+\end{center}
+Se cumple $K_v=20$, $\mathrm{GM}=45{,}1>5$ y $\mathrm{MF}=62{,}4^\circ>50^\circ$.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  xmode=log,log basis x=10,width=0.8\linewidth,height=4.6cm,xmin=0.01,xmax=100]
+\nextgroupplot[ylabel={$|L|$ [dB]},ymin=-60,ymax=70,ytick={-60,-40,-20,0,20,40,60},legend pos=south west]
+\addplot[sin] table[x=w,y=ms]{datos/parc1_bode.dat};
+\addplot[comp] table[x=w,y=mc]{datos/parc1_bode.dat};
+\addplot[ref] table[x=w,y=mg]{datos/parc1_bode.dat};
+\legend{$L_0=100G$,$L=G_cL_0$,$G_c$}
+\draw[black] (axis cs:0.01,0)--(axis cs:100,0);
+\nextgroupplot[ylabel={$\angle L$ [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-300,ymax=10,ytick={-270,-180,-90,0}]
+\addplot[sin] table[x=w,y=fs]{datos/parc1_bode.dat};
+\addplot[comp] table[x=w,y=fc]{datos/parc1_bode.dat};
+\addplot[ref] table[x=w,y=fg]{datos/parc1_bode.dat};
+\draw[black] (axis cs:0.01,-180)--(axis cs:100,-180);
+\draw[verde,dashed] (axis cs:0.2,-300)--(axis cs:0.2,10);
+\end{groupplot}
+\end{tikzpicture}
+\caption{Bode de la planta sin compensar ($K=100$), de la red de atraso y del lazo compensado. La línea verde marca $\omega_c'=0{,}2\rads$.}
+\label{fig:p1bode}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\subsection{Parte c: sobreimpulso con la carta de Nichols}
+
+\paso{Qué se lee en la carta de Nichols.}
+El punto crítico es $(-180^\circ,\,0\dB)$. Se superpone $L(j\omega)$ sobre los contornos $M$ (que son $|T|$ constante), y el valor $M_r$ es el contorno más alto al que la curva queda tangente. Desde $M_r$ se estima $\zeta$ y de ahí el sobreimpulso.
+
+\paso{Sin compensar ($K=100$).}
+La curva pasa por $-180^\circ$ con $|L|=+6\dB$, es decir, por encima de $0\dB$ en el punto crítico. Así \textbf{encierra al $-1$}: el lazo es inestable y $M_r$ no existe (no hay sobreimpulso finito, la respuesta diverge). Para tener una referencia estable, con $K=20$ ($K_v=4$) la carta da $M_r=13{,}5\dB$, y la simulación da $M_p=70{,}9\%$.
+
+\paso{Compensada: leer $M_r$.}
+La curva compensada es tangente al contorno $M_r=0{,}74\dB$ en $\omega_r=0{,}063\rads$. Como $10^{0{,}74/20}=1{,}089$, se busca $\zeta$ con
+\[
+\frac{1}{2\zeta\sqrt{1-\zeta^2}}=1{,}089\quad\Longrightarrow\quad \zeta\approx0{,}55.
+\]
+
+\paso{Estimar el sobreimpulso.}
+Con $\zeta=0{,}55$:
+\[
+M_p=\exp\!\left(-\frac{\pi\zeta}{\sqrt{1-\zeta^2}}\right)=\exp\!\left(-\frac{\pi\cdot0{,}55}{0{,}835}\right)\approx12{,}6\pct{}.
+\]
+
+\paso{Comparar con la simulación.}
+La simulación del escalón da $M_p=11{,}1\%$ y $t_s(2\%)=82$\,s. La estimación por $M_r$ queda cerca del valor real. Los polos dominantes son $-0{,}25\pm j0{,}20$ y el polo lento de lazo cerrado es $-0{,}022$, casi sobre el cero de la red. Ese polo lento deja una cola que la fórmula de segundo orden no contempla, y por eso el tiempo de establecimiento es tan largo.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.7\linewidth,height=7.4cm,xmin=-270,xmax=-90,ymin=-40,ymax=40,
+  xtick={-270,-225,-180,-135,-90},xlabel={$\angle L$ [$^\circ$]},ylabel={$|L|$ [dB]},grid=major,
+  legend pos=outer north east,legend style={font=\scriptsize}]
+\addplot[contorno,empty line=jump] table[x=fase,y=mag]{datos/nichols_M.dat};
+\addplot[sin,thick] table[x=fase,y=mag]{datos/parc1_nichols_sin.dat};
+\addplot[comp] table[x=fase,y=mag]{datos/parc1_nichols_comp.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,black] coordinates{(-180,0)};
+\legend{contornos $M$,$L_0=100G$ (sin compensar),$L=G_cL_0$ (compensada),$-1$}
+\end{axis}
+\end{tikzpicture}
+\caption{Carta de Nichols del ejercicio 1: la curva sin compensar encierra al $-1$ y la compensada queda tangente a un contorno de $0{,}74\dB$.}
+\label{fig:p1nich}
+\end{figure}
+
+\begin{resultado}
+Compensada: $M_r=0{,}74\dB$, $\zeta\approx0{,}55$ y $M_p\approx12{,}6\%$ por Nichols. La simulación da $11{,}1\%$.
+Sin compensar ($K=100$): inestable, sin sobreimpulso finito.
+\end{resultado}
+
+% =====================================================================
+\section{Ejercicio 2: reconstruir $G(s)$ desde el Bode y compensar}
+% =====================================================================
+\begin{enunciado}
+\begin{enumerate}[label=\arabic*)]
+\item Reconstruir la función de transferencia a partir del diagrama de Bode (figura~\ref{fig:p2fac}).
+\item Realizar una compensación en frecuencia para lograr $K_v=20\,\mathrm{s^{-1}}$, margen de ganancia $>40$ y margen de fase $>50^\circ$.
+\item Encontrar el máximo sobreimpulso en lazo cerrado con la carta de Nichols, para la función compensada y la sin compensar, y compararlo con la respuesta en frecuencia.
+\end{enumerate}
+\end{enunciado}
+
+% ---------------------------------------------------------------------
+\subsection{Parte 1: reconstruir $G(s)$ desde el Bode}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[xmode=log,log basis x=10,width=0.85\linewidth,height=7cm,xmin=0.1,xmax=1000,ymin=-70,ymax=40,
+  xtick={0.1,1,10,100,1000},xlabel={Frecuencia [rad/s]},ylabel={Magnitud [dB]},grid=both,
+  legend pos=north east,legend style={font=\scriptsize,cells={anchor=west}}]
+\addplot[azul,thick] table[x=w,y=g1]{datos/parc2_factores.dat};
+\addplot[naranja,thick] table[x=w,y=g2]{datos/parc2_factores.dat};
+\addplot[verde,thick] table[x=w,y=g3]{datos/parc2_factores.dat};
+\addplot[gris,thick] table[x=w,y=g4]{datos/parc2_factores.dat};
+\draw[gris,densely dotted] (axis cs:1.3,-70)--(axis cs:1.3,40) (axis cs:100,-70)--(axis cs:100,40);
+\legend{$G_1$ (34\,dB),$G_2$ ($1/s$),$G_3$ ($-2{,}41$\,dB),$G_4$ ($-40$\,dB)}
+\end{axis}
+\end{tikzpicture}
+\caption{Factores que se leen del diagrama de Bode. Cada curva es un factor de $G(s)$ por separado. Las líneas punteadas marcan los quiebres en $1{,}3$ y $100\rads$.}
+\label{fig:p2fac}
+\end{figure}
+
+\paso{Leer la pendiente inicial.}
+La pendiente de baja frecuencia es $-20\dBdec$, así que hay un \textbf{integrador} en $G$. Su curva, $G_2$, vale $0\dB$ en $\omega=1$ y por eso es $G_2=1/s$.
+
+\paso{Leer las asíntotas horizontales (ganancias).}
+Hay tres ganancias constantes, una por cada curva horizontal del diagrama:
+\begin{itemize}
+\item $G_1$ vale $34\dB$ en todo el rango. Es una ganancia pura: $K_1=10^{34/20}\approx50$.
+\item $G_3$ vale $-2{,}41\dB$ a baja frecuencia. Es la ganancia de continua del polo de $1{,}3\rads$: $K_3=10^{-2{,}41/20}\approx0{,}759$.
+\item $G_4$ vale $-40\dB$ a baja frecuencia. Es la ganancia de continua del polo de $100\rads$: $K_4=10^{-40/20}=0{,}01$.
+\end{itemize}
+
+\paso{Leer los quiebres (polos).}
+La pendiente cambia en dos frecuencias:
+\begin{itemize}
+\item En $\omega=1{,}3\rads$ aparece $G_3$ y la pendiente pasa de $-20$ a $-40\dBdec$: polo en $s=-1{,}3$.
+\item En $\omega=100\rads$ aparece $G_4$ y la pendiente pasa de $-40$ a $-60\dBdec$: polo en $s=-100$.
+\end{itemize}
+Con dos polos más el integrador, la pendiente final es $-60\dBdec$. Eso coincide con el diagrama: $n-m=3$ y $m=0$.
+
+\begin{center}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Factor & Lectura en el Bode & Forma & Valor\\
+\midrule
+$G_1$ & $34\dB$, constante & ganancia & $K_1\approx50$\\
+$G_2$ & pendiente $-20\dBdec$, $0\dB$ en $\omega=1$ & integrador & $1/s$\\
+$G_3$ & $-2{,}41\dB$ en baja frecuencia, quiebre en $1{,}3$ & polo & $K_3\approx0{,}759$, polo $1{,}3$\\
+$G_4$ & $-40\dB$ en baja frecuencia, quiebre en $100$ & polo & $K_4=0{,}01$, polo $100$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paso{Multiplicar las ganancias.}
+Como los módulos se multiplican, sus dB se suman:
+\[
+K=K_1\cdot K_3\cdot K_4=10^{(34-2{,}41-40)/20}=10^{-8{,}41/20}\approx0{,}380.
+\]
+
+\paso{Escribir la función de transferencia.}
+\[
+\boxed{G(s)=\frac{0{,}38}{s\left(1+\dfrac{s}{1{,}3}\right)\left(1+\dfrac{s}{100}\right)}=\frac{49{,}4}{s\,(s+1{,}3)\,(s+100)}}
+\]
+
+\begin{nota}
+Si las ganancias se leen como $K_1=50$ exacto, el numerador queda $50/[s(s+1{,}3)(s+100)]$ (con $-8{,}3\dB$ en continua). La diferencia con $-8{,}41\dB$ es de $0{,}1\dB$, así que es un error de lectura. Acá se usa el valor leído, $0{,}38$.
+\end{nota}
+
+\paso{Verificar la reconstrucción.}
+Con $G(s)$ se calculan los márgenes de la planta sin compensar:
+\begin{center}
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Magnitud & Valor\\
+\midrule
+$K_v=\lim_{s\to0}sG(s)$ & $0{,}38\,\mathrm{s^{-1}}$\\
+Margen de ganancia & $48{,}5\dB$\\
+Margen de fase & $74{,}1^\circ$ en $\omega_c=0{,}37\rads$\\
+Polos de lazo cerrado & $-100$; $-0{,}65\pm j0{,}27$ (estable)\\
+\bottomrule
+\end{tabular}
+\end{center}
+La planta es estable y tiene buenos márgenes, pero $K_v=0{,}38$ es muy bajo. Por eso hay que compensar.
+
+% ---------------------------------------------------------------------
+\subsection{Parte 2: compensación para $K_v=20$, $\mathrm{GM}>40$ y $\mathrm{MF}>50^\circ$}
+
+\paso{Ganancia necesaria.}
+Con $G=K_0/[s(1+s/1{,}3)(1+s/100)]$ y $K_0=0{,}38$, se tiene $K_v=K_0$. Para $K_v=20$ la red tiene que aportar la ganancia
+\[
+K_c=\frac{20}{0{,}38}=52{,}7\qquad(34{,}4\dB).
+\]
+Esta ganancia se aplica en todo el rango, así que la red completa vale $K_c$ en continua.
+
+\paso{Ver si alcanza con subir la ganancia.}
+Con $K=20$ y sin atraso, $L_{20}(s)=\dfrac{20}{s(1+s/1{,}3)(1+s/100)}$ tiene:
+\begin{center}
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+ & $K=20$, sin atraso\\
+\midrule
+$K_v$ & $20\,\mathrm{s^{-1}}$\\
+Margen de ganancia & $14{,}1\dB$ ($\times5{,}07$)\\
+Margen de fase & $11{,}7^\circ$ en $\omega_c=5{,}01\rads$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Cumple $K_v$, pero no $\mathrm{MF}>50^\circ$ ni $\mathrm{GM}>40$. Hace falta una red de atraso.
+
+\paso{Elegir el cruce con la fase.}
+La fase de $L_{20}$ es
+\[
+\angle L_{20}(j\omega)=-90^\circ-\arctan\frac{\omega}{1{,}3}-\arctan\frac{\omega}{100}.
+\]
+Para $\mathrm{MF}>50^\circ$ con un atraso que resta unos $6^\circ$, la fase en el cruce tiene que ser mejor que $-124^\circ$. Eso se cumple si $\arctan(\omega/1{,}3)<34^\circ$, es decir si $\omega_c\lesssim0{,}9\rads$. Se elige $\omega_c'=0{,}5\rads$, donde $\angle L_{20}=-111{,}3^\circ$.
+
+El margen de ganancia pide otra cosa: en $\omega_{-180}=11{,}4\rads$ el módulo es $|L_{20}|=0{,}197$. Para tener $\mathrm{GM}>40$ hace falta $\beta\ge0{,}197/0{,}025\approx8$, lo que se cumple de sobra con $\beta=40$.
+
+\paso{Calcular la red de atraso.}
+En $\omega_c'=0{,}5\rads$ el módulo es $|L_{20}|=31{,}4\dB$. Entonces $\beta=10^{31{,}4/20}\approx37{,}5$. Se usa $\beta=40$, con
+\[
+T=\frac{10}{\omega_c'}=20\,\mathrm{s},\qquad \beta T=800\,\mathrm{s}.
+\]
+\[
+G_{\text{atraso}}(s)=\frac{20s+1}{800s+1}
+\]
+La red completa es $G_c(s)=K_c\,G_{\text{atraso}}(s)$, con $K_c=52{,}7$:
+\[
+\boxed{G_c(s)=52{,}7\,\frac{20s+1}{800s+1}}
+\]
+
+\paso{Verificar.}
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & Sin compensar & $K=20$ sin atraso & Compensada\\
+\midrule
+$K_v$ [s$^{-1}$] & $0{,}38$ & $20$ & $20$\\
+Margen de ganancia & $48{,}5\dB$ & $14{,}1\dB$ & $45{,}8\dB$ ($\times195$)\\
+Margen de fase & $74{,}1^\circ$ & $11{,}7^\circ$ & $63{,}9^\circ$\\
+$\omega_c$ [rad/s] & $0{,}37$ & $5{,}01$ & $0{,}47$\\
+$\omega_{-180}$ [rad/s] & $11{,}4$ & $11{,}4$ & $11{,}2$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Se cumple $K_v=20$, $\mathrm{GM}=195>40$ (también $45{,}8\dB$) y $\mathrm{MF}=63{,}9^\circ>50^\circ$.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=0.3cm,xticklabels at=edge bottom},
+  xmode=log,log basis x=10,width=0.8\linewidth,height=4.6cm,xmin=0.001,xmax=100]
+\nextgroupplot[ylabel={$|L|$ [dB]},ymin=-60,ymax=60,ytick={-60,-40,-20,0,20,40,60},legend pos=south west]
+\addplot[sin] table[x=w,y=ms]{datos/parc2_bode.dat};
+\addplot[ref] table[x=w,y=m20]{datos/parc2_bode.dat};
+\addplot[comp] table[x=w,y=mc]{datos/parc2_bode.dat};
+\legend{$G$ ($K=0{,}38$)$\,$,$K=20$ sin atraso,$L$ compensada}
+\draw[black] (axis cs:0.001,0)--(axis cs:100,0);
+\nextgroupplot[ylabel={$\angle L$ [$^\circ$]},xlabel={$\omega$ [rad/s]},ymin=-300,ymax=10,ytick={-270,-180,-90,0}]
+\addplot[sin] table[x=w,y=fs]{datos/parc2_bode.dat};
+\addplot[ref] table[x=w,y=f20]{datos/parc2_bode.dat};
+\addplot[comp] table[x=w,y=fc]{datos/parc2_bode.dat};
+\draw[black] (axis cs:0.001,-180)--(axis cs:100,-180);
+\draw[verde,dashed] (axis cs:0.47,-300)--(axis cs:0.47,10);
+\end{groupplot}
+\end{tikzpicture}
+\caption{Bode del ejercicio 2. La línea verde marca el cruce compensado en $0{,}47\rads$.}
+\label{fig:p2bode}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\subsection{Parte 3: sobreimpulso con la carta de Nichols}
+
+\paso{Sin compensar ($K=0{,}38$).}
+La curva de Nichols no se acerca a $-1$: $|L|$ cruza $-180^\circ$ a $-50\dB$ aproximadamente. Por eso $|T|\le1$ en todas las frecuencias y el contorno más alto tangente es $0\dB$: $M_r\approx0\dB$.
+Los polos dominantes son $-0{,}65\pm j0{,}27$, con $\zeta\approx0{,}92$. Eso da $M_p=\exp\!\big(-\pi\cdot0{,}92/\sqrt{1-0{,}92^2}\big)\approx0{,}06\%$, y la simulación da el mismo valor.
+
+\paso{Comparar con la regla $\zeta\approx\mathrm{MF}/100$.}
+Esa regla da $\zeta\approx0{,}74$ y $M_p\approx3{,}2\%$. Es una sobreestimación: la regla de $\mathrm{MF}/100$ es aproximada y no tiene en cuenta el polo real rápido. Para esta planta conviene leer $M_r$ en la carta.
+
+\paso{Compensada.}
+La curva compensada es tangente al contorno $M_r=0{,}74\dB$ en $\omega_r=0{,}14\rads$. Como en el ejercicio 1, con $M_r=1{,}089$:
+\[
+\zeta\approx0{,}55\qquad\Longrightarrow\qquad M_p\approx12{,}7\%.
+\]
+
+\paso{Simulación y comparación.}
+La simulación da $M_p=10{,}4\%$ en $t_p=6{,}6$\,s y $t_s(2\%)=34$\,s. Los polos dominantes son $-0{,}62\pm j0{,}45$ (con $\zeta\approx0{,}81$), que por sí solos darían un sobreimpulso de $1{,}3\%$. El sobreimpulso real viene del polo lento de lazo cerrado en $-0{,}056$, casi sobre el cero de la red en $-0{,}05$. Por eso la estimación por $M_r$ queda cerca del valor simulado, aunque la causa es otra.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.7\linewidth,height=7.4cm,xmin=-270,xmax=-90,ymin=-40,ymax=40,
+  xtick={-270,-225,-180,-135,-90},xlabel={$\angle L$ [$^\circ$]},ylabel={$|L|$ [dB]},grid=major,
+  legend pos=outer north east,legend style={font=\scriptsize}]
+\addplot[contorno,empty line=jump] table[x=fase,y=mag]{datos/nichols_M.dat};
+\addplot[sin,thick] table[x=fase,y=mag]{datos/parc2_nichols_sin.dat};
+\addplot[comp] table[x=fase,y=mag]{datos/parc2_nichols_comp.dat};
+\addplot[only marks,mark=x,mark size=3.5pt,very thick,black] coordinates{(-180,0)};
+\legend{contornos $M$,$G$ ($K=0{,}38$),$L$ compensada,$-1$}
+\end{axis}
+\end{tikzpicture}
+\caption{Carta de Nichols del ejercicio 2. La planta sin compensar queda lejos del $-1$. La compensada queda tangente a un contorno de $0{,}74\dB$.}
+\label{fig:p2nich}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.7\linewidth,height=5.6cm,xmin=0,xmax=60,ymin=0,ymax=1.2,
+  xlabel={$t$ [s]},ylabel={$y(t)$ (escalón)},legend pos=south east,grid=major]
+\addplot[sin,thick] table[x=t,y=ys]{datos/parc2_step.dat};
+\addplot[comp] table[x=t,y=yc]{datos/parc2_step.dat};
+\legend{$G$ ($K=0{,}38$), compensada}
+\end{axis}
+\end{tikzpicture}
+\caption{Respuesta al escalón de lazo cerrado del ejercicio 2: sin compensar y compensada.}
+\label{fig:p2step}
+\end{figure}
+
+\begin{resultado}
+Sin compensar ($K=0{,}38$): $M_r\approx0\dB$, sobreimpulso prácticamente nulo ($0{,}06\%$).
+Compensada: $M_r=0{,}74\dB$, $\zeta\approx0{,}55$, sobreimpulso estimado $12{,}7\%$ por Nichols. La simulación da $10{,}4\%$.
+\end{resultado}
+
+% =====================================================================
+\section{Resumen de resultados}
+% =====================================================================
+\begin{center}
+\small
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Caso & $K_v$ & GM & MF & $M_r$ (Nichols) & $M_p$ simulado\\
+\midrule
+Ej. 1, sin comp.\ ($K=100$) & 20 & $-6{,}0\dB$ & $-8{,}8^\circ$ & $\infty$ (inestable) & ---\\
+Ej. 1, compensada & 20 & $33{,}1\dB$ & $62{,}4^\circ$ & $0{,}74\dB$ & $11{,}1\%$\\
+Ej. 2, sin comp.\ ($K=0{,}38$) & $0{,}38$ & $48{,}5\dB$ & $74{,}1^\circ$ & $\approx0\dB$ & $0{,}06\%$\\
+Ej. 2, $K=20$ sin atraso & 20 & $14{,}1\dB$ & $11{,}7^\circ$ & $13{,}9\dB$ & $72\%$\\
+Ej. 2, compensada & 20 & $45{,}8\dB$ & $63{,}9^\circ$ & $0{,}74\dB$ & $10{,}4\%$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{idea}[Lo que se repite en los dos ejercicios]
+\begin{itemize}
+\item Subir $K_v$ de $K_0$ a $20$ exige aumentar la ganancia unos $35\dB$ en el ejercicio~2. Pero eso empeora el margen de fase.
+\item La solución es un atraso con $\beta\approx40$. Baja la ganancia en el cruce de $-180^\circ$, sin tocar $K_v$, y deja el cruce en baja frecuencia, donde la fase es buena.
+\item El precio es un polo lento cerca del origen: el tiempo de establecimiento pasa de unos segundos a más de 30 s. Si el enunciado exige velocidad, hay que usar un atraso-adelanto.
+\item Para el sobreimpulso, la carta de Nichols con $M_r$ da una estimación razonable. Pero cuando hay polos lentos, la regla de segundo orden no alcanza, y conviene verificar con la simulación.
+\end{itemize}
+\end{idea}
+
+\end{document}

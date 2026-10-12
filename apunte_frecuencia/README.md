@@ -7,3 +7,8 @@
 
 Para compilar: `latexmk -pdf apunte.tex` (o `pdflatex` dos veces).
 En Overleaf hay que subir la carpeta completa, incluida `datos/`.
+
+## Resolución paso a paso de dos ejercicios de parcial
+
+- `resolucion_parciales.pdf` / `resolucion_parciales.tex`: resolución detallada de dos ejercicios de compensación en frecuencia (Nyquist, atraso, lectura de Bode y Nichols).
+- `generar_datos_parciales.py`: genera los datos de sus figuras en `datos/parc1_*.dat` y `datos/parc2_*.dat`.
