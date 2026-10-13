@@ -188,6 +188,15 @@ class TestPipeline(unittest.TestCase):
             self.assertTrue(res.recomendado.cumple)
             self.assertTrue(os.path.exists(os.path.join(d, "informe.txt")))
 
+    def test_especs_clave_desconocida(self):
+        from controlfreq.pipeline import cargar_entradas, ejecutar
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, "e.py")
+            open(f, "w").write('EXPRESION = "5/((s+1)*(s+3))"\nESPECS = dict(Kvv=20)\n')
+            with self.assertRaises(ValueError) as cm:
+                ejecutar(cargar_entradas(f), mostrar=False, salida=d, imprimir=False, guardar_graficos=False)
+            self.assertIn("Kvv", str(cm.exception))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

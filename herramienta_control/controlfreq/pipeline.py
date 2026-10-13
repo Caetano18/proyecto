@@ -12,7 +12,7 @@ import control as ct
 from . import sistema as S
 from .sistema import Sistema, a_tf, tf_a_texto
 from .frecuencia import nyquist_conteo, rejilla
-from .metricas import calcular_metricas, evaluar_especificaciones
+from .metricas import calcular_metricas, evaluar_especificaciones, CLAVES_ESPECS
 from .estabilidad import rangos_estables, casos_de_K, ganancias_criticas
 from .compensacion import ParamsDiseno, Diseno, disenar, ErrorDiseno
 from . import informe as inf
@@ -164,6 +164,13 @@ def ejecutar(ent: Entradas, mostrar: bool | None = None, salida: str | None = No
 
     # -------------------------------------------------------------- compensación
     especs = {k: v for k, v in (ent.ESPECS or {}).items() if v is not None}
+    validas = {c.lower(): c for c in CLAVES_ESPECS}
+    for k in list(especs):
+        if k not in CLAVES_ESPECS:
+            if k.lower() in validas:
+                especs[validas[k.lower()]] = especs.pop(k)
+            else:
+                raise ValueError(f"ESPECS tiene la clave desconocida «{k}». Claves válidas: {', '.join(CLAVES_ESPECS)}.")
     candidatos: list[Diseno] = []
     msgs: list[str] = []
     if comp_usuario is not None:
