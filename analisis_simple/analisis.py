@@ -334,9 +334,11 @@ fig = plt.figure(figsize=(7, 7))
 for nombre, Gd in sistemas.items():
     ct.nyquist_plot(Gd*H, color=colores[nombre], label=nombre, arrows=1, max_curve_magnitude=6, title="")
 plt.plot(-1, 0, "kx", ms=10, mew=2)
+th = np.linspace(0, 2*np.pi, 300)
+plt.plot(np.cos(th), np.sin(th), "k:", lw=0.8)      # circulo |L| = 1
 plt.xlim(-3, 1)
 plt.ylim(-2, 2)
-plt.title("Nyquist (zoom alrededor de -1)")
+plt.title("Nyquist (zoom alrededor de -1, el circulo es |L| = 1)")
 plt.xlabel("Re L(jw)")
 plt.ylabel("Im L(jw)")
 plt.grid(True, alpha=0.3)
