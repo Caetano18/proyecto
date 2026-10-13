@@ -1,29 +1,18 @@
-# Análisis en frecuencia — versión simple
+# Analisis en frecuencia
 
 Un solo archivo: `analisis.py`.
 
-1. Abrilo y cambiá el **PASO 0** (tu `G(s)`, `K` y, si querés, la compensación).
-2. Apretá ▶ (o `python analisis.py`).
-3. Mirá lo que sale en el terminal y las figuras (se guardan en `graficos/`).
+Se cambian los datos al principio del archivo (la funcion de transferencia `G`, `K`, y si se quiere
+compensar, `diseno`) y se ejecuta (`python analisis.py`, o el boton de play en VS Code).
 
 Instalar una vez: `pip install control numpy matplotlib`
 
-## Qué hace, en orden
-1. Sistema: polos, ceros, tipo, constante de error (y ajusta K si pedís `CTE_DESEADA`).
-2. **Compensación** (si pedís `DISENAR`): la calcula paso a paso, imprimiendo cada cuenta.
-3. Márgenes y estabilidad por Nyquist (verificada con las raíces) + rango de K estable.
-4. Lazo cerrado: polos, Mr, ancho de banda, escalón.
-5. Resumen sin compensar vs compensado + gráficos (Bode, Nyquist, Nichols, escalón, Bode de Gc).
+Hace, en orden: polos, ceros, tipo y constante de error / compensador / margenes y Nyquist / rango de K
+estable / lazo cerrado y escalon / resumen y graficos (quedan en la carpeta `graficos`).
 
-## Compensación
-| `DISENAR =` | Qué hace |
-|---|---|
-| `"adelanto"` | φm, α, ωm, T: sube fase y velocidad |
-| `"atraso"` | busca ωc' por la fase, β = \|L(jωc')\|, T = 10/ωc' |
-| `"atraso_adelanto"` | adelanto centrado en ωc' (por defecto ω180) + atraso que baja la ganancia |
-| `"PI"` | agrega un integrador; cero bien por debajo de ωc |
+Compensadores (`diseno = ...`): `"adelanto"`, `"atraso"`, `"atraso_adelanto"`, `"PI"`.
+Datos que usa: `mf_pedido`, `mg_pedido` (opcional, en dB), `wc_nueva` (opcional), `cte_pedida` (opcional).
+Si ya se tiene el compensador: `diseno = None` y `Gc = (50*s + 1)/(4700*s + 1)`.
 
-Datos que pide: `MF_DESEADO`, `MG_DESEADO` (opcional, dB), `WC_NUEVO` (opcional), `CTE_DESEADA` (opcional).
-Si ya tenés el compensador: `DISENAR = None` y `Gc = (50*s + 1) / (4700*s + 1)`.
-
-La versión completa, con más diseños e informe, está en `../herramienta_control/`.
+Limitaciones: si hay varios cruces por 0 dB o por -180 grados, MF y MG son los del cruce principal;
+el retardo se aproxima con Pade de orden 8.
