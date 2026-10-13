@@ -101,3 +101,14 @@ CARPETA_SALIDA = "salidas"
 FORMATOS = ("png",)   # ej: ("png", "pdf")
 DPI = 140
 EXPORTAR_DAT = False  # True: escribe también archivos .dat (para pgfplots/LaTeX) y un resumen.csv
+
+# -----------------------------------------------------------------------------
+#  Para correr desde VS Code: apretá el botón ▶ (Run Python File) con este archivo abierto.
+#  También sirve:  python main.py
+# -----------------------------------------------------------------------------
+if __name__ == "__main__":
+    import os
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import main
+    sys.exit(main.main([os.path.abspath(__file__)]))

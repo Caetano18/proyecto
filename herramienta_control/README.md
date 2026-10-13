@@ -16,6 +16,7 @@ pip install -r requirements.txt        # numpy, scipy, matplotlib, control
 
 ```bash
 python main.py                                  # analiza lo que esté en entradas.py
+# (en VS Code: abrí entradas.py y apretá el botón ▶ de arriba a la derecha, hace lo mismo)
 python main.py ejemplos/parcial1_nyquist_atraso.py
 python main.py mi_planta.py --no-show           # solo guarda las figuras (no abre ventanas)
 python main.py --lista                          # lista los ejemplos
