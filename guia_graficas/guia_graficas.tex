@@ -14,6 +14,7 @@
 \usepackage[a4paper,left=2.2cm,right=2.2cm,top=2.3cm,bottom=2.3cm,headheight=14pt]{geometry}
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{booktabs,array,tabularx}
 \usepackage{enumitem}
 \usepackage{titlesec}
@@ -62,6 +63,11 @@
 \newtcolorbox{idea}{base,colback=azul!5,colframe=azul,title={Idea clave}}
 \newtcolorbox{nota}{base,colback=naranja!5,colframe=naranja,title={Ojo}}
 \newtcolorbox{regla}{base,colback=verde!5,colframe=verde,title={Regla práctica}}
+\newtcolorbox{leer}{base,colback=gris!6,colframe=gris!70,title={Cómo se lee}}
+\newcommand{\ejA}{\par\smallskip\noindent\textbf{\color{azul}Ejemplo A.}\ }
+\newcommand{\ejB}{\par\smallskip\noindent\textbf{\color{rojo}Ejemplo B.}\ }
+\newcommand{\apilada}[3]{\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{figuras/#1}\\[6pt]\includegraphics[width=0.8\textwidth]{figuras/#2}\caption{#3 \emph{Arriba:} Ejemplo A. \emph{Abajo:} Ejemplo B.}\end{figure}}
+\newcommand{\dosfig}[4]{\begin{figure}[H]\centering\includegraphics[width=0.49\textwidth]{figuras/#1}\hfill\includegraphics[width=0.49\textwidth]{figuras/#2}\caption{#3 \emph{Izquierda:} Ejemplo A. \emph{Derecha:} Ejemplo B.#4}\end{figure}}
 
 % figura centrada con ancho relativo
 \newcommand{\fig}[3]{\begin{figure}[htbp]\centering\includegraphics[width=#2\textwidth]{figuras/#1}\caption{#3}\end{figure}}
@@ -108,87 +114,193 @@ Figura & Qué muestra & Pregunta que responde\\
 
 En todas las figuras \textcolor{azul}{\textbf{azul}} es el sistema sin compensar y \textcolor{rojo}{\textbf{rojo}} el compensado.
 Se usan dos ejemplos para ilustrar: el \textbf{Ejemplo A} (parcial 1: $G=K/(s^3+10s^2+5s)$ con $K=100$ y un atraso) y
-el \textbf{Ejemplo B} (un adelanto sobre $10/[s(s+1)(0{,}05s+1)]$).
+el \textbf{Ejemplo B} (un adelanto sobre $10/[s(s+1)(0{,}05s+1)]$). Se usan a fondo en la sección~\ref{sec:pasos}.
 
-\section{Paso a paso para leer una corrida}
+\section{Paso a paso para leer una corrida, con dos ejemplos}
 \label{sec:pasos}
 
-Es el orden que conviene seguir cada vez que corrés \texttt{analisis.py}. Los pasos 1 y 2 salen del texto del terminal,
-del 3 al 6 salen de las figuras, y el 7 y el 8 cierran el análisis.
+Es el orden que conviene seguir cada vez que corrés \texttt{analisis.py}. En cada paso va primero \emph{cómo se lee} y después
+lo que da cada uno de los dos ejemplos. Los pasos 1 y 2 salen del texto del terminal; del 3 al 6, de las figuras; el 7 y el 8
+cierran el análisis.
 
-\begin{enumerate}[label=\textbf{\arabic*)},leftmargin=*,itemsep=6pt]
-\item \textbf{¿Es estable? (texto, sección 3).} Buscá la línea \emph{lazo cerrado estable / INESTABLE}. Trae $P$, $N$ y
- $Z=N+P$ y, entre paréntesis, la cuenta por raíces: tienen que coincidir. Si dice INESTABLE, resolvé eso primero: el
- \emph{rango de K estable} te dice cuánto hay que bajar $K$.
-
-\item \textbf{Tipo y error en régimen (texto, sección 1).} Anotá el tipo y $K_p$, $K_v$ o $K_a$ y compará con lo que pide el
- enunciado. Si no se cumple, lo que hay que tocar es la ganancia a baja frecuencia, no los márgenes.
-
-\item \textbf{Bode} (\arch{1\_bode}).
- \begin{enumerate}[label=(\alph*),itemsep=1pt]
- \item La pendiente inicial es el tipo: plana $\to$ 0, $-20\dBdec\to$ 1, $-40\dBdec\to$ 2. Tiene que coincidir con el paso 2.
- \item Ubicá $\wc$: donde la magnitud cruza 0 dB (línea punteada).
- \item Leé la fase en $\wc$. El margen de fase es $180^\circ$ más esa fase. Pedir $\MF\ge45^\circ$; con menos de $30^\circ$ oscila mucho.
- \item Leé cuántos dB por debajo de 0 está la magnitud en $\wcien$ (línea de trazo y punto): ese es el $\MG$. Pedir $\MG\ge6\dB$.
- \item Mirá la pendiente con que cruza 0 dB: $-20\dBdec$ ideal, $-40\dBdec$ justo, $-60\dBdec$ casi seguro inestable.
- \end{enumerate}
-
-\item \textbf{Nyquist} (\arch{2\_nyquist}).
- \begin{enumerate}[label=(\alph*),itemsep=1pt]
- \item Ubicá el $-1$ (la cruz) y el círculo punteado $|L|=1$.
- \item Con $P=0$: si la curva llena cruza el eje real negativo \emph{a la derecha} del $-1$, es estable; a la izquierda, inestable.
- El valor del cruce es $-1/\MG$.
- \item El $\MF$ se lee donde la curva corta el círculo. Cuanto más lejos pasa del $-1$, más margen hay.
- \item Si la curva se sale de la ventana o $P\neq0$, mandan los números $P$, $N$ y $Z$ del texto.
- \end{enumerate}
-
-\item \textbf{Nichols} (\arch{3\_nichols}).
- \begin{enumerate}[label=(\alph*),itemsep=1pt]
- \item Para ser estable, la curva tiene que pasar a la derecha y por debajo de la cruz $(-180^\circ,\,0\dB)$.
- \item $\MF$ es la distancia horizontal a la cruz; $\MG$, la vertical.
- \item Fijate con qué curva gris queda tangente: ese valor en dB es $\Mr$. Hasta unos $2$--$3\dB$ el lazo está bien amortiguado.
- \end{enumerate}
-
-\item \textbf{Escalón} (\arch{4\_escalon}).
- \begin{enumerate}[label=(\alph*),itemsep=1pt]
- \item ¿Llega a 1? Con tipo 1 o mayor tiene que llegar.
- \item Leé el sobreimpulso $M_p$ y el tiempo de establecimiento $t_s$.
- \item Comparalos con lo que esperabas por el $\MF$ (tabla de la sección del escalón: $45^\circ\to23\%$, $60^\circ\to9\%$).
- \item Una cola lenta es típica de un atraso. Una oscilación que crece significa inestable: volvé al paso 1.
- \end{enumerate}
-
-\item \textbf{Si compensaste: tabla de resumen y} \arch{5\_compensador}.
- \begin{enumerate}[label=(\alph*),itemsep=1pt]
- \item La constante de error ($K_v$) tiene que ser la misma en las dos columnas.
- \item $\MF$ y $\MG$ tienen que cumplir lo pedido.
- \item $\wc$ tiene que haber subido con un adelanto o bajado con un atraso.
- \item En el Bode de $G_c$: un adelanto tiene una joroba de fase positiva; un atraso, un valle negativo que tiene que quedar
- una década por debajo del nuevo cruce.
- \item En el Bode del lazo, el atraso se ve más bajo a baja frecuencia: es normal, $K_v$ no cambió.
- \end{enumerate}
-
-\item \textbf{Decidí qué tocar.} Buscá lo que viste en la tabla de síntomas (sección~\ref{sec:sintomas}). Resumido: poco margen de
- fase $\to$ bajar $K$ o adelanto; muy lento $\to$ subir $K$ o adelanto; error grande $\to$ subir $K$ o atraso; inestable $\to$
- bajar $K$ y volver al paso 1.
-\end{enumerate}
-
-\paragraph{Los mismos pasos aplicados al Ejemplo A sin compensar} ($K=100$): primero el diagnóstico, después el compensado.
 \begin{center}
 \small
-\begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Paso & Qué se lee & Conclusión\\
+& \textbf{\color{azul}Ejemplo A} (parcial 1) & \textbf{\color{rojo}Ejemplo B} (apunte)\\
 \midrule
-1 & \emph{INESTABLE}: $N=2$, $Z=2$; polos $0{,}22\pm j3{,}09$. Rango estable $0<K<50$ & hay que bajar $K$ a menos de 50 o compensar\\
-2 & tipo 1, $K_v=20$ & cumple el error: no conviene bajar $K$ \\
-3 & $\MF=-8{,}8^\circ$ en $\wc=3{,}14$; $\MG=0{,}5$ ($-6\dB$) en $\wcien=2{,}24$; cruza con $-40\dBdec$ & inestable \\
-4 & corta el eje real en $-2$ (a la izquierda de $-1$) & inestable, coincide con el paso 1 \\
-5 & cruza 0 dB en $-189^\circ$, a la izquierda de la cruz & inestable \\
-6 & oscilación creciente de unos $3\rads$ (periodo $\approx2$ s) & es la frecuencia de $\wc$ \\
-7 & con el atraso $(50s+1)/(4700s+1)$: $K_v=20$ igual, $\MF=62{,}4^\circ$, $\MG=33{,}1\dB$, $\Mr=0{,}74\dB$, $M_p=11\%$, $t_s=82$ s & cumple todo, a costa de velocidad \\
+Sistema & $G=K/(s^3+10s^2+5s)$, $K=100$ & $G=K/[s(s+1)(0{,}05s+1)]$, $K=10$\\
+Pedido & $K_v=20$, $\MF>50^\circ$, $\MG>5$ & $K_v=10$, $\MF\ge45^\circ$, $\MG\ge10\dB$\\
+Situación & sin compensar es \emph{inestable} & sin compensar es estable pero muy oscilatorio\\
+Compensador & atraso $(50s+1)/(4700s+1)$ & adelanto (lo calcula el programa)\\
+En \texttt{analisis.py} &
+{\ttfamily\scriptsize K = 100\newline G = K/(s**3 + 10*s**2 + 5*s)\newline Gc = (50*s + 1)/(4700*s + 1)} &
+{\ttfamily\scriptsize K = 10\newline G = K/(s*(s+1)*(0.05*s+1))\newline diseno = "adelanto"\newline mf\_pedido = 45\newline mg\_pedido = 10}\\
 \bottomrule
 \end{tabularx}
 \end{center}
+En todas las figuras de esta sección, \textcolor{azul}{azul} es el sistema sin compensar y \textcolor{rojo}{rojo} el compensado.
+
+\subsection{Paso 1: ¿es estable?}
+\begin{leer}
+En la sección 3 del texto buscá la línea \emph{lazo cerrado estable / INESTABLE}. Trae $P$, $N$ y $Z=N+P$ y, entre paréntesis,
+la cuenta por raíces: tienen que coincidir. Mirá también el \emph{rango de K estable}. Si dice INESTABLE, resolvé eso primero.
+\end{leer}
+\ejA Sin compensar: $P=0$, $N=2$, $Z=2$ (por raíces, 2): \textbf{INESTABLE}. Los polos de lazo cerrado son $0{,}22\pm j3{,}09$, con parte real
+positiva. El rango estable es $0<K<50$ y $K=100$ queda afuera. Compensado: $N=0$, $Z=0$, estable.
+
+\ejB Sin compensar: $N=0$, $Z=0$, \textbf{estable}, pero los polos son $-0{,}25\pm j3{,}11$: parte real casi cero, es decir, muy poco
+amortiguados. El rango es $0<K<21$ y $K=10$ está en la mitad. Compensado: estable, polos $-3{,}47\pm j5{,}67$.
+
+\emph{Moraleja:} ``estable'' no alcanza. Los pasos siguientes miden cuánto amortiguamiento hay.
+
+\subsection{Paso 2: tipo y error en régimen}
+\begin{leer}
+En la sección 1 del texto anotá el tipo y $K_p$, $K_v$ o $K_a$, y compará con lo que pide el enunciado. Si no se cumple, lo que hay
+que tocar es la ganancia a baja frecuencia, no los márgenes.
+\end{leer}
+\ejA Tipo 1, $K_v=20$ (error a la rampa $1/K_v=0{,}05$): \emph{cumple}. Por eso no sirve estabilizar bajando $K$: con $K<50$ el
+$K_v$ quedaría por debajo de 10. Hay que compensar.
+
+\ejB Tipo 1, $K_v=10$ (error a la rampa $0{,}1$): cumple. Un adelanto o un atraso tiene ganancia 1 en continua, así que no lo cambia.
+
+\subsection{Paso 3: Bode (\texttt{1\_bode})}
+\begin{leer}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item La pendiente inicial es el tipo: plana $\to0$, $-20\dBdec\to1$, $-40\dBdec\to2$. Tiene que coincidir con el paso 2.
+\item Ubicá $\wc$: donde la magnitud cruza 0 dB (línea punteada).
+\item Leé la fase en $\wc$: $\MF=180^\circ+$ esa fase. Pedir $\MF\ge45^\circ$; con menos de $30^\circ$ oscila mucho.
+\item Leé cuántos dB por debajo de 0 está la magnitud en $\wcien$ (línea de trazo y punto): ese es $\MG$. Pedir $\MG\ge6\dB$.
+\item Mirá la pendiente con que cruza 0 dB: $-20\dBdec$ ideal, $-40\dBdec$ justo, $-60\dBdec$ casi seguro inestable.
+\end{enumerate}
+\end{leer}
+\ejA Pendiente inicial $-20\dBdec$ (tipo 1, coincide). Sin compensar: $\wc=3{,}14\rads$, fase $-188{,}8^\circ$, entonces
+$\MF=-8{,}8^\circ$; en $\wcien=2{,}24\rads$ la magnitud está $6\dB$ \emph{arriba} de 0, o sea $\MG=0{,}5$ ($-6{,}02\dB$). Cruza con
+$-40\dBdec$. Los dos márgenes negativos dicen inestable. La ganancia crítica es $100\times0{,}5=50$, igual que el rango del paso 1.
+Compensado: $\wc=0{,}20\rads$, fase $-117{,}6^\circ$, $\MF=62{,}4^\circ$, $\MG=33{,}1\dB$ y cruza con $-20\dBdec$.
+
+\ejB Pendiente inicial $-20\dBdec$ (tipo 1). Sin compensar: $\wc=3{,}07\rads$, $\MF=9{,}4^\circ$, $\wcien=4{,}47\rads$, $\MG=2{,}1$
+($6{,}4\dB$); cruza con $-40\dBdec$: estable pero justísimo. Compensado: $\wc=4{,}96\rads$, $\MF=45{,}1^\circ$, $\MG=14{,}9\dB$ y cruza con
+$-20\dBdec$ (el cero del adelanto compensó la pendiente).
+
+\apilada{p1_bode.png}{lead_bode.png}{Paso 3, Bode con los márgenes (punteada: $\wc$; trazo y punto: $\wcien$).}
+
+\subsection{Paso 4: Nyquist (\texttt{2\_nyquist})}
+\begin{leer}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item Ubicá el $-1$ (la cruz) y el círculo punteado $|L|=1$.
+\item Con $P=0$: si la curva llena cruza el eje real negativo \emph{a la derecha} del $-1$, es estable; a la izquierda, inestable.
+ El valor del cruce es $-1/\MG$.
+\item El $\MF$ se lee donde la curva corta el círculo. Cuanto más lejos pasa del $-1$, más margen hay.
+\item Si la curva se sale de la ventana o $P\neq0$, mandan los números $P$, $N$ y $Z$ del texto.
+\end{enumerate}
+\end{leer}
+\ejA Sin compensar la curva azul corta el eje real en $-2=-1/0{,}5$: a la \emph{izquierda} del $-1$, inestable ($N=2$). La roja queda toda
+a la derecha del $-1$, corta el círculo con $62^\circ$ (su $\MF$) y cruza el eje real muy cerca del origen.
+
+\ejB Sin compensar cruza en $-0{,}48=-1/2{,}1$: a la derecha del $-1$ (estable) pero muy cerca, y corta el círculo casi sobre el eje real
+(es el $\MF$ de $9^\circ$). Compensado cruza en $-0{,}18=-1/5{,}5$ y corta el círculo a $45^\circ$.
+
+\dosfig{p1_nyquist.png}{lead_nyquist.png}{Paso 4, Nyquist con zoom alrededor de $-1$.}{}
+
+\subsection{Paso 5: Nichols (\texttt{3\_nichols})}
+\begin{leer}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item Para ser estable, la curva tiene que pasar a la derecha y por debajo de la cruz $(-180^\circ,\,0\dB)$.
+\item $\MF$ es la distancia horizontal a la cruz; $\MG$, la vertical.
+\item Fijate con qué curva gris queda tangente: ese valor en dB es $\Mr$. Hasta unos $2$--$3\dB$ el lazo está bien amortiguado.
+\end{enumerate}
+\end{leer}
+\ejA La curva azul cruza la línea de 0 dB en $-189^\circ$ (a la izquierda de la cruz) y cruza $-180^\circ$ por encima de 0 dB
+($+6\dB$): del lado inestable. La roja pasa a la derecha y por debajo y queda tangente a una curva gris entre $0{,}5$ y $1\dB$
+($\Mr=0{,}74\dB$).
+
+\ejB La azul pasa casi encima de la cruz (cruza 0 dB en $-171^\circ$ y $-180^\circ$ a $-6{,}4\dB$) y se mete adentro de la gris de
+$12\dB$, la más alta rotulada (el pico real es de $15{,}9\dB$, por eso oscila tanto). La roja se corrió a la derecha: $\MF=45^\circ$ y $\Mr=2{,}3\dB$, que coincide con la cota
+$1/(2\sin(\MF/2))=2{,}3\dB$.
+
+\dosfig{p1_nichols.png}{lead_nichols.png}{Paso 5, Nichols.}{}
+
+\subsection{Paso 6: escalón (\texttt{4\_escalon})}
+\begin{leer}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item ¿Llega a 1? Con tipo 1 o mayor tiene que llegar.
+\item Leé el sobreimpulso $M_p$ y el tiempo de establecimiento $t_s$.
+\item Comparalos con lo esperado por el $\MF$ (tabla de la sección del escalón: $45^\circ\to23\%$, $60^\circ\to9\%$).
+\item Una cola lenta es típica de un atraso. Una oscilación que crece significa inestable: volvé al paso 1.
+\end{enumerate}
+\end{leer}
+\ejA Sin compensar: oscilación que \emph{crece} con periodo de $2$ s ($\approx3\rads$, la misma $\wc$ del paso 3). Compensado: llega a 1,
+$M_p=11\%$, $t_p=15$ s y $t_s=82$ s. Para $62^\circ$ la regla daría $M_p\approx7\%$; el resto es la cola lenta del atraso (un polo de
+lazo cerrado en $-0{,}022$ casi cancelado por el cero del atraso en $-0{,}02$).
+
+\ejB Sin compensar: $M_p=77\%$ y $t_s=15$ s, con un amortiguamiento de unos $0{,}08$. Compensado: $M_p=27\%$, $t_p=0{,}56$ s y $t_s=1{,}0$ s.
+La regla para $45^\circ$ daba $23\%$: el real es un poco peor.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{figuras/p1_escalon.png}\\[4pt]
+\includegraphics[width=0.66\textwidth]{figuras/lead_escalon.png}
+\caption{Paso 6, escalón. Arriba, Ejemplo A: a la izquierda el sistema sin compensar (inestable, recortado a $\pm4$) y a la derecha el
+compensado hasta 320 s. Abajo, Ejemplo B.}
+\end{figure}
+
+\subsection{Paso 7: compensador (\texttt{5\_compensador}) y tabla de resumen}
+\begin{leer}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item La constante de error ($K_v$) tiene que ser la misma en las dos columnas del resumen.
+\item $\MF$ y $\MG$ tienen que cumplir lo pedido.
+\item $\wc$ tiene que haber subido con un adelanto o bajado con un atraso.
+\item En el Bode de $G_c$: un adelanto tiene una joroba de fase positiva; un atraso, un valle negativo que tiene que quedar una
+ década por debajo del nuevo cruce.
+\item En el Bode del lazo, el atraso se ve más bajo a baja frecuencia: es normal, $K_v$ no cambió.
+\end{enumerate}
+\end{leer}
+\ejA $G_c=(50s+1)/(4700s+1)$: cero en $0{,}02\rads$, polo en $0{,}0002\rads$ (fuera del dibujo), $\beta=94$, o sea $-39{,}5\dB$ en alta
+frecuencia. En el nuevo cruce $\wc=0{,}2\rads$ (una década arriba del cero) resta solo $5{,}6^\circ$. Es lo que explica que el Bode
+compensado de la figura del paso 3 parezca \emph{más bajo} que el azul a baja frecuencia aunque $K_v$ sigue en 20 (ver resumen).
+
+\ejB $G_c=(0{,}521s+1)/(0{,}0782s+1)$: $\alpha=0{,}150$, cero en $1{,}92\rads$, polo en $12{,}8\rads$. Agrega un máximo de $47{,}7^\circ$ de
+fase en $\omega_m=4{,}95\rads$, que es justo donde cae el nuevo cruce. En alta frecuencia multiplica por $1/\alpha=6{,}7$ ($16{,}5\dB$):
+amplifica el ruido.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.49\textwidth]{figuras/p1_compensador.png}\hfill
+\includegraphics[width=0.49\textwidth]{figuras/lead_compensador.png}
+\caption{Paso 7, Bode del compensador. \emph{Izquierda:} Ejemplo A (atraso). \emph{Derecha:} Ejemplo B (adelanto).}
+\end{figure}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{\textcolor{azul}{Ejemplo A}} & \multicolumn{2}{c}{\textcolor{rojo}{Ejemplo B}}\\
+& sin comp. & compensado & sin comp. & compensado \\
+\midrule
+$K_v$ & 20 & 20 & 10 & 10\\
+$\MF$ & $-8{,}8^\circ$ & $62{,}4^\circ$ & $9{,}4^\circ$ & $45{,}1^\circ$\\
+$\wc$ [rad/s] & 3,14 & 0,20 & 3,07 & 4,96\\
+$\MG$ [dB] & $-6{,}0$ & 33,1 & 6,4 & 14,9\\
+$\Mr$ [dB] & --- & 0,74 & 15,9 & 2,3\\
+Ancho de banda [rad/s] & --- & 0,32 & 4,8 & 9,0\\
+$M_p$ [\%] & --- & 11 & 77 & 27\\
+$t_s$ [s] & --- & 82 & 15,3 & 1,0\\
+\bottomrule
+\end{tabular}
+\end{center}
+(Las rayas son valores que no tienen sentido porque el lazo cerrado es inestable.)
+
+\subsection{Paso 8: decidir qué tocar}
+\begin{leer}
+Buscá lo que viste en la tabla de síntomas (sección~\ref{sec:sintomas}). Resumido: poco margen de fase $\to$ bajar $K$ o adelanto;
+muy lento $\to$ subir $K$ o adelanto; error grande $\to$ subir $K$ o atraso; inestable $\to$ bajar $K$ y volver al paso 1.
+\end{leer}
+\ejA Era inestable y el $K_v=20$ es un requisito, así que bajar $K$ no servía: se compensó con atraso. Cumple todo ($K_v$, $\MF$, $\MG$)
+a costa de velocidad ($t_s=82$ s). Si hiciera falta una respuesta más rápida, el camino es un adelanto en lugar del atraso.
+
+\ejB Era estable pero con $\MF=9^\circ$: poco margen. Se compensó con adelanto, que además lo hizo más rápido. Queda $\MF=45{,}1^\circ$
+(justo en el límite) y $M_p=27\%$; si ese sobreimpulso es mucho, se vuelve a correr con un \texttt{mf\_pedido} mayor.
 
 \section{Todo sale del lazo abierto \texorpdfstring{$L(s)$}{L(s)}}
 
@@ -425,9 +537,6 @@ un polo y un cero lentos que producen una cola larga hacia el valor final, y los
 Úsalas como orientación, no como resultado: el valor que vale es el que imprime el programa.
 \end{nota}
 
-\fig{p1_escalon.png}{1.0}{Ejemplo A, escalón en lazo cerrado. A la izquierda se ve el sistema sin compensar: oscilación que crece
-(periodo de unos $2\,$s, o sea $\approx3\rads\approx\wc$). A la derecha, el sistema compensado: sube rápido y se asienta con una cola lenta.}
-
 \section{Bode del compensador}
 
 \fig{compensadores.png}{1.0}{Los tres compensadores clásicos. Arriba, ganancia; abajo, fase.}
@@ -451,81 +560,10 @@ El atraso-adelanto es el producto de los dos: la parte de adelanto aporta la fas
 
 \begin{nota}
 Un atraso tiene ganancia 1 en continua, pero su polo está en $1/(\beta T)$, que suele quedar \emph{muy por debajo} del rango
-dibujado. Por eso en el Bode de la sección siguiente el rojo parece \emph{más bajo} que el azul a baja frecuencia: no es que
+dibujado. Por eso, en el Bode del Ejemplo A (paso 3), el rojo parece \emph{más bajo} que el azul a baja frecuencia: no es que
 haya bajado $K_v$; si extendés el gráfico hacia la izquierda las dos curvas terminan coincidiendo. La tabla de resumen del
 programa lo confirma ($K_v=20$ en ambos).
 \end{nota}
-
-\section{Ejemplo A comentado: parcial 1 (atraso)}
-
-$G=K/(s^3+10s^2+5s)$ con $K=100$ ($K_v=20$) y $G_c=(50s+1)/(4700s+1)$.
-
-\fig{p1_bode.png}{0.82}{Ejemplo A: Bode con los márgenes (líneas punteadas: $\wc$; de trazo y punto: $\wcien$).}
-
-\textbf{Sin compensar} (azul). El Bode empieza con pendiente $-20\dBdec$ (tipo 1). Cruza 0 dB en $\wc=3{,}14\rads$ con la fase en
-$-188{,}8^\circ$: $\MF=-8{,}8^\circ$. La fase vale $-180^\circ$ en $\wcien=\sqrt5=2{,}24\rads$ y ahí la magnitud está
-\emph{por encima} de 0 dB ($+6\dB$): $\MG=0{,}5$ ($-6{,}02\dB$). Los dos márgenes negativos dicen: inestable. La ganancia crítica es
-$K=100\times0{,}5=50$, que coincide con el rango $0<K<50$ del texto.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.49\textwidth]{figuras/p1_nyquist.png}\hfill
-\includegraphics[width=0.49\textwidth]{figuras/p1_nichols.png}
-\caption{Ejemplo A. Izquierda, Nyquist; derecha, Nichols.}
-\end{figure}
-
-En el \textbf{Nyquist}, la curva azul corta el eje real negativo en $-2$ (a la izquierda de $-1$, que es $1/\MG$): $N=2$,
-$P=0$, $Z=2$, y las raíces del lazo cerrado confirman dos polos inestables ($0{,}22\pm j3{,}09$). La frecuencia de esos polos
-($3{,}09\rads$) es casi la $\wc$ que leíste en el Bode: eso es lo que se ve en la oscilación creciente del escalón.
-La curva roja, en cambio, queda toda dentro de la zona derecha del $-1$ y corta el círculo $|L|=1$ con mucha holgura.
-
-En el \textbf{Nichols}, la azul cruza la línea de 0 dB en $-189^\circ$ (a la \emph{izquierda} del punto crítico) y cruza
-$-180^\circ$ por encima de 0 dB: del lado inestable. La roja pasa a la derecha y por debajo del punto crítico, y roza la
-curva gris de $0{,}5$--$1\dB$ (el programa da $\Mr=0{,}74\dB$).
-
-\textbf{Compensado} (rojo). El atraso bajó la ganancia en alta frecuencia: $\wc$ cayó de $3{,}14$ a $0{,}20\rads$ y en ese cruce
-la fase es $-117{,}6^\circ$, o sea $\MF=62{,}4^\circ$. $\MG$ pasó a $33{,}1\dB$. Se pagó con velocidad: el ancho de banda bajó de $4{,}67$ a
-$0{,}32\rads$ y $t_s=82\,$s. La regla de segundo orden daría $M_p\approx 7\%$ para $62^\circ$; en la realidad es $11\%$,
-con la cola lenta que se ve en el escalón (un polo de lazo cerrado en $-0{,}022$, casi cancelado por el cero del atraso).
-
-\fig{p1_compensador.png}{0.6}{Ejemplo A: Bode del compensador $(50s+1)/(4700s+1)$. Cero en $0{,}02\rads$ y polo en $0{,}0002\rads$ (fuera del dibujo). En $\wc=0{,}2\rads$ resta apenas $5{,}6^\circ$.}
-
-El compensador tiene el cero una década por debajo del nuevo cruce ($0{,}02$ contra $0{,}2$): de ahí que casi no reste fase
-justo donde se mide el $\MF$ (solo $5{,}6^\circ$). Esa es la regla de diseño del atraso.
-
-\section{Ejemplo B comentado: adelanto}
-
-$G=10/[s(s+1)(0{,}05s+1)]$ ($K_v=10$); pedido $\MF=45^\circ$, $\MG\ge10\dB$. El programa propone
-$G_c=(0{,}521s+1)/(0{,}0782s+1)$: $\alpha=0{,}150$, $\omega_m=4{,}95\rads$, cero en $1{,}92$ y polo en $12{,}8\rads$.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.49\textwidth]{figuras/lead_bode.png}\hfill
-\includegraphics[width=0.49\textwidth]{figuras/lead_escalon.png}
-\caption{Ejemplo B. Izquierda, Bode; derecha, escalón.}
-\end{figure}
-
-\begin{center}
-\small
-\begin{tabular}{@{}lrr@{}}
-\toprule
-& Sin compensar & Con adelanto \\
-\midrule
-$\MF$ & $9{,}4^\circ$ & $45{,}1^\circ$\\
-$\MG$ & $6{,}4\dB$ & $14{,}9\dB$\\
-$\wc$ [rad/s] & 3,07 & 4,96\\
-$\Mr$ [dB] & 15,9 & 2,3\\
-Ancho de banda [rad/s] & 4,8 & 9,0\\
-$M_p$ & 77\,\% & 27\,\%\\
-$t_s$ [s] & 15,3 & 1,0\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Lo que se ve: el adelanto \emph{subió} $\wc$ (más rápido) y puso una joroba de fase justo en el cruce, por eso el $\MF$ pasa de $9^\circ$
-a $45^\circ$ y la oscilación se amortigua. El $\Mr=2{,}3\dB$ coincide con la cota $1/(2\sin(\MF/2))=2{,}3\dB$ de la regla de
-Nichols. El costo es la ganancia de alta frecuencia: arriba del polo, el compensador multiplica por $1/\alpha=6{,}7$ ($16{,}5\dB$), y
-si hay ruido de medición, se amplifica.
 
 \section{Tabla de síntomas}
 \label{sec:sintomas}

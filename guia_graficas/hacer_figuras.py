@@ -230,6 +230,7 @@ guardar(fig, "compensadores.png")
 # ---------------------------------------------------------------- 6. escalon del ejemplo del parcial 1
 G = 100/(s**3 + 10*s**2 + 5*s)
 Gc = (50*s + 1)/(4700*s + 1)
+plt.rcParams.update({"font.size": 12})
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.2))
 for a, tmax in ((a1, 12), (a2, 320)):
     tt = np.linspace(0, tmax, 6000)
@@ -248,5 +249,6 @@ a1.legend(fontsize=8, loc="upper left")
 a2.legend(fontsize=8, loc="lower right")
 fig.tight_layout()
 guardar(fig, "p1_escalon.png")
+plt.rcParams.update({"font.size": 10})
 
 print("listo:", sorted(os.listdir(OUT)))
