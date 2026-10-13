@@ -10,7 +10,7 @@ Instalar una vez: `pip install control numpy matplotlib`
 Hace, en orden: polos, ceros, tipo y constante de error / compensador / margenes y Nyquist / rango de K
 estable / lazo cerrado y escalon / resumen y graficos (quedan en la carpeta `graficos`).
 
-Compensadores (`diseno = ...`): `"adelanto"`, `"atraso"`, `"atraso_adelanto"`, `"PI"`.
+Compensadores (`diseno = ...`): `"adelanto"`, `"atraso"`, `"atraso_adelanto"`.
 Datos que usa: `mf_pedido`, `mg_pedido` (opcional, en dB), `wc_nueva` (opcional), `cte_pedida` (opcional).
 Si ya se tiene el compensador: `diseno = None` y `Gc = (50*s + 1)/(4700*s + 1)`.
 

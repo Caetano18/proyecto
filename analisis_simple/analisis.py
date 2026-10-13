@@ -18,7 +18,7 @@ retardo = 0                         # retardo puro en segundos (se aproxima con 
 cte_pedida = None                   # Kp, Kv o Ka pedido (segun el tipo); ajusta K. Ej: 20
 
 # compensacion
-diseno = None                       # "adelanto", "atraso", "atraso_adelanto" o "PI" (None = sin compensar)
+diseno = None                       # "adelanto", "atraso" o "atraso_adelanto" (None = sin compensar)
 mf_pedido = 50                      # margen de fase pedido, en grados
 mg_pedido = None                    # margen de ganancia pedido, en dB (opcional)
 wc_nueva = None                     # frecuencia de cruce que se quiere, en rad/s (opcional)
@@ -161,24 +161,7 @@ def atraso_adelanto(L, w):
     return Gc
 
 
-def PI(L, w):
-    gm, pm, w180, wc = margenes(L)
-    if not np.isfinite(wc):
-        raise ValueError("L no cruza 0 dB, revisar K")
-    print(f"wc = {wc:.4g} rad/s, MF sin PI = {pm:.2f} grados")
-    for razon in range(5, 200, 5):          # Ti = razon/wc
-        Ti = razon/wc
-        Gc = (Ti*s + 1)/(Ti*s)
-        if cumple(Gc*L):
-            break
-    else:
-        print("el PI no alcanza para lo pedido (bajar K o usar atraso)")
-    print(f"Ti = {razon}/wc = {Ti:.4g} s (el cero queda {razon} veces abajo de wc y resta {np.degrees(np.arctan(1/razon)):.1f} grados)")
-    print("el PI agrega un integrador: sube el tipo en 1")
-    return Gc
-
-
-disenos = {"adelanto": adelanto, "atraso": atraso, "atraso_adelanto": atraso_adelanto, "PI": PI}
+disenos = {"adelanto": adelanto, "atraso": atraso, "atraso_adelanto": atraso_adelanto}
 
 # ------------------------------------------------------------------ 1. sistema
 print("\n--- 1. sistema ---")
