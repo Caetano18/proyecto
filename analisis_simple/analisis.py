@@ -17,15 +17,16 @@ G = K / (s**3 + 10*s**2 + 5*s)       # tu función de transferencia de lazo abie
 #   otras formas de escribirla:   G = 50 / (s*(s+1.3)*(s+100))
 #                                 G = ct.tf([5], [1, 3, 2])      (coeficientes: numerador, denominador)
 
-CTE_DESEADA = None                   # constante de error pedida (Kp, Kv o Ka según el tipo): ajusta K sola. ej: 20
 H = 1                                # sensor en la realimentación (1 = realimentación unitaria)
 RETARDO = 0                          # retardo puro [s] (se aproxima con Padé de orden 8)
+CTE_DESEADA = None                   # constante de error pedida (Kp, Kv o Ka según el tipo): ajusta K sola. ej: 20
 
-# Compensación (opcional) — elegí UNA de las dos formas:
-Gc = None                            # a) ponerlo vos, ej:  Gc = (50*s + 1) / (4700*s + 1)
-DISENAR = None                       # b) que lo calcule solo:  "adelanto"  o  "atraso"
-MF_DESEADO = 50                      #    margen de fase pedido [°]  (solo si DISENAR)
-MG_DESEADO = None                    #    margen de ganancia pedido [dB] (opcional, ej: 10).  None = no se exige
+# ── COMPENSACIÓN ── (con DISENAR = None no se compensa)
+DISENAR = None                       # que lo calcule solo, paso a paso:  "adelanto" | "atraso" | "atraso_adelanto" | "PI"
+MF_DESEADO = 50                      # margen de fase pedido [°]
+MG_DESEADO = None                    # margen de ganancia pedido [dB]   (opcional, ej: 10)
+WC_NUEVO = None                      # frecuencia de cruce que querés [rad/s]  (opcional; atraso y atraso_adelanto)
+Gc = None                            # o ponerlo vos a mano (con DISENAR = None), ej:  Gc = (50*s + 1) / (4700*s + 1)
 
 CARPETA = "graficos"                 # acá se guardan las figuras (también se muestran en pantalla)
 # ═════════════════════════════════════════════════════════════════════════════
@@ -68,51 +69,142 @@ def margenes(L):
     return gm, pm, w180, wc
 
 
+def tipo_y_cte(L):
+    """Tipo del sistema (polos en el origen) y constante de error lím s^tipo·L(s)."""
+    num, den = np.trim_zeros(L.num[0][0], "f"), np.trim_zeros(L.den[0][0], "f")
+    tipo = 0
+    while abs(den[-1]) < 1e-12 and len(den) > 1:
+        den, tipo = den[:-1], tipo + 1
+    return tipo, np.polyval(num, 0) / np.polyval(den, 0)
+
+
 def cumple(Lc):
     """¿El lazo compensado Lc cumple MF_DESEADO (y MG_DESEADO si se pidió)?"""
     gm, pm, _, _ = margenes(Lc)
     return pm >= MF_DESEADO and (MG_DESEADO is None or 20 * np.log10(gm) >= MG_DESEADO)
 
 
-def disenar_adelanto(L, w, MF_req):
-    """Adelanto Gc = (T·s+1)/(α·T·s+1): agrega fase donde |L| = 10·log10(α)."""
+def lead_lag(T, razon):
+    """(T·s+1)/(razon·T·s+1): razón < 1 = adelanto, razón > 1 = atraso."""
+    return (T * s + 1) / (razon * T * s + 1)
+
+
+def disenar_adelanto(L, w):
+    """ADELANTO  Gc = (T·s+1)/(α·T·s+1): agrega fase alrededor de ωm y sube el cruce."""
     mag_dB = 20 * np.log10(np.abs(L(1j * w)))
     MF0 = margenes(L)[1]
-    for delta in range(2, 60):                          # grados extra de "seguridad"
-        phi = np.radians(MF_req - MF0 + delta)
+    if not np.isfinite(MF0):
+        raise ValueError("L no cruza 0 dB: no hay margen de fase que corregir (revisá K).")
+    print(f"  1) MF sin compensar = {MF0:.2f}°  →  faltan {MF_DESEADO - MF0:.2f}° para llegar a {MF_DESEADO:g}°")
+    for delta in range(2, 60):                          # colchón: al subir ωc, la fase de L baja
+        phi = np.radians(MF_DESEADO - MF0 + delta)
         if not 0 < phi < np.radians(70):
-            raise ValueError("Hace falta más de ~70° de adelanto: probá con dos etapas o con atraso.")
+            raise ValueError("Hace falta más de ~70° de adelanto: probá con atraso o atraso_adelanto.")
         alfa = (1 - np.sin(phi)) / (1 + np.sin(phi))
         wm = w[np.argmin(np.abs(mag_dB - 10 * np.log10(alfa)))]
         T = 1 / (wm * np.sqrt(alfa))
-        Gc = (T * s + 1) / (alfa * T * s + 1)
+        Gc = lead_lag(T, alfa)
         if cumple(Gc * L):
             break
     else:
         print("  ATENCIÓN: no logré cumplir todo lo pedido con una sola etapa de adelanto.")
-    print(f"  adelanto: φ_extra = {delta}°, α = {alfa:.4f}, ωm = {wm:.3f} rad/s, T = {T:.4f}")
+    print(f"  2) Fase a agregar: φm = {MF_DESEADO:g} − ({MF0:.2f}) + {delta}° (colchón) = {np.degrees(phi):.2f}°")
+    print(f"  3) α = (1 − sen φm)/(1 + sen φm) = {alfa:.4f}")
+    print(f"  4) ωm = {wm:.4g} rad/s: ahí |L| = 10·log α = {10 * np.log10(alfa):.2f} dB; el adelanto sube "
+          f"{-10 * np.log10(alfa):.2f} dB → el nuevo cruce cae justo en ωm")
+    print(f"  5) T = 1/(ωm·√α) = {T:.4g}   →  cero en {1 / T:.4g} rad/s,  polo en {1 / (alfa * T):.4g} rad/s")
     return Gc
 
 
-def disenar_atraso(L, w, MF_req):
-    """Atraso Gc = (T·s+1)/(β·T·s+1): baja la ganancia hasta que el cruce caiga donde la fase da el MF."""
+def disenar_atraso(L, w):
+    """ATRASO  Gc = (T·s+1)/(β·T·s+1): baja la ganancia hasta que el cruce caiga donde la fase da el MF."""
     Lw = L(1j * w)
-    fase = fase_grados(Lw, tipo)
-    for extra in range(5, 60):                          # grados de margen por el atraso que agrega Gc
-        idx = np.where(fase <= -180 + MF_req + extra)[0]
-        if len(idx) == 0 or idx[0] == 0:
-            raise ValueError("La fase de L nunca baja a ese valor: el atraso no sirve para este sistema.")
-        wc_nuevo, beta = w[idx[0]], np.abs(Lw[idx[0]])
+    fase = fase_grados(Lw, tipo_y_cte(L)[0])
+    print(f"  1) MF sin compensar = {margenes(L)[1]:.2f}°  (pedido: {MF_DESEADO:g}°)")
+    for extra in ([None] if WC_NUEVO else range(5, 60)):    # colchón por la fase que resta el propio atraso
+        if extra is None:
+            i = np.argmin(np.abs(w - WC_NUEVO))
+        else:
+            idx = np.where(fase <= -180 + MF_DESEADO + extra)[0]
+            if len(idx) == 0 or idx[0] == 0:
+                raise ValueError("La fase de L nunca baja a ese valor: el atraso no sirve para este sistema.")
+            i = idx[0]
+        wc_nuevo, beta = w[i], np.abs(Lw[i])
         if beta <= 1:
             raise ValueError("Ya cumple el margen de fase: no hace falta compensar.")
         T = 10 / wc_nuevo                               # cero una década por debajo del nuevo cruce
-        Gc = (T * s + 1) / (beta * T * s + 1)
+        Gc = lead_lag(T, beta)
         if cumple(Gc * L):
             break
     else:
         print("  ATENCIÓN: no logré cumplir todo lo pedido con un atraso.")
-    print(f"  atraso: ωc nuevo = {wc_nuevo:.4f} rad/s, β = {beta:.2f}, T = {T:.3f}")
+    if extra is None:
+        print(f"  2) Nuevo cruce elegido por vos: ωc' = {wc_nuevo:.4g} rad/s")
+    else:
+        print(f"  2) Nuevo cruce: ωc' = {wc_nuevo:.4g} rad/s, donde ∠L = {fase[i]:.1f}° = −180° + {MF_DESEADO:g}° + {extra}° (colchón)")
+    print(f"  3) β = |L(jωc')| = {beta:.3f}   ({20 * np.log10(beta):.1f} dB de atenuación necesaria)")
+    print(f"  4) T = 10/ωc' = {T:.4g}   →  cero en {1 / T:.4g} rad/s,  polo en {1 / (beta * T):.4g} rad/s")
     return Gc
+
+
+def disenar_atraso_adelanto(L, w):
+    """ATRASO-ADELANTO: el adelanto (centrado en ωc') da la fase; el atraso baja la ganancia sin tocar el error."""
+    w180 = margenes(L)[2]
+    wcn = WC_NUEVO or w180
+    if not np.isfinite(wcn):
+        raise ValueError("L no cruza −180°: indicá WC_NUEVO (frecuencia de cruce deseada).")
+    A0 = np.abs(L(1j * wcn))
+    MF_disp = 180 + np.interp(wcn, w, fase_grados(L(1j * w), tipo_y_cte(L)[0]))
+    print(f"  1) Cruce elegido: ωc' = {wcn:.4g} rad/s ({'WC_NUEVO' if WC_NUEVO else 'ω180 de L'}),  |L(jωc')| = {20 * np.log10(A0):.2f} dB")
+    print(f"  2) Margen de fase disponible en ωc': 180° + ∠L = {MF_disp:.2f}°  (pedido: {MF_DESEADO:g}°)")
+    for delta in range(2, 40):
+        phim = max(MF_DESEADO - MF_disp + delta, 0.0)
+        if phim >= 70:
+            raise ValueError("Hace falta más de ~70° de adelanto en ese ωc': probá otro WC_NUEVO.")
+        alfa = (1 - np.sin(np.radians(phim))) / (1 + np.sin(np.radians(phim)))
+        T1 = 1 / (wcn * np.sqrt(alfa))
+        A = A0 / np.sqrt(alfa)                          # |L·adelanto| en ωc'
+        Gc = lead_lag(T1, alfa)
+        T2 = beta = None
+        if A > 1:                                       # el atraso baja |L| exactamente a 0 dB en ωc'
+            T2 = 10 / wcn
+            x = wcn * T2
+            beta = np.sqrt(((1 + x**2) * A**2 - 1)) / x
+            Gc = Gc * lead_lag(T2, beta)
+        if cumple(Gc * L):
+            break
+    else:
+        print("  ATENCIÓN: no logré cumplir todo lo pedido (probá otro WC_NUEVO).")
+    print(f"  3) Adelanto: φm = {MF_DESEADO:g} − {MF_disp:.2f} + {delta}° = {phim:.2f}°  →  α = {alfa:.4f}")
+    print(f"     T1 = 1/(ωc'·√α) = {T1:.4g}   →  cero en {1 / T1:.4g},  polo en {1 / (alfa * T1):.4g} rad/s")
+    if beta:
+        print(f"  4) Atraso: baja los {20 * np.log10(A):.2f} dB que sobran en ωc'  →  β = {beta:.3f},  T2 = 10/ωc' = {T2:.4g}")
+        print(f"     cero en {1 / T2:.4g},  polo en {1 / (beta * T2):.4g} rad/s")
+    else:
+        print("  4) Con el adelanto ya alcanza la ganancia: no hace falta la parte de atraso.")
+    return Gc
+
+
+def disenar_PI(L, w):
+    """PI  Gc = (Ti·s+1)/(Ti·s): agrega un integrador (sube el tipo en 1); el cero queda bien por debajo de ωc."""
+    gm, pm, w180, wc = margenes(L)
+    if not np.isfinite(wc):
+        raise ValueError("L no cruza 0 dB: ajustá K.")
+    print(f"  1) ωc = {wc:.4g} rad/s,  MF sin PI = {pm:.2f}°")
+    for razon in range(5, 200, 5):                      # Ti = razón/ωc
+        Ti = razon / wc
+        Gc = (Ti * s + 1) / (Ti * s)
+        if cumple(Gc * L):
+            break
+    else:
+        print("  ATENCIÓN: el PI no alcanza para lo pedido (probá bajar K o usar atraso).")
+    print(f"  2) Ti = {razon}/ωc = {Ti:.4g} s: el cero queda {razon} veces por debajo de ωc (resta ≈ {np.degrees(np.arctan(1 / razon)):.1f}° de fase)")
+    print("  3) El PI agrega un integrador: el error en régimen al escalón pasa a 0.")
+    return Gc
+
+
+DISENOS = {"adelanto": disenar_adelanto, "atraso": disenar_atraso,
+           "atraso_adelanto": disenar_atraso_adelanto, "PI": disenar_PI}
 
 
 # ═════════════════════════ PASO 1: EL SISTEMA ═════════════════════════
@@ -129,12 +221,7 @@ mostrar(L0)
 print("Polos:", np.round(polos, 4))
 print("Ceros:", np.round(ceros, 4) if len(ceros) else "(ninguno)")
 
-# tipo del sistema = cantidad de polos en el origen; constante de error = lím s^tipo · L(s)
-num, den = np.trim_zeros(L0.num[0][0], "f"), np.trim_zeros(L0.den[0][0], "f")
-tipo = 0
-while abs(den[-1]) < 1e-12 and len(den) > 1:
-    den, tipo = den[:-1], tipo + 1
-cte = np.polyval(num, 0) / np.polyval(den, 0)
+tipo, cte = tipo_y_cte(L0)                              # tipo = polos en el origen; cte = lím s^tipo·L(s)
 nombre_cte = ["Kp", "Kv", "Ka"][tipo] if tipo <= 2 else "K"
 print(f"Tipo {tipo}  →  {nombre_cte} = {cte:.4g}")
 if CTE_DESEADA:
@@ -156,23 +243,28 @@ w = np.logspace(lo, hi, 4000)
 
 # ═════════════════ PASO 2: COMPENSADOR (si lo pediste) ═════════════════
 if DISENAR:
-    print("═" * 70, "\nPASO 2 — DISEÑO DEL COMPENSADOR\n" + "═" * 70)
+    if DISENAR not in DISENOS:
+        raise SystemExit(f"DISENAR = {DISENAR!r} no existe. Opciones: {', '.join(DISENOS)} (o None).")
+    print("═" * 70, f"\nPASO 2 — DISEÑO DEL COMPENSADOR ({DISENAR})\n" + "═" * 70)
     try:
-        Gc = {"adelanto": disenar_adelanto, "atraso": disenar_atraso}[DISENAR](L0, w, MF_DESEADO)
+        Gc = DISENOS[DISENAR](L0, w)
     except ValueError as error:
         raise SystemExit(f"\n✗ No se pudo diseñar el compensador: {error}")
 if Gc is not None:
-    print("Gc(s) =")
+    print("\nCompensador resultante:  Gc(s) =")
     mostrar(Gc)
+    print("  polos:", np.round(ct.poles(Gc), 5), "  ceros:", np.round(ct.zeros(Gc), 5))
 
 sistemas = {"Sin compensar": G}
 if Gc is not None:
     sistemas["Compensado"] = Gc * G
+tipos = {n: tipo_y_cte(Gd * H)[0] for n, Gd in sistemas.items()}
 colores = {"Sin compensar": "tab:blue", "Compensado": "tab:red"}
 BLANCO = dict(fc="white", alpha=0.7, ec="none")
 
 # ═════════════════ PASO 3: MÁRGENES Y ESTABILIDAD (Nyquist) ═════════════════
 print("═" * 70, "\nPASO 3 — MÁRGENES Y ESTABILIDAD\n" + "═" * 70)
+resumen = {}
 for nombre, Gd in sistemas.items():
     L = Gd * H
     gm, pm, w180, wc = margenes(L)
@@ -181,6 +273,9 @@ for nombre, Gd in sistemas.items():
     Z = int(np.sum(ct.poles(ct.feedback(Gd, H)).real > 1e-9))
     print(f"[{nombre}]")
     print(texto_margenes(gm, pm, w180, wc))
+    t_c, k_c = tipo_y_cte(L)
+    resumen[nombre] = {"Cte. de error": f"{['Kp', 'Kv', 'Ka'][min(t_c, 2)]} = {k_c:.4g}", "MF [°]": pm, "ωc [rad/s]": wc,
+                       "MG [dB]": 20 * np.log10(gm) if np.isfinite(gm) else np.inf}
     print(f"  Nyquist: P = {P}, N = {N}  →  Z = N + P = {N + P}   (raíces: {Z} polos inestables)  "
           f"→ lazo cerrado {'ESTABLE' if Z == 0 else 'INESTABLE'}")
 
@@ -231,10 +326,20 @@ for nombre, Gd in sistemas.items():
     print(f"[{nombre}]  polos de lazo cerrado: {np.round(pc, 4)}")
     print(f"  Mr = {20 * np.log10(Mr):.2f} dB   ancho de banda = {'—' if bw is None else f'{bw:.4g} rad/s'}")
     resultados[nombre] = T
+    resumen[nombre].update({"Mr [dB]": 20 * np.log10(Mr), "BW [rad/s]": bw})
     if np.all(pc.real < 0):
         info = ct.step_info(T)
+        resumen[nombre].update({"Mp [%]": info["Overshoot"], "ts 2% [s]": info["SettlingTime"]})
         print(f"  Escalón: Mp = {info['Overshoot']:.2f} %,  tp = {info['PeakTime']:.3g} s,  "
               f"tr = {info['RiseTime']:.3g} s,  ts(2 %) = {info['SettlingTime']:.3g} s")
+
+# ═════════════════════ RESUMEN ═════════════════════
+print("═" * 70, "\nRESUMEN\n" + "═" * 70)
+filas = {k: None for r in resumen.values() for k in r}
+fmt = lambda v: "—" if v is None else v if isinstance(v, str) else "∞" if np.isinf(v) else f"{v:.4g}"
+print(f"{'':14s}" + "".join(f"{n:>16s}" for n in resumen))
+for k in filas:
+    print(f"{k:14s}" + "".join(f"{fmt(r.get(k)):>16s}" for r in resumen.values()))
 
 # ═════════════════════ PASO 5: GRÁFICOS ═════════════════════
 CARPETA = os.path.join(os.path.dirname(os.path.abspath(__file__)), CARPETA)   # junto a este archivo
@@ -248,7 +353,7 @@ for nombre, Gd in sistemas.items():
     gm, pm, w180, wc = margenes(L)
     c = colores[nombre]
     ax1.semilogx(w, 20 * np.log10(np.abs(Lw)), c, label=nombre)
-    ax2.semilogx(w, fase_grados(Lw, tipo), c, label=nombre)
+    ax2.semilogx(w, fase_grados(Lw, tipos[nombre]), c, label=nombre)
     if np.isfinite(wc):
         ax1.axvline(wc, color=c, ls=":")
         ax2.axvline(wc, color=c, ls=":")
@@ -288,7 +393,7 @@ fig.savefig(f"{CARPETA}/2_nyquist.png", dpi=140)
 fig = plt.figure(figsize=(8, 7))
 for nombre, Gd in sistemas.items():
     Lw = (Gd * H)(1j * w)
-    plt.plot(fase_grados(Lw, tipo), 20 * np.log10(np.abs(Lw)), colores[nombre], label=nombre)
+    plt.plot(fase_grados(Lw, tipos[nombre]), 20 * np.log10(np.abs(Lw)), colores[nombre], label=nombre)
 plt.plot(-180, 0, "kx", ms=10, mew=2)
 ct.nichols_grid()
 plt.ylim(-40, 40)
@@ -310,6 +415,21 @@ plt.ylabel("y(t)")
 plt.grid(True, alpha=0.3)
 plt.legend()
 fig.savefig(f"{CARPETA}/4_escalon.png", dpi=140)
+
+# Bode del compensador
+if Gc is not None:
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
+    Gw = Gc(1j * w)
+    ax1.semilogx(w, 20 * np.log10(np.abs(Gw)), "tab:green")
+    ax2.semilogx(w, fase_grados(Gw, tipo_y_cte(Gc)[0]), "tab:green")
+    ax1.set_ylabel("|Gc| [dB]")
+    ax2.set_ylabel("∠Gc [°]")
+    ax2.set_xlabel("ω [rad/s]")
+    ax1.set_title("Bode del compensador Gc(s)")
+    for a in (ax1, ax2):
+        a.grid(True, which="both", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(f"{CARPETA}/5_compensador.png", dpi=140)
 
 print("═" * 70, f"\nListo. Figuras guardadas en: {CARPETA}")
 plt.show()
