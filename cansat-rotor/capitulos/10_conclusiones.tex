@@ -31,6 +31,30 @@
         proyecto.
 \end{enumerate}
 
+\section*{¿Hasta qué punto es viable la autorrotación?}
+\begin{itemize}
+  \item \textbf{Es viable y cumple \Req{C4}}, pero el límite lo pone el área del rotor: un
+        rotor en autorrotación frena como mucho como un disco de su tamaño. Con
+        $R=\SI{0.20}{m}$ el piso es de unos \SIrange{6.5}{7}{m/s}; ningún perfil, paso o
+        torsión lo baja más de \SI{0.5}{m/s}.
+  \item \textbf{Es estable} (cap.~\ref{cap:estabilidad}): todos los modos de péndulo son
+        estables, el punto de diseño está en el régimen normal de autorrotación (molino
+        turbulento) y la transición desde el drogue no atraviesa el anillo de vórtices.
+        Hacen falta la pala BV y cuatro aletas antigiro desplegables con calaje
+        ajustable.
+  \item \textbf{El punto débil es el margen}: sin el aporte del drogue cae a
+        \SI{7.9}{m/s}, al borde de \SI{8}{m/s}, y la probabilidad estimada de no cumplir
+        \Req{C4} es del 3 al 6\,\%. El paracaídas sigue siendo más seguro.
+  \item \textbf{Mejora posible: $R=\SI{0.25}{m}$.} Por escalado con $\CR=0{,}97$ daría
+        $\approx\SI{5.8}{m/s}$ con drogue y $\approx\SI{6.4}{m/s}$ sin él, a unas
+        \SI{1000}{rpm} y con menos carga centrífuga. El costo es que la pala de
+        \SI{206}{mm} ocupa casi todo el cuerpo: la traba y el amortiguador deben pasar a
+        la tapa inferior. $R=\SI{0.23}{m}$ es un compromiso ($\approx\SI{6.1}{m/s}$).
+        Requiere confirmarse con la BEMT.
+  \item \textbf{Condición para seguir}: que E3 mida $\CR\ge1{,}0$ y que las caídas desde
+        drone den menos de \SI{7.5}{m/s} sin drogue. Si no, pasar al paracaídas.
+\end{itemize}
+
 \begin{resultado}[Recomendación]
 Avanzar con la configuración A: rotor de 4 palas de placa de carbono curvada al 7\,\%
 ($156\times45$\,mm, laminado con varilla en el borde de ataque), paso de \ang{-3}, sin
@@ -57,7 +81,6 @@ interno con servo y anillo amortiguador en la base. Mantener un paracaídas de
   \item E3 para medir $\CR$ real y el rozamiento de los rodamientos; recalcular con la
         BEMT.
   \item Caídas desde drone (E4), vibración y choque (E5) e integración (E6).
-  \item Trabajo futuro: simulación dinámica completa del descenso y análisis de
-        estabilidad del conjunto rotor–cuerpo–drogue (anillo de vórtices, péndulo,
-        giro del cuerpo y aletas antigiro).
+  \item Validar la BEMT con una herramienta independiente (QBlade, BEM y estela libre).
+  \item Trabajo futuro: simulación dinámica completa del descenso con Monte Carlo.
 \end{enumerate}
