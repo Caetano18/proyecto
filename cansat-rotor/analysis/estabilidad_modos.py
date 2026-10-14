@@ -127,42 +127,21 @@ with open(D+'estabilidad_d3.dat', 'w') as f:
         ne2 = nu2 + gam/8*Kp
         b0 = 6.1*nu2/ne2
         f.write(f'{d3:.1f} {np.sqrt(ne2):.4f} {gam/(16*np.sqrt(ne2)):.4f} {b0:.3f} {-Kp*b0:.3f}\n')
-# ---------------- 5. flameo cuasiestacionario 2 GDL ----------------
+# ---------------- 5. divergencia torsional (seccion tipica en 0,75R) ----------------
+# El flameo se toma del p-k del cap. de estructura; aqui solo la cota estatica.
 Lp = 0.156
-def flutter(mu_l, Ith, ycc, ycg, GJ, a=5.7):
-    b = c/2
-    r = 0.75*R
-    xa = (ycg - ycc)*c         # c.m. detras del eje elastico
-    xac = (ycc - 0.25)*c       # c.a. delante del eje
+def omega_div(Ith, ycc, GJ, a=5.7, r=0.75*R):
     wth0 = np.pi/(2*Lp)*np.sqrt(GJ/Ith)
-    def lam(Om):
-        U = Om*r; q = 0.5*rho*U**2
-        wh2 = nu2*Om**2; wa2 = wth0**2 + Om**2
-        S = mu_l*xa; Ia = Ith
-        Mm = np.array([[mu_l, S], [S, Ia]])
-        La = q*c*a                       # dL/dalpha
-        K = np.array([[mu_l*wh2, La], [0, Ia*wa2 - La*xac]])
-        Cc = np.array([[La/U, La*(0.75*c - ycc*c)/U], [-La*xac/U, -La*xac*(0.75*c-ycc*c)/U + np.pi*rho*b**3*U*(0.5-(ycc-0.5)*2)]])
-        Mi = np.linalg.inv(Mm)
-        Aa = np.block([[np.zeros((2, 2)), np.eye(2)], [-Mi@K, -Mi@Cc]])
-        return np.linalg.eigvals(Aa)
-    Oms = np.linspace(50, 1200, 1151)
-    crit = None; div = None
-    for O in Oms:
-        l = lam(O)
-        unst = l[l.real > 1e-6]
-        if len(unst):
-            crit = O; div = bool(np.any(abs(unst.imag) < 1e-6)); break
-    return crit, div, wth0
-for nm, p in {'A': (0.0342, 5.96e-6, 0.500, 0.500, 7.6e-3), 'BV': (0.0396, 8.21e-6, 0.428, 0.441, 51.7e-3)}.items():
-    cr_, dv, wt = flutter(*p)
-    out[f'flameo {nm}: Omc [rad/s], es divergencia, wth0'] = (cr_, dv, wt, (cr_/Om0) if cr_ else None)
-with open(D+'estabilidad_flameo.dat', 'w') as f:
-    f.write('ycg OmA OmBV\n')
-    for yc in np.linspace(0.30, 0.60, 13):
-        a_, _, _ = flutter(0.0342, 5.96e-6, 0.500, yc, 7.6e-3)
-        b_, _, _ = flutter(0.0396, 8.21e-6, 0.428, yc, 51.7e-3)
-        f.write(f'{yc:.3f} {(a_ or 1200)/Om0:.3f} {(b_ or 1200)/Om0:.3f}\n')
+    xac = (ycc - 0.25)*c
+    den = 0.5*rho*r**2*c*a*xac - Ith
+    return np.sqrt(Ith*wth0**2/den) if den > 0 else np.inf, wth0
+for nm, p in {'A': (5.96e-6, 0.500, 7.6e-3), 'BV': (8.21e-6, 0.428, 51.7e-3)}.items():
+    od, wt = omega_div(*p)
+    out[f'divergencia {nm}: OmD, OmD/Om0, wth0/Om0'] = (od, od/Om0, wt/Om0)
+with open(D+'estabilidad_div.dat', 'w') as f:
+    f.write('GJ rA rBV\n')
+    for GJ in np.geomspace(3e-3, 1e-1, 30):
+        f.write(f'{GJ*1e3:.3f} {omega_div(5.96e-6, 0.500, GJ)[0]/Om0:.3f} {omega_div(8.21e-6, 0.428, GJ)[0]/Om0:.3f}\n')
 # ---------------- 6. drogue ----------------
 zexit, ztip = 0.030, (R-e)*np.sin(np.radians(6.1))
 out['angulo cuerda para tocar puntas [deg]'] = 90 - np.degrees(np.arctan((zexit-ztip)/R))
