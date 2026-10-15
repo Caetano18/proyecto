@@ -15,39 +15,62 @@
 \newcommand{\kNmmm}{\si{kN\cdot mm}}
 \newcommand{\Eeq}{\si{kN/mm^2}}
 
-\title{Materiales Aeroespaciales\\[2pt]\large Trabajo Práctico: Laminados especiales\\ Teoría Clásica de Laminados}
-\author{Caetano Gimenez -- Legajo 27446}
-\date{15/10/2026}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{Materiales Aeroespaciales}\rhead{Fecha: 15/10/2026}\cfoot{\thepage}
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{}{0pt}{}
+\setlength{\parskip}{6pt}\setlength{\parindent}{0pt}
 
 \begin{document}
-\maketitle
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge Materiales Aeroespaciales\par}
+\vspace{0.6cm}
+{\LARGE TP: Laminados especiales\par}
+\vspace{2cm}
+{\large Profesores: Ing. Anibal Cesar Vettorel\\
+\hspace{2.2cm}Ing. Carlos Mario Carbonel\par}
+\vspace{1cm}
+{\large Alumno: Gimenez, Caetano -- 27446\par}
+\vspace{1cm}
+{\large Fecha: 15/10/2026\par}
+{\large Año: 2026\par}
+\end{titlepage}
 
-%--------------------------------------------------------------------
-\section{Datos de entrada e hipótesis}
 
-Lámina de carbono/epoxi de alta resistencia, espesor $t=0{,}125\ \mathrm{mm}$:
+\section{Introducción;}
+
+El presente trabajo tiene como objetivo aplicar los conceptos de la Teoría Clásica de Laminados al análisis de distintas configuraciones de laminados de carbono/epoxi. Para cada una se calcularon las matrices $A$, $B$ y $D$ y las constantes elásticas equivalentes, tanto para el comportamiento en membrana como en flexión, y se analizaron los resultados a partir de la simetría, la orientación y la secuencia de apilamiento.
+
+En la primera parte se estudió un laminado cuasi-isotrópico $(0/45/-45/90)_s$. En la segunda, tres laminados cross-ply: $(0/0/90/90)$, $(0/90/0/90)$ y $(0/90)_s$. Los dos primeros son antisimétricos y el tercero es simétrico, que se incluyó a modo de comparación. Todos los cálculos se hicieron con un script de Python que sigue las mismas ecuaciones que se detallan más abajo.
+
+\section{Datos e hipótesis;}
+
+La lámina es de carbono/epoxi de alta resistencia, con un espesor $t=0{,}125\ \mathrm{mm}$. Las constantes elásticas son
 \[
 E_1=140,\quad E_2=10,\quad G_{12}=5\ \Eeq,\qquad \nu_{12}=0{,}3,
 \qquad \nu_{21}=\nu_{12}\frac{E_2}{E_1}=0{,}0214 .
 \]
-Sistema de coordenadas: $x$--$y$ en el plano del laminado, $z$ positivo hacia arriba y origen en el plano medio; los ángulos se miden desde $x$ en sentido antihorario. La lámina 1 es la de $z$ más negativo.
+Se trabajó en unidades de kN y mm. El sistema de coordenadas es el del enunciado: $x$ e $y$ en el plano del laminado y $z$ positivo hacia arriba, con el origen en el plano medio. Los ángulos se miden desde $x$ en sentido antihorario y la lámina 1 es la que está más abajo ($z$ más negativo).
 
-\paragraph{Hipótesis de la Teoría Clásica de Laminados.} Láminas perfectamente adheridas (sin deslizamiento entre ellas), tensión plana en cada lámina ($\sigma_z=\tau_{xz}=\tau_{yz}=0$), comportamiento elástico lineal, laminado delgado con normales a la superficie media que permanecen rectas y normales tras la deformación (Kirchhoff, $\gamma_{xz}=\gamma_{yz}=0$) y deformación lineal en el espesor: $\varepsilon=\varepsilon^0+z\kappa$.
+Se adoptaron las hipótesis habituales de la teoría: las láminas están perfectamente adheridas entre sí, cada una trabaja en tensión plana ($\sigma_z=\tau_{xz}=\tau_{yz}=0$) con comportamiento elástico lineal, y las normales al plano medio se mantienen rectas y perpendiculares tras la deformación (Kirchhoff). Esto implica una deformación lineal en el espesor, $\varepsilon=\varepsilon^0+z\kappa$.
 
-\paragraph{Ecuaciones empleadas.}
-Rigidez reducida en ejes de la lámina:
+Las rigideces reducidas de la lámina en sus ejes son
 \[
 Q_{11}=\frac{E_1}{1-\nu_{12}\nu_{21}},\quad
 Q_{22}=\frac{E_2}{1-\nu_{12}\nu_{21}},\quad
 Q_{12}=\frac{\nu_{12}E_2}{1-\nu_{12}\nu_{21}},\quad
-Q_{66}=G_{12}.
+Q_{66}=G_{12},
 \]
-Rigidez transformada $[\bar Q]=[T]^{-1}[Q][R][T][R]^{-1}$, con $c=\cos\theta$, $s=\sin\theta$,
-$[R]=\mathrm{diag}(1,1,2)$ y
+y para una lámina a un ángulo $\theta$ se obtiene $[\bar Q]=[T]^{-1}[Q][R][T][R]^{-1}$, con $c=\cos\theta$, $s=\sin\theta$, $[R]=\mathrm{diag}(1,1,2)$ y
 \[
 [T]=\begin{bmatrix}c^2&s^2&2cs\\ s^2&c^2&-2cs\\ -cs&cs&c^2-s^2\end{bmatrix}.
 \]
-Matrices del laminado ($z_k$ son las cotas de las caras de la lámina $k$):
+Las matrices del laminado se obtienen sumando lámina a lámina, siendo $z_k$ la cota de la cara superior de la lámina $k$:
 \[
 A_{ij}=\sum_k \bar Q_{ij}^{(k)}(z_k-z_{k-1}),\quad
 B_{ij}=\frac12\sum_k \bar Q_{ij}^{(k)}(z_k^2-z_{k-1}^2),\quad
@@ -58,38 +81,33 @@ D_{ij}=\frac13\sum_k \bar Q_{ij}^{(k)}(z_k^3-z_{k-1}^3),
 \begin{bmatrix}A&B\\B&D\end{bmatrix}
 \begin{Bmatrix}\varepsilon^0\\\kappa\end{Bmatrix}.
 \]
-Constantes equivalentes, con $h$ el espesor total:
+Las constantes equivalentes se calcularon con $a=A^{-1}$ para membrana y $d=D^{-1}$ para flexión, siendo $h$ el espesor total del laminado:
 \begin{align}
-\text{Membrana } (a=A^{-1}):&\quad
+\text{Membrana:}&\quad
 E_x=\frac{1}{h\,a_{11}},\ E_y=\frac{1}{h\,a_{22}},\ G_{xy}=\frac{1}{h\,a_{66}},\
 \nu_{xy}=-\frac{a_{12}}{a_{11}},\\
-\text{Flexión } (d=D^{-1}):&\quad
+\text{Flexión:}&\quad
 E^f_x=\frac{12}{h^3 d_{11}},\ E^f_y=\frac{12}{h^3 d_{22}},\ G^f_{xy}=\frac{12}{h^3 d_{66}},\
 \nu^f_{xy}=-\frac{d_{12}}{d_{11}}.
 \end{align}
-Todos los resultados se obtuvieron con el script \texttt{calc\_laminados.py} (adjunto en el repositorio).
 
-\paragraph{Rigideces de la lámina.}
+Con los datos de la lámina resultan las siguientes rigideces, en $\Eeq$:
 \[
-[Q]=\begin{bmatrix}140{,}906&3{,}019&0\\3{,}019&10{,}065&0\\0&0&5\end{bmatrix}\Eeq .
-\]
-\[
-[\bar Q]_{0^\circ}=[Q],\quad
+[Q]=[\bar Q]_{0^\circ}=\begin{bmatrix}140{,}906&3{,}019&0\\3{,}019&10{,}065&0\\0&0&5\end{bmatrix},\qquad
 [\bar Q]_{90^\circ}=\begin{bmatrix}10{,}065&3{,}019&0\\3{,}019&140{,}906&0\\0&0&5\end{bmatrix},
 \]
 \[
-[\bar Q]_{45^\circ}=\begin{bmatrix}44{,}252&34{,}252&32{,}710\\34{,}252&44{,}252&32{,}710\\32{,}710&32{,}710&36{,}233\end{bmatrix},\quad
-[\bar Q]_{-45^\circ}=\begin{bmatrix}44{,}252&34{,}252&-32{,}710\\34{,}252&44{,}252&-32{,}710\\-32{,}710&-32{,}710&36{,}233\end{bmatrix}\Eeq .
+[\bar Q]_{45^\circ}=\begin{bmatrix}44{,}252&34{,}252&32{,}710\\34{,}252&44{,}252&32{,}710\\32{,}710&32{,}710&36{,}233\end{bmatrix},\qquad
+[\bar Q]_{-45^\circ}=\begin{bmatrix}44{,}252&34{,}252&-32{,}710\\34{,}252&44{,}252&-32{,}710\\-32{,}710&-32{,}710&36{,}233\end{bmatrix}.
 \]
 
-%--------------------------------------------------------------------
-\section{Parte 1: laminado cuasi-isotrópico $(0/45/-45/90)_s$}
+\section{Parte 1: laminado cuasi-isotrópico;}
 
-\subsection{Definición y condiciones}
-Un laminado \emph{cuasi-isotrópico} es aquel cuya matriz $[A]$ (comportamiento en membrana) es isótropa: $A_{11}=A_{22}$, $A_{66}=(A_{11}-A_{12})/2$, $A_{16}=A_{26}=0$, de modo que las propiedades en el plano no dependen de la dirección. Condiciones: (i) al menos tres orientaciones distintas, con $N\ge3$ familias; (ii) ángulos igualmente espaciados $\pi/N$ (p.\,ej. $0/60/-60$ o $0/45/90/-45$); (iii) todas las orientaciones con igual espesor total. Es isótropo \emph{sólo en membrana}: la flexión depende de la secuencia, y en general $[D]$ no es isótropa.
+\subsection{Definición y condiciones;}
+Se entiende por laminado cuasi-isotrópico a aquel cuya matriz $[A]$ es isótropa, es decir $A_{11}=A_{22}$, $A_{16}=A_{26}=0$ y $A_{66}=(A_{11}-A_{12})/2$. De esta forma las propiedades en el plano no dependen de la dirección. Para lograrlo la configuración debe tener tres o más orientaciones, con los ángulos igualmente espaciados en $\pi/N$ (por ejemplo $0/60/-60$ o $0/45/90/-45$) y con el mismo espesor total en cada una. Hay que aclarar que esta isotropía vale solo en membrana, ya que en flexión la matriz $[D]$ depende de la secuencia de apilamiento y en general no es isótropa.
 
-\subsection{Esquema}
-Son 8 láminas, $h=8t=1{,}0\ \mathrm{mm}$, simétrico respecto al plano medio.
+\subsection{Esquema;}
+El laminado $(0/45/-45/90)_s$ tiene 8 láminas y un espesor total de $h=1{,}0$ mm. Es simétrico respecto del plano medio, por lo que las láminas 5 a 8 repiten en espejo a las láminas 4 a 1.
 
 \begin{figure}[H]
 \centering
@@ -104,26 +122,23 @@ Son 8 láminas, $h=8t=1{,}0\ \mathrm{mm}$, simétrico respecto al plano medio.
   \node[left] at (-0.9,0.28) {$z=-0{,}5$};
   \node[left] at (-0.9,4.4) {$z=+0{,}5$};
 \end{tikzpicture}
-\caption{Laminado $(0/45/-45/90)_s$; lámina 1 abajo, $z$ positivo hacia arriba (cotas en mm).}
+\caption{Laminado $(0/45/-45/90)_s$. La lámina 1 está abajo y $z$ es positivo hacia arriba (cotas en mm).}
 \end{figure}
 
-\subsection{Matrices $A$, $B$ y $D$}
+\subsection{Matrices A, B y D;}
 \[
 [A]=\begin{bmatrix}59{,}869&18{,}636&0\\18{,}636&59{,}869&0\\0&0&20{,}616\end{bmatrix}\kNmm,\qquad
-[B]=[0]\ \si{kN}.
+[B]=[0]\ \si{kN},
 \]
 \[
 [D]=\begin{bmatrix}8{,}2997&1{,}3090&0{,}5111\\1{,}3090&2{,}1665&0{,}5111\\0{,}5111&0{,}5111&1{,}4740\end{bmatrix}\kNmmm .
 \]
 
-\paragraph{Análisis.}
-\begin{itemize}
-\item $[A]$: $A_{11}=A_{22}$, $A_{16}=A_{26}=0$ y $A_{66}=(A_{11}-A_{12})/2=(59{,}869-18{,}636)/2=20{,}616$: es isótropa, como se espera para un cuasi-isotrópico. No hay acoplamiento tracción--corte.
-\item $[B]=0$ por ser simétrico respecto del plano medio: no hay acoplamiento membrana--flexión (una carga en el plano no curva el laminado).
-\item $[D]$ \emph{no} es isótropa: $D_{11}\neq D_{22}$ porque las láminas a $0^\circ$ están lejos del plano medio (brazo mayor) y las de $90^\circ$ cerca, y $D_{16},D_{26}\neq0$ por las láminas $\pm45^\circ$ (acoplamiento flexión--torsión). Por eso quasi-isotropía en membrana no implica isotropía en flexión.
-\end{itemize}
+Como se puede ver, $[A]$ cumple las condiciones de isotropía: $A_{11}=A_{22}$, $A_{16}=A_{26}=0$ y $A_{66}=(59{,}869-18{,}636)/2=20{,}616$, y por lo tanto no hay acoplamiento entre tracción y corte. Esto es consistente con lo esperado para un cuasi-isotrópico. La matriz $[B]$ es nula porque el laminado es simétrico respecto del plano medio, por lo que una carga en el plano no genera curvatura.
 
-\subsection{Constantes elásticas equivalentes}
+Por otro lado, $[D]$ no es isótropa. Ocurre que $D_{11}\neq D_{22}$ debido a que las láminas a $0^\circ$ están en las caras exteriores, donde tienen mayor brazo respecto del plano medio, mientras que las de $90^\circ$ están más cerca del centro. Además, $D_{16}$ y $D_{26}$ son distintos de cero por la presencia de las láminas a $\pm45^\circ$, lo que genera acoplamiento entre flexión y torsión. Es decir que el laminado es cuasi-isotrópico en membrana pero no en flexión.
+
+\subsection{Constantes elásticas equivalentes;}
 \begin{center}
 \begin{tabular}{lcccc}
 \toprule
@@ -134,17 +149,16 @@ Flexión  & 89,74 & 21,98 & 16,18 & 0,569 \\
 \bottomrule
 \end{tabular}
 \end{center}
-En membrana se verifica la relación isótropa $G=E/[2(1+\nu)]=54{,}07/2{,}622=20{,}62\ \Eeq$. En flexión las constantes son muy distintas entre $x$ e $y$ (con $\nu^f_{yx}=0{,}139$): el laminado es ortótropo a flexión y sensible a la secuencia.
+En membrana se verifica la relación de un material isótropo, $G=E/[2(1+\nu)]=54{,}07/2{,}622=20{,}62\ \Eeq$. En flexión, en cambio, las constantes son muy distintas entre $x$ e $y$ (con $\nu^f_{yx}=0{,}139$), lo que muestra que a flexión el laminado se comporta como ortótropo y es sensible a la secuencia.
 
-%--------------------------------------------------------------------
-\section{Parte 2: laminados cross-ply antisimétricos}
+\section{Parte 2: laminados cross-ply antisimétricos;}
 
-\subsection{Definición}
-Un laminado \emph{cross-ply} sólo tiene láminas a $0^\circ$ y $90^\circ$. Es \emph{antisimétrico} si, para cada lámina de ángulo $\theta$ a una distancia $z$ del plano medio, existe otra de ángulo $-\theta$ (o $90^\circ-\theta$ en cross-ply) a $-z$ con igual espesor y material; es decir, el apilado por encima del plano medio es el ``complemento'' del de abajo. Consecuencias: $A_{16}=A_{26}=D_{16}=D_{26}=0$ y $B_{11}=-B_{22}\neq0$, con el resto de $B$ nulo, de manera que aparece acoplamiento membrana--flexión (una tracción en $x$ curva el laminado).
+\subsection{Definición;}
+Un laminado cross-ply es aquel que solo tiene láminas a $0^\circ$ y $90^\circ$. Se lo llama antisimétrico cuando, para cada lámina de orientación $\theta$ a una distancia $z$ del plano medio, existe otra de orientación $90^\circ-\theta$ a una distancia $-z$, con el mismo material y espesor. En otras palabras, el apilado por encima del plano medio es el complemento del de abajo. La consecuencia es que $A_{16}=A_{26}=D_{16}=D_{26}=0$ y que $B_{11}=-B_{22}\neq0$, con el resto de $[B]$ nulo. Esto genera acoplamiento entre membrana y flexión: una tracción en $x$ curva el laminado.
 
-Las configuraciones A y B (apilado $[0_2/90_2]$ y $[0/90/0/90]$) son antisimétricas. La C, $(0/90)_s=[0/90/90/0]$, es \emph{simétrica} y se incluye como referencia.
+Los laminados A $(0/0/90/90)$ y B $(0/90/0/90)$ son antisimétricos. El C $(0/90)_s=[0/90/90/0]$ es simétrico y lo incluimos como referencia.
 
-\subsection{Esquemas}
+\subsection{Esquemas;}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[scale=0.8]
@@ -159,15 +173,15 @@ Las configuraciones A y B (apilado $[0_2/90_2]$ y $[0/90/0/90]$) son antisimétr
   }
   \draw[->,thick] (-0.7,0) -- (-0.7,2.8) node[above] {$z$};
 \end{tikzpicture}
-\caption{Configuraciones A $(0/0/90/90)$, B $(0/90/0/90)$ y C $(0/90)_s$. Cada lámina de $0{,}125$ mm; $h=0{,}5$ mm; $z$ positivo hacia arriba, lámina 1 abajo (cotas $z=-0{,}25;-0{,}125;0;0{,}125;0{,}25$ mm).}
+\caption{Configuraciones A $(0/0/90/90)$, B $(0/90/0/90)$ y C $(0/90)_s$. Cada lámina es de $0{,}125$ mm, $h=0{,}5$ mm, $z$ es positivo hacia arriba y la lámina 1 está abajo (cotas $z=-0{,}25;-0{,}125;0;0{,}125;0{,}25$ mm).}
 \end{figure}
 
-\subsection{Matrices $A$, $B$ y $D$}
-Las tres configuraciones tienen el mismo número de láminas a $0^\circ$ y $90^\circ$, por lo que comparten
+\subsection{Matrices A, B y D;}
+Las tres configuraciones tienen la misma cantidad de láminas a $0^\circ$ y a $90^\circ$, por lo que comparten la matriz
 \[
 [A]=\begin{bmatrix}37{,}743&1{,}510&0\\1{,}510&37{,}743&0\\0&0&2{,}500\end{bmatrix}\kNmm .
 \]
-Difieren en $[B]$ y $[D]$:
+Lo que cambia entre ellas son $[B]$ (en \si{kN}) y $[D]$ (en \kNmmm):
 \[
 \text{A: }[B]=\begin{bmatrix}-4{,}0888&0&0\\0&4{,}0888&0\\0&0&0\end{bmatrix},\quad
 [D]=\begin{bmatrix}0{,}7863&0{,}0315&0\\0{,}0315&0{,}7863&0\\0&0&0{,}0521\end{bmatrix}
@@ -180,18 +194,13 @@ Difieren en $[B]$ y $[D]$:
 \text{C: }[B]=[0],\quad
 [D]=\begin{bmatrix}1{,}2974&0{,}0315&0\\0{,}0315&0{,}2752&0\\0&0&0{,}0521\end{bmatrix}
 \]
-(unidades: $[B]$ en \si{kN} y $[D]$ en \kNmmm).
 
-\paragraph{Análisis.}
-\begin{itemize}
-\item $A_{11}=A_{22}$ y $A_{16}=A_{26}=0$: el laminado es equilibrado (balanceado) y ortótropo en membrana, sin acoplamiento tracción--corte, en los tres casos.
-\item A y B (antisimétricos) tienen $B_{11}=-B_{22}\neq0$: acoplamiento membrana--flexión (tipo \emph{bending--extension}). El valor es proporcional a la ``excentricidad'' de las láminas: en A los $0^\circ$ están agrupados en una cara y $B_{11}$ es el doble que en B, donde el apilado alternado compensa parcialmente.
-\item C es simétrico: $[B]=0$, sin acoplamiento. Pero $D_{11}\gg D_{22}$ porque los $0^\circ$ están en las caras exteriores (mayor brazo) y los $90^\circ$ en el interior.
-\item $D$ de A y B coincide ($0{,}7863$), ya que cada lámina $0^\circ$ y $90^\circ$ aparece en cotas simétricas respecto de las del otro.
-\end{itemize}
+En los tres casos $A_{11}=A_{22}$ y $A_{16}=A_{26}=0$, es decir que son laminados balanceados, ortótropos en membrana y sin acoplamiento entre tracción y corte. En A y B aparece $B_{11}=-B_{22}\neq0$, que es el acoplamiento entre membrana y flexión que se esperaba por ser antisimétricos. El valor de $B_{11}$ en A es el doble que en B: en A las láminas a $0^\circ$ están agrupadas en una misma cara y el efecto se acumula, mientras que en B el apilado alternado lo compensa en parte.
 
-\subsection{Constantes elásticas equivalentes}
-Obtenidas con $A^{-1}$ y $D^{-1}$ (sin acoplamiento):
+El laminado C es simétrico, por lo que $[B]=0$ y no hay acoplamiento. Sin embargo, su matriz $[D]$ está muy desbalanceada ($D_{11}\gg D_{22}$) porque las láminas a $0^\circ$ están en las caras exteriores y las de $90^\circ$ en el interior. Por último, $[D]$ resulta igual en A y en B, ya que en ambos casos las láminas de cada orientación quedan en cotas simétricas respecto de las de la otra orientación.
+
+\subsection{Constantes elásticas equivalentes;}
+Primero se calcularon con $A^{-1}$ y $D^{-1}$, sin considerar el acoplamiento:
 \begin{center}
 \begin{tabular}{llcccc}
 \toprule
@@ -207,7 +216,7 @@ C & flexión  & 124,21 & 26,35 & 5,00 & 0,114 \\
 \end{tabular}
 \end{center}
 
-\paragraph{Efecto del acoplamiento.} Para A y B, $B\neq0$, por lo que las constantes anteriores sobreestiman la rigidez real. Invirtiendo la matriz completa $\begin{bmatrix}A&B\\B&D\end{bmatrix}$ (flexibilidad $\begin{bmatrix}a&b\\b^T&d\end{bmatrix}$ y constantes con $a_{ij}$ y $d_{ij}$ del bloque correspondiente):
+En A y B, como $[B]\neq0$, estos valores sobreestiman la rigidez real. Por eso se invirtió también la matriz completa $\begin{bmatrix}A&B\\B&D\end{bmatrix}$ y se calcularon las constantes con los bloques $a_{ij}$ y $d_{ij}$ de la flexibilidad resultante:
 \begin{center}
 \begin{tabular}{lcccc}
 \toprule
@@ -218,10 +227,9 @@ B & 64,73 & 5,00 & 0,040 & 14\,\% \\
 \bottomrule
 \end{tabular}
 \end{center}
-La pérdida de rigidez es mucho mayor en A que en B, en línea con el valor de $B_{11}$.
+La pérdida de rigidez es mucho mayor en A que en B, lo que va de la mano con el valor de $B_{11}$ de cada uno.
 
-%--------------------------------------------------------------------
-\section{Comparación y conclusiones}
+\section{Comparación y conclusiones;}
 
 \begin{center}\small
 \setlength{\tabcolsep}{3pt}
@@ -230,18 +238,17 @@ La pérdida de rigidez es mucho mayor en A que en B, en línea con el valor de $
 Laminado & Simetría & $B$ & $A$ & $D$ \\
 \midrule
 $(0/45/-45/90)_s$ & simétrico & $0$ & isótropa & ortótropa con $D_{16},D_{26}\neq0$ \\
-A $(0/0/90/90)$ & antisimétrico & $B_{11}=-B_{22}=-4{,}09$ & ortótropa (equilibrada) & ortótropa, $D_{11}{=}D_{22}$ \\
-B $(0/90/0/90)$ & antisimétrico & $B_{11}=-B_{22}=-2{,}04$ & ortótropa (equilibrada) & ortótropa, $D_{11}{=}D_{22}$ \\
-C $(0/90)_s$ & simétrico & $0$ & ortótropa (equilibrada) & ortótropa, $D_{11}\gg D_{22}$ \\
+A $(0/0/90/90)$ & antisimétrico & $B_{11}=-B_{22}=-4{,}09$ & ortótropa & ortótropa, $D_{11}{=}D_{22}$ \\
+B $(0/90/0/90)$ & antisimétrico & $B_{11}=-B_{22}=-2{,}04$ & ortótropa & ortótropa, $D_{11}{=}D_{22}$ \\
+C $(0/90)_s$ & simétrico & $0$ & ortótropa & ortótropa, $D_{11}\gg D_{22}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\begin{itemize}
-\item El laminado cuasi-isotrópico logra isotropía en el plano ($E=54{,}07$, $G=20{,}62\ \Eeq$) a costa de menor rigidez en la dirección de las fibras que los cross-ply ($E_x=75{,}36\ \Eeq$), pero conserva acoplamiento flexión--torsión.
-\item La simetría respecto del plano medio ($B=0$) elimina el acoplamiento membrana--flexión; la antisimetría de A y B lo introduce y reduce la rigidez efectiva, lo que en la práctica provoca alabeo de la pieza tras el curado y bajo carga.
-\item Las tres configuraciones cross-ply tienen la misma rigidez de membrana, pero la secuencia de apilado define la rigidez a flexión: C coloca los $0^\circ$ afuera y es 1,65 veces más rígido en $x$ que A/B, a cambio de $E^f_y$ muy inferior.
-\item Conclusión de diseño: para evitar alabeo conviene laminados simétricos; la secuencia define flexión, y el número y orientación de láminas define la membrana.
-\end{itemize}
+A modo de conclusión, el laminado cuasi-isotrópico logra propiedades iguales en todas las direcciones del plano ($E=54{,}07$ y $G=20{,}62\ \Eeq$), pero a costa de tener menos rigidez en la dirección de las fibras que los cross-ply ($E_x=75{,}36\ \Eeq$), y además conserva acoplamiento entre flexión y torsión por las láminas a $\pm45^\circ$.
+
+En cuanto a la simetría, un laminado simétrico respecto del plano medio tiene $[B]=0$ y no presenta acoplamiento entre membrana y flexión. En cambio, la antisimetría de A y B introduce ese acoplamiento y reduce la rigidez efectiva, 56\,\% en A y 14\,\% en B. En la práctica esto se traduce en alabeo de la pieza después del curado y bajo carga.
+
+Por último, las tres configuraciones cross-ply tienen la misma rigidez de membrana, pero la secuencia de apilado define la rigidez a flexión: en C los $0^\circ$ están afuera y su rigidez a flexión en $x$ es 1,65 veces la de A y B, a cambio de una $E^f_y$ mucho menor. De esto se desprende que, para evitar el alabeo, conviene usar laminados simétricos, y que la cantidad y orientación de las láminas definen el comportamiento en membrana mientras que la secuencia define el de flexión.
 
 \end{document}
