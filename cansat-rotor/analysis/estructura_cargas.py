@@ -16,13 +16,14 @@ from scipy.integrate import solve_ivp
 from scipy.linalg import eigh
 import estructura_seccion as SEC
 import estructura_modal as MOD
+import v2_config as v2c
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 rho, g = 1.225, 9.81
 R, e, Lb, XP, C = MOD.R, MOD.e, MOD.Lb, MOD.XP, SEC.C
 V1 = 13.4            # velocidad de la etapa 1 al liberar
 OM = MOD.OM_D
-T_ROTOR = 3.78       # empuje del rotor
+T_ROTOR = 4.68       # empuje del rotor (BEMT v2, rotor solo)
 B = 4
 # materiales típicos (no medidos)
 PETG_XY, PETG_Z = 45e6, 25e6       # resistencia a tracción impresa en el plano / entre capas
@@ -175,8 +176,8 @@ if __name__ == "__main__":
     print("\n== 3. Componentes ==")
     sA = SEC.get("A")
     Fc = MOD.tension(sA, np.array([0.0]), OM)[0] * 13.1 / 13.1
-    Fc_max = MOD.tension(sA, np.array([0.0]), 1500 * np.pi / 30)[0]
-    pr("fuerza centrífuga en la bisagra a 1150 / 1500 rpm", Fc, f"/ {Fc_max:.2f} N")
+    Fc_max = MOD.tension(sA, np.array([0.0]), MOD.OM_PICO)[0]
+    pr("fuerza centrífuga en la bisagra a régimen / sobrepaso de arranque", Fc, f"/ {Fc_max:.2f} N")
     d = 2e-3; Apin = np.pi * d**2 / 4
     # brazo del tope (plano 4) y golpe
     a_s, a_s2 = 4e-3, 10e-3
@@ -247,13 +248,13 @@ if __name__ == "__main__":
         sig_tooth = 6 * F * 1.0e-3 / (1.2e-3 * 0.8e-3**2)
         pr(f"pestaña/diente {lab}: F", F, f"N ; sigma neta {sig_net/1e6:.1f} ; desgarro {tau_to/1e6:.1f} ; diente {sig_tooth/1e6:.1f} MPa")
     # tubo
-    At = np.pi * 86e-3 * 2e-3
-    F30 = 0.5 * 30 * g
+    At = np.pi * 79e-3 * 2e-3        # cuerpo Ø81, pared de 2 mm
+    F30 = 0.49 * 30 * g
     s_ax = F30 / At
-    s_cr = PETG_E * 2e-3 / (43e-3 * np.sqrt(3 * (1 - 0.38**2)))
+    s_cr = PETG_E * 2e-3 / (39.5e-3 * np.sqrt(3 * (1 - 0.38**2)))
     pr("tubo: sigma axial 30 G / con Kt=3", s_ax / 1e6, f"/ {3*s_ax/1e6:.2f} MPa")
     pr("tubo: pandeo clásico / x0,3 / x0,3 x0,5 (aberturas)", s_cr / 1e6, f"/ {0.3*s_cr/1e6:.1f} / {0.15*s_cr/1e6:.1f} MPa")
-    pr("tubo: parámetro de Starnes r/sqrt(R t) para Ø8", 4e-3 / np.sqrt(43e-3 * 2e-3))
+    pr("tubo: parámetro de Starnes r/sqrt(R t) para Ø8", 4e-3 / np.sqrt(39.5e-3 * 2e-3))
 
     print("\n== 4. Rodamientos 628/8-2Z ==")
     Cdyn, C0 = 1330.0, 570.0
@@ -265,13 +266,13 @@ if __name__ == "__main__":
         Y = 2.30 if ratio <= 0.014 else 1.99
         P = (0.56 * Fr + Y * Fa) if Fa / Fr > e_ else Fr
         L10 = (Cdyn / P)**3
-        hrs = L10 * 1e6 / (1150 * 60)
+        hrs = L10 * 1e6 / (OM * 30 / np.pi * 60)
         pr(f"{lab}: Fa={Fa:.2f} N Fr={Fr:.2f} N -> P", P, f"N ; L10={L10:.3g} Mrev = {hrs:.3g} h")
     for lab, acc in (("30 G", 30), ("aterrizaje 150 g", 150), ("aterrizaje 500 g", 500)):
         Fa = 0.075 * acc * g
         P0 = max(0.5 * Fa, Fa * 0.5)
         pr(f"carga estática {lab}: Fa", Fa, f"N ; s0 = {C0/P0:.1f}")
-    pr("n / n_lim", 1150 / 45000 * 100, "%")
+    pr("n / n_lim", OM * 30 / np.pi / 45000 * 100, "%")
 
     print("\n== 5. Fatiga ==")
     N_life = 1e6
@@ -281,19 +282,19 @@ if __name__ == "__main__":
     Mcyc = Fc * np.radians(5.0) * 22e-3
     pr("brazo PETG: sigma alternante 1P (inclinación 5 grados)", Mcyc / Zarm / 1e6, "MPa")
     pr("eje: sigma alternante 1P con desbalance 1 g", 1e-3 * 0.12 * OM**2 * 8.5e-3 / Z8 / 1e6, "MPa")
-    print("  revoluciones por vuelo (90 s):", 1150 * 1.5, " campaña de ensayos estimada:", 1150 * 60 * 1.0)
+    print("  revoluciones por vuelo (110 s):", OM * 30 / np.pi * 110 / 60, " campaña de ensayos estimada:", OM * 30 / np.pi * 60 * 1.0)
 
     print("\n== 6. Impacto ==")
-    for V in (6.4, 7.8):
-        E = 0.5 * 0.5 * V**2
-        pr(f"V={V}: energía", E, "J")
+    for V, mm in ((6.4, 0.49), (7.4, 0.49), (5.5, 0.33)):
+        E = 0.5 * mm * V**2
+        pr(f"V={V}, m={mm}: energía", E, "J")
         for s_, lab in ((2e-3, "suelo duro, sin amortiguador"), (10e-3, "suelo blando"),
                         (17.5e-3, "espuma 25 mm"), (27.5e-3, "espuma + suelo blando")):
             a = V**2 / (2 * s_ * 0.8)
             pr(f"   {lab} (s={s_*1e3:.1f} mm): a", a / g, "g")
-    sp = 0.5 * 7.8**2 / (0.8 * 17.5e-3) * 0.5 / (np.pi / 4 * (88e-3**2 - 58e-3**2))
-    pr("tensión de meseta necesaria (7,8 m/s, anillo 88/58)", sp / 1e6, "MPa")
+    sp = 0.5 * 7.4**2 / (0.8 * 17.5e-3) * 0.49 / (np.pi / 4 * (81e-3**2 - 58e-3**2))
+    pr("tensión de meseta necesaria (7,4 m/s, 0,49 kg, anillo 81/58)", sp / 1e6, "MPa")
     for acc in (150, 200):
-        pr(f"a {acc} g: batería 55 g / rotor 54 g / lastre 83 g [N]", 0.055 * acc * g,
-           f"/ {0.054*acc*g:.0f} / {0.083*acc*g:.0f}")
-    pr("energía del rotor a 1150 rpm", 0.5 * 5.13e-4 * OM**2, "J")
+        pr(f"a {acc} g: batería 48 g / rotor 64 g / lastre 28 g [N]", 0.048 * acc * g,
+           f"/ {0.064*acc*g:.0f} / {0.028*acc*g:.0f}")
+    pr("energía del rotor a régimen", 0.5 * v2c.Iz(0.1) * OM**2, "J")

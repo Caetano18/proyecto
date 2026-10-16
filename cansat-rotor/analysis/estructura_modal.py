@@ -2,7 +2,7 @@
 """Dinámica de la pala en giro: Rayleigh-Ritz con rigidización centrífuga (Southwell),
 diagrama de Campbell, divergencia torsional, torsión estática y flameo (p-k, Theodorsen).
 
-Modelo de pala (x medido desde la bisagra, 0 <= x <= Lb = 0,156 m):
+Modelo de pala (x medido desde la bisagra, 0 <= x <= Lb = R - e = 0,206 m en v2):
   - tramo de portapala 0 <= x <= 0,020 m (rígido, +2 g);
   - tramo libre de carbono 0,020 <= x <= 0,156 m con las propiedades de
     estructura_seccion.py.
@@ -18,17 +18,19 @@ import numpy as np
 from scipy.linalg import eigh, eig
 from scipy.special import hankel2
 import estructura_seccion as SEC
+import v2_config as cfg
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 rho = 1.225
-R, e = 0.200, 0.044
+R, e = cfg.R, cfg.E
 Lb = R - e
 XP = 0.020             # largo del portapala
 M_PP = 2.0e-3          # masa del portapala
 K_BETA = 0.005         # resorte de apertura [N m/rad] (orden de magnitud)
 A_LIFT = 5.7           # pendiente de sustentación [1/rad]
 X_AC = 0.25            # centro aerodinámico / cuerda
-OM_D = 120.1           # velocidad de giro de diseño [rad/s]
+OM_D = 128.7           # velocidad de giro de diseño [rad/s] (BEMT v2, régimen)
+OM_PICO = 162.6        # sobrepaso de arranque [rad/s] (cap. de arranque)
 NG = 24
 xg_, wg_ = np.polynomial.legendre.leggauss(NG)
 
@@ -159,7 +161,7 @@ def pk_damping(s, Om, x_cg=None, r_ref=0.75 * R):
     xa = (yg - s["y_sc"]) / b
     Ia = s["Ith"] + m * ((yg - s["y_sc"])**2 - (s["yg"] - s["y_sc"])**2)
     # frecuencias en vacío a Om
-    wh = np.sqrt((1 + 1.5 * e / Lb) * Om**2 + K_BETA / 6.0e-5)
+    wh = np.sqrt((1 + 1.5 * e / Lb) * Om**2 + K_BETA / (6.0e-5 * cfg.IB / 4.35e-5))
     wa = torsion_freq(s, Om, "restr")
     kh, ka = m * wh**2, Ia * wa**2
     Ms = np.array([[m, m * b * xa], [m * b * xa, Ia]])
@@ -203,7 +205,7 @@ def flutter_speed(s, x_cg=None, Om_max=800.0):
 
 
 if __name__ == "__main__":
-    rpm = np.linspace(0, 1500, 61)
+    rpm = np.linspace(0, 1700, 69)
     Oms = rpm * np.pi / 30
     cfgs = ["A", "B", "BV"]
     S = {c: blade(c) for c in cfgs}
@@ -213,7 +215,7 @@ if __name__ == "__main__":
         print(f"\n===== configuración {c}: m_pala = {mb*1e3:.2f} g")
         Kf, Mf = bending_mats(s, "flap", OM_D, k_root=K_BETA)
         wf = freqs(Kf, Mf)
-        print(" batimiento a 1150 rpm [/rev]:", np.round(wf[:3] / OM_D, 2), " Hz:", np.round(wf[:3] / 2 / np.pi, 1))
+        print(" batimiento a rpm de diseño [/rev]:", np.round(wf[:3] / OM_D, 2), " Hz:", np.round(wf[:3] / 2 / np.pi, 1))
         Kf0, Mf0 = bending_mats(s, "flap", 0.0, k_root=K_BETA)
         print(" batimiento a 0 rpm [Hz]:", np.round(freqs(Kf0, Mf0)[:3] / 2 / np.pi, 1))
         for kz in (30.0, 150.0):
@@ -222,11 +224,11 @@ if __name__ == "__main__":
             print(f" arrastre k_zeta={kz:.0f}: [/rev] {np.round(wl[:2]/OM_D,2)}  Hz {np.round(wl[:2]/2/np.pi,1)}")
         for wp in ("restr", "libre"):
             w0 = torsion_freq(s, 0.0, wp); w1 = torsion_freq(s, OM_D, wp); w1a = torsion_freq(s, OM_D, wp, aero=True)
-            print(f" torsión ({wp}): 0 rpm {w0/2/np.pi:.1f} Hz ; 1150 rpm {w1/2/np.pi:.1f} Hz = {w1/OM_D:.2f}/rev ;"
+            print(f" torsión ({wp}): 0 rpm {w0/2/np.pi:.1f} Hz ; rpm de diseño {w1/2/np.pi:.1f} Hz = {w1/OM_D:.2f}/rev ;"
                   f" con rigidez aero {w1a/2/np.pi:.1f} Hz = {w1a/OM_D:.2f}/rev")
             OmD = divergence(s, wp)
             print(f"   divergencia: Om_D = {OmD:.1f} rad/s = {OmD*30/np.pi:.0f} rpm ; Om_D/Om = {OmD/OM_D:.2f}")
-        # contribuciones a la rigidez torsional a 1150 rpm (primer modo, restringido)
+        # contribuciones a la rigidez torsional a rpm de diseño (primer modo, restringido)
         K_s, K_N, K_p, K_a, M, *_ = torsion_mats(s, OM_D, "restr")
         lam, vec = eigh(K_s + K_N + K_p, M)
         v = vec[:, 0]
@@ -240,7 +242,7 @@ if __name__ == "__main__":
               % (tension(s, np.array([0.0]), OM_D)[0], tension(s, np.array([XP]), OM_D)[0]))
         gmax = max(pk_damping(s, OM_D))
         OmF = flutter_speed(s)
-        print(f"   flameo p-k: amortiguamiento máx. a 1150 rpm = {gmax:.3f} ; Om_F = {OmF:.0f} rad/s")
+        print(f"   flameo p-k: amortiguamiento máx. a rpm de diseño = {gmax:.3f} ; Om_F = {OmF:.0f} rad/s")
     # ---- Campbell
     with open(os.path.join(DATA, "estructura_campbell.dat"), "w") as f:
         f.write("rpm bat bat1 lag30 lag150 torA torAl torB torBV torBVl\n")

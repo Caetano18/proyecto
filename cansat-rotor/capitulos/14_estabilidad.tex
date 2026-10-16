@@ -1,47 +1,54 @@
-\chapter{Estabilidad y dinámica del conjunto rotor--cuerpo--drogue}\label{cap:estabilidad}
+\chapter{Estabilidad y dinámica del conjunto rotor--cuerpo}\label{cap:estabilidad}
 \usepgfplotslibrary{groupplots}
 
 El conjunto es estable en todos los modos linealizados que se estudian. Hay tres puntos
 débiles. Primero, el punto de diseño queda en el borde superior de la región de anillo de
 vórtices. Segundo, el cuerpo gira por el rozamiento de los rodamientos: sin aletas llega
-a cientos de rpm en medio minuto. Tercero, la pala de la configuración A tiene un margen
-de divergencia torsional insuficiente a las \num{1505}~rpm del BEMT. Este capítulo usa
-los valores refinados de los capítulos~\ref{cap:bemt} y~\ref{cap:estructura}:
-$\Omega=\SI{157.6}{rad/s}$, $V_2=\SI{6.94}{m/s}$ con drogue y \SI{7.91}{m/s} sin él,
-$T=\SI{3.58}{N}$, $C_R=0{,}97$, $\theta=\ang{-3}$, $\beta_0=\ang{6.1}$, número de Lock
-$\gamma=11{,}5$, $I_b=\SI{4.35e-5}{kg.m^2}$, tope elástico a \ang{+15} y rodamientos
-628/8-2Z (688ZZ). Los cálculos están en \texttt{analysis/estabilidad\_modos.py}.
+a cientos de rpm en medio minuto. Tercero, la pala de la configuración A es inestable
+(flameo por debajo de la velocidad de régimen) con el rotor de $R=\SI{0.25}{m}$. Con el
+drogue soltado antes de abrir el rotor (capítulo~\ref{cap:arq}) desaparecen el péndulo
+drogue--cuerpo, la cuerda por el eje y la estela sobre el drogue: el modelo del rotor solo
+es el nominal y el drogue atado queda como modo de falla de la liberación. Este capítulo
+usa los valores refinados de los capítulos~\ref{cap:bemt} y~\ref{cap:estructura}:
+$\Omega=\SI{128.7}{rad/s}$, $V_2=\SI{6.36}{m/s}$ (\SI{5.81}{m/s} con el drogue atado),
+$T=\SI{4.68}{N}$, $C_R=0{,}96$, $\theta=\ang{-3}$, $\beta_0=\ang{4.2}$, número de Lock
+$\gamma=12{,}6$, $I_b=\SI{9.7e-5}{kg.m^2}$, $m_2=\SI{0.49}{kg}$, tope elástico a \ang{+15}
+y rodamientos 628/8-2Z (688ZZ). Los cálculos están en
+\texttt{analysis/estabilidad\_modos.py}.
 
 \begin{resultado}[Resultados principales del capítulo]
 \begin{itemize}
-  \item \textbf{Anillo de vórtices.} $V_2/v_h=2{,}04$ con drogue y $1{,}98$ sin él. Ese
-        valor está a \SI{1.8}{m/s} de un borde de la región a $1{,}5\,v_h$, pero coincide
+  \item \textbf{Anillo de vórtices.} $V_2/v_h=2{,}04$ (también con el drogue atado). Ese
+        valor está a \SI{1.7}{m/s} de un borde de la región a $1{,}5\,v_h$, pero coincide
         con el borde más conservador ($\approx2\,v_h$). La transición desde
-        \SI{13.4}{m/s} recorre el plano $V/v_h$ de 4,5 a 2,0 sin entrar en la región.
-  \item \textbf{Péndulo.} Hay un modo de inclinación del cuerpo de
-        \SIrange{2.3}{2.6}{Hz} con $\zeta\approx0{,}22$, partido en dos ramas por la
-        giroscopía. El modo del sistema drogue--cuerpo es de \SI{0.18}{Hz} con
-        $\zeta\approx0{,}84$. Ningún autovalor cruza al semiplano derecho en los barridos
+        \SI{13.4}{m/s} recorre el plano $V/v_h$ de 4,8 a 2,0 sin entrar en la región.
+  \item \textbf{Péndulo.} Con el rotor solo hay un modo de inclinación del cuerpo de
+        \SIrange{2.1}{2.5}{Hz} con $\zeta\approx0{,}30$, partido en dos ramas por la
+        giroscopía, y una deriva lateral amortiguada ($-1{,}56$~1/s). Si el drogue
+        quedara atado, aparece un modo drogue--cuerpo de \SI{0.26}{Hz} con
+        $\zeta\approx0{,}46$. Ningún autovalor cruza al semiplano derecho en los barridos
         de centro de masa, rpm, largo de cuerda y fuerza H.
   \item \textbf{Giro del cuerpo.} El par de los rodamientos es de
-        $\approx\SI{0.73}{mN.m}$ (rango \numrange{0.34}{1.7}). Sin aletas el cuerpo llega a
-        $\approx\num{160}$~rpm a los \SI{10}{s} y a $\approx\num{540}$~rpm a los
+        $\approx\SI{0.65}{mN.m}$ (rango \numrange{0.31}{1.5}). Sin aletas el cuerpo llega a
+        $\approx\num{150}$~rpm a los \SI{10}{s} y a $\approx\num{490}$~rpm a los
         \SI{40}{s}. Cuatro aletas desplegables de $40\times\SI{40}{mm}$ lo dejan en
-        $\approx\SI{2.5}{rad/s}$. Para cumplir el criterio de video
-        ($\le\SI{0.5}{rad/s}$) hay que darles un calaje de $\approx\ang{1.3}$ contra el
+        $\approx\SI{2.4}{rad/s}$. Para cumplir el criterio de video
+        ($\le\SI{0.5}{rad/s}$) hay que darles un calaje de $\approx\ang{1.4}$ contra el
         par y ajustarlo en ensayo.
-  \item \textbf{Batimiento.} $\nu_\beta=1{,}20$ y $\zeta_\beta=0{,}60$: el modo está
+  \item \textbf{Batimiento.} $\nu_\beta=1{,}16$ y $\zeta_\beta=0{,}68$: el modo está
         muy amortiguado. Un $\delta_3$ de \ang{15} a \ang{20} baja la conicidad a
-        $\approx\ang{4.5}$ y aleja la pala del tope, pero agrega $\approx\ang{-1.5}$ de
+        $\approx\ang{3}$ y aleja la pala del tope, pero agrega $\approx\ang{-1}$ de
         paso.
   \item \textbf{Divergencia y flameo.} La sección típica da para la pala A
-        $\Omega_D/\Omega=0{,}96$ (cota conservadora). El modelo p-k del
-        capítulo~\ref{cap:estructura}, reescalado, da un margen de flameo de 1,53 y uno de
-        divergencia de 1,19 a 1,59. La pala BV queda con márgenes de 3,2 a 4,2.
-        \textbf{La pala BV es necesaria.}
-  \item \textbf{Drogue.} Para tocar las puntas, la cuerda tendría que inclinarse
-        \ang{86} respecto del eje. Eso solo pasa si el drogue pierde tensión en la estela
-        del rotor. Se recomienda un tubo guía rígido sobre el cubo.
+        $\Omega_D/\Omega=0{,}69$. El modelo p-k del capítulo~\ref{cap:estructura}, ya con
+        el rotor de \SI{0.25}{m}, da para A un flameo a \SI{124}{rad/s} ($0{,}96\,\Omega$)
+        y una divergencia de $0{,}79$ a $0{,}98\,\Omega$: la pala A es inestable en régimen.
+        La pala B ($\pm\ang{45}$) da 1,96 de flameo y 1,9--2,1 de divergencia; la BV, 2,55
+        y 2,8--3,2 (2,0 sobre el sobrepaso del arranque). \textbf{La pala BV es
+        necesaria.}
+  \item \textbf{Drogue (solo si no se suelta).} Para tocar las puntas, la cuerda tendría
+        que inclinarse \ang{87} respecto del eje, algo que solo pasa si el drogue pierde
+        tensión en la estela del rotor. Soltarlo antes de abrir elimina el riesgo.
 \end{itemize}
 \end{resultado}
 
@@ -52,13 +59,15 @@ El punto de diseño está fuera de la región de anillo de vórtices, pero en su
 superior. La velocidad inducida en vuelo estacionario con el empuje del punto de diseño
 es
 \begin{equation}
-  v_h=\sqrt{\frac{T}{2\rho A}}=\sqrt{\frac{3{,}58}{2\cdot1{,}225\cdot0{,}1257}}
-  =\SI{3.41}{m/s},
+  v_h=\sqrt{\frac{T}{2\rho A}}=\sqrt{\frac{4{,}68}{2\cdot1{,}225\cdot0{,}1963}}
+  =\SI{3.12}{m/s},
   \qquad \frac{V_2}{v_h}=2{,}04 .
   \label{eq:estabilidad-vh}
 \end{equation}
-Sin drogue, $T=W$, $v_h=\SI{3.99}{m/s}$ y $V_2/v_h=1{,}98$. El cociente es casi el mismo
-porque, con menos empuje, la velocidad de descenso y $v_h$ bajan juntas.
+Con el drogue atado (falla de la liberación), $T=\SI{3.89}{N}$, $v_h=\SI{2.84}{m/s}$ y
+$V_2/v_h=2{,}04$ también. El cociente es el mismo porque, con menos empuje, la velocidad de
+descenso y $v_h$ bajan juntas. En la Arquitectura~2 ($m_2=\SI{0.36}{kg}$), $v_h=\SI{2.67}{m/s}$
+y $V_2=\SI{5.47}{m/s}$.
 
 Los límites publicados de la región no coinciden entre sí. Dependen del criterio:
 fluctuación de empuje, pérdida de control o cambio del flujo medio. Para descenso axial,
@@ -72,15 +81,15 @@ funciona como un molino turbulento y es inevitable estar cerca del borde.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.9\textwidth, height=6.2cm, xmin=0, xmax=6, ymin=0, ymax=5,
+\begin{axis}[width=0.9\textwidth, height=6.2cm, xmin=0, xmax=8, ymin=0, ymax=5.5,
   xlabel={Tiempo desde la liberación [s]}, ylabel={$V/v_h$}, grid=major,
   legend pos=north east, legend style={font=\footnotesize}]
   \fill[cfreno!25] (axis cs:0,0.4) rectangle (axis cs:6,1.5);
   \fill[cfreno!10] (axis cs:0,1.5) rectangle (axis cs:6,2.0);
   \addplot[crot, very thick] table[x=t, y=r] {analysis/data/estabilidad_vrs.dat};
   \addlegendentry{trayectoria (BEMT, transitorio)}
-  \addplot[cfijo, dashed, thick] coordinates {(0,1.98) (6,1.98)};
-  \addlegendentry{sin drogue, 1,98}
+  \addplot[cfijo, dashed, thick] coordinates {(0,2.04) (8,2.04)};
+  \addlegendentry{régimen, 2,04}
   \node[font=\scriptsize, cfreno!70!black] at (axis cs:3,0.95) {anillo de vórtices ($0{,}4$--$1{,}5\,v_h$)};
   \node[font=\scriptsize, cfreno!70!black] at (axis cs:1.6,1.75) {borde amplio ($\le 2\,v_h$)};
   \node[font=\scriptsize, anchor=west] at (axis cs:4.2,2.45) {diseño: 2,04};
@@ -92,16 +101,18 @@ límites aproximados de la literatura.}
 \label{fig:estabilidad-vrs}
 \end{figure}
 
-\paragraph{Transición.} Durante el arranque el empuje es bajo ($T=\SI{2.7}{N}$ con
-$\Omega=0$) y la velocidad es alta. $V/v_h$ arranca en 4,5 y baja de forma monótona hasta
-2,04 en unos \SI{6}{s}, sin sobrepasarse. El rotor llega a la zona de anillo por arriba y
-nunca la cruza.
+\paragraph{Transición.} Durante el arranque el empuje es bajo ($T=\SI{3.8}{N}$ con
+$\Omega=0$) y la velocidad es alta. $V/v_h$ arranca en 4,8 y baja hasta 2,04 en unos
+\SI{8}{s}, con un mínimo de 2,01 (el rotor sobrepasa un \SI{26}{\percent} su velocidad de
+giro y frena el descenso un instante de más). El rotor llega a la zona de anillo por arriba
+y nunca cruza el borde de $2\,v_h$ de forma apreciable.
 
 \paragraph{Margen ante ráfagas y caída de rpm.} Una ráfaga ascendente $w$ reduce la
 velocidad relativa a $V_2-w$. Para llegar a $1{,}5\,v_h$ hace falta
-$w=V_2-1{,}5v_h=\SI{1.8}{m/s}$. Para el borde de $2\,v_h$ basta con \SI{0.12}{m/s}, de
-modo que contra ese criterio el margen es nulo. La perturbación dura poco: la constante
-de tiempo vertical es $\tau_V=m/(\partial D/\partial V)\approx mV_2/2W=\SI{0.35}{s}$. Una
+$w=V_2-1{,}5v_h=\SI{1.7}{m/s}$ (\SI{1.4}{m/s} en la Arquitectura~2). Para el borde de
+$2\,v_h$ basta con \SI{0.12}{m/s}, de modo que contra ese criterio el margen es nulo. La
+perturbación dura poco: la constante de tiempo vertical es
+$\tau_V=m/(\partial D/\partial V)\approx mV_2/2W=\SI{0.32}{s}$. Una
 caída de rpm baja el empuje, el conjunto acelera y $V/v_h$ sube: el sistema se aleja
 solo de la región. La caída de rpm, por lo tanto, no lleva al anillo de vórtices.
 Además, $\partial T/\partial V>0$ en el molino turbulento, lo que amortigua el
@@ -110,8 +121,8 @@ movimiento vertical.
 \begin{nota}[Interpretación]
 Estar a $\approx2\,v_h$ significa trabajar en molino turbulento, con fluctuaciones de
 empuje esperables de algunos por ciento, no dentro del anillo de vórtices. El dato
-crítico es el borde a $1{,}5\,v_h$, con un margen de \SI{1.8}{m/s} (\SI{26}{\percent}).
-Un $C_R$ mayor (Buhl, $1{,}25$) llevaría a $V_2/v_h\approx1{,}8$ y reduciría ese margen a
+crítico es el borde a $1{,}5\,v_h$, con un margen de \SI{1.7}{m/s} (\SI{26}{\percent}).
+Un $C_R$ mayor (Buhl, $1{,}21$) llevaría a $V_2/v_h\approx1{,}8$ y reduciría ese margen a
 $\approx\SI{1}{m/s}$.
 \end{nota}
 
@@ -121,24 +132,26 @@ $\approx\SI{1}{m/s}$.
 \subsection{Momento angular y su transmisión al cuerpo}
 Con bisagras de batimiento, el cuerpo apenas siente el momento angular del rotor. La
 inercia polar del rotor es
-$I_p=B(I_b+2eS_b+m_be^2)\approx\SI{3.9e-4}{kg.m^2}$, con $S_b=m_bx_g=\SI{4.37e-4}{kg.m}$.
-Su momento angular es $H=I_p\Omega=\SI{0.061}{N.m.s}$. Si el rotor fuera rígido, una
+$I_p=B(I_b+2eS_b+m_be^2)\approx\SI{7.3e-4}{kg.m^2}$, con $S_b=m_bx_g=\SI{7.4e-4}{kg.m}$.
+Su momento angular es $H=I_p\Omega=\SI{0.094}{N.m.s}$. Si el rotor fuera rígido, una
 inclinación del eje a velocidad $q$ exigiría un par $Hq$. Con bisagras, el disco se
 inclina con retraso y solo el resorte efectivo de la excentricidad,
 \begin{equation}
-  K_h=\frac{B}{2}eS_b\Omega^2=\SI{0.95}{N.m/rad},
+  K_h=\frac{B}{2}eS_b\Omega^2=\SI{1.08}{N.m/rad},
   \label{eq:estabilidad-Kh}
 \end{equation}
 transmite par al eje. Con la respuesta cuasiestacionaria del plano de puntas,
 $\beta_\text{rel}=-(16/\gamma+i)\,\dot\theta/\Omega$~\cite{johnson1980}, el cuerpo recibe
-un amortiguamiento $K_h\,16/(\gamma\Omega)=\SI{8.4e-3}{N.m.s}$ y un término
-giroscópico $H_\text{ef}=H_\text{cubo}+K_h/\Omega=\SI{6.1e-3}{N.m.s}$. Es el
-\SI{10}{\percent} de $H$, de modo que la precesión del conjunto es débil y no domina.
+un amortiguamiento $K_h\,16/(\gamma\Omega)=\SI{1.06e-2}{N.m.s}$ y un término
+giroscópico $H_\text{ef}=H_\text{cubo}+K_h/\Omega=\SI{8.4e-3}{N.m.s}$. Es el
+\SI{9}{\percent} de $H$, de modo que la precesión del conjunto es débil y no domina.
 
 \subsection{Modelo linealizado}
 Se usa notación compleja ($X=x+iy$, $\theta=\theta_x+i\theta_y$) porque el conjunto es
 axisimétrico. Los grados de libertad son el desplazamiento lateral del centro de masa
-$X$, la inclinación $\theta$ y el desplazamiento lateral del drogue $Y$:
+$X$, la inclinación $\theta$ y el desplazamiento lateral del drogue $Y$. Con el drogue
+soltado, $N=0$ y $Y$ queda desacoplado: el modelo nominal es de dos grados de libertad.
+El tercero solo se usa para el caso de falla de la liberación:
 \begin{align}
   m\ddot X &= -c_r(\dot X+h\dot\theta)+(1-k_H)T\theta+\frac{N}{L}(Y-X-h_a\theta),\\
   I_t\ddot\theta &= iH_\text{ef}\dot\theta-\Big(c_rh^2+\frac{16K_h}{\gamma\Omega}\Big)\dot\theta
@@ -152,24 +165,24 @@ entre 0,3 y 1,5 porque no se conoce bien. El empuje va a lo largo del eje y pasa
 centro de masa, así que no produce momento. La rigidez de péndulo viene de la fuerza H en
 el cubo y de la tensión $N$ de la cuerda en su salida, por encima del centro de masa.
 Valores nominales: $h=\SI{0.15}{m}$ (cubo sobre el centro de masa, est.),
-$h_a=h+\SI{0.03}{m}$, $I_t=\SI{3e-3}{kg.m^2}$ (est.), $L=\SI{1.5}{m}$,
-$N=W-T-D_\text{cuerpo}=\SI{1.16}{N}$ y $m_d=\SI{15}{g}$ (drogue más masa aparente,
-est.). El cuerpo cilíndrico no aporta fuerza lateral lineal: su fuerza de flujo cruzado
+$h_a=h+\SI{0.03}{m}$, $I_t=\SI{3e-3}{kg.m^2}$ (est.), $m=\SI{0.49}{kg}$ y, solo con el drogue
+atado, $L=\SI{1.5}{m}$, $N=W-T-D_\text{cuerpo}=\SI{0.81}{N}$ y $m_d=\SI{15}{g}$ (drogue más
+masa aparente, est.). El cuerpo cilíndrico no aporta fuerza lateral lineal: su fuerza de flujo cruzado
 es cuadrática.
 
 \begin{table}[H]
 \centering\small
-\caption{Autovalores del modelo nominal. El modo de traslación lateral pura ($\lambda=0$)
-es neutro, porque nada fija la posición horizontal.}
+\caption{Autovalores del modelo nominal (rotor solo) y con el drogue atado (falla de la
+liberación). El modo de traslación lateral pura ($\lambda=0$) es neutro, porque nada fija
+la posición horizontal.}
 \label{tab:estabilidad-modos}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Modo & $\lambda$ [1/s] & $f$ [Hz] & $\zeta$ & Sin drogue\\\midrule
-Inclinación, rama progresiva & $-3{,}60\pm16{,}6i$ & 2,64 & 0,21 & $-3{,}97\pm16{,}1i$\\
-Inclinación, rama regresiva  & $-3{,}18\pm14{,}6i$ & 2,32 & 0,21 & $-3{,}46\pm14{,}0i$\\
-Péndulo drogue--cuerpo       & $-1{,}74\pm1{,}14i$ & 0,18 & 0,84 & ---\\
-Lateral del drogue           & $-19{,}7$ & --- & sobreamort. & ---\\
-Deriva lateral amortiguada   & --- & --- & --- & $-1{,}27$\\
+Modo & $\lambda$ [1/s] & $f$ [Hz] & $\zeta$ & Con drogue atado\\\midrule
+Inclinación, rama progresiva & $-4{,}95+15{,}8i$ & 2,51 & 0,30 & $-5{,}20+15{,}7i$\\
+Inclinación, rama regresiva  & $-4{,}06-13{,}0i$ & 2,07 & 0,30 & $-4{,}26-13{,}0i$\\
+Péndulo drogue--cuerpo       & --- & --- & --- & $-0{,}83\pm1{,}62i$ (0,26\,Hz, $\zeta=0{,}46$)\\
+Deriva lateral amortiguada   & $-1{,}56$ & --- & --- & $-1{,}70$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -177,8 +190,11 @@ Deriva lateral amortiguada   & --- & --- & --- & $-1{,}27$\\
 \subsection{Lugar de raíces}
 Ningún barrido lleva un autovalor al semiplano derecho. Al bajar el centro de masa (más
 $h$) sube la frecuencia del modo de inclinación, porque crece la rigidez $k_HTh$, y
-también su amortiguamiento, que crece con $c_rh^2$. Con $h=\SI{0.05}{m}$ el modo baja a \SIrange{1.35}{1.7}{Hz} y $\zeta=0{,}17$.  Las rpm actúan a través de $T\propto\Omega^2$ y de $K_h$.
-El largo de cuerda casi no cambia el modo de inclinación: solo mueve el péndulo lento.
+también su amortiguamiento, que crece con $c_rh^2$. Con $h=\SI{0.05}{m}$ el modo baja a \SIrange{1.15}{1.6}{Hz} y $\zeta=0{,}23$; con
+$h=\SI{0.22}{m}$ sube a \SI{2.8}{Hz} y $\zeta=0{,}43$. Las rpm actúan a través de
+$T\propto\Omega^2$ y de $K_h$. El largo de cuerda (solo con el drogue atado) casi no
+cambia el modo de inclinación: solo mueve el péndulo lento, de \SI{0.48}{Hz} con
+$L=\SI{0.5}{m}$ a \SI{0.16}{Hz} con \SI{3}{m}.
 
 \begin{figure}[H]
 \centering
@@ -208,7 +224,7 @@ El modelo es cuasiestacionario: el disco sigue al eje sin dinámica propia y la 
 tiene retraso. La fuerza H ($k_H$), $I_t$ y $h$ son estimaciones. Como criterio se exige
 $\mathrm{Re}\,\lambda<0$ con $\zeta\ge0{,}1$ en todos los modos oscilatorios dentro del
 rango barrido. Se cumple con margen. La amplitud de balanceo ante turbulencia no se
-calcula: la oscilación de \SIrange{2.3}{2.6}{Hz} es la que verá la cámara nadir.
+calcula: la oscilación de \SIrange{2.1}{2.5}{Hz} es la que verá la cámara nadir.
 \end{nota}
 
 %=====================================================================
@@ -225,33 +241,34 @@ $d_m=\SI{12}{mm}$ y $n$ en rpm. Para grasa se toman valores típicos (no de cat�
 $f_0=1{,}5$ (de 0,7 a 2) y $\nu=\SI{25}{mm^2/s}$ (de 15 a 70). El escudo 2Z no roza.
 Resulta
 \begin{equation}
-  M_f=2(M_0+M_1)\approx\SI{0.73}{mN.m}\qquad(\text{rango }0{,}34\text{--}\SI{1.7}{mN.m}),
+  M_f=2(M_0+M_1)\approx\SI{0.65}{mN.m}\qquad(\text{rango }0{,}31\text{--}\SI{1.5}{mN.m}),
 \end{equation}
 dominado por la grasa. Depende de la velocidad relativa $\Omega-\omega_b$.
 
 \paragraph{Amortiguamiento del cuerpo.} El roce de la piel del cilindro (capa laminar,
-$C_f=1{,}33/\sqrt{Re_L}$) da $c_b=\SI{2.8e-6}{N.m.s}$, casi nada. Con
-$I_z=\SI{4e-4}{kg.m^2}$ (est.), la aceleración inicial es $M_f/I_z\approx\SI{1.8}{rad/s^2}$.
-El cuerpo llega a \num{160}~rpm a los \SI{10}{s} y a \num{540}~rpm a los \SI{40}{s}
+$C_f=1{,}33/\sqrt{Re_L}$) da $c_b=\SI{2.3e-6}{N.m.s}$, casi nada. Con
+$I_z=\SI{4e-4}{kg.m^2}$ (est.), la aceleración inicial es $M_f/I_z\approx\SI{1.6}{rad/s^2}$.
+El cuerpo llega a \num{150}~rpm a los \SI{10}{s} y a \num{490}~rpm a los \SI{40}{s}
 (figura~\ref{fig:estabilidad-giro}).
 
 \paragraph{Criterio para el video.} Se pide $|\omega_b|\le\SI{0.5}{rad/s}$
 ($\approx\SI{29}{\degree/s}$). Así la imagen gira menos de \ang{1} por cuadro a
 \SI{30}{fps} y se puede estabilizar después. El criterio es propio, no del concurso.
 
-\paragraph{Aletas.} El envolvente Ø\SI{95}{mm} solo deja \SI{3.5}{mm} radiales. Unas
-aletas fijas de esa altura darían $c\sim\num{e-6}$, inútiles. Las aletas tienen que ser
-\textbf{desplegables}: plegadas contra el cuerpo y abiertas por resorte al liberar el
-rotor. Cada aleta de envergadura $s$ y cuerda $l$, con centro a $r_f=R_c+s/2$, aporta
+\paragraph{Aletas.} En la Arquitectura~1 el envolvente Ø\SI{90}{mm} deja menos de
+\SI{1}{mm} radial sobre las palas plegadas. Unas aletas fijas de esa altura darían
+$c\sim\num{e-6}$, inútiles. Las aletas tienen que ser \textbf{desplegables}: plegadas contra
+el cuerpo y abiertas por resorte al liberar el rotor (en la Arquitectura~2 se pliegan en el
+espacio anular dentro del contenedor y se abren al salir de él). Cada aleta de envergadura $s$ y cuerda $l$, con centro a $r_f=R_c+s/2$, aporta
 \begin{equation}
   c_f=\tfrac12\rho V a_fSr_f^2,\qquad
   M_\delta=\tfrac12\rho V^2a_fSr_f\,\delta,\qquad
   a_f=\frac{2\pi\mathcal A}{2+\sqrt{\mathcal A^2+4}},\quad\mathcal A=2s/l .
 \end{equation}
-Con cuatro aletas de $40\times\SI{40}{mm}$ ($a_f=2{,}6$): $c=\SI{2.9e-4}{N.m.s}$ y el
-cuerpo se estabiliza en $M_f/c\approx\SI{2.5}{rad/s}$ (24~rpm). Solo con amortiguamiento
+Con cuatro aletas de $40\times\SI{40}{mm}$ ($a_f=2{,}6$): $c=\SI{2.7e-4}{N.m.s}$ y el
+cuerpo se estabiliza en $M_f/c\approx\SI{2.4}{rad/s}$ (23~rpm). Solo con amortiguamiento
 haría falta $s\approx\SI{80}{mm}$. Es más eficaz un \textbf{calaje} $\delta$ que anule el
-par: $\delta=M_f/M_\delta\approx\ang{1.3}$. El resto se debe a la incertidumbre de $M_f$:
+par: $\delta=M_f/M_\delta\approx\ang{1.4}$. El resto se debe a la incertidumbre de $M_f$:
 con un error de $\pm\SI{50}{\percent}$ quedan $\approx\SI{1.2}{rad/s}$. Por eso el calaje
 se ajusta midiendo el giro en un ensayo de túnel o de caída.
 
@@ -283,9 +300,9 @@ puntos es el criterio de \SI{0.5}{rad/s}.}
 \label{fig:estabilidad-giro}
 \end{figure}
 
-Las aletas también suman amortiguamiento lateral bajo el centro de masa: el modo de
-péndulo lento pasa de $\zeta=0{,}84$ a 0,83 y su $\mathrm{Re}\,\lambda$ de $-1{,}74$ a
-$-1{,}80$. Es un efecto chico pero favorable.
+Las aletas también suman amortiguamiento lateral bajo el centro de masa: la deriva
+lateral amortiguada pasa de $\mathrm{Re}\,\lambda=-1{,}56$ a $-1{,}69$. Es un efecto chico
+pero favorable.
 
 %=====================================================================
 \section{Batimiento y acoplamiento paso--batimiento}\label{sec:estabilidad-flap}
@@ -293,23 +310,23 @@ $-1{,}80$. Es un efecto chico pero favorable.
 El modo de batimiento está muy amortiguado. La frecuencia propia en el sistema giratorio,
 con la excentricidad y el resorte de apertura, es
 \begin{equation}
-  \nu_\beta^2=1+\frac{eS_b}{I_b}+\frac{k_\beta}{I_b\Omega^2}=1{,}447,\qquad
-  \nu_\beta=1{,}20,\qquad \zeta_\beta=\frac{\gamma}{16\nu_\beta}=0{,}60,
+  \nu_\beta^2=1+\frac{eS_b}{I_b}+\frac{k_\beta}{I_b\Omega^2}=1{,}337,\qquad
+  \nu_\beta=1{,}16,\qquad \zeta_\beta=\frac{\gamma}{16\nu_\beta}=0{,}68,
   \label{eq:estabilidad-nub}
 \end{equation}
-con autovalores $s/\Omega=-0{,}72\pm0{,}96i$. Una perturbación se reduce a $e^{-2\pi\cdot0{,}72}$ (\SI{1}{\percent})
+con autovalores $s/\Omega=-0{,}79\pm0{,}85i$. Una perturbación se reduce a $e^{-2\pi\cdot0{,}79}$ (\SI{0.7}{\percent})
 en una vuelta. En el sistema fijo, los modos regresivo y progresivo quedan a
-$|0{,}96\mp1|\,\Omega$, es decir $0{,}04\Omega$ y $1{,}96\Omega$. El regresivo es lento, pero
+$|0{,}85\mp1|\,\Omega$, es decir $0{,}15\Omega$ y $1{,}85\Omega$. El regresivo es lento, pero
 tiene el mismo amortiguamiento.
 
 \paragraph{$\delta_3$.} Si el eje de batimiento se inclina $\delta_3$, el paso cambia en
 $\Delta\theta=-\tan\delta_3\,\beta$. Al primer orden, eso equivale a una rigidez
 aerodinámica adicional, $\nu_e^2=\nu_\beta^2+(\gamma/8)\tan\delta_3$. La conicidad baja
 como $\beta_0\propto1/\nu_e^2$ (tabla~\ref{tab:estabilidad-d3}). Con $\delta_3=\ang{20}$, $\beta_0$ pasa de
-\ang{6.1} a \ang{4.5}. Con la misma ráfaga del capítulo~\ref{cap:estructura}, la pala
-llega a $\approx\ang{6.9}$ y queda lejos del tope de \ang{+15}. A cambio, el paso efectivo
-baja \ang{1.6} y las rpm suben, por la tendencia de la figura~\ref{fig:bemt-barrido-c}.
-Un $\delta_3$ negativo es peligroso: con \ang{-30} la conicidad llega a \ang{14} y la pala
+\ang{4.2} a \ang{2.9}. Con la misma ráfaga del capítulo~\ref{cap:estructura}, la pala
+llega a $\approx\ang{4.5}$ y queda lejos del tope de \ang{+15}. A cambio, el paso efectivo
+baja \ang{1.1} y las rpm suben, por la tendencia de la figura~\ref{fig:bemt-barrido-c}.
+Un $\delta_3$ negativo es peligroso: con \ang{-30} la conicidad llega a \ang{13} y la pala
 apoya en el tope. Con el tope a \ang{+15} y $\delta_3=0$ el margen es suficiente, así que
 el $\delta_3$ queda como opción y no como requisito.
 
@@ -320,12 +337,12 @@ el $\delta_3$ queda como opción y no como requisito.
 \begin{tabular}{@{}ccccc@{}}
 \toprule
 $\delta_3$ & $\nu_e$ & $\zeta$ & $\beta_0$ & $\Delta\theta$ en $\beta_0$\\\midrule
-\ang{-30} & 0,79 & 0,92 & \ang{14.3} & $+\ang{8.3}$\\
-\ang{-10} & 1,09 & 0,66 & \ang{7.4} & $+\ang{1.3}$\\
-\ang{0}   & 1,20 & 0,60 & \ang{6.1} & 0\\
-\ang{10}  & 1,30 & 0,55 & \ang{5.2} & $-\ang{0.9}$\\
-\ang{20}  & 1,40 & 0,51 & \ang{4.5} & $-\ang{1.6}$\\
-\ang{30}  & 1,51 & 0,48 & \ang{3.9} & $-\ang{2.2}$\\
+\ang{-30} & 0,65 & 1,20 & \ang{13.1} & $+\ang{7.6}$\\
+\ang{-10} & 1,03 & 0,77 & \ang{5.3} & $+\ang{0.9}$\\
+\ang{0}   & 1,16 & 0,68 & \ang{4.2} & 0\\
+\ang{10}  & 1,27 & 0,62 & \ang{3.5} & $-\ang{0.6}$\\
+\ang{20}  & 1,38 & 0,57 & \ang{2.9} & $-\ang{1.1}$\\
+\ang{30}  & 1,50 & 0,53 & \ang{2.5} & $-\ang{1.4}$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -333,7 +350,8 @@ $\delta_3$ & $\nu_e$ & $\zeta$ & $\beta_0$ & $\Delta\theta$ en $\beta_0$\\\midru
 %=====================================================================
 \section{Divergencia y flameo de la pala}\label{sec:estabilidad-flameo}
 
-A \num{1505}~rpm, la pala A no tiene margen aeroelástico; la pala BV sí. En la sección
+A \num{1229}~rpm, la pala A es inestable con el rotor de \SI{0.25}{m}; la pala BV tiene
+margen. En la sección
 típica a $0{,}75R$, con el centro de corte a $x_{ac}$ detrás del centro aerodinámico y una
 frecuencia de torsión
 $\omega_\theta^2=\omega_{\theta0}^2+\Omega^2$ (con
@@ -344,41 +362,49 @@ ocurre cuando
   \label{eq:estabilidad-div}
 \end{equation}
 Con las propiedades de la tabla~\ref{tab:estructura-aeroel}, la pala A da
-$\Omega_D=\SI{151}{rad/s}$, o sea $\Omega_D/\Omega=0{,}96$, y la pala BV da
-$\Omega_D/\Omega=3{,}2$. La sección típica es conservadora: carga toda la pala con la
+$\Omega_D=\SI{89}{rad/s}$, o sea $\Omega_D/\Omega=0{,}69$, y la pala BV da
+$\Omega_D/\Omega=2{,}2$. La sección típica es conservadora: carga toda la pala con la
 presión dinámica de $0{,}75R$ contra la rigidez de la raíz. El análisis distribuido del
-capítulo~\ref{cap:estructura} da 1790--\num{2400}~rpm para A, que a las rpm refinadas son
-$\Omega_D/\Omega=1{,}19$--$1{,}59$.
+capítulo~\ref{cap:estructura}, ya con la pala de \SI{206}{mm}, da \num{967}--\num{1200}~rpm
+para A, que a las rpm de régimen son $\Omega_D/\Omega=0{,}79$--$0{,}98$. La pala de
+\SI{206}{mm} es más flexible en torsión que la de \SI{156}{mm} y recibe más presión
+dinámica en $0{,}75R$: por eso A, que antes tenía margen de 1,2--1,6, ahora diverge.
 
 Para el flameo, el modelo cuasiestacionario de dos grados de libertad no sirve: sin la
 función de Theodorsen predice inestabilidades débiles de torsión a cualquier velocidad.
 Se adoptan entonces los resultados p-k del capítulo~\ref{cap:estructura}, que dependen
-de $\Omega$ y no de la relación de diseño. Para A, \num{2310}~rpm dan
-$\Omega_F/\Omega=1{,}53$. Para BV, \num{6250}~rpm dan 4,15. El margen usual en rotores es
-$\ge1{,}3$ a la velocidad máxima (est.). A sobreviviría en régimen nominal, pero un
-embalamiento al \SI{120}{\percent}, por ejemplo con paso de \ang{-6} y \num{1840}~rpm,
-la deja a $\Omega_F/\Omega=1{,}26$ y con divergencia posible.
+de $\Omega$ y no de la relación de diseño. Para A, el flameo ocurre a \SI{124}{rad/s}
+($\Omega_F/\Omega=0{,}96$): la pala es inestable en régimen. Para B ($\pm\ang{45}$ sin
+varilla), $\Omega_F=\SI{252}{rad/s}$ (1,96). Para BV, \SI{328}{rad/s} (2,55). El margen usual
+en rotores es $\ge1{,}3$ a la velocidad máxima (est.), y la velocidad máxima es el
+sobrepaso del arranque, \SI{162.6}{rad/s} (1,26 veces el régimen): sobre él B queda en 1,55
+y BV en 2,0. B cumple, pero con poca reserva frente a errores de masa y de posición del
+centro de masa.
 
 \begin{resultado}[Aeroelasticidad]
 Hay que usar la pala BV (varilla de borde de ataque y capas a $\pm\ang{45}$). Su centro
-de masa debe quedar en $y_{cm}\le0{,}41c$. Con BV los márgenes son
-$\Omega_D/\Omega\ge3{,}2$ y $\Omega_F/\Omega\approx4{,}2$.
+de masa debe quedar en $y_{cm}\le0{,}41c$ (con el centro de masa en $0{,}45c$ el flameo
+aparece a \num{3030}~rpm, 2,5 veces el régimen). Con BV los márgenes son
+$\Omega_D/\Omega\ge2{,}8$ y $\Omega_F/\Omega\approx2{,}5$ (2,0 sobre el sobrepaso).
 \end{resultado}
 
 %=====================================================================
-\section{Drogue en la estela del rotor}\label{sec:estabilidad-drogue}
+\section{Drogue en la estela del rotor (solo si no se suelta)}\label{sec:estabilidad-drogue}
 
-El drogue solo puede tocar las palas si pierde la tensión. La cuerda sale del eje hueco a
-unos \SI{30}{mm} sobre el plano de bisagras (est.). Las puntas, con conicidad de
-\ang{6.1}, suben $(R-e)\sin\beta_0=\SI{17}{mm}$. Para que la cuerda llegue al disco
-tendría que formar
+En la configuración v2 el drogue se suelta antes de abrir el rotor, así que esta sección
+cubre solo la falla de la liberación. Soltarlo elimina la cuerda por el eje, la estela sobre
+el drogue y el péndulo drogue--cuerpo, y es una de las razones del cambio
+(capítulo~\ref{cap:arq}). Con el drogue atado, solo puede tocar las palas si pierde la
+tensión. La cuerda sale del eje hueco a unos \SI{30}{mm} sobre el plano de bisagras (est.).
+Las puntas, con conicidad de \ang{4.2}, suben $(R-e)\sin\beta_0=\SI{15}{mm}$. Para que la
+cuerda llegue al disco tendría que formar
 \begin{equation}
-  \phi_\text{crit}=90^\circ-\arctan\frac{z_\text{sal}-z_\text{punta}}{R}\approx\ang{86}
+  \phi_\text{crit}=90^\circ-\arctan\frac{z_\text{sal}-z_\text{punta}}{R}\approx\ang{87}
 \end{equation}
 con el eje, es decir, el drogue tendría que estar casi a la altura del rotor. Con tensión
-$N=\SI{1.16}{N}$, una ráfaga lateral $w$ inclina la cuerda unos $\arctan(w/V_2)$:
-\ang{16} con \SI{2}{m/s}. El modo de péndulo del drogue tiene $\zeta=0{,}84$, sin
-amplificación. Los ángulos normales están lejos de \ang{86}.
+$N=\SI{0.81}{N}$, una ráfaga lateral $w$ inclina la cuerda unos $\arctan(w/V_2)$:
+\ang{19} con \SI{2}{m/s}. El modo de péndulo del drogue tiene $\zeta=0{,}46$, sin
+amplificación. Los ángulos normales están lejos de \ang{87}.
 
 \begin{figure}[H]
 \centering
@@ -405,13 +431,14 @@ discontinua para alcanzar las puntas.}
 
 El riesgo real está en la estela. El aire relativo sube y el drogue queda aguas abajo del
 rotor, en una estela de molino turbulento con poco flujo medio y mucha recirculación. A
-$L=7{,}5R$ la estela ya se mezcló en parte, pero la presión dinámica sobre el drogue
+$L=6R$ la estela ya se mezcló en parte, pero la presión dinámica sobre el drogue
 fluctúa y puede caer. Si el drogue pierde tensión, el péndulo pierde rigidez, porque
 $N\to0$ en la ec.~\eqref{eq:estabilidad-modelo}, y la tela puede caer hacia el cubo. Las
-prestaciones no dependen de esto, porque el caso sin drogue ($V_2=\SI{7.91}{m/s}$)
+prestaciones no dependen de esto, porque el caso con drogue atado ($V_2=\SI{5.81}{m/s}$)
 cumple C4. Durante la transición el cuerpo frena a $\approx\SI{3}{m/s^2}$. El drogue
-puede frenar a $N/m_d\approx\SI{80}{m/s^2}$, así que la cuerda sigue tensa. No se
-modela la estela en el drogue, y este riesgo queda como \textbf{cualitativo}.
+puede frenar a $N/m_d\approx\SI{54}{m/s^2}$, así que la cuerda sigue tensa. No se
+modela la estela en el drogue, y este riesgo queda como \textbf{cualitativo}. Con la
+liberación previa, el riesgo desaparece.
 
 %=====================================================================
 \section{Márgenes y recomendaciones}\label{sec:estabilidad-rec}
@@ -423,16 +450,16 @@ modela la estela en el drogue, y este riesgo queda como \textbf{cualitativo}.
 \begin{tabularx}{\textwidth}{@{}lYYc@{}}
 \toprule
 Fenómeno & Valor & Criterio & Estado\\\midrule
-Anillo de vórtices & $V/v_h=2{,}04$; ráfaga \SI{1.8}{m/s} & $>1{,}5\,v_h$ & justo\\
-Inclinación (péndulo) & $\zeta=0{,}21$, \SI{2.5}{Hz} & $\zeta\ge0{,}1$ & cumple\\
-Péndulo drogue & $\zeta=0{,}84$ & $\zeta\ge0{,}1$ & cumple\\
-Batimiento & $\zeta_\beta=0{,}60$, $\nu_\beta=1{,}20$ & amortiguado & cumple\\
-Conicidad + ráfaga & \ang{9.3} & $<$ tope \ang{15} & cumple\\
-Giro del cuerpo, sin aletas & 160--540 rpm & $\le\SI{0.5}{rad/s}$ & no cumple\\
+Anillo de vórtices & $V/v_h=2{,}04$; ráfaga \SI{1.7}{m/s} & $>1{,}5\,v_h$ & justo\\
+Inclinación (péndulo) & $\zeta=0{,}30$, \SI{2.1}{}--\SI{2.5}{Hz} & $\zeta\ge0{,}1$ & cumple\\
+Péndulo drogue (si no se suelta) & $\zeta=0{,}46$ & $\zeta\ge0{,}1$ & cumple\\
+Batimiento & $\zeta_\beta=0{,}68$, $\nu_\beta=1{,}16$ & amortiguado & cumple\\
+Conicidad + ráfaga & \ang{6.4} & $<$ tope \ang{15} & cumple\\
+Giro del cuerpo, sin aletas & 150--490 rpm & $\le\SI{0.5}{rad/s}$ & no cumple\\
 Giro, 4 aletas 40×40 + calaje & $\approx0$--\SI{1.2}{rad/s} & $\le\SI{0.5}{rad/s}$ & con ajuste\\
-Divergencia, pala A / BV & 0,96--1,59 / $\ge3{,}2$ & $\ge1{,}3$ & A no, BV sí\\
-Flameo, pala A / BV & 1,53 / 4,15 & $\ge1{,}3$ & BV\\
-Drogue contra palas & \ang{16} frente a \ang{86} & con tensión & cualitativo\\
+Divergencia, pala A / B / BV & 0,79--0,98 / 1,9--2,1 / $\ge2{,}8$ & $\ge1{,}3$ & A no\\
+Flameo, pala A / B / BV & 0,96 / 1,96 / 2,55 & $\ge1{,}3$ & B y BV\\
+Drogue contra palas (si no se suelta) & \ang{19} frente a \ang{87} & con tensión & cualitativo\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -442,17 +469,20 @@ Drogue contra palas & \ang{16} frente a \ang{86} & con tensión & cualitativo\\
         ensayo de balanceo sobre filo.
   \item \textbf{Cuatro aletas desplegables} de $\approx40\times\SI{40}{mm}$ en el fondo
         del cuerpo, abiertas por resorte al liberar el rotor, con calaje inicial de
-        \ang{1.3} contra el par del rotor y ajustable entre \ang{0} y \ang{3}. Medir el
+        \ang{1.4} contra el par del rotor y ajustable entre \ang{0} y \ang{3}. Medir el
         par de los rodamientos en banco (caída libre de un volante) antes de fijar el
         calaje. Reengrasar con aceite ligero o desengrasar los 688ZZ reduce $M_f$ a
-        menos de la mitad.
+        menos de la mitad. En la Arquitectura~2 las aletas se pliegan dentro del
+        contenedor y se abren al salir de él.
   \item \textbf{Centro de masa bajo}: lastre en el fondo, con
         $h\gtrsim\SI{0.12}{m}$ bajo el cubo, para mantener la frecuencia y el
         amortiguamiento del modo de inclinación.
-  \item \textbf{Tubo guía} rígido de \SIrange{40}{60}{mm} sobre el cubo para la cuerda, y
-        destorcedor por encima. Mantener $L\ge\SI{1.5}{m}$.
+  \item \textbf{Soltar el drogue antes de abrir el rotor} (capítulo~\ref{cap:arq}): elimina
+        el péndulo drogue--cuerpo, la cuerda por el eje y la estela sobre el drogue. Si
+        el drogue quedara atado por una falla, un tubo guía rígido sobre el cubo y
+        $L\ge\SI{1.5}{m}$ mantienen la cuerda alejada de las palas.
   \item $\delta_3=\ang{15}$--\ang{20} en las bisagras solo si los ensayos muestran
-        conicidades mayores que \ang{7}. Si se usa, corregir el paso para mantener las
+        conicidades mayores que \ang{7} (ahora son de \ang{4.2}). Si se usa, corregir el paso para mantener las
         rpm.
   \item Verificar en ensayo de caída: rpm, $V_2$, balanceo (IMU) y giro del cuerpo. Ningún
         valor de este capítulo está medido.
