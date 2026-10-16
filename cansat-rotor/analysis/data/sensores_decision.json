@@ -80,7 +80,14 @@
    0.0,
    0.0
   ],
+  "prob_ganador_pun": [
+   0.1761,
+   0.661,
+   0.00414,
+   0.15876
+  ],
   "ganador": "BMP388",
+  "excluidas": {},
   "cambia_con_peso": []
  },
  "Temperatura interna (SN2)": {
@@ -153,12 +160,19 @@
    0.411626441680605
   ],
   "prob_ganador": [
-   0.3934,
-   0.49542,
+   0.39458,
+   0.4913,
    0.0,
-   0.11118
+   0.11412
+  ],
+  "prob_ganador_pun": [
+   0.44656,
+   0.42642,
+   0.00432,
+   0.1227
   ],
   "ganador": "AHT20 (equipo)",
+  "excluidas": {},
   "cambia_con_peso": [
    "precisión"
   ]
@@ -239,12 +253,19 @@
    0.4987804235542815
   ],
   "prob_ganador": [
-   0.30412,
-   0.29074,
-   0.00224,
-   0.4029
+   0.30492,
+   0.2925,
+   0.0028,
+   0.39978
+  ],
+  "prob_ganador_pun": [
+   0.2804,
+   0.30528,
+   0.0129,
+   0.40142
   ],
   "ganador": "MPU6050 + ADXL375",
+  "excluidas": {},
   "cambia_con_peso": [
    "costo y disponibilidad",
    "extras"
@@ -320,12 +341,19 @@
    0.32959609365267833
   ],
   "prob_ganador": [
-   0.61546,
-   0.02144,
-   0.3631,
+   0.61264,
+   0.02222,
+   0.36514,
    0.0
   ],
+  "prob_ganador_pun": [
+   0.47554,
+   0.21118,
+   0.2904,
+   0.02288
+  ],
   "ganador": "QMC5883L (equipo)",
+  "excluidas": {},
   "cambia_con_peso": [
    "rango y resolución",
    "inmunidad a interferencias"
@@ -390,11 +418,17 @@
    0.08835962256296305
   ],
   "prob_ganador": [
-   0.00616,
-   0.99384,
+   0.0058,
+   0.9942,
    0.0
   ],
+  "prob_ganador_pun": [
+   0.03426,
+   0.9655,
+   0.00024
+  ],
   "ganador": "INA226",
+  "excluidas": {},
   "cambia_con_peso": []
  },
  "GPS (SN4, X5)": {
@@ -461,11 +495,17 @@
    0.4158033310663045
   ],
   "prob_ganador": [
-   0.00022,
-   0.8838,
-   0.11598
+   0.00028,
+   0.88396,
+   0.11576
+  ],
+  "prob_ganador_pun": [
+   0.04614,
+   0.80802,
+   0.14584
   ],
   "ganador": "NEO-M8N",
+  "excluidas": {},
   "cambia_con_peso": []
  },
  "Radio (X1, X2, C5)": {
@@ -544,12 +584,19 @@
    0.47880372068617955
   ],
   "prob_ganador": [
-   0.00022,
-   0.89544,
-   0.10432,
-   2e-05
+   0.00026,
+   0.89456,
+   0.10506,
+   0.00012
+  ],
+  "prob_ganador_pun": [
+   0.00246,
+   0.82042,
+   0.17192,
+   0.0052
   ],
   "ganador": "RFM95W (SX1276)",
+  "excluidas": {},
   "cambia_con_peso": []
  },
  "Cámaras (C6, C7, SN6, SN7)": {
@@ -559,21 +606,23 @@
    "consumo",
    "masa y tamaño",
    "costo",
-   "integración con el sistema"
+   "integración con el sistema",
+   "cumple E1/E2 (sin LiPo)"
   ],
   "pesos": [
-   0.25,
-   0.15,
-   0.2,
-   0.1,
-   0.15,
-   0.15
+   0.22,
+   0.13,
+   0.18,
+   0.08,
+   0.13,
+   0.13,
+   0.13
   ],
   "candidatos": [
    "ESP32-CAM OV2640 (equipo)",
-   "ESP32-S3 + OV5640",
+   "ESP32-S3 con cámara (tipo XIAO Sense)",
    "Raspberry Pi Zero 2 W + cámara",
-   "Microcámara de acción"
+   "Microcámara de acción (LiPo interna)"
   ],
   "puntajes": [
    [
@@ -582,7 +631,8 @@
     4.0,
     5.0,
     5.0,
-    4.0
+    4.0,
+    5.0
    ],
    [
     3.0,
@@ -590,7 +640,8 @@
     3.0,
     5.0,
     4.0,
-    4.0
+    4.0,
+    5.0
    ],
    [
     3.0,
@@ -598,7 +649,8 @@
     1.0,
     4.0,
     3.0,
-    3.0
+    3.0,
+    5.0
    ],
    [
     5.0,
@@ -606,31 +658,39 @@
     2.0,
     3.0,
     2.0,
-    3.0
+    3.0,
+    1.0
    ]
   ],
   "suma": [
-   3.45,
-   3.5,
-   2.8499999999999996,
-   3.45
+   3.6399999999999997,
+   3.68,
+   3.1100000000000003,
+   3.13
   ],
   "topsis": [
-   0.5078232078829353,
-   0.5134668319405783,
-   0.29639224626377814,
-   0.5654969354809546
+   0.5408933676781718,
+   0.562175830017786,
+   0.38566959659466354,
+   0.5182696307259853
   ],
   "prob_ganador": [
-   0.38258,
-   0.1838,
-   0.0,
-   0.43362
+   0.40682,
+   0.59038,
+   0.0028,
+   0.0
   ],
-  "ganador": "ESP32-S3 + OV5640",
+  "prob_ganador_pun": [
+   0.4222,
+   0.53742,
+   0.04038,
+   0.0
+  ],
+  "ganador": "ESP32-S3 con cámara (tipo XIAO Sense)",
+  "excluidas": {
+   "Microcámara de acción (LiPo interna)": "E1: batería de polímero de litio"
+  },
   "cambia_con_peso": [
-   "confiabilidad del registro",
-   "calidad de video",
    "consumo",
    "costo"
   ]
@@ -711,12 +771,19 @@
    0.7529566921720524
   ],
   "prob_ganador": [
-   0.00042,
+   0.00034,
    0.0,
-   0.73198,
-   0.2676
+   0.73526,
+   0.2644
+  ],
+  "prob_ganador_pun": [
+   0.00872,
+   0.04036,
+   0.6545,
+   0.29642
   ],
   "ganador": "RP2040 (Pico/Zero)",
+  "excluidas": {},
   "cambia_con_peso": []
  },
  "Actuador de liberación": {
@@ -724,20 +791,20 @@
    "par disponible",
    "masa",
    "picos de corriente",
-   "robustez frente a M3",
+   "robustez frente a M3 (choque sobre el eje)",
    "costo",
    "disponibilidad"
   ],
   "pesos": [
-   0.25,
+   0.2,
    0.1,
    0.15,
-   0.2,
+   0.25,
    0.1,
    0.2
   ],
   "candidatos": [
-   "SG90 (equipo)",
+   "SG90 (equipo, engranajes de plástico)",
    "MG90S (engranajes metálicos)",
    "Solenoide de traba"
   ],
@@ -746,12 +813,12 @@
     3.0,
     5.0,
     3.0,
-    3.0,
+    2.0,
     5.0,
     5.0
    ],
    [
-    4.0,
+    3.0,
     4.0,
     3.0,
     4.0,
@@ -768,26 +835,32 @@
    ]
   ],
   "suma": [
-   3.8,
-   4.050000000000001,
-   2.6500000000000004
+   3.55,
+   3.85,
+   2.75
   ],
   "topsis": [
-   0.6541855328727311,
-   0.8684898738917537,
-   0.1902689800651653
+   0.5557396610004842,
+   0.8656680965443742,
+   0.4442603389995157
   ],
   "prob_ganador": [
-   0.07402,
-   0.92598,
+   0.08734,
+   0.91266,
    0.0
   ],
+  "prob_ganador_pun": [
+   0.1958,
+   0.80198,
+   0.00222
+  ],
   "ganador": "MG90S (engranajes metálicos)",
+  "excluidas": {},
   "cambia_con_peso": []
  },
- "Sensor de rpm y de estado de las trabas (nuevo)": {
+ "Sensor de rpm y de estado de las trabas": {
   "criterios": [
-   "compatibilidad con 3,3 V",
+   "compatibilidad eléctrica y funcional (3,3 V, orientación de los imanes)",
    "robustez",
    "masa",
    "costo",
@@ -803,8 +876,9 @@
    0.15
   ],
   "candidatos": [
-   "Hall con imán (DRV5013)",
-   "Hall A3144 (4,5 V)",
+   "Hall interruptor (DRV5032/DRV5033)",
+   "Hall latch DRV5013 (pide imanes alternados)",
+   "Hall A3144 (4,5 V, unipolar)",
    "Reflectivo IR (TCRT5000)",
    "Interruptor de lámina (reed)"
   ],
@@ -818,7 +892,15 @@
     5.0
    ],
    [
-    2.0,
+    4.0,
+    5.0,
+    5.0,
+    4.0,
+    5.0,
+    5.0
+   ],
+   [
+    3.0,
     5.0,
     5.0,
     5.0,
@@ -844,23 +926,278 @@
   ],
   "suma": [
    4.85,
-   4.25,
+   4.6,
+   4.5,
    3.65,
    4.2
   ],
   "topsis": [
-   0.8836942230047596,
-   0.47323351289224164,
-   0.448432721904313,
-   0.6320794661686695
+   0.8558146628764317,
+   0.7094350348160049,
+   0.5711091901458051,
+   0.32887384219701005,
+   0.5734400698732546
   ],
   "prob_ganador": [
-   0.98344,
-   0.01384,
+   0.95276,
    0.0,
-   0.00272
+   0.04572,
+   0.0,
+   0.00152
   ],
-  "ganador": "Hall con imán (DRV5013)",
+  "prob_ganador_pun": [
+   0.74594,
+   0.14252,
+   0.09494,
+   0.0002,
+   0.0164
+  ],
+  "ganador": "Hall interruptor (DRV5032/DRV5033)",
+  "excluidas": {},
   "cambia_con_peso": []
+ },
+ "Detección de la separación del cohete (X3)": {
+  "criterios": [
+   "fiabilidad de la detección",
+   "independencia de la interfaz del cohete",
+   "robustez al choque (S4, S5)",
+   "hardware y pines extra",
+   "costo",
+   "falsos positivos"
+  ],
+  "pesos": [
+   0.3,
+   0.2,
+   0.15,
+   0.1,
+   0.1,
+   0.15
+  ],
+  "candidatos": [
+   "Luz (panel solar de E3)",
+   "Microinterruptor de separación",
+   "Aceleración (IMU: pulso y caída libre)",
+   "Luz y aceleración combinadas"
+  ],
+  "puntajes": [
+   [
+    4.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    3.0
+   ],
+   [
+    3.0,
+    2.0,
+    2.0,
+    3.0,
+    5.0,
+    2.0
+   ],
+   [
+    4.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    3.0
+   ],
+   [
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+   ]
+  ],
+  "suma": [
+   4.4,
+   2.7,
+   4.4,
+   5.0
+  ],
+  "topsis": [
+   0.629183830987061,
+   0.0,
+   0.629183830987061,
+   1.0
+  ],
+  "prob_ganador": [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ],
+  "prob_ganador_pun": [
+   0.0303,
+   0.0,
+   0.02638,
+   0.94332
+  ],
+  "ganador": "Luz y aceleración combinadas",
+  "excluidas": {},
+  "cambia_con_peso": []
+ },
+ "Memoria no volátil y tiempo (F1, F2, F3, F5)": {
+  "criterios": [
+   "resistencia a escrituras",
+   "seguridad ante corte de energía",
+   "mantiene el tiempo de misión",
+   "pines y hardware",
+   "costo",
+   "masa"
+  ],
+  "pesos": [
+   0.20000000000000004,
+   0.25000000000000006,
+   0.25000000000000006,
+   0.10000000000000002,
+   0.10000000000000002,
+   0.10000000000000002
+  ],
+  "candidatos": [
+   "FRAM I2C + RTC DS3231 con pila",
+   "FRAM I2C + hora UTC del GPS",
+   "Flash interna (NVS) + hora UTC del GPS",
+   "Solo tarjeta microSD"
+  ],
+  "puntajes": [
+   [
+    5.0,
+    5.0,
+    5.0,
+    4.0,
+    3.0,
+    4.0
+   ],
+   [
+    5.0,
+    5.0,
+    3.0,
+    5.0,
+    4.0,
+    5.0
+   ],
+   [
+    3.0,
+    3.0,
+    2.0,
+    5.0,
+    5.0,
+    5.0
+   ],
+   [
+    4.0,
+    2.0,
+    1.0,
+    4.0,
+    5.0,
+    4.0
+   ]
+  ],
+  "suma": [
+   4.600000000000001,
+   4.400000000000001,
+   3.3500000000000005,
+   2.8500000000000005
+  ],
+  "topsis": [
+   0.8729651378432025,
+   0.6228685988415273,
+   0.28841778560771075,
+   0.14800493251636035
+  ],
+  "prob_ganador": [
+   0.7841,
+   0.21588,
+   2e-05,
+   0.0
+  ],
+  "prob_ganador_pun": [
+   0.70844,
+   0.29092,
+   0.00062,
+   2e-05
+  ],
+  "ganador": "FRAM I2C + RTC DS3231 con pila",
+  "excluidas": {},
+  "cambia_con_peso": []
+ },
+ "Fuente de energía (E1, E2, E7, M4)": {
+  "criterios": [
+   "autonomía de E7 con margen",
+   "riesgo de perder video (C6, C7)",
+   "cabe en el presupuesto de masa (S1)",
+   "cumple M4 y E2",
+   "costo",
+   "simplicidad"
+  ],
+  "pesos": [
+   0.28,
+   0.2,
+   0.17,
+   0.1,
+   0.1,
+   0.15
+  ],
+  "candidatos": [
+   "1 celda 18650, todo encendido",
+   "1 celda 18650, cámaras al despegue",
+   "2 celdas 18650 en paralelo, todo encendido"
+  ],
+  "puntajes": [
+   [
+    2.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+   ],
+   [
+    4.0,
+    2.0,
+    5.0,
+    5.0,
+    5.0,
+    3.0
+   ],
+   [
+    5.0,
+    5.0,
+    2.0,
+    4.0,
+    4.0,
+    4.0
+   ]
+  ],
+  "suma": [
+   4.16,
+   3.8200000000000003,
+   4.140000000000001
+  ],
+  "topsis": [
+   0.482092737454432,
+   0.5211127996898349,
+   0.669215016117811
+  ],
+  "prob_ganador": [
+   0.48898,
+   0.06364,
+   0.44738
+  ],
+  "prob_ganador_pun": [
+   0.4446,
+   0.11436,
+   0.44104
+  ],
+  "ganador": "1 celda 18650, todo encendido",
+  "excluidas": {},
+  "cambia_con_peso": [
+   "autonomía de E7 con margen"
+  ]
  }
 }

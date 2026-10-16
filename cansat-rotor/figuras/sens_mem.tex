@@ -1,0 +1,14 @@
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{5.2cm}cccccc|rrrr@{}}
+\toprule
+\textbf{Opción} & C1 & C2 & C3 & C4 & C5 & C6 & \textbf{Suma} & \textbf{TOPSIS} & \textbf{$P_{\text{gana}}$} & \textbf{$P^{\pm1}$}\\
+\midrule
+\textit{peso} & 20 & 25 & 25 & 10 & 10 & 10 & & & &\\\midrule
+\textbf{FRAM I2C + RTC DS3231 con pila} & 5 & 5 & 5 & 4 & 3 & 4 & 4{,}60 & 0{,}87 & \textbf{0{,}78} & \textbf{0{,}71}\\
+FRAM I2C + hora UTC del GPS & 5 & 5 & 3 & 5 & 4 & 5 & 4{,}40 & 0{,}62 & 0{,}22 & 0{,}29\\
+Flash interna (NVS) + hora UTC del GPS & 3 & 3 & 2 & 5 & 5 & 5 & 3{,}35 & 0{,}29 & 0{,}00 & 0{,}00\\
+Solo tarjeta microSD & 4 & 2 & 1 & 4 & 5 & 4 & 2{,}85 & 0{,}15 & 0{,}00 & 0{,}00\\
+\bottomrule
+\end{tabular}}
+\par\smallskip\begin{minipage}{0.96\linewidth}\footnotesize\raggedright \textbf{Criterios} (peso en \%): C1 resistencia a escrituras; C2 seguridad ante corte de energía; C3 mantiene el tiempo de misión; C4 pines y hardware; C5 costo; C6 masa.
+\end{minipage}

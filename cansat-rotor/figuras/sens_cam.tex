@@ -1,0 +1,15 @@
+{\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{5.2cm}ccccccc|rrrr@{}}
+\toprule
+\textbf{Opción} & C1 & C2 & C3 & C4 & C5 & C6 & C7 & \textbf{Suma} & \textbf{TOPSIS} & \textbf{$P_{\text{gana}}$} & \textbf{$P^{\pm1}$}\\
+\midrule
+\textit{peso} & 22 & 13 & 18 & 8 & 13 & 13 & 13 & & & &\\\midrule
+ESP32-CAM OV2640 (equipo) & 2 & 2 & 4 & 5 & 5 & 4 & 5 & 3{,}64 & 0{,}54 & 0{,}41 & 0{,}42\\
+\textbf{ESP32-S3 con cámara (tipo XIAO Sense)} & 3 & 3 & 3 & 5 & 4 & 4 & 5 & 3{,}68 & 0{,}56 & \textbf{0{,}59} & \textbf{0{,}54}\\
+Raspberry Pi Zero 2 W + cámara & 3 & 4 & 1 & 4 & 3 & 3 & 5 & 3{,}11 & 0{,}39 & 0{,}00 & 0{,}04\\
+Microcámara de acción (LiPo interna)${}^{\ast}$ & 5 & 5 & 2 & 3 & 2 & 3 & 1 & 3{,}13 & 0{,}52 & \textit{excl.} & \textit{excl.}\\
+\bottomrule
+\end{tabular}}
+\par\smallskip\begin{minipage}{0.96\linewidth}\footnotesize\raggedright \textbf{Criterios} (peso en \%): C1 confiabilidad del registro; C2 calidad de video; C3 consumo; C4 masa y tamaño; C5 costo; C6 integración con el sistema; C7 cumple E1/E2 (sin LiPo).
+ ${}^{\ast}$ Excluida por un requisito: E1: batería de polímero de litio.
+\end{minipage}

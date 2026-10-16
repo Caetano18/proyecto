@@ -1,0 +1,783 @@
+\chapter{Selección de sensores y módulos electrónicos}\label{cap:sensores}
+\providecommand{\nv}{$^{\dagger}$}
+
+Este capítulo revisa la electrónica que el equipo ya eligió (planilla «Detalle Electrónica»,
+precios al 1.º de octubre de 2026) frente a los requisitos del anexo~A v2~\cite{anexo} y a las
+condiciones de vuelo que fija el resto del documento: caída a \SI{13}{m/s} con el drogue, rotor
+a unas \SI{1200}{rpm}, choque de \SI{30}{G}, dos horas de autonomía. Para cada función se
+comparan al menos dos alternativas con criterios ponderados, se prueba si la elección
+depende de los pesos y se dice qué cambiar. No reemplaza a las hojas de datos: los valores que
+no pude confirmar en una hoja del fabricante, sino solo en listados de distribuidores o en
+resúmenes, llevan la marca\nv{} y hay que verificarlos con el lote comprado. Los puntajes son
+juicio de ingeniería sobre esas especificaciones, y los costos de las piezas que el equipo no
+compró son estimaciones: la planilla solo trae precios de lo ya elegido.
+
+\begin{resultado}[Resultado del capítulo]
+Los componentes del equipo cubren casi todo el anexo, pero hay cuatro hallazgos que cambian el
+diseño y varias mejoras de bajo costo.
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{La ESP32-C3 Super Mini no tiene pines suficientes.} El diseño pide 19 líneas
+        (tabla~\ref{tab:sens-pines}) y la placa saca 13\nv, tres de ellas de arranque y dos de
+        consola. Con un expansor de I$^2$C siguen haciendo falta 16 pines nativos. La matriz
+        elige el RP2040 (\SI{74}{\percent}). Es el cambio más importante del capítulo.
+  \item \textbf{\Req{E7} no se cumple con holgura si las cámaras graban desde la rampa.} Con los
+        consumos de la planilla, una celda da \SI{2.3}{h} y el \SI{53}{\percent} de los casos
+        simulados queda bajo las 2~h. Encender las cámaras al despegar (con respaldo por la
+        separación y por comando) da \SI{8.6}{h} sin masa extra; una segunda celda en paralelo
+        da \SI{4.6}{h} pero suma \SI{48}{g} que el presupuesto de la Arq.~1 no tiene
+        (sección~\ref{sec:sens-bat}).
+  \item \textbf{Faltan tres funciones en la planilla:} detectar la separación del cohete
+        (\Req{X3}), conservar contador y hora de misión tras un reinicio
+        (\Req{F1}, \Req{F2}, \Req{F5}) y medir las rpm del rotor y el estado de las trabas. Se
+        resuelven con la luz del panel de \Req{E3} más la IMU, una FRAM con un RTC y un sensor
+        Hall con dos microinterruptores: unos \SI{8}{g} y sin cambios de diseño mecánico.
+  \item \textbf{El servo SG90 de plástico es el eslabón débil frente a \Req{M3}.} El par alcanza
+        (margen de 8 a 17 en régimen), pero un choque de \SI{30}{G} puede forzar el engranaje
+        de plástico por el eje. El MG90S, de la misma medida, lo resuelve (\SI{91}{\percent}).
+  \item Mejoras opcionales: segundo barómetro (BMP388) para redundancia; ADXL375 para registrar
+        el choque que satura al MPU6050 ($\pm\SI{16}{g}$); shunt de \SI{20}{m\ohm} en el INA219;
+        modo aerotransportado en el GPS; y alejar el magnetómetro del imán del rotor
+        ($\ge\SI{150}{mm}$).
+  \item \textbf{Radio.} El LR2021 cierra el enlace con más de \SI{27}{dB} de margen incluso en el
+        nulo de la antena (con SF7); su riesgo es de integración (módulo y biblioteca), no de
+        prestaciones. Se propone probarlo en banco y tener el RFM95W como plan~B.
+\end{enumerate}
+\end{resultado}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[xbar, width=0.78\textwidth, height=7.2cm, bar width=4.5pt, xmin=0, xmax=1,
+    xlabel={Probabilidad de ganar frente a variaciones de los pesos},
+    symbolic y coords={Barómetro,Temperatura,IMU,Magnetómetro,Tensión y corriente,GPS,Radio,Cámaras,Computadora,Servo de traba},
+    ytick=data, y dir=reverse, y tick label style={font=\footnotesize},
+    legend style={font=\scriptsize, at={(0.5,1.03)}, anchor=south}, legend columns=2, enlarge y limits=0.07,
+    xmajorgrids, grid style={black!12}]
+  \addplot[fill=cfijo!70, draw=cfijo] coordinates {(0.20,Barómetro) (0.39,Temperatura) (0.30,IMU) (0.61,Magnetómetro) (0.01,Tensión y corriente) (0.00,GPS) (0.00,Radio) (0.41,Cámaras) (0.00,Computadora) (0.09,Servo de traba)};
+  \addplot[fill=crot!70, draw=crot] coordinates {(0.80,Barómetro) (0.49,Temperatura) (0.40,IMU) (0.61,Magnetómetro) (0.99,Tensión y corriente) (0.88,GPS) (0.89,Radio) (0.59,Cámaras) (0.74,Computadora) (0.91,Servo de traba)};
+  \legend{componente del equipo, mejor alternativa}
+\end{axis}
+\end{tikzpicture}
+\caption{Robustez de la elección en las diez funciones donde el equipo ya tiene componente
+(pesos sorteados con Dirichlet, $5\times10^4$ casos). Una barra azul baja con una naranja alta
+no obliga a cambiar: la regla de la sección~\ref{sec:sens-metodo} pide además que el cambio
+actúe sobre un requisito o un riesgo.}
+\label{fig:sens-prob}
+\end{figure}
+
+%=====================================================================
+\section{Método y regla de decisión}\label{sec:sens-metodo}
+
+Cada función tiene de cuatro a siete criterios y de dos a cinco alternativas. Los puntajes van
+de 1 (peor) a 5 (mejor) y salen de las especificaciones de las secciones siguientes; para el
+costo, 5 es lo más barato. Se calculan dos indicadores. La suma ponderada es
+$S_i=\sum_j w_j s_{ij}$. TOPSIS~\cite{sensores-hwang1981} normaliza cada columna por su norma
+y mide la cercanía relativa a una alternativa ideal imaginaria,
+$C_i=d_i^-/(d_i^++d_i^-)$, donde $d_i^+$ y $d_i^-$ son las distancias a la mejor y a la peor
+puntuación de cada criterio. Para saber si el orden depende de los pesos que elegí, se sortean
+$5\times10^4$ vectores de pesos con una distribución de Dirichlet centrada en los pesos base
+(la desviación de cada peso queda entre 0,05 y 0,10) y se cuenta cuántas veces gana cada
+alternativa: es $P_{\text{gana}}$, el enfoque habitual de sensibilidad a los pesos
+\cite{sensores-triantaphyllou1997}. En $P^{\pm1}$ además cada puntaje cambia en $\pm1$ con
+probabilidad \num{0.25}. Una alternativa que incumple un requisito se excluye (marca $\ast$).
+Las tablas de decisión traen los puntajes $C1,\dots,Cn$, la fila de pesos (en \%), la suma, TOPSIS y las dos
+probabilidades; en negrita la alternativa más probable. El código está en
+\texttt{analysis/v2\_sensores.py}.
+
+\begin{nota}[Regla de decisión]
+Se propone cambiar un componente del equipo solo si (i) otra alternativa gana con
+$P_{\text{gana}}\ge0{,}7$ y (ii) la mejora actúa sobre un requisito del anexo o sobre un
+riesgo identificado en este documento. Si la ventaja es de precisión que el anexo no pide, se
+mantiene lo que el equipo ya tiene: cambiar cuesta tiempo de integración y de pruebas.
+\end{nota}
+
+%=====================================================================
+\section{Cobertura de los requisitos}\label{sec:sens-cobertura}
+
+\begin{table}[H]
+\centering\small
+\caption{Requisitos de sensores, comunicaciones y energía del anexo~A v2, y su cobertura con la
+planilla del equipo.}\label{tab:sens-cobertura}
+\begin{tabularx}{\textwidth}{@{}p{1.6cm}YYp{2.0cm}@{}}
+\toprule
+\textbf{Req.} & \textbf{Qué pide} & \textbf{Componente del equipo y comentario} & \textbf{Estado}\\\midrule
+\Req{SN1} & Altitud por presión & BMP280. La puesta a cero llega por \Req{G1}; la liberación usa el \SI{80}{\percent} del máximo medido con el mismo sensor & Cumple\\
+\Req{SN2} & Temperatura interna & AHT20 (también la del BMP280) & Cumple\\
+\Req{SN3}, \Req{SN8} & Tensión y corriente de la batería & INA219; hace falta un shunt de \SI{20}{m\ohm} & Cumple con ajuste\\
+\Req{SN4} & Posición por GPS & NEO-7M; configurar el modo aerotransportado & Cumple\\
+\Req{SN5}, \Req{X5} & Aceleración y rotación en tres ejes & MPU6050; satura en $\pm\SI{16}{g}$ & Cumple\\
+\Req{SN6}, \Req{SN7} & Video del despliegue, color, $\ge640\times480$ & 2 ESP32-CAM OV2640 ($800\times600$) con microSD propia & A validar\\
+\Req{X1}, \Req{X2}, \Req{X4}, \Req{C5} & 915--\SI{928}{MHz} o 2,4\,GHz, sin difusión, 1\,Hz & LR2021 de Waveshare; paquetes con dirección de destino & A validar\\
+\Req{X3} & Comando automático al separarse del cohete & No hay sensor dedicado & \textbf{Falta}\\
+\Req{X6}, \Req{E3} & Estado de batería y señal del panel por telecomando & INA219 y panel de $120\times\SI{60}{mm}$ en una entrada analógica & Cumple\\
+\Req{E6} & Indicador de encendido & LED de encendido & Cumple\\
+\Req{E7} & Dos horas integrado en el cohete & Una celda 18650 & \textbf{Riesgo}\\
+\Req{C8}, \Req{E8}, \Req{E9} & Baliza con batería e interruptor propios & Buzzer con pila botón; el portapila no puede tener resorte (\Req{M4}) & Cumple con ajuste\\
+\Req{F1}, \Req{F2}, \Req{F5} & Contador, hora de misión y estado tras un reinicio & Ni FRAM ni RTC en la planilla & \textbf{Falta}\\
+\Req{F3}, \Req{G1} & Hora UTC y cero de altitud por comando & Firmware; el GPS da la hora UTC & Cumple\\
+--- & rpm del rotor y estado de las trabas (propios de este diseño) & No hay & \textbf{Falta}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Presión y altitud (\texorpdfstring{\Req{SN1}}{SN1})}\label{sec:sens-pres}
+
+\paragraph{Qué importa.} La liberación del rotor se decide con el \SI{80}{\percent} del máximo
+que midió el propio sensor, así que el error absoluto y el de escala se cancelan
+(capítulo~\ref{cap:sens}, sección~\ref{sec:sens-masa}). Importan el ruido, la estabilidad
+durante el vuelo (deriva con la temperatura) y la respuesta a la presión dinámica en el puerto.
+Esas dos últimas, junto con el retardo del filtro, son lo que fija el error de la altura de
+liberación: \SI{3.4}{m} de desviación y \SI{12.9}{m} en el percentil 95, de los cuales el
+barómetro explica menos de \SI{1}{m}.
+
+\begin{table}[H]
+\centering\small
+\caption{Barómetros. Exactitud relativa: tras la puesta a cero, sobre un intervalo corto.
+Datos de las hojas de Bosch~\cite{sensores-bmp280,sensores-bmp388} y de TE~\cite{electronica-ms5611}.}\label{tab:sens-pres-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Sensor} & \textbf{Exactitud} & \textbf{Deriva térmica del offset} & \textbf{Observaciones}\\\midrule
+BMP280 (equipo) & relativa $\pm\SI{0.12}{hPa}$ ($\approx\SI{1}{m}$, 700--\SI{900}{hPa}); absoluta $\pm\SI{1}{hPa}$ & $\pm\SI{1.5}{Pa/K}$ ($\approx\SI{12.6}{cm/K}$) & Hoja rev.~1.26 (oct.\ 2021); un distribuidor lo marca como discontinuado\nv; no encontré el ruido RMS\\
+BMP388 & relativa $\pm\SI{0.08}{hPa}$ ($\approx\SI{0.66}{m}$); absoluta $\pm\SI{0.5}{hPa}$ según Bosch (la hoja de SparkFun dice $\pm\SI{50}{Pa}$) & $\pm\SI{0.75}{Pa/K}$ & Ruido \SI{0.03}{Pa} con el menor ancho de banda; las fuentes difieren en el ruido de otros modos\\
+MS5611 & resolución \SI{0.012}{mbar} (OSR~4096); $\pm\SI{1.5}{mbar}$ a \SI{25}{\celsius} y \SI{750}{mbar}, $\pm\SI{2.5}{mbar}$ de $-20$ a \SI{85}{\celsius} & --- & Es el barómetro que supuso el capítulo~\ref{cap:electronica}; dos conversiones por lectura\\
+BME280 & misma medición de presión que el BMP280, más humedad\nv & $\pm\SI{1.5}{Pa/K}$\nv & Sin ventaja para esta tarea\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del barómetro.}\label{tab:sens-pres}
+\input{figuras/sens_pres}
+\end{table}
+
+\paragraph{Lectura.} El BMP388 gana en \SI{80}{\percent} de los sorteos ($P^{\pm1}=\num{0.66}$),
+sobre todo por su menor ruido y deriva. Pero cambiarlo reduciría el error de la altura de
+liberación de \SI{3.4}{m} a \SI{3.3}{m} de desviación (menos del \SI{2}{\percent}): la deriva
+del BMP280 aporta \SI{0.7}{m} y su ruido \SI{0.15}{m}, contra \SI{2.3}{m} del retardo del filtro
+y \SI{2.4}{m} del puerto estático. La regla de decisión pide que la mejora actúe sobre un
+riesgo, y aquí el riesgo es otro. Lo que sí vale la pena es la \textbf{redundancia}: un
+BMP388 como segundo barómetro (dirección \texttt{0x77}, con el BMP280 en \texttt{0x76}) cubre
+el bloqueo de uno de los dos y permite la votación 2 de 3 del capítulo~\ref{cap:electronica} con
+dos fuentes independientes de presión más la IMU. Costo: \SI{1}{g} y una entrada más en el bus I$^2$C.
+Como el capítulo~\ref{cap:electronica} se sintonizó con el ruido del MS5611
+(\SI{0.10}{m}), el ruido real del BMP280 con el filtro interno hay que medirlo en banco y
+reajustar la sintonía.
+
+%=====================================================================
+\section{Temperatura interna (\texorpdfstring{\Req{SN2}}{SN2})}\label{sec:sens-temp}
+
+\begin{table}[H]
+\centering\small
+\caption{Sensores de temperatura.}\label{tab:sens-temp-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Sensor} & \textbf{Exactitud} & \textbf{Consumo e interfaz} & \textbf{Observaciones}\\\midrule
+AHT20 (equipo)~\cite{sensores-aht20} & $\pm\SI{0.3}{\celsius}$ y $\pm2$\,\%HR (20--80\,\%HR)\nv & \SIrange{0.25}{0.27}{mA}\nv; I$^2$C \texttt{0x38} & Las fuentes discrepan en la corriente (una da \SI{23}{mA} en ráfaga); no conseguí la hoja de Aosong\\
+SHT31 & $\pm\SI{0.2}{\celsius}$ y $\pm2$\,\%HR\nv & I$^2$C \texttt{0x44/0x45} & Más caro; mismos datos\\
+DS18B20 & $\pm\SI{0.5}{\celsius}$\nv & 1-Wire, un pin & Sin humedad; un pin más\\
+Temperatura del BMP280 & $\pm\SI{1}{\celsius}$ a \SI{25}{\celsius}\nv & ya en el bus & Sin costo, menor exactitud\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del sensor de temperatura.}\label{tab:sens-temp}
+\input{figuras/sens_temp}
+\end{table}
+
+\paragraph{Lectura.} AHT20 y SHT31 empatan (\num{0.39} contra \num{0.49}); el orden depende solo
+del peso de la precisión. El anexo no fija una exactitud para \Req{SN2}. \textbf{Se mantiene el
+AHT20.} Dos consejos de instalación: ponerlo lejos del elevador de 5\,V y de las cámaras, que
+son las fuentes de calor (la «temperatura interna» debe representar a la carga útil, no a un
+regulador), y dejar el BMP280 como segunda lectura para detectar un fallo del primero.
+
+%=====================================================================
+\section{Aceleración y giro (\texorpdfstring{\Req{SN5}, \Req{X5}}{SN5, X5})}\label{sec:sens-imu}
+
+\paragraph{Qué importa.} Tres cosas distinguen una IMU para este vuelo. (1)~El rango de
+aceleración frente a \Req{S5}: el choque de \SI{30}{G} y el pulso de la carga de expulsión
+superan los $\pm\SI{16}{g}$ del MPU6050. (2)~El rango del giroscopio frente al giro del cuerpo: sin
+aletas antigiro el cuerpo llegaría a \SI{490}{rpm} ($\approx\SI{2940}{\degree/s}$) a los \SI{40}{s}
+(capítulo~\ref{cap:estabilidad}), por encima de los \SI{2000}{\degree/s} del MPU6050; con las
+cuatro aletas el giro baja a \SI{2.4}{rad/s}, y el rango sobra. (3)~La IMU puede dar una
+\emph{segunda medida de las rpm del rotor}: la vibración a $4\times$ la frecuencia de giro
+(\SI{82}{Hz} a \SI{1229}{rpm}) se ve en el acelerómetro del cuerpo si se muestrea a \SI{1}{kHz},
+como control cruzado del sensor Hall.
+
+\begin{table}[H]
+\centering\small
+\caption{Sensores inerciales.}\label{tab:sens-imu-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Sensor} & \textbf{Rangos} & \textbf{Consumo} & \textbf{Observaciones}\\\midrule
+MPU6050 (equipo)~\cite{sensores-mpu6050} & $\pm2/4/8/\SI{16}{g}$; $\pm250$ a $\pm\SI{2000}{\degree/s}$; 16 bits & \SIrange{3.6}{3.9}{mA}\nv & I$^2$C \texttt{0x68/0x69}; ruido del acelerómetro $400\,\mu\text{g}/\sqrt{\text{Hz}}$\nv\\
+ADXL375~\cite{sensores-adxl375} & hasta $\pm\SI{200}{g}$; supervivencia a \SI{10000}{g} & desde \SI{35}{\micro A} & Solo acelerómetro; resolución gruesa ($\approx\SI{49}{mg}$ por LSB\nv); I$^2$C o SPI; LGA $3\times5\times\SI{1}{mm}$\\
+ICM-20948~\cite{sensores-icm20948} & 9 ejes (con AK09916), QFN $3\times3\times\SI{1}{mm}$ & \SI{3.11}{mA}\nv & Alimentación desde \SI{1.71}{V}; trae el magnetómetro, pero quedaría junto a la IMU\\
+LSM6DSO & $\pm\SI{16}{g}$; $\pm\SI{2000}{\degree/s}$\nv & menor que el MPU6050\nv & Mismo rango útil\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la IMU.}\label{tab:sens-imu}
+\input{figuras/sens_imu}
+\end{table}
+
+\paragraph{Lectura.} Es un empate de tres: MPU6050 + ADXL375 (\num{0.40}), MPU6050 solo
+(\num{0.30}) e ICM-20948 (\num{0.29}); el ganador cambia con el peso del costo y de los extras.
+El ICM-20948 \emph{no} mejora el rango (también $\pm\SI{16}{g}$ y $\pm\SI{2000}{\degree/s}$),
+así que no resuelve el problema (1). Ninguna alternativa pasa la regla de decisión, porque el
+anexo no pide medir el choque. \textbf{Se mantiene el MPU6050}, con la dirección
+\texttt{0x69} (pin AD0 en alto) para dejar \texttt{0x68} al RTC, y se agrega el \textbf{ADXL375
+como opción} si el equipo quiere registrar el pulso de expulsión y el choque de aterrizaje
+(sirve para validar \Req{S4} y \Req{S5} y la carga de apertura del capítulo~\ref{cap:estructura}).
+Hay que muestrear a $\ge\SI{500}{Hz}$ y guardar en la microSD; la telemetría a 1\,Hz solo lleva
+el valor del MPU6050. Antes de calibrar conviene leer \texttt{WHO\_AM\_I}: los módulos baratos
+llevan a veces un chip equivalente.
+
+%=====================================================================
+\section{Magnetómetro}\label{sec:sens-mag}
+
+El anexo no exige magnetómetro; el equipo lo incluyó para estimar el rumbo del cuerpo. Su
+problema en este diseño es el \textbf{imán del sensor Hall} que gira con el rotor
+(capítulo~\ref{cap:electronica}): a una distancia $r$ de un imán pequeño, el campo sobre su eje es el de un
+dipolo,
+\begin{equation}
+  B_{\text{eje}}=\frac{\mu_0}{4\pi}\frac{2m}{r^3},\qquad m=\frac{B_r V}{\mu_0},
+  \label{eq:sens-dipolo}
+\end{equation}
+con $B_r\approx\SI{1.3}{T}$ (N42)\nv{} y $V$ el volumen del imán~\cite{sensores-jackson1999}; en el
+plano ecuatorial vale la mitad.
+
+\begin{table}[H]
+\centering\small
+\caption{Campo de un imán de neodimio Ø\,4$\times$\SI{1.5}{mm} y error de rumbo en el peor caso,
+con un campo terrestre horizontal de \SI{20}{\micro T}\nv{} (orden de magnitud del modelo
+WMM~\cite{sensores-wmm} para el centro de Argentina). El imán gira a \SI{20}{Hz}, por lo que el
+campo oscila en el magnetómetro.}\label{tab:sens-iman}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+\textbf{Distancia} [mm] & \textbf{$B_{\text{eje}}$} [\si{\micro T}] & \textbf{$B_{\text{ecuador}}$} [\si{\micro T}] & \textbf{Error de rumbo} [\si{\degree}]\\\midrule
+50 & 31,2 & 15,6 & $>45$\\
+100 & 3,9 & 1,95 & 11,2\\
+150 & 1,16 & 0,58 & 3,3\\
+200 & 0,49 & 0,24 & 1,4\\
+300 & 0,14 & 0,07 & 0,4\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con un imán de Ø\,6$\times$\SI{2}{mm} los errores a 100, 150 y \SI{200}{mm} serían de 36, 10 y
+\SI{4}{\degree}. Hay que alejar el magnetómetro del cubo al menos \SI{150}{mm} (el extremo
+inferior del cuerpo, donde está la electrónica), usar el imán más chico que active al Hall y
+calibrar el magnetómetro \emph{ya montado} (hierro duro y blando), porque los servos y los
+inductores de los conversores también lo perturban.
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del magnetómetro.}\label{tab:sens-mag}
+\input{figuras/sens_mag}
+\end{table}
+
+\paragraph{Lectura.} El QMC5883L~\cite{sensores-qmc5883l} ($\pm2$ o $\pm8$ gauss, hasta \SI{200}{Hz},
+\SIrange{75}{100}{\micro A}\nv) gana con \num{0.61}; el MMC5983MA queda segundo (\num{0.37}) por
+rango y resolución. \textbf{Se mantiene el QMC5883L}, que es opcional. Una trampa conocida: los módulos
+vendidos como «HMC5883L» suelen traer un QMC5883L, con otra dirección (\texttt{0x0D} contra
+\texttt{0x1E}) y otros registros; el escaneo I$^2$C lo revela.
+
+%=====================================================================
+\section{Tensión y corriente (\texorpdfstring{\Req{SN3}, \Req{SN8}, \Req{X6}}{SN3, SN8, X6})}\label{sec:sens-ina}
+
+La corriente de la batería con todo encendido es de $\approx\SI{1.3}{A}$ de promedio y, con los dos
+servos bloqueados a la vez, llega a unos \SI{3}{A} (capítulo~\ref{cap:sens}, sección
+\ref{sec:sens-energia}). Los módulos INA219 comerciales traen un shunt de \SI{0.1}{\ohm}, que a
+\SI{3}{A} caería \SI{0.3}{V} y podría reiniciar el elevador de 5\,V con la celda fría. El capítulo~\ref{cap:electronica}
+ya usa \SI{20}{m\ohm}: con él el INA219 mide hasta $\pm\SI{16}{A}$ con paso de \SI{0.5}{mA}
+(caída de \SI{60}{mV} a \SI{3}{A}); el INA226 daría $\pm\SI{4.1}{A}$ y \SI{125}{\micro A}, con
+un error de offset diez veces menor (\SI{10}{\micro V} contra $\approx\SI{100}{\micro V}$\nv).
+
+\begin{table}[H]
+\centering\small
+\caption{Monitores de tensión y corriente~\cite{electronica-ina219,sensores-ina226}.}\label{tab:sens-ina-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Sensor} & \textbf{Shunt y bus} & \textbf{Resolución} & \textbf{Observaciones}\\\midrule
+INA219 (equipo) & $\pm\SI{320}{mV}$, bus 0--\SI{26}{V} & 12 bits; \SI{0.5}{mA} con \SI{20}{m\ohm} & Ganancia seleccionable\\
+INA226 & $\pm\SI{81.92}{mV}$ (\SI{2.5}{\micro V} por LSB), bus hasta \SI{36}{V}\nv & 16 bits & Offset de \SI{10}{\micro V} y error de ganancia de \SI{0.1}{\percent} máx.\nv; pin de alerta\\
+ADC de la MCU + shunt & según el ADC & 12 bits, poco lineal & Sin chip extra, pero consume pines\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del monitor de energía.}\label{tab:sens-ina}
+\input{figuras/sens_ina}
+\end{table}
+
+\paragraph{Lectura.} El INA226 gana por un margen enorme (\num{0.99}), pero la ventaja es de
+resolución y offset que \Req{SN3} y \Req{SN8} no piden: ninguna medida del vuelo necesita
+mejor que \SI{1}{mA}. \textbf{Se mantiene el INA219 con el shunt de \SI{20}{m\ohm}}; el INA226
+es una sustitución directa (mismo bus, otros registros) si algún ensayo muestra una deriva que
+moleste. El INA219 en \texttt{0x40} no choca con nada del mapa de la tabla~\ref{tab:sens-i2c}.
+
+%=====================================================================
+\section{GPS (\texorpdfstring{\Req{SN4}}{SN4})}\label{sec:sens-gps}
+
+\begin{table}[H]
+\centering\small
+\caption{Receptores GNSS.}\label{tab:sens-gps-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Receptor} & \textbf{Sensibilidad y adquisición} & \textbf{Consumo} & \textbf{Observaciones}\\\midrule
+NEO-7M (equipo)~\cite{sensores-neo7} & seguimiento \SI{-162}{dBm}; arranque en frío \SI{29}{s}, readquisición \SI{1}{s} (resumen de u-blox) & $\approx\SI{35}{mA}$ (planilla) & Altitud máx.\ \SI{50000}{m} y \SI{500}{m/s}\nv; antena cerámica integrada\\
+NEO-M8N~\cite{sensores-neom8} & hasta 3 GNSS simultáneos; 72 canales; \SI{-167}{dBm}\nv & hasta \SI{67}{mA}\nv & Costo mayor; más satélites\\
+ATGM336H & GPS + BeiDou\nv & $\approx\SI{25}{mA}$\nv & Muy chico y barato; menos soporte\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del GPS.}\label{tab:sens-gps}
+\input{figuras/sens_gps}
+\end{table}
+
+\paragraph{Lectura.} El NEO-M8N gana (\num{0.88}), por la sensibilidad y los sistemas
+adicionales. Pero el NEO-7M cumple \Req{SN4} y \Req{X5}. \textbf{Se mantiene el NEO-7M.} Tres
+ajustes: (1)~configurar el \emph{modelo dinámico aerotransportado de menos de 4\,g}
+(\texttt{dynModel}~$=8$ en \texttt{UBX-CFG-NAV5}~\cite{sensores-ublox7}) en cada arranque, porque
+el modelo por defecto limita la dinámica; (2)~guardar la última posición válida en la FRAM;
+(3)~probar la adquisición en frío con las palas plegadas y el contenedor cerrado, ya que el
+tubo (sobre todo si fuera metálico, capítulo~\ref{cap:arq}) atenúa. Si en ese ensayo el NEO-7M
+no fija a tiempo, el NEO-M8N es una sustitución directa por la misma UART.
+
+%=====================================================================
+\section{Radio (\texorpdfstring{\Req{X1}--\Req{X4}, \Req{C5}}{X1-X4, C5})}\label{sec:sens-radio}
+
+\begin{table}[H]
+\centering\small
+\caption{Radios. Las bandas válidas son las de \Req{X1}: \SIrange{915}{928}{MHz} y
+\SIrange{2400}{2483.5}{MHz}.}\label{tab:sens-radio-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Radio} & \textbf{Potencia y sensibilidad} & \textbf{Integración} & \textbf{Observaciones}\\\midrule
+LR2021, Waveshare Core2021-HF (equipo)~\cite{sensores-lr2021} & sub-GHz hasta \SI{+22}{dBm}; 2,4\,GHz hasta \SI{+12}{dBm}; LoRa \SI{-141.5}{dBm} (SF12, \SI{125}{kHz}) & SPI + BUSY + NRESET + IRQ; RadioLib lo lista~\cite{sensores-radiolib} & Datasheet v1.1 (hay una v2.1 de abril de 2026 sin revisar); una fuente decía LoRa a 200\,kbit/s y la final dice 125\,kbit/s; no verifiqué cómo es el montaje de la placa\\
+RFM95W (SX1276)~\cite{sensores-sx1276} & hasta \SI{+20}{dBm} (PA\_BOOST, $\approx\SI{120}{mA}$)\nv; $\approx\SI{-137}{dBm}$ en SF12 y \SI{125}{kHz}\nv & Módulo soldable de paso \SI{2}{mm}\nv; bibliotecas maduras & Hay variantes de 868 y de 915\,MHz: comprar la de 915\\
+XBee-PRO 900HP~\cite{electronica-xbee900} & \SI{24}{dBm}; \SI{-101}{dBm} a \SI{200}{kbit/s} & Módulo listo, UART & Mucho más caro; es el supuesto del cap.~\ref{cap:electronica}\\
+ESP-NOW (2,4\,GHz) & hasta unos \SI{20}{dBm}\nv; sensibilidad de WiFi, decenas de dB peor que LoRa\nv & ya en la ESP32 & Menor alcance en el suelo; riesgo con \Req{X2} si se usa la dirección de difusión\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la radio.}\label{tab:sens-radio}
+\input{figuras/sens_radio}
+\end{table}
+
+\paragraph{Enlace con LoRa.} Con las mismas hipótesis del capítulo~\ref{cap:electronica}
+(distancia oblicua de \SI{2}{km}, antena del CanSat de \SI{1.6}{dBi}, Yagi de \SI{8}{dBi} en
+tierra, \SI{-5.5}{dB} de cables, polarización y cuerpo, \SI{-97.7}{dB} de espacio libre a
+\SI{915}{MHz}) y \SI{20}{dBm} de potencia (\SI{100}{mW}; el límite de ENACOM debe
+verificarse), la potencia recibida es de \SI{-73.6}{dBm}. Con las sensibilidades típicas del
+SX1276\nv{} a \SI{125}{kHz}~\cite{sensores-an1200} el margen es de \SI{49.4}{dB} con SF7,
+\SI{55.4}{dB} con SF9 y \SI{63.4}{dB} con SF12; en el nulo de la antena de dipolo
+(\SI{-20}{dBi}, el peor caso del capítulo~\ref{cap:electronica}) es de \SI{27.8}{dB} con SF7 y
+\SI{33.8}{dB} con SF9, contra \SI{20.8}{dB} del XBee. Sobre el suelo, con el modelo de dos rayos
+del capítulo~\ref{cap:electronica} (CanSat a \SI{0.3}{m}) y \SI{10}{dB} de reserva, el alcance es de
+\SI{1.8}{km} con SF7, \SI{2.5}{km} con SF9, \SI{3.0}{km} con SF10 y \SI{4.0}{km} con SF12
+(contra \SIrange{0.60}{0.66}{km} del XBee a \SI{10}{dB}).
+
+\begin{table}[H]
+\centering\small
+\caption{Tiempo en el aire de un paquete LoRa (cabecera explícita, CRC, codificación 4/5,
+preámbulo de 8 símbolos), con la fórmula de Semtech~\cite{sensores-an1200}. 56~B: trama binaria
+con los campos de \Req{X5}, \Req{X6} y \Req{G3}; 140~B: la misma trama en texto CSV.}\label{tab:sens-lora}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+\textbf{SF} & \textbf{Ancho} [kHz] & \textbf{56~B} [ms] & \textbf{140~B} [ms] & \textbf{Sensibilidad} [dBm]\\\midrule
+7 & 125 & 108 & 231 & $-123$\\
+8 & 125 & 195 & 410 & $-126$\\
+9 & 125 & 349 & 738 & $-129$\\
+10 & 125 & 657 & 1354 & $-132$\\
+8 & 250 & 98 & 205 & $-123$\\
+9 & 250 & 175 & 369 & $-126$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Lectura.} El RFM95W gana con \num{0.89} y \num{0.82} ($P^{\pm1}$); el LR2021 queda
+último (\num{0.00}) porque la matriz castiga su integración (módulo de montaje superficial\nv,
+menos herencia y menos software probado), no sus prestaciones. Con cualquiera de los dos el
+margen sobra, así que \textbf{la radio no limita la misión: limita el plazo}. Propuesta:
+(1)~hacer funcionar el LR2021 en banco con RadioLib \emph{ahora}, con paquetes de
+\SI{56}{B}; (2)~si antes del hito de integración no hay comunicación estable, pasar al RFM95W,
+que se pide ya porque tarda en llegar; (3)~usar una trama \textbf{binaria} de unos \SI{56}{B}
+(tiempo 4~B, contador 2, estado 1, altitud 4, presión 4, temperatura 2, aceleración y giro
+12, GPS 11, tensión y corriente 4, rpm 2, trabas 1, panel 1, dirección y CRC 4) con SF8 y
+\SI{125}{kHz} (\SI{195}{ms}) o SF9 (\SI{349}{ms}): deja más de \SI{0.5}{s} por segundo para la
+ventana de recepción de telecomandos (\Req{X6}, \Req{G15}). El texto CSV de \SI{140}{B} con SF9
+(\SI{738}{ms}) ocuparía casi todo el segundo y no deja ventana. El formato es libre desde el
+anexo~A v2; la estación terrena genera el CSV (\Req{G2}). Para \Req{X2}, cada paquete lleva la
+dirección del destinatario.
+
+%=====================================================================
+\section{Video (\texorpdfstring{\Req{C6}, \Req{C7}, \Req{SN6}, \Req{SN7}}{C6, C7, SN6, SN7})}\label{sec:sens-cam}
+
+\begin{table}[H]
+\centering\small
+\caption{Cámaras.}\label{tab:sens-cam-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Opción} & \textbf{Imagen} & \textbf{Consumo} & \textbf{Observaciones}\\\midrule
+ESP32-CAM OV2640 (equipo)~\cite{sensores-ov2640} & SVGA a 30\,fps y UXGA a 15\,fps (capacidad del sensor)\nv & \SI{180}{mA} a \SI{5}{V} con el flash apagado\nv; \SI{300}{mA} en la planilla & microSD de hasta \SI{4}{GB}\nv; existen grabadores AVI/MJPEG de código abierto, sin ensayo de 2\,h\\
+ESP32-S3 con cámara (tipo XIAO Sense) & OV2640 u OV5640; PSRAM de 8\,MB\nv & mayor & Más memoria para almacenar fotogramas; otra placa\\
+Raspberry Pi Zero 2 W + cámara & 1080p & el mayor & Arranque de Linux de decenas de segundos\nv\\
+Microcámara de acción & 1080p o más & medio & \textbf{Batería de polímero de litio interna}: la excluye \Req{E1}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de las cámaras.}\label{tab:sens-cam}
+\input{figuras/sens_cam}
+\end{table}
+
+\paragraph{Lectura.} Es un empate (\num{0.41} contra \num{0.59}); el orden cambia con el peso del
+consumo y del costo. La microcámara de acción tiene la mejor imagen y el registro más
+confiable, pero queda \textbf{excluida} por \Req{E1}: su batería es un polímero de litio, y
+quitarla para alimentarla desde la celda 18650 exige modificar la cámara. Los
+puntos que importan para las ESP32-CAM son otros:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Consumo.} Las dos cámaras son el \SI{73}{\percent} de la potencia del CanSat.
+        La corriente real de grabación con microSD escribiendo, sin WiFi, hay que medirla: la
+        planilla usa \SI{300}{mA} y la hoja de un proveedor \SI{180}{mA}\nv{}, y de eso depende
+        \Req{E7} (sección~\ref{sec:sens-bat}).
+  \item \textbf{Integridad del archivo.} Un AVI cortado por una caída de tensión pierde el
+        índice y no se reproduce. Se pide grabar en \textbf{segmentos de unos 10 s, cerrándolos
+        cada vez}, de modo que un corte en el choque del aterrizaje o en el arranque del
+        servo (\SI{500}{mA} de pico) pierda a lo sumo un segmento.
+  \item \textbf{Cumple \Req{SN7}:} color, SVGA ($800\times600$) o VGA ($640\times480$).
+  \item \textbf{Capacidad.} A SVGA con JPEG de \SIrange{30}{60}{kB} por cuadro y \SI{20}{fps}
+        (estimación), la grabación consume \SIrange{0.6}{1.2}{MB/s} (\SIrange{36}{72}{MB} por
+        minuto): el descenso de pocos minutos cabe en cualquier tarjeta, pero \emph{no} dos
+        horas. Por eso las cámaras no deben grabar desde la rampa, además de por la energía.
+  \item \textbf{Plan B:} la placa ESP32-S3 con cámara que la planilla nombra («XIAO»), de
+        otra familia pero con el mismo ecosistema, si el ensayo de 2\,h con corte de energía
+        falla.
+\end{itemize}
+
+%=====================================================================
+\section{Computadora de vuelo y presupuesto de pines}\label{sec:sens-mcu}
+
+El diseño necesita las líneas de la tabla~\ref{tab:sens-pines}.
+
+\begin{table}[H]
+\centering\small
+\caption{Líneas que necesita la computadora de vuelo.}\label{tab:sens-pines}
+\begin{tabularx}{\textwidth}{@{}Yr@{}}
+\toprule
+\textbf{Función} & \textbf{Líneas}\\\midrule
+I$^2$C compartido (SDA, SCL): BMP280, AHT20, MPU6050, QMC5883L, INA219, FRAM, RTC (y, opcionales, BMP388 y ADXL375) & 2\\
+UART del GPS (RX, TX; el TX configura el modelo dinámico) & 2\\
+SPI compartido (SCK, MOSI, MISO) de la radio y la microSD & 3\\
+Radio: NSS, BUSY, NRESET, IRQ & 4\\
+microSD: CS & 1\\
+Servos (2 señales PWM) & 2\\
+Habilitación de las cámaras (MOSFET) & 1\\
+Sensor Hall de rpm (con interrupción) & 1\\
+Estado de las trabas (2 microinterruptores) & 2\\
+Panel solar (entrada analógica) & 1\\\midrule
+\textbf{Total} & \textbf{19}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La ESP32-C3 saca de su chip 22 o 16 pines según la variante, y tiene un solo I$^2$C, tres SPI y
+dos UART~\cite{sensores-esp32c3}. La Super Mini expone 13 (GPIO0 a 10, 20 y 21)\nv, de los
+cuales GPIO2, 8 y 9 son pines de arranque y GPIO20 y 21 son la UART de consola; las entradas
+analógicas útiles son GPIO0 a 4. Faltan \textbf{6 líneas}. Un expansor I$^2$C (MCP23017) podría
+llevar la habilitación de las cámaras y los dos microinterruptores (3 líneas), pero aun así
+quedarían 16 líneas nativas (radio, SPI, servos, Hall, panel, GPS) para 13 pines. Habría que
+sacrificar la microSD de respaldo o el panel.
+
+\begin{table}[H]
+\centering\small
+\caption{Computadoras de vuelo.}\label{tab:sens-mcu-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Placa} & \textbf{Núcleo} & \textbf{Periféricos} & \textbf{Observaciones}\\\midrule
+ESP32-C3 Super Mini (equipo) & RISC-V de \SI{160}{MHz}, \SI{400}{kB} de SRAM & 1 I$^2$C, 3 SPI, 2 UART; 13 pines expuestos\nv & Radio WiFi/BLE sin uso; consumo de la planilla \SI{85}{mA}\\
+RP2040 (Raspberry Pi Pico)~\cite{sensores-rp2040} & 2 Cortex-M0+ de \SI{133}{MHz}, \SI{264}{kB} & 2 I$^2$C, 2 SPI, 2 UART, 16 canales PWM; 26 GPIO en la Pico\nv & Sin radio; determinista; flash externa (la persistencia va a la FRAM)\\
+ESP32-S3 mini & 2 Xtensa de \SI{240}{MHz}\nv & más GPIO\nv & Más pines, mismo ecosistema\\
+STM32F411 (Black Pill) & Cortex-M4F de \SI{100}{MHz}\nv & 3 SPI, 3 I$^2$C, 3 UART\nv & El más robusto; costo y ecosistema distintos\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la computadora de vuelo.}\label{tab:sens-mcu}
+\input{figuras/sens_mcu}
+\end{table}
+
+\paragraph{Lectura.} La ESP32-C3 casi no gana (\num{0.00}; $P^{\pm1}=\num{0.01}$); el RP2040
+gana con \num{0.74} y el STM32 con \num{0.26}. Aquí sí se cumple la regla: otra placa gana con
+más de \num{0.7} y el cambio actúa sobre un riesgo concreto (no se puede cablear el diseño).
+\textbf{Recomendación: la Raspberry Pi Pico (RP2040)} o, si se quiere conservar el ecosistema
+ESP32, una ESP32-S3 con 20 o más pines. Ambas se programan con el mismo entorno de Arduino y
+RadioLib las soporta. El LR2021, el GPS, los sensores I$^2$C y los servos se conectan igual;
+cambian los pines y desaparece el consumo de la radio WiFi. La alternativa de usar dos
+microcontroladores (la ESP32-C3 para radio y GPS, y otra placa para los mecanismos)
+funcionaría, pero duplica el firmware y los puntos de falla.
+
+%=====================================================================
+\section{Mecanismos: servo, rpm y estado de las trabas}\label{sec:sens-mec}
+
+\subsection{Actuador de liberación}
+\begin{table}[H]
+\centering\small
+\caption{Actuadores de la traba y del pasador.}\label{tab:sens-act-esp}
+\begin{tabularx}{\textwidth}{@{}p{3.0cm}YYY@{}}
+\toprule
+\textbf{Actuador} & \textbf{Par y velocidad} & \textbf{Masa y engranajes} & \textbf{Observaciones}\\\midrule
+SG90 (equipo)~\cite{arq-sg90} & 1,8\,kgf$\cdot$cm ($\approx\SI{176}{mN.m}$) a \SI{4.8}{V}; \SI{0.1}{s} por \ang{60} & \SI{9}{g}, plástico & Algunas hojas dan 1,2\,kgf$\cdot$cm\nv; la corriente de bloqueo no está en la hoja\\
+MG90S & 1,8\,kgf$\cdot$cm a \SI{4.8}{V}\nv & $\approx\SI{13}{g}$\nv, metal & Misma medida y conector\\
+Solenoide de traba & según el modelo & mayor & Suele pedir 12\,V y \SI{1}{A}; bobina que se calienta (\Req{M2})\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del actuador.}\label{tab:sens-act}
+\input{figuras/sens_act}
+\end{table}
+
+\paragraph{Lectura.} El capítulo~\ref{cap:arq} calculó un par de \SIrange{10}{21}{mN.m} en
+régimen para el pasador (margen de 8 a 17 sobre los \SI{176}{mN.m} del SG90) y de
+\SIrange{55}{110}{mN.m} durante el choque de apertura. El par \emph{no} es el problema. Lo es
+el \textbf{choque sobre el eje} (\Req{M3}, \Req{S5}): un servo con los engranajes de plástico
+puede perder dientes si el eje es forzado desde la carga. El MG90S, con engranajes de metal
+y el mismo par nominal\nv, lo resuelve. Gana con \num{0.91} ($P^{\pm1}=\num{0.80}$) y pasa la
+regla de decisión. Cuesta unos \SI{4}{g} más por servo (\SI{9}{g} los dos). Debe energizarse
+solo después de fijar su PWM, como pide el capítulo~\ref{cap:electronica}.
+
+\subsection{Sensor de rpm y estado de las trabas}
+El rotor se confirma por las rpm (el estado \texttt{PAYLOAD\_RELEASE} exige más de
+\SI{600}{rpm}). El capítulo~\ref{cap:electronica} propone un sensor Hall fijo y dos imanes
+opuestos en el cubo, para mantener el balance. A \SI{1229}{rpm} da \SI{20.5}{Hz}: cualquier
+Hall alcanza.
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión del sensor de rpm.}\label{tab:sens-hall}
+\input{figuras/sens_hall}
+\end{table}
+
+\paragraph{Lectura.} Un \emph{latch} digital como el DRV5013 (2,5 a \SI{38}{V}, umbrales de
+operación de 3,4 a \SI{18}{mT} según la variante, \SI{30}{kHz}\nv~\cite{sensores-drv5013}) conmuta
+con un polo y se suelta con el contrario, de modo que sirve con los dos imanes opuestos del
+capítulo~\ref{cap:electronica} y \textbf{no} funciona con un solo imán (quedaría trabado tras el primer
+paso). Un \emph{interruptor omnipolar} (familia DRV5032/DRV5033\nv) responde a cualquier polo,
+tolera un error de orientación del imán y cuenta dos pulsos por vuelta con los dos imanes.
+Gana con \num{0.95}. El A3144 es unipolar y pide 4,5\,V: puede alimentarse del riel de 5\,V
+con un pull-up a 3,3\,V, pero ese riel se apaga en la rampa si las cámaras se encienden al
+despegar. Para el estado de las trabas bastan dos microinterruptores (anillo liberado, pasador
+retirado) con antirrebote. Y como control cruzado de las rpm sirve el pico a $4\times$ en la IMU
+(sección~\ref{sec:sens-imu}).
+
+%=====================================================================
+\section{Funciones que faltan en la planilla}\label{sec:sens-faltan}
+
+\subsection{Detección de la separación (\texorpdfstring{\Req{X3}}{X3})}
+El anexo pide que la telemetría envíe un comando automáticamente cuando el CanSat se separa del
+cohete. No hay sensor dedicado, y el diseño no conoce la interfaz del cohete. Hay dos señales
+que el CanSat ya tiene: la \textbf{luz} que recibe el panel de \Req{E3} (dentro de la sección
+del cohete está a oscuras; al salir recibe el cielo) y la \textbf{aceleración} (un pulso de la
+carga de expulsión seguido de caída libre).
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la detección de separación.}\label{tab:sens-sep}
+\input{figuras/sens_sep}
+\end{table}
+
+\paragraph{Lectura.} La combinación de luz y aceleración gana por diseño (\num{1.00}; $P^{\pm1}=\num{0.94}$)
+porque no necesita hardware nuevo, no depende del cohete y cada una cubre el fallo de la otra: la luz
+no se afecta por el choque, y la IMU no depende de que la sección del cohete esté a oscuras (un cohete con
+ventanas, o una prueba a la luz del día). Se propone declarar la separación con \textbf{la primera}
+de las dos señales (un falso positivo solo adelanta el reloj de misión; un falso negativo lo
+pierde), registrar cuál fue, y enviar el comando de \Req{X3} una vez. Los umbrales (por ejemplo,
+más de \SI{0.5}{V} en el panel durante \SI{0.2}{s}; o un pulso de más de \SI{3}{g} seguido de
+menos de \SI{0.3}{g} durante \SI{0.1}{s}) se calibran en el ensayo de integración. Pregunta
+a la organización: ¿qué evento define «separación» (salida del tubo, apertura del drogue)?
+
+\subsection{Memoria no volátil y tiempo de misión (\texorpdfstring{\Req{F1}, \Req{F2}, \Req{F5}}{F1, F2, F5})}
+La planilla no lleva memoria persistente ni reloj. El anexo exige que el contador de paquetes, el
+tiempo de misión y los estados de configuración (cero de altitud, estado del software)
+sobrevivan a un reinicio o a una pérdida momentánea de energía.
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la memoria y el reloj.}\label{tab:sens-mem}
+\input{figuras/sens_mem}
+\end{table}
+
+\paragraph{Lectura.} La FRAM I$^2$C (la MB85RC256V del capítulo~\ref{cap:electronica}:
+\SI{32}{kB}, $10^{12}$ escrituras, \SI{1}{MHz}~\cite{electronica-mb85rc256v}) más un RTC
+DS3231 con pila~\cite{sensores-ds3231} gana con \num{0.78}. La FRAM resiste las escrituras a
+1\,Hz (7\,200 por vuelo contra $10^{12}$) y es segura ante cortes (la escritura es inmediata, sin
+borrado de sector); el RTC mantiene la hora cuando la MCU se reinicia o se apaga. La alternativa
+sin RTC (hora UTC del GPS) falla justo cuando importa: tras un corte de energía el GPS tarda
+decenas de segundos en fijar. Dos detalles: el DS3231 usa la dirección \texttt{0x68}, por eso el
+MPU6050 pasa a \texttt{0x69}; y su pila de respaldo no puede ir en un portapila de resorte
+(\Req{M4}): hay que usar una pila con lengüetas soldadas, igual que la de la baliza. Masa:
+unos \SI{6}{g} los dos módulos.
+
+%=====================================================================
+\section{Fuente de energía y \texorpdfstring{\Req{E7}}{E7}}\label{sec:sens-bat}
+
+La celda del equipo es una 18650 de \SI{3400}{mAh} (\SI{48}{g}). Si es la Samsung INR18650-35E,
+la hoja da \SI{3350}{mAh} \emph{mínimos} a 0,2\,C (\SI{3500}{mAh} es el valor comercial), \SI{8}{A}
+continuos, \SI{3.6}{V} nominales, corte en \SI{2.65}{V} y \SI{50}{g} máximo~\cite{sensores-samsung35e}.
+Es la fuente permitida por \Req{E1} y \Req{E2}. El capítulo~\ref{cap:sens} (sección
+\ref{sec:sens-energia}) mostró que el consumo lo domina el video.
+
+\begin{table}[H]
+\centering\small
+\caption{Autonomía para varias políticas de energía. $P$: probabilidad de que
+la autonomía sea menor a \SI{2}{h} en un Monte Carlo con los rangos del capítulo~\ref{cap:sens}
+(corrientes y rendimientos). «Medida» es el supuesto de \SI{180}{mA} por cámara y \SI{45}{mA} medios de radio
+(1\,Hz con \SI{0.35}{s} de transmisión).}\label{tab:sens-energia2}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Política} & \textbf{Nominal} [h] & \textbf{Media} [h] & \textbf{$P(<2\,\text{h})$}\\\midrule
+1 celda, todo encendido (planilla: \SI{300}{mA} por cámara) & 2,29 & 2,01 & 53\,\%\\
+1 celda, todo encendido, cámaras de 150--\SI{220}{mA} & --- & 2,44 & 8\,\%\\
+1 celda, todo encendido, «medida» & 3,51 & --- & ---\\
+1 celda, cámaras al despegue & 8,6 (rampa) & --- & 0\,\%\\
+2 celdas en paralelo, todo encendido (planilla) & 4,58 & 4,02 & 0\,\%\\
+2 celdas en paralelo, todo encendido, «medida» & 7,03 & --- & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisión de la fuente de energía.}\label{tab:sens-bat}
+\input{figuras/sens_bat}
+\end{table}
+
+\paragraph{Lectura.} Es un empate entre una celda con todo encendido (\num{0.49}) y dos celdas
+(\num{0.45}); la política con cámaras al despegue (\num{0.06}) pierde por el riesgo que le asigné de
+no grabar si falla la detección del despegue. El empate se rompe por la masa y por \Req{E7}:
+\begin{itemize}[leftmargin=*]
+  \item Una celda con todo encendido y los consumos de la planilla \textbf{no cumple}
+        \Req{E7} en la mitad de los casos. Solo se justifica si la medición de las cámaras
+        confirma unos \SI{180}{mA} o menos (autonomía de \SI{3.5}{h}).
+  \item La segunda celda da margen de sobra pero pesa \SI{48}{g}. En la Arq.~1 el lastre es de
+        \SI{33}{g}; con los cambios de este capítulo (\SI{+16}{g}) quedan \SI{17}{g}; con la segunda
+        celda faltarían \SI{31}{g} y se pasaría de los \SI{510}{g} de \Req{S1}. Se compensaría
+        si el panel solar pesara de verdad unos \SI{6}{g} y no los \SI{37}{g} de la planilla
+        (a pesar primero) o con otro ahorro estructural. En la Arq.~2 el lastre extra viaja en el
+        contenedor y se suelta, pero la masa que vuela aumenta.
+  \item \textbf{La política con las cámaras encendidas al despegar} usa la
+        misma celda y consume \SI{1.28}{W} en la rampa (\SI{8.6}{h}). Su riesgo se acota con
+        \emph{tres disparadores independientes}: el despegue (la transición \texttt{LAUNCH\_PAD} a
+        \texttt{ASCENT}, $h>\SI{10}{m}$ y $a_z>2\,g$), la caída de presión y la separación de
+        \Req{X3}, más un telecomando de la estación. Las cámaras arrancan en unos segundos y la
+        subida dura decenas de segundos.
+\end{itemize}
+\textbf{Decisión propuesta:} medir primero la corriente real de las cámaras. Si es
+$\le\SI{200}{mA}$, dejar todo encendido con una celda (cumple y es lo más simple). Si es
+mayor, encender las cámaras con los tres disparadores. Reservar la segunda celda para el caso de
+que se pese el panel y el presupuesto de masa lo admita. Pregunta a la organización: ¿\Req{E7} exige que las cámaras
+estén \emph{grabando} durante las dos horas o solo que el CanSat funcione?
+
+Dos recordatorios de \Req{M4}: el portapila de la 18650 y el de la pila de la baliza no pueden
+tener contactos de resorte; van con lengüetas soldadas o con un soporte rígido.
+
+%=====================================================================
+\section{Síntesis}\label{sec:sens-sintesis}
+
+\begin{table}[H]
+\centering\small
+\caption{Decisiones sobre la electrónica. Tipo: \textbf{N}ecesario (riesgo o requisito), \textbf{R}ecomendado,
+\textbf{O}pcional, \textbf{M}antener.}\label{tab:sens-resumen}
+\begin{tabularx}{\textwidth}{@{}p{2.4cm}p{2.5cm}Ycr@{}}
+\toprule
+\textbf{Función} & \textbf{Equipo} & \textbf{Propuesta y motivo} & \textbf{Tipo} & \textbf{$\Delta$masa} [g]\\\midrule
+Computadora & ESP32-C3 Super Mini & RP2040 (Pico): 19 líneas contra 13 pines & N & $-1$\\
+Rpm y trabas & --- & Hall omnipolar, dos imanes, 2 microinterruptores & N & $+2$\\
+Memoria y reloj & --- & FRAM MB85RC256V y RTC DS3231 con pila soldada (\Req{F1}, \Req{F2}, \Req{F5}) & N & $+6$\\
+Separación (\Req{X3}) & --- & Luz del panel y pulso de la IMU & N & $0$\\
+Servo de traba & 2 SG90 & 2 MG90S (\Req{M3}) & R & $+9$\\
+Energía & 1 celda 18650 & Medir cámaras; política según la tabla~\ref{tab:sens-energia2} & R & $0$ o $+48$\\
+Radio & LR2021 & Probar en banco; RFM95W como plan B; trama binaria de \SI{56}{B} & R & $0$\\
+Barómetro & BMP280 & Mantener; agregar un BMP388 como segundo & O & $+1$\\
+IMU & MPU6050 & Mantener en \texttt{0x69}; ADXL375 opcional (choque) & O & $+1.5$\\
+Monitor de energía & INA219 & Mantener; shunt de \SI{20}{m\ohm} & M & $0$\\
+GPS & NEO-7M & Mantener; modelo aerotransportado & M & $0$\\
+Cámaras & 2 ESP32-CAM & Mantener; grabación en segmentos; plan B S3 & M & $0$\\
+Magnetómetro & QMC5883L & Mantener (opcional); a $\ge\SI{150}{mm}$ del imán & M & $0$\\
+Temperatura & AHT20 & Mantener & M & $0$\\
+Baliza y panel & buzzer, panel & Pila con lengüetas (\Req{M4}); pesar el panel & M & $0$\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Los cambios \textbf{N} y \textbf{R} suman \SI{+16}{g} (sin la segunda celda), que caben en los
+\SI{33}{g} de lastre de la Arq.~1 (tabla~\ref{tab:masa}); cada módulo nuevo es de bajo costo
+(órdenes de pocos miles de pesos, estimados). La ESP32-C3 reemplazada no se pierde: sirve de
+banco de pruebas o de relé de datos.
+
+\begin{table}[H]
+\centering\small
+\caption{Mapa de direcciones I$^2$C con los cambios propuestos. No hay choques.}\label{tab:sens-i2c}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Dirección} & \textbf{Dispositivo} & \textbf{Dirección} & \textbf{Dispositivo}\\\midrule
+\texttt{0x0D} & QMC5883L & \texttt{0x50} & FRAM MB85RC256V\\
+\texttt{0x38} & AHT20 & \texttt{0x68} & DS3231 (RTC)\\
+\texttt{0x40} & INA219 & \texttt{0x69} & MPU6050 (AD0 alto)\\
+\texttt{0x53} & ADXL375 (opcional) & \texttt{0x76} & BMP280\\
+\texttt{0x77} & BMP388 (opcional) & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pendientes de la planilla del equipo.}
+\begin{itemize}[leftmargin=*]
+  \item El panel solar figura con \SI{37}{g} y un precio de \num{29.643}: si es 29\,643 pesos
+        (separador de miles), el total pasa de unos \SI{215124}{ARS} a unos \SI{244737}{ARS}
+        (\Req{C9} se cumple igual, con menos de la cuarta parte del límite de \$\,1\,000\,000). Hay que
+        pesar el panel: afecta al presupuesto de masa (sección~\ref{sec:sens-masa} del capítulo
+        \ref{cap:sens}).
+  \item Con \SI{177}{g} de electrónica la planilla da \SI{35.4}{\percent} de los \SI{500}{g} y un
+        margen de \SI{323}{g}; el resumen que la acompañaba dice \SI{28.4}{\percent} y \SI{358}{g}.
+  \item La celda: \SI{3400}{mAh} contra los \SI{3350}{mAh} mínimos de la Samsung 35E.
+  \item Se nombra una placa «XIAO» donde la lista pone ESP32-CAM; hay que fijar cuál es.
+  \item Los \SI{105}{mA} de la radio son la corriente de transmisión continua; con 1\,Hz y
+        \SI{0.35}{s} de transmisión el promedio es de unos \SI{45}{mA}.
+\end{itemize}
+
+\paragraph{Ensayos que cierran las dudas.}
+\begin{enumerate}[leftmargin=*]
+  \item Corriente de cada ESP32-CAM grabando 2\,h con microSD y corte de energía forzado.
+  \item LR2021 en banco con RadioLib (paquetes de \SI{56}{B}) y alcance a \SI{2}{km} con las
+        palas plegadas; comparación con el RFM95W.
+  \item Ruido en banco del BMP280 (y del BMP388) con el filtro interno, y reajuste del filtro de
+        Kalman.
+  \item Servo MG90S bajo choque (\SI{30}{G}) con carga en el eje.
+  \item Calibración del magnetómetro montado, con el rotor girando.
+  \item Escaneo I$^2$C, prueba de adquisición en frío del GPS con el contenedor cerrado y
+        calibración de los umbrales de separación (luz e IMU).
+  \item Peso del panel solar y de cada módulo antes de cerrar el presupuesto de masa.
+\end{enumerate}
