@@ -34,14 +34,17 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(AQUI, 'data')
 
 # ---------------------------------------------------------------- datos base
-RHO, NU, G = 1.225, 1.5e-5, 9.81
-M = 0.500
+import v2_config as cfg
+RHO, NU, G = cfg.RHO, cfg.NU, cfg.G
+M1, W1 = cfg.M1, cfg.M1 * cfg.G          # etapa 1 (con drogue)
+M = cfg.M2                               # masa en la etapa 2 (v2: sin el drogue soltado)
 W = M * G
-R, E = 0.200, 0.044
+R, E = cfg.R, cfg.E
 A_DISC = np.pi * R**2
-K_DROGUE = 0.5 * RHO * 0.8 * np.pi * 0.25**2 / 4      # N/(m/s)^2
-K_CUERPO = 0.5 * RHO * 0.8 * np.pi * 0.095**2 / 4
-V_ETAPA1 = 13.4
+K_DROGUE = 0.5 * RHO * cfg.CD_DROGUE * np.pi * cfg.D_DROGUE**2 / 4      # N/(m/s)^2
+K_CUERPO = 0.5 * RHO * cfg.CD_CUERPO * np.pi * cfg.D_ENV**2 / 4
+DROGUE_ATADO = cfg.DROGUE_ATADO
+V_ETAPA1 = float(np.sqrt(W1 / (K_DROGUE + K_CUERPO)))
 
 # ---------------------------------------------------------------- polares
 RE_LIST = [20e3, 35e3, 50e3, 75e3, 100e3]
@@ -325,8 +328,10 @@ def omega_estable(rot, V, Om_max=500.0):
     return (max(est) if est else np.nan), r
 
 
-def equilibrio(rot, drogue=True, Vlo=2.5, Vhi=16.0):
+def equilibrio(rot, drogue=None, Vlo=2.5, Vhi=16.0):
     """V y Omega de equilibrio: Q=0 (rama estable más rápida) y T + D_drogue + D_cuerpo = W."""
+    if drogue is None:
+        drogue = DROGUE_ATADO
     k = K_CUERPO + (K_DROGUE if drogue else 0.0)
     cache = {}
 
