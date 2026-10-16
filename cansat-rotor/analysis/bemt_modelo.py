@@ -44,6 +44,7 @@ A_DISC = np.pi * R**2
 K_DROGUE = 0.5 * RHO * cfg.CD_DROGUE * np.pi * cfg.D_DROGUE**2 / 4      # N/(m/s)^2
 K_CUERPO = 0.5 * RHO * cfg.CD_CUERPO * np.pi * cfg.D_ENV**2 / 4
 DROGUE_ATADO = cfg.DROGUE_ATADO
+V2_REF = 6.36 if cfg.CFG != 'v1' else 6.94      # V de régimen de la etapa 2 (BEMT) de referencia
 V_ETAPA1 = float(np.sqrt(W1 / (K_DROGUE + K_CUERPO)))
 
 # ---------------------------------------------------------------- polares

@@ -3,8 +3,11 @@
 
 Con el paso de diseño $\theta=\ang{-3}$ el rotor arranca solo, sin trampas, con un margen de
 unos \ang{3} de paso respecto del límite de arranque. Con la apertura de las palas incluida,
-llega al \SI{90}{\percent} de sus rpm finales en \SI{2.4}{s}, tras caer \SI{26}{m}. El
-arranque no es un riesgo de vuelo con este paso, pero sí consume altura. Este capítulo
+llega al \SI{90}{\percent} de sus rpm finales en \SI{1.6}{s}, tras caer \SI{22}{m}
+(configuración v2: rotor de $R=\SI{0.25}{m}$, sin drogue, $m_2=\SI{0.49}{kg}$). El
+arranque no es un riesgo de vuelo con este paso, pero sí consume altura. Una falla de
+arranque deja al CanSat cayendo a unos \SI{14}{m/s} (rotor parado, que frena como un
+disco), por encima del límite de C4. Este capítulo
 explica la física del arranque desde $\Omega=0$, delimita la región de parámetros en la que el
 rotor arranca solo, simula el transitorio con la apertura de las palas y cuantifica once
 métodos para acelerar o asegurar el arranque. Todos los números salen del modelo BEMT del
@@ -16,23 +19,24 @@ de arranque se hizo todavía.
 \begin{itemize}
   \item Con $\Omega=0$ la pala ve el flujo a $\alpha=\ang{90}+\theta$, en pérdida profunda. El
         par de arranque nace de inclinar la fuerza normal ($C_D\approx1{,}17$) hacia adelante:
-        $Q_0=\SI{17.8}{mN.m}$ a \SI{13.4}{m/s} con \ang{-3}, unas 24 veces el rozamiento de
+        $Q_0=\SI{30}{mN.m}$ a \SI{13.4}{m/s} con \ang{-3}, unas 40 veces el rozamiento de
         los rodamientos (\SI{0.73}{mN.m}).
   \item Límite de arranque: con rozamiento nominal el rotor arranca solo si
-        $\theta_{0,75}\lesssim\ang{-0.1}$ a \SI{13.4}{m/s} y $\lesssim\ang{-0.4}$ a
-        \SI{6.94}{m/s}. Con $\theta\ge\ang{0}$ queda trabado: con \ang{+1} hay un equilibrio
-        estable lento (girando hacia atrás a $\approx\SI{2}{rad/s}$) y la caja cae a
-        \SI{10.7}{m/s}.
+        $\theta_{0,75}\lesssim\ang{-0.1}$ a \SI{13.4}{m/s} y $\lesssim\ang{-0.3}$ a
+        \SI{6.36}{m/s}. Con $\theta\ge\ang{0}$ queda trabado: con \ang{+1} hay un equilibrio
+        estable lento (girando hacia atrás a $\approx\SI{3}{rad/s}$) y la caja cae a
+        \SI{14.1}{m/s}.
   \item Transitorio base ($\theta=\ang{-3}$, apertura desde \ang{-89}, rozamiento nominal):
-        apertura en \SI{0.13}{s}, $t_{90}=\SI{2.39}{s}$, $z_{90}=\SI{26.5}{m}$. La apertura
-        cuesta solo \SI{0.1}{s}.
+        apertura en \SI{0.18}{s}, $t_{90}=\SI{1.55}{s}$, $z_{90}=\SI{21.7}{m}$. La apertura
+        cuesta solo \SI{0.06}{s}. El sobrepaso de $\Omega$ llega a \SI{162.6}{rad/s}
+        (\num{1553}~rpm), un \SI{26}{\percent} sobre el régimen.
   \item Los métodos más rentables: acoplamiento pasivo paso--batimiento $\delta_3=\ang{30}$
-        ($t_{90}=\SI{1.10}{s}$, $z_{90}=\SI{12.9}{m}$, sin masa añadida), paso colectivo variable
-        pasivo de \ang{-8} a \ang{-3} ($\SI{1.44}{s}$, \SI{16.4}{m}) y paso fijo \ang{-4}
-        ($\SI{1.97}{s}$, \SI{22.0}{m}, costo cero). El resorte de pre-rotación funciona
-        ($\Omega_0=\SI{40}{rad/s}$: \SI{1.0}{s}, \SI{0.4}{J}) pero hace girar el cuerpo
-        en sentido contrario a $\approx\SI{50}{rad/s}$. Motor, Savonius, liberación más
-        temprana y menos rozamiento aportan menos de \SI{0.3}{s}.
+        ($t_{90}=\SI{0.76}{s}$, $z_{90}=\SI{10.8}{m}$, sin masa añadida), paso colectivo variable
+        pasivo de \ang{-8} a \ang{-3} ($\SI{0.95}{s}$, \SI{13.4}{m}) y paso fijo \ang{-4}
+        ($\SI{1.29}{s}$, \SI{18.0}{m}, costo cero). El resorte de pre-rotación funciona
+        ($\Omega_0=\SI{40}{rad/s}$: \SI{0.61}{s}, \SI{0.7}{J}) pero hace girar el cuerpo
+        en sentido contrario a $\approx\SI{76}{rad/s}$. Motor, Savonius, liberación más
+        temprana y menos rozamiento aportan menos de \SI{0.2}{s}.
   \item \textbf{Recomendación}: mantener paso fijo entre \ang{-3} y \ang{-4} con rodamientos
         limpios (sin cambiar a sellados de contacto); no añadir mecanismos de arranque para el
         primer vuelo. Si se necesita recuperar altura, la opción con mejor relación
@@ -112,9 +116,9 @@ hacia adelante. El giro se dibuja hacia la izquierda: el borde de ataque está a
 
 Al crecer $\Omega$, $\phi$ baja y $\alpha$ recorre la pérdida profunda desde \ang{87}
 hasta el flujo adherido (figura~\ref{fig:arranque-alfa}). A \SI{13.4}{m/s} la sección de
-$0{,}75R$ pasa por \ang{50} a \SI{60}{rad/s} y por \ang{22} a \SI{150}{rad/s}; solo por
+$0{,}75R$ pasa por \ang{45} a \SI{60}{rad/s} y por \ang{17} a \SI{150}{rad/s}; solo por
 encima de \SI{170}{rad/s} se adhiere ($\alpha\approx\ang{5}$). En toda la travesía $C_l$
-sube de 0,06 a 0,8 mientras $C_d$ baja de 1,17 a 0,24, y el término
+sube de 0,06 a 0,9 mientras $C_d$ baja de 1,17 a 0,17, y el término
 $C_l\sin\phi-C_d\cos\phi$ se mantiene positivo. Las secciones exteriores (mayor $\Omega r$)
 se adhieren antes; la raíz sigue en pérdida a rpm de régimen. Por eso el par crece con
 $\Omega$ en vez de caer, y la curva $Q(\Omega)$ con $\theta=\ang{-3}$ es monótona hasta
@@ -161,7 +165,7 @@ queda allí aunque exista la rama rápida. La figura~\ref{fig:arranque-qomega} m
 $\theta=\ang{-3}$ no hay trampa a ninguna $V$ entre 4 y \SI{16}{m/s}: $Q$ es positivo desde
 $\Omega=0$ y tiene una sola raíz, la de régimen. Con $\theta=\ang{+1}$ a \SI{13.4}{m/s}
 aparecen tres raíces: una estable a $\Omega\approx\SI{-3}{rad/s}$ (el rotor gira despacio
-hacia atrás), una inestable a \SI{41}{rad/s} y la estable de régimen a \SI{238}{rad/s}. La
+hacia atrás), una inestable a \SI{34}{rad/s} y la estable de régimen a \SI{212}{rad/s}. La
 raíz inestable es el umbral: por debajo de ella el rotor vuelve a la trampa. Con $\theta=0$
 el par a $\Omega$ pequeño es de \num{0.1} a \SI{1}{mN.m}, del orden del rozamiento: el rotor
 queda parado o arranca de forma errática.
@@ -177,7 +181,7 @@ queda parado o arranca de forma errática.
 \addplot[cfijo!40, thick] table[x=Om, y=V4] {analysis/data/arranque_qomega.dat};
 \addlegendentry{4}
 \addplot[cfijo, thick] table[x=Om, y=V694] {analysis/data/arranque_qomega.dat};
-\addlegendentry{6,94}
+\addlegendentry{6,36}
 \addplot[ccont, thick] table[x=Om, y=V10] {analysis/data/arranque_qomega.dat};
 \addlegendentry{10}
 \addplot[crot, very thick] table[x=Om, y=V134] {analysis/data/arranque_qomega.dat};
@@ -205,7 +209,7 @@ queda parado o arranca de forma errática.
 \end{tikzpicture}
 \caption{Curvas $Q(\Omega)$. Izquierda: paso de diseño a varias velocidades. Derecha: zona de
 arranque a \SI{13.4}{m/s}; la línea de trazos es $Q_f=\SI{0.73}{mN.m}$. Con \ang{+1} el
-cero estable a $\Omega<0$ es la trampa y el cero inestable a \SI{41}{rad/s} el umbral.}
+cero estable a $\Omega<0$ es la trampa y el cero inestable a \SI{34}{rad/s} el umbral.}
 \label{fig:arranque-qomega}
 \end{figure}
 
@@ -264,17 +268,17 @@ diseño ($\theta=\ang{-3}$). Resolución de la bisección: \ang{0.1}.}
 \label{tab:arranque-mapa}
 \begin{tabular}{lrrrrrrr}
 \toprule
-$V$ [m/s] & 4 & 5 & 6,94 & 9 & 11 & 13,4 & 16 \\
+$V$ [m/s] & 4 & 5 & 6,36 & 9 & 11 & 13,4 & 16 \\
 \midrule
-$Q_f=0{,}73$ mN·m (nominal) & $-1{,}4$ & $-0{,}9$ & $-0{,}4$ & $-0{,}3$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ \\
-$Q_f=0{,}34$ mN·m (aceite) & $-0{,}6$ & $-0{,}4$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ & $-0{,}1$ & $0{,}0$ \\
-$Q_f=1{,}7$ mN·m (grasa fría) & $-3{,}2$ & $-2{,}1$ & $-1{,}1$ & $-0{,}6$ & $-0{,}4$ & $-0{,}3$ & $-0{,}2$ \\
-$Q_f=5$ mN·m (sellos, suciedad) & $-9{,}4$ & $-6{,}0$ & $-3{,}2$ & $-1{,}9$ & $-1{,}3$ & $-0{,}9$ & $-0{,}6$ \\
-torsión $+\ang{10}$, $Q_f$ nominal & $-0{,}8$ & $-0{,}3$ & $+0{,}1$ & $+0{,}3$ & $+0{,}3$ & $+0{,}4$ & $+0{,}4$ \\
-torsión $+\ang{20}$, $Q_f$ nominal & $-0{,}2$ & $+0{,}2$ & $+0{,}7$ & $+0{,}9$ & $+1{,}0$ & $+1{,}0$ & $+1{,}1$ \\
-polar 2D ($C_{D,\max}=1{,}98$) & $-1{,}0$ & $-0{,}6$ & $-0{,}3$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ & $-0{,}1$ \\
+$Q_f=0{,}73$ mN·m (nominal) & $-0{,}9$ & $-0{,}5$ & $-0{,}3$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ & $-0{,}1$ \\
+$Q_f=0{,}34$ mN·m (aceite) & $-0{,}4$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ & $-0{,}1$ & $0{,}0$ & $0{,}0$ \\
+$Q_f=1{,}7$ mN·m (grasa fría) & $-2{,}0$ & $-1{,}2$ & $-0{,}8$ & $-0{,}4$ & $-0{,}2$ & $-0{,}2$ & $-0{,}1$ \\
+$Q_f=5$ mN·m (sellos, suciedad) & $-5{,}6$ & $-3{,}6$ & $-2{,}2$ & $-1{,}1$ & $-0{,}8$ & $-0{,}5$ & $-0{,}3$ \\
+torsión $+\ang{10}$, $Q_f$ nominal & $-0{,}1$ & $+0{,}2$ & $+0{,}3$ & $+0{,}4$ & $+0{,}6$ & $+0{,}6$ & $+0{,}6$ \\
+torsión $+\ang{20}$, $Q_f$ nominal & $+0{,}6$ & $+0{,}8$ & $+1{,}0$ & $+1{,}1$ & $+1{,}2$ & $+1{,}2$ & $+1{,}2$ \\
+polar 2D ($C_{D,\max}=1{,}98$) & $-0{,}5$ & $-0{,}3$ & $-0{,}2$ & $-0{,}1$ & $-0{,}1$ & $-0{,}1$ & $0{,}0$ \\
 \midrule
-margen del diseño, nominal & 1,6 & 2,1 & 2,6 & 2,7 & 2,8 & 2,9 & 2,9 \\
+margen del diseño, nominal & 2,1 & 2,5 & 2,7 & 2,8 & 2,9 & 2,9 & 2,9 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -284,22 +288,24 @@ prácticamente en \ang{0}, lo que confirma la regla del capítulo~\ref{cap:dim};
 tiene \ang{2.9} de margen, más que la tolerancia de fabricación de $\pm\ang{1}$. Segunda, el
 rozamiento solo importa a baja velocidad o si se multiplica: con \SI{5}{mN.m} (sellos de
 contacto, suciedad, grasa fría) y una liberación lenta el paso de diseño quedaría justo en el
-límite. Tercera, la torsión con raíz más negativa ($\theta_{tw}>0$ en la convención
+límite (a \SI{4}{m/s} ya no arrancaría). Tercera, la torsión con raíz más negativa
+($\theta_{tw}>0$ en la convención
 $\theta(r)=\theta_{0,75}+\theta_{tw}(r/R-0{,}75)$) mueve el límite hacia pasos positivos:
-\ang{0.5} con $\theta_{tw}=\ang{+10}$ y \ang{1.0} con \ang{+20}, porque la raíz, que aporta
-el par a $\Omega$ bajo, trabaja con más paso negativo.
+\ang{0.6} con $\theta_{tw}=\ang{+10}$ y \ang{1.2} con \ang{+20}, porque la raíz, que aporta
+el par a $\Omega$ bajo, trabaja con más paso negativo. Es el mismo sentido que en el
+capítulo~\ref{cap:bemt}.
 
 \paragraph{Sensibilidad a la polar en pérdida.} Con la polar 2D ($C_{D,\max}=1{,}98$ en vez
-de 1,17), $Q_0$ sube de \num{17.8} a \SI{25.7}{mN.m} a \SI{13.4}{m/s} (\SI{+44}{\percent}),
+de 1,17), $Q_0$ sube de \num{30} a \SI{44}{mN.m} a \SI{13.4}{m/s} (\SI{+47}{\percent}),
 pero el paso crítico casi no cambia: el límite lo fija el signo de la fuerza en el plano, no
-su módulo. La polar en pérdida afecta el tiempo de arranque (\SI{-0.25}{s},
+su módulo. La polar en pérdida afecta el tiempo de arranque (\SI{-0.18}{s},
 sec.~\ref{sec:arranque-dinamica}), no la existencia del arranque.
 
 %=======================================================================================
 \section{Dinámica temporal del arranque}\label{sec:arranque-dinamica}
 
 Con la apertura de las palas incluida, el rotor llega al \SI{90}{\percent} de sus rpm en
-\SI{2.39}{s} y \SI{26.5}{m}, solo \SI{0.1}{s} más que el cálculo cuasiestacionario del
+\SI{1.55}{s} y \SI{21.7}{m}, solo \SI{0.06}{s} más que el cálculo cuasiestacionario del
 capítulo~\ref{cap:bemt}.
 
 \subsection{Modelo}
@@ -309,7 +315,7 @@ el eje:
 \begin{equation}
   \frac{d}{dt}\bigl[I_z(\beta)\,\Omega\bigr]=f(\beta)\,Q(\theta,\Omega,V)-Q_f\operatorname{sgn}\Omega+Q_\text{ext}(t),
   \qquad
-  m\dot V=W-f(\beta)\,T(\theta,\Omega,V)-\tfrac12\rho V^2\textstyle\sum C_DA ,
+  m\dot V=W-f(\beta)\,T(\theta,\Omega,V)-\tfrac12\rho V^2C_{D,c}A_c ,
   \label{eq:arranque-din}
 \end{equation}
 con $T$ y $Q$ interpolados en tablas BEMT $(\theta,\Omega,V)$ de
@@ -320,10 +326,11 @@ fuerza y brazo; $f=1$ con la pala abierta. La inercia polar depende de la apertu
   I_z(\beta)=I_\text{cubo}+B\bigl(I_b\cos^2\beta+2S_be\cos\beta+m_be^2\bigr),
   \label{eq:arranque-iz}
 \end{equation}
-con $I_b=\SI{4.35e-5}{kg.m^2}$, $m_b=\SI{7.4}{g}$, $S_b=m_bx_g$ ($x_g\approx\SI{70}{mm}$,
-estimado), $e=\SI{44}{mm}$ e $I_\text{cubo}$ ajustado para que $I_z(0)=\SI{5e-4}{kg.m^2}$.
-Resulta $I_z(\ang{-89})=\SI{1.47e-4}{kg.m^2}$: con las palas colgando el rotor tiene
-\SI{29}{\percent} de su inercia final.
+con $I_b=\SI{9.74e-5}{kg.m^2}$, $m_b=\SI{9.5}{g}$, $S_b=m_bx_g$ ($x_g\approx\SI{92}{mm}$,
+estimado por escala de la pala de $R=\SI{0.20}{m}$), $e=\SI{44}{mm}$ e $I_\text{cubo}$ del
+rotor anterior ($\SI{8.6e-5}{kg.m^2}$, cubo y herrajes sin cambio). Resulta
+$I_z(0)=\SI{8.6e-4}{kg.m^2}$ e $I_z(\ang{-89})=\SI{1.65e-4}{kg.m^2}$: con las palas colgando
+el rotor tiene el \SI{19}{\percent} de su inercia final.
 
 La apertura sigue el batimiento simplificado de la ecuación~\eqref{eq:estructura-apertura}
 del capítulo de estructura, con fuerza de flujo cruzado ($C_{dc}=1{,}2$), resorte de
@@ -334,7 +341,7 @@ $\beta=\ang{-89}$. Cuando $\beta$ alcanza la conicidad cuasiestática
   \label{eq:arranque-cono}
 \end{equation}
 se da la pala por abierta y $\beta=\beta_c$ desde entonces; el tope elástico de \ang{+15}
-limita la conicidad a bajas rpm. El factor $k=0{,}8$ calibra $\beta_c\approx\ang{4}$ en
+limita la conicidad a bajas rpm. El factor $k=0{,}8$ calibra $\beta_c\approx\ang{4.5}$ en
 régimen. El rebote en el tope, el batimiento cíclico y la inercia del flujo inducido se
 ignoran. El paso de integración es \SI{2}{ms} (Euler semi-implícito), con $t_{90}$ y
 $z_{90}$ medidos sobre el valor de $\Omega$ a \SI{8}{s}.
@@ -342,12 +349,15 @@ $z_{90}$ medidos sobre el valor de $\Omega$ a \SI{8}{s}.
 \subsection{Transitorio de referencia}
 
 La figura~\ref{fig:arranque-trans} muestra el caso base. Las palas se abren en
-\SI{0.13}{s} (de acuerdo con los \SIrange{127}{148}{ms} del capítulo de estructura) y quedan
-contra el tope de \ang{15} hasta $\approx\SI{1.8}{s}$, porque la fuerza centrífuga es baja. El
-primer segundo es lento: el par es de 16 a \SI{20}{mN.m} y la aceleración de unos
-\SI{40}{rad/s^2}. Entre 1,5 y \SI{2.5}{s}, ya con flujo casi adherido en la punta, el par
-supera \SI{50}{mN.m} y $\Omega$ sube hasta un sobrepaso de \SI{164}{rad/s} a \SI{3}{s}. El
-régimen es $\Omega=\SI{157}{rad/s}$, $V=\SI{6.94}{m/s}$, igual al del capítulo~\ref{cap:bemt}.
+\SI{0.18}{s} (con el rotor más largo la apertura es algo más lenta que los
+\SIrange{127}{148}{ms} del rotor de \SI{0.20}{m}) y quedan contra el tope de \ang{15} hasta
+$\approx\SI{1.4}{s}$, porque la fuerza centrífuga es baja. El primer segundo es lento: el
+par es de 36 a \SI{61}{mN.m} y la aceleración media de unos \SI{45}{rad/s^2}. Entre 1,2 y
+\SI{2}{s}, ya con flujo casi adherido en la punta, el par llega a \SI{212}{mN.m} (a
+\SI{1.6}{s}) y $\Omega$ sube hasta un sobrepaso de \SI{162.6}{rad/s} a \SI{1.9}{s}, un
+\SI{26}{\percent} sobre el régimen. El régimen es $\Omega=\SI{128.7}{rad/s}$,
+$V=\SI{6.36}{m/s}$, igual al del capítulo~\ref{cap:bemt}. Ese sobrepaso (\num{1553}~rpm)
+es la velocidad de diseño de las cargas centrífugas (capítulo~\ref{cap:estructura}).
 
 \begin{figure}[H]
 \centering
@@ -377,25 +387,34 @@ régimen es $\Omega=\SI{157}{rad/s}$, $V=\SI{6.94}{m/s}$, igual al del capítulo
 \addlegendentry{$\beta$ base ($\ge0$)}
 \end{groupplot}
 \end{tikzpicture}
-\caption{Arranque desde $\Omega=0$, $V=\SI{13.4}{m/s}$, con drogue y apertura de palas desde
+\caption{Arranque desde $\Omega=0$, $V=\SI{13.4}{m/s}$, rotor solo y apertura de palas desde
 \ang{-89}. Izquierda: rpm para varios métodos. Derecha: velocidad de caída y conicidad del
 caso base (la conicidad se dibuja desde que la pala está abierta).}
 \label{fig:arranque-trans}
 \end{figure}
 
-\paragraph{Efecto de la apertura.} La apertura cuesta solo \SI{0.1}{s} y \SI{1.4}{m}, por
+\paragraph{Efecto de la apertura.} La apertura cuesta solo \SI{0.06}{s} y \SI{1.6}{m}, por
 dos razones: dura poco frente a $t_{90}$, y mientras las palas cuelgan la inercia es la
-tercera parte, de modo que el poco par disponible acelera igual. La conservación del momento
+quinta parte, de modo que el poco par disponible acelera igual. La conservación del momento
 cinético tiene otra consecuencia, que es la clave para la pre-rotación: un giro dado
-\emph{antes} de abrir las palas se divide por $I_z(0)/I_z(\ang{-89})=3{,}4$ al abrirse.
+\emph{antes} de abrir las palas se divide por $I_z(0)/I_z(\ang{-89})=5{,}2$ al abrirse.
+
+\paragraph{Soltar el drogue antes de abrir (configuración v2).} Sin el drogue la caja
+acelera mientras las palas se abren: en \SI{0.2}{s} gana \SI{1.7}{m/s} y en \SI{0.3}{s},
+\SI{2.5}{m/s} (capítulo~\ref{cap:arq}). Con la liberación a \SI{16}{m/s} (casos 13),
+$t_{90}$ baja \SI{0.17}{s}: el par crece con $V^2$ y la caída libre previa ayuda al
+arranque, aunque el rotor tiene que frenar desde más velocidad (más sobrepaso). Con la
+Arquitectura~2 ($m_2=\SI{0.36}{kg}$) el arranque tarda \SI{1.65}{s} y \SI{20.9}{m}
+(caso 25), y el régimen baja a \SI{111}{rad/s} y \SI{5.46}{m/s}; la carga más liviana frena
+menos, por lo que tarda \SI{0.1}{s} más en llegar al régimen.
 
 \paragraph{Caso trabado.} Con \ang{+1} el rotor gira despacio hacia atrás
-($\Omega\to\SI{-2.1}{rad/s}$) y la caja desciende a \SI{10.7}{m/s}, fuera del requisito
+($\Omega\to\SI{-2.8}{rad/s}$) y la caja desciende a \SI{14.1}{m/s}, fuera del requisito
 C4. Con \ang{0} queda parado ($Q<Q_f$) y el resultado es el mismo.
 
 \subsection{Tiempos y alturas de arranque}
 
-La tabla~\ref{tab:arranque-casos} resume los 22 casos simulados. Todos parten de
+La tabla~\ref{tab:arranque-casos} resume los 26 casos simulados. Todos parten de
 $\Omega=0$ y \SI{13.4}{m/s} con apertura de palas, salvo los indicados. La altura $z_{90}$ es
 la caída desde la liberación hasta el \SI{90}{\percent} de las rpm finales.
 
@@ -409,38 +428,41 @@ régimen a \SI{8}{s}. $Q_f=\SI{0.73}{mN.m}$ salvo indicación.}
 \toprule
 \# & Caso & $t_{90}$ [s] & $z_{90}$ [m] & $\Omega_f$ [rad/s] & $V_f$ [m/s] \\
 \midrule
-1 & Base, $\theta=\ang{-3}$ & 2,39 & 26,5 & 157,1 & 6,94 \\
-2 & Base sin apertura (cuasiestacionario, cap.~\ref{cap:bemt}) & 2,29 & 25,1 & 157,1 & 6,94 \\
-3 & $\theta=\ang{-2}$ & 3,17 & 34,6 & 149,6 & 6,90 \\
-4 & $\theta=\ang{-4}$ & 1,97 & 22,0 & 164,5 & 7,01 \\
-5 & $\theta=\ang{-5}$ & 1,69 & 19,1 & 171,9 & 7,09 \\
-6 & $\theta=\ang{-6}$ & 1,50 & 17,1 & 178,9 & 7,16 \\
-7 & Torsión $+\ang{10}$ ($\theta_{0,75}=\ang{-3}$, raíz \ang{-8.3}) & 2,18 & 24,3 & 157,4 & 6,88 \\
-8 & Torsión $+\ang{20}$, $\theta_{0,75}=\ang{-1}$ & 3,29 & 35,9 & 138,8 & 6,83 \\
-9 & Pestaña: \ang{-4} equivalentes en la mitad externa (fija) & 1,53 & 17,4 & 177,6 & 7,17 \\
-10 & Polar 2D ($C_{D,\max}=1{,}98$) & 2,14 & 22,3 & 157,1 & 6,96 \\
-11 & $Q_f=\SI{0.34}{mN.m}$ (aceite) & 2,35 & 26,0 & 157,4 & 6,94 \\
-12 & $Q_f=\SI{1.7}{mN.m}$ & 2,50 & 27,6 & 156,1 & 6,95 \\
-13 & Liberación a \SI{16}{m/s} & 2,20 & 25,7 & 157,1 & 6,94 \\
-14 & Liberación a \SI{10}{m/s} & 2,67 & 27,6 & 157,1 & 6,94 \\
-15 & Liberación a \SI{6.94}{m/s} & 2,94 & 28,6 & 157,1 & 6,94 \\
-16 & Paso variable pasivo \ang{-8}$\to$\ang{-3} ($\Omega_s=\SI{80}{rad/s}$) & 1,44 & 16,4 & 157,1 & 6,94 \\
-17 & $\delta_3=\ang{30}$ & 1,10 & 12,9 & 155,5 & 6,94 \\
-18 & $\delta_3=\ang{45}$ & 0,98 & 11,7 & 154,7 & 6,93 \\
-19 & Motor \SI{3}{mN.m} durante \SI{1}{s} & 2,18 & 24,2 & 157,1 & 6,94 \\
-20 & Resorte, $\Omega_0=\SI{20}{rad/s}$ (palas abiertas) & 1,53 & 16,9 & 157,1 & 6,94 \\
-21 & Resorte, $\Omega_0=\SI{40}{rad/s}$ & 1,00 & 11,3 & 157,1 & 6,94 \\
-22 & Resorte, $\Omega_0=\SI{80}{rad/s}$ & 0,39 & 4,7 & 157,1 & 6,94 \\
+1 & Base, $\theta=\ang{-3}$ & 1,55 & 21,7 & 128,7 & 6,36 \\
+2 & Base sin apertura (cuasiestacionario, cap.~\ref{cap:bemt}) & 1,49 & 20,0 & 128,7 & 6,36 \\
+3 & $\theta=\ang{-2}$ & 2,02 & 28,1 & 122,1 & 6,30 \\
+4 & $\theta=\ang{-4}$ & 1,29 & 18,0 & 135,1 & 6,43 \\
+5 & $\theta=\ang{-5}$ & 1,12 & 15,7 & 141,2 & 6,51 \\
+6 & $\theta=\ang{-6}$ & 1,00 & 14,0 & 147,2 & 6,60 \\
+7 & Torsión $+\ang{10}$ ($\theta_{0,75}=\ang{-3}$, raíz \ang{-8.3}) & 1,40 & 19,6 & 128,2 & 6,25 \\
+8 & Torsión $+\ang{20}$, $\theta_{0,75}=\ang{-1}$ & 1,99 & 27,6 & 112,7 & 6,19 \\
+9 & Pestaña: \ang{-4} equivalentes en la mitad externa (fija) & 1,01 & 14,2 & 147,1 & 6,64 \\
+10 & Polar 2D ($C_{D,\max}=1{,}98$) & 1,38 & 17,4 & 129,0 & 6,36 \\
+11 & $Q_f=\SI{0.34}{mN.m}$ (aceite) & 1,54 & 21,5 & 128,9 & 6,35 \\
+12 & $Q_f=\SI{1.7}{mN.m}$ & 1,58 & 22,0 & 128,3 & 6,36 \\
+13 & Liberación a \SI{16}{m/s} & 1,39 & 21,1 & 128,7 & 6,36 \\
+14 & Liberación a \SI{10}{m/s} & 1,80 & 22,5 & 128,7 & 6,36 \\
+15 & Liberación a \SI{6.36}{m/s} & 2,11 & 23,4 & 128,7 & 6,36 \\
+16 & Paso variable pasivo \ang{-8}$\to$\ang{-3} ($\Omega_s=\SI{80}{rad/s}$) & 0,95 & 13,4 & 128,7 & 6,36 \\
+17 & $\delta_3=\ang{30}$ & 0,76 & 10,8 & 129,2 & 6,36 \\
+18 & $\delta_3=\ang{45}$ & 0,71 & 10,1 & 129,4 & 6,36 \\
+19 & Motor \SI{3}{mN.m} durante \SI{1}{s} & 1,48 & 20,3 & 128,7 & 6,36 \\
+20 & Resorte, $\Omega_0=\SI{20}{rad/s}$ (palas abiertas) & 0,98 & 13,0 & 128,7 & 6,36 \\
+21 & Resorte, $\Omega_0=\SI{40}{rad/s}$ & 0,61 & 7,9 & 128,7 & 6,36 \\
+22 & Resorte, $\Omega_0=\SI{80}{rad/s}$ & 0,18 & 2,3 & 128,7 & 6,36 \\
 \midrule
-23 & $\theta=\ang{+1}$ sin ayuda & --- & --- & $-2{,}1$ & 10,70 \\
-24 & $\theta=\ang{0}$ sin ayuda & --- & --- & 0 & 10,70 \\
+23 & $\theta=\ang{+1}$ sin ayuda & --- & --- & $-2{,}8$ & 14,07 \\
+24 & $\theta=\ang{0}$ sin ayuda & --- & --- & 0 & 14,08 \\
+\midrule
+25 & Arq.~2: $m_2=\SI{0.36}{kg}$ & 1,65 & 20,9 & 111,2 & 5,46 \\
+26 & Arq.~2: $m_2=\SI{0.36}{kg}$, apertura a \SI{16}{m/s} & 1,48 & 20,3 & 111,2 & 5,46 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-El valor de referencia del capítulo~\ref{cap:bemt} (\SI{2.3}{s}, \SI{25}{m}) se reproduce
-(caso 2). La incertidumbre de la polar en pérdida (casos 1 y 10) vale \SI{0.25}{s} y
-\SI{4}{m}; la del rozamiento, \SI{0.15}{s}. Estas cifras dan la escala de lo que un método
+El valor de referencia del capítulo~\ref{cap:bemt} (\SI{1.5}{s}, \SI{20}{m}) se reproduce
+(caso 2). La incertidumbre de la polar en pérdida (casos 1 y 10) vale \SI{0.18}{s} y
+\SI{4}{m}; la del rozamiento, \SI{0.04}{s}. Estas cifras dan la escala de lo que un método
 de arranque debe superar para que su efecto sea distinguible del error del modelo.
 
 %=======================================================================================
@@ -457,7 +479,7 @@ figura~\ref{fig:arranque-tiempos} resume los dos barridos continuos.
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.8cm},
   width=0.48\textwidth, height=5.6cm, grid=major, legend style={font=\scriptsize}]
 \nextgroupplot[xlabel={paso fijo $\theta$ [\si{\degree}]}, ylabel={$t_{90}$ [s]}, xmin=-10, xmax=0,
-  ymin=0, ymax=9, axis y line*=left]
+  ymin=0, ymax=6, axis y line*=left]
 \addplot[crot, very thick, mark=*, mark size=1.4pt] table[x=th, y=t90] {analysis/data/arranque_tpaso.dat};
 \addplot[only marks, mark=square*, black, mark size=2pt] coordinates {(-3,2.394)};
 \node[font=\scriptsize, anchor=south west] at (axis cs:-3,2.6) {diseño};
@@ -479,41 +501,41 @@ abiertas, con $\theta=\ang{-3}$, y energía cinética $\frac12I_z\Omega_0^2$ cor
 
 \subsection{Paso más negativo}
 
-Cada grado de paso negativo adicional quita unos \SI{0.3}{s} y \SI{3}{m} de arranque, a
-costa de rpm: de \ang{-3} a \ang{-4}, $t_{90}$ baja de 2,39 a \SI{1.97}{s} y la caída de 26,5
-a \SI{22.0}{m}, mientras $\Omega_f$ sube de 157 a \SI{164}{rad/s} y $V_2$ de 6,94 a
-\SI{7.01}{m/s}. A \ang{-6} se ganan \SI{0.9}{s} y \SI{9}{m}, con \num{1710}~rpm y
-$V_2=\SI{7.16}{m/s}$, todavía dentro de C4 pero con más carga centrífuga y menos margen de
+Cada grado de paso negativo adicional quita unos \SI{0.25}{s} y \SI{3}{m} de arranque, a
+costa de rpm: de \ang{-3} a \ang{-4}, $t_{90}$ baja de 1,55 a \SI{1.29}{s} y la caída de 21,7
+a \SI{18.0}{m}, mientras $\Omega_f$ sube de 129 a \SI{135}{rad/s} y $V_2$ de 6,36 a
+\SI{6.43}{m/s}. A \ang{-6} se ganan \SI{0.55}{s} y \SI{7.6}{m}, con \num{1406}~rpm y
+$V_2=\SI{6.60}{m/s}$, todavía dentro de C4 pero con más carga centrífuga y menos margen de
 flameo (cap.~\ref{cap:estructura}). El rendimiento decrece: por debajo de \ang{-6} el
-arranque solo mejora \SI{0.15}{s} por grado. La curva también muestra lo contrario: hacia
-\ang{-1} el arranque se alarga a \SI{5.2}{s} y \SI{56}{m}, y a \ang{-0.5} a \SI{8.9}{s}.
-Ese es el riesgo real de un portapala mal impreso.
+arranque solo mejora \SI{0.1}{s} por grado. La curva también muestra lo contrario: hacia
+\ang{-1} el arranque se alarga a \SI{3.2}{s} y \SI{44}{m}, y a \ang{-0.5} a \SI{5.0}{s} y
+\SI{69}{m}. Ese es el riesgo real de un portapala mal impreso.
 
 \subsection{Torsión y paso variable en la envergadura}
 
 La torsión con raíz más negativa ayuda poco al tiempo de arranque: $\theta_{tw}=\ang{+10}$
-con $\theta_{0,75}=\ang{-3}$ (raíz a \ang{-8.3}, punta a \ang{-0.5}) gana \SI{0.2}{s} y
-\SI{2.2}{m} sin cambiar el régimen. Su valor está en el margen: desplaza el paso crítico
-\ang{0.5} (tabla~\ref{tab:arranque-mapa}). En la placa de carbono de \SI{0.5}{mm}, una
-torsión de \ang{10} sobre \SI{156}{mm} exige un molde torsionado; es factible pero añade
+con $\theta_{0,75}=\ang{-3}$ (raíz a \ang{-8.3}, punta a \ang{-0.5}) gana \SI{0.15}{s} y
+\SI{2.1}{m} sin cambiar el régimen. Su valor está en el margen: desplaza el paso crítico
+\ang{0.6} (tabla~\ref{tab:arranque-mapa}). En la placa de carbono de \SI{0.5}{mm}, una
+torsión de \ang{10} sobre \SI{206}{mm} exige un molde torsionado; es factible pero añade
 una variable de fabricación. Una alternativa equivalente, más sencilla, es un portapala con
 \ang{2} a \ang{3} más de paso negativo en la raíz solo en el tramo de unión (paso escalonado),
 que aporta en el arranque el mismo efecto del primer orden.
 
 \subsection{Pre-rotación por resorte en el cubo}
 
-Un resorte que dé $\Omega_0$ al soltar acorta el arranque casi linealmente: \SI{-0.04}{s}
+Un resorte que dé $\Omega_0$ al soltar acorta el arranque casi linealmente: \SI{-0.025}{s}
 por cada rad/s, hasta $\Omega_0\approx\SI{100}{rad/s}$ (figura~\ref{fig:arranque-tiempos}).
 Su función depende del paso.
 
 \paragraph{Con paso de diseño.} No hace falta para arrancar, solo para ganar altura:
-$\Omega_0=\SI{40}{rad/s}$ da $t_{90}=\SI{1.0}{s}$ y $z_{90}=\SI{11.3}{m}$ (\SI{-15}{m}).
+$\Omega_0=\SI{40}{rad/s}$ da $t_{90}=\SI{0.61}{s}$ y $z_{90}=\SI{7.9}{m}$ (\SI{-13.8}{m}).
 
 \paragraph{Con paso $\ge0$ (trampa).} El resorte debe llevar el rotor por encima del umbral
 inestable. Por bisección de la simulación se obtuvo el $\Omega_0$ mínimo
-(tabla~\ref{tab:arranque-om0}). Con \ang{+1} se necesitan \num{32} a \SI{38}{rad/s}, algo
-menos que el cero de $Q$ (\SI{41}{rad/s} a \SI{13.4}{m/s}) porque la caída se frena mientras
-tanto. Con \ang{0} basta $\approx\SI{20}{rad/s}$ (valor acotado por la ventana de simulación
+(tabla~\ref{tab:arranque-om0}). Con \ang{+1} se necesitan \num{28} a \SI{37}{rad/s}, algo
+menos que el cero de $Q$ (\SI{34}{rad/s} a \SI{13.4}{m/s}) porque la caída se frena mientras
+tanto. Con \ang{0} basta $\approx\SI{15}{rad/s}$ (valor acotado por la ventana de simulación
 de \SI{4}{s}, por lo lento de la aceleración).
 
 \begin{table}[H]
@@ -523,34 +545,34 @@ trampa, y energía del resorte $E=\tfrac12I_z\Omega_0^2$.}
 \label{tab:arranque-om0}
 \begin{tabular}{lrrrr}
 \toprule
-$V$ al soltar [m/s] & 6,94 & 10 & 13,4 & 16 \\
+$V$ al soltar [m/s] & 6,36 & 10 & 13,4 & 16 \\
 \midrule
-$\theta=\ang{0}$: $\Omega_0$ & $\approx19$ & $\approx19$ & $\approx19$ & $\approx19$ \\
-$\theta=\ang{+1}$: $\Omega_0$ & 31,6 & 33,7 & 35,7 & 37,8 \\
-$\theta=\ang{+1}$: $E$ [J] & 0,25 & 0,28 & 0,32 & 0,36 \\
+$\theta=\ang{0}$: $\Omega_0$ & $\approx15$ & $\approx15$ & $\approx15$ & $\approx15$ \\
+$\theta=\ang{+1}$: $\Omega_0$ & 27,8 & 31,1 & 34,6 & 37,2 \\
+$\theta=\ang{+1}$: $E$ [J] & 0,33 & 0,41 & 0,51 & 0,59 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Dimensionamiento.} Se toma $\Omega_0=\SI{40}{rad/s}$ como objetivo (salida de
-trampa con \ang{+1} y ganancia de \SI{15}{m} con \ang{-3}): $E=\SI{0.40}{J}$. El resorte debe
+trampa con \ang{+1} y ganancia de \SI{14}{m} con \ang{-3}): $E=\SI{0.69}{J}$. El resorte debe
 actuar \emph{después} de abrir las palas: si actúa antes, el momento cinético se reparte en una
-inercia 3,4 veces mayor y la energía necesaria sube a \SI{1.36}{J}. Con un resorte de
-torsión de una vuelta útil ($\varphi=2\pi$), $k=2E/\varphi^2=\SI{0.020}{N.m/rad}$ y
-$M_\text{max}=k\varphi=\SI{0.127}{N.m}$. Con alambre de acero de resorte y tensión de flexión
+inercia 5,2 veces mayor y la energía necesaria sube a \SI{3.6}{J}. Con un resorte de
+torsión de una vuelta útil ($\varphi=2\pi$), $k=2E/\varphi^2=\SI{0.035}{N.m/rad}$ y
+$M_\text{max}=k\varphi=\SI{0.22}{N.m}$. Con alambre de acero de resorte y tensión de flexión
 admisible \SI{1000}{MPa}~\cite{budynas2015},
 \begin{equation}
-  d=\left(\frac{32M_\text{max}}{\pi\sigma_\text{adm}}\right)^{1/3}=\SI{1.1}{mm},\qquad
+  d=\left(\frac{32M_\text{max}}{\pi\sigma_\text{adm}}\right)^{1/3}=\SI{1.3}{mm},\qquad
   N=\frac{E_sd^4}{64kD}=\num{11}\text{ espiras}\;(D=\SI{20}{mm}),
   \label{eq:arranque-resorte}
 \end{equation}
-lo que da unos \SI{0.7}{m} de alambre y \SI{5}{g}, más trinquete y gatillo (\SIrange{3}{5}{g}
+lo que da unos \SI{0.7}{m} de alambre y \SI{7}{g}, más trinquete y gatillo (\SIrange{3}{5}{g}
 estimados).
 
 \begin{nota}[Reacción sobre el cuerpo]
 El resorte se apoya en el eje fijo, es decir, en el cuerpo. Sin par externo, el cuerpo recibe
-el momento cinético opuesto: con $I_\text{cuerpo}\approx\SI{4e-4}{kg.m^2}$ gira a
-$-I_z\Omega_0/I_\text{cuerpo}\approx\SI{-50}{rad/s}$ (\num{480}~rpm). Es cien veces el criterio
+el momento cinético opuesto: con $I_\text{cuerpo}\approx\SI{4.5e-4}{kg.m^2}$ gira a
+$-I_z\Omega_0/I_\text{cuerpo}\approx\SI{-76}{rad/s}$ (\num{730}~rpm). Es cien veces el criterio
 de video del capítulo~\ref{cap:estabilidad} y el drogue y las aletas tardarían segundos en
 amortiguarlo. Esta es la objeción principal a toda pre-rotación con reacción interna (resorte,
 servo, motor).
@@ -558,26 +580,26 @@ servo, motor).
 
 \subsection{Pre-rotación con el servo o con un motor}
 
-El servo MG90S da \SI{0.18}{N.m} pero gira a \SI{60}{\degree} en \SI{0.1}{s}, unos
+El servo del equipo (SG90, \SI{0.18}{N.m} según su hoja de datos; el MG90S da algo más) pero gira a \SI{60}{\degree} en \SI{0.1}{s}, unos
 \SI{10}{rad/s} (valores de catálogo típicos); acoplado directo al cubo con un trinquete no
-puede dar más que $\Omega_0\approx\SI{10}{rad/s}$, que vale \SI{0.4}{s} de ganancia. Además
+puede dar más que $\Omega_0\approx\SI{10}{rad/s}$, que vale \SI{0.3}{s} de ganancia. Además
 ya está asignado a la traba. Un motor sin escobillas o con núcleo hueco pequeño
-(\SIrange{3}{5}{g}) con \SI{3}{mN.m} durante \SI{1}{s} gana solo \SI{0.2}{s} y \SI{2.3}{m}
+(\SIrange{3}{5}{g}) con \SI{3}{mN.m} durante \SI{1}{s} gana solo \SI{0.07}{s} y \SI{1.3}{m}
 (caso 19): su par es la sexta parte del aerodinámico. Ambos comparten la reacción sobre el
 cuerpo.
 
 \subsection{Aprovechar la apertura de las palas}
 
 La apertura entrega a cada pala un impulso angular alrededor de la bisagra de
-$I_b\dot\beta_i\approx\SI{2.1e-3}{N.m.s}$ ($\dot\beta_i\approx\SI{48}{rad/s}$, de la energía
-de golpe de 0,041 a \SI{0.061}{J} del cap.~\ref{cap:estructura}). Si el eje de la bisagra se
+$I_b\dot\beta_i\approx\SI{4.7e-3}{N.m.s}$ ($\dot\beta_i\approx\SI{48}{rad/s}$ estimado, la
+energía de golpe del cap.~\ref{cap:estructura} escalada al rotor de \SI{0.25}{m}). Si el eje de la bisagra se
 gira un ángulo $\delta$ en el plano del disco, la fuerza aerodinámica que abre la pala tiene
 una componente tangencial y una fracción $\sin\delta$ de ese impulso pasa al eje del rotor:
 \begin{equation}
-  \Omega_0\approx\frac{B\,I_b\dot\beta_i\sin\delta}{I_z}\approx\SI{17}{rad/s}\cdot\sin\delta .
+  \Omega_0\approx\frac{B\,I_b\dot\beta_i\sin\delta}{I_z}\approx\SI{22}{rad/s}\cdot\sin\delta .
   \label{eq:arranque-apert}
 \end{equation}
-Con $\delta=\ang{20}$, $\Omega_0\approx\SI{6}{rad/s}$ y la ganancia es \SI{0.25}{s} (estimación
+Con $\delta=\ang{20}$, $\Omega_0\approx\SI{7.5}{rad/s}$ y la ganancia es \SI{0.2}{s} (estimación
 de orden de magnitud). Lo relevante es que una bisagra girada es justamente un acoplamiento
 $\delta_3$: el beneficio grande no viene del impulso de apertura sino del cambio de paso con
 la conicidad (sección~\ref{sec:arranque-d3}). A diferencia del resorte, aquí el par sale del
@@ -593,9 +615,9 @@ Un paso grande al inicio y de régimen después combina el arranque de \ang{-8} 
   \label{eq:arranque-var}
 \end{equation}
 que representa un contrapeso centrífugo contra un resorte (fuerza $\propto\Omega^2$). El
-arranque baja a \SI{1.44}{s} y \SI{16.4}{m} (\SI{-0.95}{s}, \SI{-10}{m}) sin cambiar el
-régimen. Su modo de falla es benigno: trabado a \ang{-8} el rotor gira a \SI{192}{rad/s} con
-$V_2=\SI{7.3}{m/s}$ (dentro de C4) y trabado a \ang{-3} es el diseño base. La versión activa
+arranque baja a \SI{0.95}{s} y \SI{13.4}{m} (\SI{-0.60}{s}, \SI{-8.3}{m}) sin cambiar el
+régimen. Su modo de falla es benigno: trabado a \ang{-8} el rotor gira a \SI{158}{rad/s} con
+$V_2=\SI{6.9}{m/s}$ (dentro de C4) y trabado a \ang{-3} es el diseño base. La versión activa
 con el servo permitiría la misma ley, pero exige un actuador por pala o un plato oscilante en
 un cubo de \SI{44}{mm}, fuera del alcance del proyecto. La figura~\ref{fig:arranque-mec}(a)
 muestra el mecanismo pasivo: el portapala gira sobre un buje en su eje longitudinal; una
@@ -614,10 +636,10 @@ y como a bajas rpm la pala descansa en el tope de \ang{15} ($\beta-\beta_r\appro
 paso inicial resulta automáticamente \ang{-9} con $\delta_3=\ang{30}$ y \ang{-14} con
 \ang{45}. A medida que la fuerza centrífuga baja la conicidad hacia \ang{4}, el paso vuelve
 al de régimen: es un paso colectivo variable pasivo sin piezas añadidas. La simulación da
-$t_{90}=\SI{1.10}{s}$ y $z_{90}=\SI{12.9}{m}$ con \ang{30} (\SI{-1.3}{s}, \SI{-13.5}{m}), y
-\SI{0.98}{s} con \ang{45}. Las rpm finales bajan \SI{1}{\percent} porque la conicidad de
-régimen del modelo (\ang{4.0}) difiere de la de referencia (\ang{4.4}); se corrige con el
-paso del portapala.
+$t_{90}=\SI{0.76}{s}$ y $z_{90}=\SI{10.8}{m}$ con \ang{30} (\SI{-0.8}{s}, \SI{-10.9}{m}), y
+\SI{0.71}{s} con \ang{45}. Las rpm finales cambian menos de \SI{1}{\percent} porque la
+conicidad de régimen del modelo (\ang{4.5}) difiere algo de la de referencia; se corrige con
+el paso del portapala.
 
 Costos y riesgos: el acoplamiento también actúa en vuelo. Una ráfaga que suba la conicidad
 \ang{2} baja el paso \ang{1.2} con \ang{30}, lo que sube las rpm y la fuerza centrífuga y
@@ -631,8 +653,8 @@ lineal~\eqref{eq:arranque-d3} se aplicó solo con la pala abierta ($\beta\ge0$).
 Una pestaña o flap de borde de fuga desviado cambia el ángulo de sustentación nula; se
 modeló, en primer orden, como \ang{-4} de paso adicional en la mitad externa de la pala
 (flap del \SI{20}{\percent} de cuerda desviado unos \ang{10}, con eficacia
-$\approx0{,}4$, estimada). Fija, da $t_{90}=\SI{1.53}{s}$ pero lleva el régimen a
-\SI{178}{rad/s} y $V_2=\SI{7.17}{m/s}$ (caso 9), igual que un paso de \ang{-6}: una pestaña
+$\approx0{,}4$, estimada). Fija, da $t_{90}=\SI{1.01}{s}$ pero lleva el régimen a
+\SI{147}{rad/s} y $V_2=\SI{6.64}{m/s}$ (caso 9), igual que un paso de \ang{-6}: una pestaña
 fija no es mejor que un paso más negativo. Solo tiene sentido si se retrae (por fuerza
 centrífuga o presión dinámica), y entonces es un paso variable con un mecanismo más frágil
 en la parte más solicitada de la pala. No se recomienda.
@@ -642,7 +664,7 @@ en la parte más solicitada de la pala. No se recomienda.
 Un Savonius en el cubo ($\varnothing\SI{44}{mm}\times\SI{25}{mm}$, coeficiente de par
 estático $C_{Q0}\approx0{,}3$, estimado) aporta
 $Q=C_{Q0}\tfrac12\rho V^2 A\,r\approx\SI{0.8}{mN.m}$ a \SI{13.4}{m/s} y
-\SI{0.2}{mN.m} a \SI{6.94}{m/s}: el \SI{4}{\percent} de $Q_0$, del orden del rozamiento. Sirve
+\SI{0.2}{mN.m} a \SI{6.36}{m/s}: el \SI{3}{\percent} de $Q_0$, del orden del rozamiento. Sirve
 como respaldo contra la trampa solo si el rozamiento es nominal y a alta $V$; además ocupa el
 lugar de la copa del drogue. La asimetría entre palas (por ejemplo dos palas a \ang{-6} y dos
 a \ang{0}) da el par promedio de su paso medio y añade desequilibrio aerodinámico y vibración
@@ -651,17 +673,18 @@ de 1P; no aporta nada que no dé el paso medio.
 \subsection{Liberación a mayor velocidad}
 
 El par crece con $V^2$, pero la inercia del rotor es la misma y la caída dura más: liberar a
-\SI{16}{m/s} gana solo \SI{0.19}{s} y \SI{0.8}{m} respecto de \SI{13.4}{m/s}, y liberar a
-\SI{6.94}{m/s} pierde \SI{0.55}{s} y \SI{2.1}{m} (casos 13 a 15). La altura casi no cambia
+\SI{16}{m/s} gana solo \SI{0.17}{s} y \SI{0.6}{m} respecto de \SI{13.4}{m/s}, y liberar a
+\SI{6.36}{m/s} pierde \SI{0.56}{s} y \SI{1.7}{m} (casos 13 a 15). Con el drogue soltado antes
+de abrir (v2), la velocidad de apertura sube por sí sola a \SIrange{14}{16}{m/s}. La altura casi no cambia
 porque a mayor $V$ se cae más rápido durante el arranque. En la práctica la etapa 1 ya está
 en su terminal (\SI{13.4}{m/s}) a la altura de liberación de C4, así que este método no tiene
 recorrido.
 
 \subsection{Reducir el rozamiento}
 
-Con el paso de diseño el rozamiento cambia $t_{90}$ en \SI{\pm0.1}{s}: de 2,35 (aceite,
-\SI{0.34}{mN.m}) a \SI{2.50}{s} (grasa fría, \SI{1.7}{mN.m}). Su valor es de margen: con
-\SI{5}{mN.m} el paso crítico a \SI{6.94}{m/s} cae a \ang{-3.2} (tabla~\ref{tab:arranque-mapa}).
+Con el paso de diseño el rozamiento cambia $t_{90}$ en \SI{\pm0.03}{s}: de 1,54 (aceite,
+\SI{0.34}{mN.m}) a \SI{1.58}{s} (grasa fría, \SI{1.7}{mN.m}). Su valor es de margen: con
+\SI{5}{mN.m} el paso crítico a \SI{6.36}{m/s} cae a \ang{-2.2} (tabla~\ref{tab:arranque-mapa}).
 Por eso conviene rodamientos 688 con escudo metálico (ZZ, sin contacto) y no sellos de goma
 (2RS), lavados y relubricados con aceite liviano o grasa de baja viscosidad, y un ensayo de
 rozamiento a \SI{-10}{\celsius} si se esperan temperaturas bajas en altura.
@@ -751,7 +774,7 @@ elásticos o actuadores en rojo.
 \section{Matriz comparativa y recomendación}\label{sec:arranque-matriz}
 
 La tabla~\ref{tab:arranque-matriz} compara los métodos respecto del caso base
-($t_{90}=\SI{2.39}{s}$, $z_{90}=\SI{26.5}{m}$). La masa es una estimación; la complejidad y el
+($t_{90}=\SI{1.55}{s}$, $z_{90}=\SI{21.7}{m}$). La masa es una estimación; la complejidad y el
 riesgo se califican de 1 (bajo) a 5 (alto). ``Compatible'' se refiere a los requisitos de
 masa (\SI{500}{g}), envolvente (S2, S3), descenso (C4) y video estable.
 
@@ -764,19 +787,19 @@ masa (\SI{500}{g}), envolvente (S2, S3), descenso (C4) y video estable.
 \toprule
 Método & $\Delta t_{90}$ [s] & $\Delta z_{90}$ [m] & Masa [g] & Compl. & Riesgo & Compatibilidad / comentario \\
 \midrule
-Paso \ang{-4} (fijo) & $-0{,}42$ & $-4{,}5$ & 0 & 1 & 1 & Sí. $V_2$ $+\SI{0.07}{m/s}$, +\SI{5}{\percent} rpm \\
-Paso \ang{-6} (fijo) & $-0{,}89$ & $-9{,}4$ & 0 & 1 & 2 & Sí. $V_2=7{,}16$; más carga y flameo \\
-Torsión $+\ang{10}$ & $-0{,}21$ & $-2{,}2$ & 0 & 3 & 2 & Sí. +\ang{0.5} de margen; molde \\
-Resorte $\Omega_0=40$ & $-1{,}39$ & $-15{,}2$ & 8--10 & 4 & 4 & Gira el cuerpo $\approx\SI{50}{rad/s}$ \\
-Servo (trinquete) & $\approx-0{,}4$ & $\approx-4$ & 2 & 3 & 3 & Servo ocupado en la traba; reacción \\
-Motor \SI{3}{mN.m}, \SI{1}{s} & $-0{,}21$ & $-2{,}3$ & 4--6 & 4 & 3 & Consumo, cableado al cubo, reacción \\
-Apertura con bisagra girada & $\approx-0{,}25$ & $\approx-3$ & 0 & 2 & 2 & Es un $\delta_3$ (fila siguiente) \\
-Paso variable centrífugo & $-0{,}95$ & $-10{,}1$ & 8--12 & 5 & 3 & Falla benigna; cubo \SI{44}{mm} saturado \\
-$\delta_3=\ang{30}$ & $-1{,}29$ & $-13{,}5$ & 0 & 2 & 3 & Recalcular $\nu_\beta$ y tope \\
-Pestaña fija (\ang{-4} eq.) & $-0{,}86$ & $-9{,}1$ & 1 & 2 & 2 & Igual a paso \ang{-6}; retráctil: no \\
+Paso \ang{-4} (fijo) & $-0{,}26$ & $-3{,}6$ & 0 & 1 & 1 & Sí. $V_2$ $+\SI{0.07}{m/s}$, +\SI{5}{\percent} rpm \\
+Paso \ang{-6} (fijo) & $-0{,}56$ & $-7{,}6$ & 0 & 1 & 2 & Sí. $V_2=6{,}60$; más carga y flameo \\
+Torsión $+\ang{10}$ & $-0{,}15$ & $-2{,}1$ & 0 & 3 & 2 & Sí. +\ang{0.6} de margen; molde \\
+Resorte $\Omega_0=40$ & $-0{,}94$ & $-13{,}8$ & 8--10 & 4 & 4 & Gira el cuerpo $\approx\SI{76}{rad/s}$ \\
+Servo (trinquete) & $\approx-0{,}3$ & $\approx-5$ & 2 & 3 & 3 & Servo ocupado en la traba; reacción \\
+Motor \SI{3}{mN.m}, \SI{1}{s} & $-0{,}07$ & $-1{,}3$ & 4--6 & 4 & 3 & Consumo, cableado al cubo, reacción \\
+Apertura con bisagra girada & $\approx-0{,}2$ & $\approx-3$ & 0 & 2 & 2 & Es un $\delta_3$ (fila siguiente) \\
+Paso variable centrífugo & $-0{,}60$ & $-8{,}3$ & 8--12 & 5 & 3 & Falla benigna; cubo \SI{44}{mm} saturado \\
+$\delta_3=\ang{30}$ & $-0{,}79$ & $-10{,}9$ & 0 & 2 & 3 & Recalcular $\nu_\beta$ y tope \\
+Pestaña fija (\ang{-4} eq.) & $-0{,}54$ & $-7{,}4$ & 1 & 2 & 2 & Igual a paso \ang{-6}; retráctil: no \\
 Savonius en el cubo & $\approx-0{,}02$ & $\approx0$ & 3 & 2 & 2 & Choca con la copa del drogue \\
-Liberación a \SI{16}{m/s} & $-0{,}19$ & $-0{,}8$ & 0 & --- & --- & Sin recorrido (V1 terminal) \\
-Rozamiento $0{,}73\to0{,}34$ & $-0{,}04$ & $-0{,}5$ & 0 & 1 & 1 & Sí. Gana margen a baja $V$ \\
+Liberación a \SI{16}{m/s} & $-0{,}17$ & $-0{,}6$ & 0 & --- & --- & Se da sola al soltar el drogue \\
+Rozamiento $0{,}73\to0{,}34$ & $-0{,}01$ & $-0{,}1$ & 0 & 1 & 1 & Sí. Gana margen a baja $V$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -784,22 +807,22 @@ Rozamiento $0{,}73\to0{,}34$ & $-0{,}04$ & $-0{,}5$ & 0 & 1 & 1 & Sí. Gana marg
 \begin{resultado}[Recomendación]
 \begin{enumerate}
   \item \textbf{Paso fijo entre \ang{-3} y \ang{-4}, sin mecanismo de arranque.} El arranque es
-        seguro (margen de \ang{2.6} a \ang{3.9} sobre el paso crítico a 6,94--\SI{13.4}{m/s},
-        más que la tolerancia de $\pm\ang{1}$) y la caída de arranque, 22--\SI{27}{m}, cabe en
-        la altura de la etapa 2. Pasar a \ang{-4} gana \SI{4.5}{m} con
+        seguro (margen de \ang{2.7} a \ang{3.9} sobre el paso crítico a 6,36--\SI{13.4}{m/s},
+        más que la tolerancia de $\pm\ang{1}$) y la caída de arranque, 18--\SI{22}{m}, cabe en
+        la altura de la etapa 2. Pasar a \ang{-4} gana \SI{3.6}{m} con
         $\Delta V_2=+\SI{0.07}{m/s}$: es la mejora gratis y se recomienda si el portapala
         se reimprime.
   \item \textbf{Rodamientos ZZ limpios y lubricados con aceite liviano}; prohibir sellos de
         contacto. Cuesta nada y protege el margen a baja $V$, donde
         $Q_f=\SI{5}{mN.m}$ lo agotaría.
   \item \textbf{Si se necesita altura}, el siguiente paso es la bisagra con
-        $\delta_3\approx\ang{30}$: \SI{-13.5}{m} sin masa añadida, mejor que el resorte
-        (\SI{-15}{m} pero con \SI{50}{rad/s} de giro del cuerpo y \SI{10}{g}) y que el paso
-        variable centrífugo (\SI{-10}{m}, mecanismo complejo). Requiere recalcular el
+        $\delta_3\approx\ang{30}$: \SI{-11}{m} sin masa añadida, mejor que el resorte
+        (\SI{-14}{m} pero con \SI{76}{rad/s} de giro del cuerpo y \SI{10}{g}) y que el paso
+        variable centrífugo (\SI{-8}{m}, mecanismo complejo). Requiere recalcular el
         batimiento (cap.~\ref{cap:estabilidad}) y validarlo en banco.
   \item \textbf{Descartados}: motor, servo, Savonius, pestaña retráctil y liberación más
         temprana, por ganancia menor que la incertidumbre del modelo
-        (\SI{0.25}{s}) o por la reacción sobre el cuerpo.
+        (\SI{0.18}{s}) o por la reacción sobre el cuerpo.
 \end{enumerate}
 \end{resultado}
 
@@ -819,11 +842,11 @@ luego verificar el transitorio. Ninguno se hizo todavía.
 Ensayo & Método & Criterio \\
 \midrule
 A1. Rozamiento & Cubo con palas montado en el eje; impulso a mano a $\approx\SI{100}{rad/s}$; desaceleración por sensor hall; $Q_f=I_z|\dot\Omega|$ a baja $\Omega$ (sin palas para separar el arrastre). Ambiente y \SI{-10}{\celsius}. & $Q_f\le\SI{1.7}{mN.m}$ a \SI{20}{\celsius}; $\le\SI{3}{mN.m}$ en frío. \\
-A2. Par estático & Rotor trabado con brazo y balanza (o celda de carga de \SI{100}{g}) frente a un ventilador o túnel con flujo vertical de 5, 7, 10 y \SI{13}{m/s} (anemómetro en el plano del disco). & $Q_0\ge\SI{9}{mN.m}$ a \SI{13}{m/s} con \ang{-3} (la mitad del modelo); signo positivo a todo $V$. \\
+A2. Par estático & Rotor trabado con brazo y balanza (o celda de carga de \SI{100}{g}) frente a un ventilador o túnel con flujo vertical de 5, 7, 10 y \SI{13}{m/s} (anemómetro en el plano del disco). & $Q_0\ge\SI{15}{mN.m}$ a \SI{13}{m/s} con \ang{-3} (la mitad del modelo); signo positivo a todo $V$. \\
 A3. Barrido de paso & Repetir A2 con portapalas de \ang{-1}, \ang{0} y \ang{+1}. & Ubicar el paso crítico; aceptar si $\theta_c\ge\ang{-1.5}$ (margen $\ge\ang{1.5}$). \\
 A4. Arranque libre & Rotor libre en el flujo, palas colgando y trabadas; liberación por el servo real; registro de rpm a \SI{1}{kHz} y video a 240 fps. 20 repeticiones. & 20/20 arranques; $t_{90}$ en banco dentro de $\pm\SI{40}{\percent}$ del modelo corrido a la $V$ del banco; apertura $<\SI{0.3}{s}$. \\
-A5. Trampa & Con \ang{+1}: confirmar que no arranca; con impulso a mano medir el $\Omega_0$ umbral. & Umbral dentro de $\pm\SI{50}{\percent}$ de la tabla~\ref{tab:arranque-om0}; valida el modelo de la rama lenta. \\
-A6. Caída real & Lanzamiento desde dron a $\ge\SI{60}{m}$ con la etapa 1 completa. & $z_{90}\le\SI{40}{m}$; $V$ final dentro de C4. \\
+A5. Trampa & Con \ang{+1}: confirmar que no arranca (la caja cae a $\approx\SI{14}{m/s}$); con impulso a mano medir el $\Omega_0$ umbral. & Umbral dentro de $\pm\SI{50}{\percent}$ de la tabla~\ref{tab:arranque-om0}; valida el modelo de la rama lenta. \\
+A6. Caída real & Lanzamiento desde dron a $\ge\SI{60}{m}$ con la etapa 1 completa. & $z_{90}\le\SI{35}{m}$; $V$ final dentro de C4. \\
 \bottomrule
 \end{tabularx}
 \end{table}

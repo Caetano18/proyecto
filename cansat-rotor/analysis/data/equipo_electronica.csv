@@ -1,0 +1,19 @@
+componente,tension,consumo_mA,masa_g,funcion,precio_ARS_2026_10_01
+ESP32-C3 Super Mini,3.3 V,85.0,4.0,Computadora de vuelo; picos de 200 mA,7384.0
+BMP280,3.3 V,1.0,1.0,Presión y altitud (I2C 0x76/0x77),4511.0
+AHT20,3.3 V,1.0,1.0,Temperatura y humedad (I2C),6885.0
+MPU6050,3.3 V,3.8,2.0,Acelerómetro y giroscopio (I2C),5848.13
+QMC5883L,3.3 V,1.0,1.0,Magnetómetro (I2C),6098.42
+INA219,3.3 V,1.0,2.0,Tensión y corriente de la batería (I2C),5141.07
+GPS NEO-7M,3.3 V,35.0,15.0,Posición; antena cerámica integrada,46381.33
+Waveshare Core2021-HF (LR2021 LoRa),3.3 V,105.0,5.0,"Telemetría y telecomandos (SPI, 850-930 MHz / 2,4 GHz)",37400.0
+LED de encendido,3.3 V,5.0,1.0,Indicador de encendido,0.0
+ESP32-CAM OV2640 (cenit),5.0 V,300.0,10.0,Video superior en microSD propia,22499.0
+ESP32-CAM OV2640 (nadir),5.0 V,300.0,10.0,Video inferior en microSD propia,22499.0
+Servo SG90 x2,5.0 V,20.0,18.0,Liberación; pico 500 mA c/u,11082.0
+Lector microSD,3.3 V,30.0,5.0,Respaldo de telemetría (SPI),3795.0
+"Regulador mini560 3,3 V","5 V a 3,3 V",0.0,3.0,"Alimenta MCU, sensores, LoRa y GPS",6277.0
+Regulador boost 5 V,"3,7 V a 5 V",0.0,4.0,Alimenta cámaras y servos; picos de 2 A,3637.0
+"Panel solar 120x60 mm 0,3 W",0-2 V,0.0,37.0,Señal al recibir radiación (E3),29.643
+Buzzer + pila botón,3.0 V,25.0,10.0,Baliza acústica independiente,5000.0
+Batería 1x18650 3400 mAh,"3,7 V",0.0,48.0,Fuente principal,20656.15

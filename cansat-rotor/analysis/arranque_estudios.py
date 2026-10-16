@@ -10,15 +10,16 @@ from scipy.interpolate import RegularGridInterpolator
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bemt_modelo as b  # noqa: E402
+import v2_config as cfg  # noqa: E402
 
 DATA = b.DATA
 QF = 0.73e-3                       # rozamiento de rodamientos [N.m] (cap. 14)
 TH_REG = -3.0
-# inercias (cap. 15): I_b alrededor de la bisagra, inercia polar con palas abiertas ~5e-4
-IB, MB, XG, E, LB = 4.35e-5, 0.0074, 0.070, b.E, 0.156
+# inercias (cap. 15), escaladas a la configuración activa (v2_config)
+IB, MB, XG, E, LB = cfg.IB, cfg.MB, cfg.XG, b.E, cfg.LB
 SB = MB * XG
 B = 4
-IHUB = 5.0e-4 - B * (IB + 2 * SB * E + MB * E**2)
+IHUB = cfg.IHUB
 BETA_TOPE = np.radians(15.0)
 CDC, MR = 1.2, 0.005
 
@@ -57,7 +58,7 @@ def fisica():
     # curvas Q(Omega)
     Om = np.r_[-40:0:4, 0:60:3, 60:420:10]
     cols, filas = ['Om'], []
-    casos = [('V4', TH_REG, 4.0, None), ('V694', TH_REG, 6.94, None), ('V10', TH_REG, 10.0, None),
+    casos = [('V4', TH_REG, 4.0, None), ('V694', TH_REG, round(b.V2_REF, 2), None), ('V10', TH_REG, 10.0, None),
              ('V134', TH_REG, 13.4, None), ('V16', TH_REG, 16.0, None),
              ('t0', 0.0, 13.4, None), ('t1', 1.0, 13.4, None), ('t1V5', 1.0, 5.0, None),
              ('tm3_2D', TH_REG, 13.4, b.polar_2d())]
@@ -78,7 +79,7 @@ def fisica():
         fila.append(Q_(b.Rotor(theta=-3, polar=b.polar_2d()), 0.0, V) * 1e3)
         filas.append(fila)
     guardar('q0', ['V', 'tm6', 'tm4', 'tm3', 'tm2', 'tm1', 'tm3_2D'], filas)
-    log('Q0(13.4, -3)=%.2f  Q0(6.94,-3)=%.2f' % (filas[10][3], Q_(b.Rotor(theta=-3), 0, 6.94) * 1e3))
+    log('Q0(13.4, -3)=%.2f  Q0(V2,-3)=%.2f' % (filas[10][3], Q_(b.Rotor(theta=-3), 0, b.V2_REF) * 1e3))
 
 
 # ------------------------------------------------------------------ 2. mapa
@@ -112,7 +113,7 @@ def mapa():
     confs = [('f073', QF, 0, None), ('f034', 0.34e-3, 0, None), ('f17', 1.7e-3, 0, None),
              ('f5', 5e-3, 0, None), ('tw10', QF, 10, None), ('tw20', QF, 20, None), ('p2D', QF, 0, p2d)]
     filas = []
-    for V in (4, 5, 6.94, 9, 11, 13.4, 16):
+    for V in (4, 5, round(b.V2_REF, 2), 9, 11, 13.4, 16):
         fila = [V] + [th_critico(V, qf, tw, pol) for _, qf, tw, pol in confs]
         filas.append(fila)
         log('mapa V=%.2f' % V, ['%.2f' % x for x in fila[1:]])
@@ -163,9 +164,11 @@ def beta_cono(T, o):
 
 
 def sim(mp, th_fun=lambda o, beta: TH_REG, V0=13.4, Om0=0.0, qf=QF, apertura=True, tmax=8.0,
-        dt=0.002, Qextra=lambda t, o: 0.0, guardar_hist=None):
+        dt=0.002, Qextra=lambda t, o: 0.0, guardar_hist=None, m=None):
     """Integra (I Omega)' = f Q - Qf + Qextra ; m V' = W - f T - k V^2 ; batimiento de apertura."""
-    k = b.K_DROGUE + b.K_CUERPO
+    m = b.M if m is None else m
+    W = m * b.G
+    k = b.K_CUERPO + (b.K_DROGUE if b.DROGUE_ATADO else 0.0)
     xs = np.linspace(0, LB, 12)[1:] - LB / 22
     o, V, z = Om0, V0, 0.0
     beta, bdot = (np.radians(-89.0), 0.0) if apertura else (np.radians(4.4), 0.0)
@@ -192,7 +195,7 @@ def sim(mp, th_fun=lambda o, beta: TH_REG, V0=13.4, Om0=0.0, qf=QF, apertura=Tru
             beta = beta_cono(T, o)
         L += (f * Q - qfr + Qextra(t, o)) * dt
         o = L / Iz(beta)
-        V += (b.W - f * T - k * V * V) / b.M * dt
+        V += (W - f * T - k * V * V) / m * dt
         z += V * dt
         t += dt
         H.append((t, o, V, z, np.degrees(beta), th, f * Q * 1e3))
@@ -242,7 +245,9 @@ def dinamica():
     caso('f17', 'Qf=1,7', M3, qf=1.7e-3)
     caso('V16', 'liberacion a 16 m/s', M3, V0=16.0)
     caso('V10', 'liberacion a 10 m/s', M3, V0=10.0)
-    caso('V7', 'liberacion a 6,94 m/s', M3, V0=6.94)
+    caso('V7', 'liberacion a V2 (rotor ya en regimen)', M3, V0=b.V2_REF)
+    caso('m036', 'Arq. 2: m2 = 0,36 kg', M3, m=0.36, guardar_hist='m036')
+    caso('m036V16', 'Arq. 2: m2 = 0,36 kg, apertura a 16 m/s', M3, m=0.36, V0=16.0)
     # paso colectivo variable pasivo: -8 a Omega=0 -> -3 por encima de 80 rad/s
     var = lambda o, beta: TH_REG + (-8 - TH_REG) * max(0.0, 1 - (max(o, 0) / 80.0)**2)
     caso('var', 'paso variable -8 -> -3 (Om_s=80)', M3, th_fun=var, guardar_hist='var')
@@ -260,7 +265,7 @@ def dinamica():
     guardar('casos', ['n', 't90', 'z90', 'Of', 'Vf', 'tap'], filas)
     # Omega0 mínimo para th=+1 y th=0 (palas abiertas al soltar el resorte) a varias V
     filas = []
-    for V0 in (6.94, 10.0, 13.4, 16.0):
+    for V0 in (round(b.V2_REF, 2), 10.0, 13.4, 16.0):
         fila = [V0]
         for th in (0.0, 1.0):
             lo, hi = 0.0, 150.0
@@ -280,7 +285,7 @@ def dinamica():
     filas = []
     for Om0 in (0, 10, 20, 30, 40, 60, 80, 100, 120):
         r = sim(M3, Om0=float(Om0), apertura=False, tmax=6)
-        filas.append((Om0, r['t90'], r['z90'], 0.5 * 5e-4 * Om0**2))
+        filas.append((Om0, r['t90'], r['z90'], 0.5 * Iz(0.0) * Om0**2))
     guardar('resorte', ['Om0', 't90', 'z90', 'E'], filas)
     log('resorte', filas)
     # t90 frente al paso (fijo)

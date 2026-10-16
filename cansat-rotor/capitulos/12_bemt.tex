@@ -2,43 +2,51 @@
 \usepgfplotslibrary{groupplots}
 
 El modelo BEMT con las polares extendidas de la placa curvada al \SI{7}{\percent}
-predice, para el rotor base ($B=4$, $c=\SI{45}{mm}$, $\theta=\ang{-3}$, sin torsión) y con
-el drogue atado, un descenso de $V_2\approx\SI{6.9}{m/s}$ a $\approx\num{1500}$~rpm. La
-velocidad es un \SI{8}{\percent} mayor que la estimación base de \SI{6.4}{m/s}, porque el
-coeficiente de resistencia del rotor que resulta es $C_R\approx0{,}97$ y no 1,2. Las rpm
-son un \SI{30}{\percent} mayores que las \num{1150} de la base y confirman la estimación
-por sección neutra del capítulo~\ref{cap:polares}. Este capítulo deduce el modelo,
-discute el cierre de cantidad de movimiento en el estado de molino turbulento, lo valida,
-barre paso, cuerda, número de palas y torsión, y analiza el arranque desde
-$\Omega=0$ a \SI{13.4}{m/s}. También entrega el mapa $T(\Omega,V)$, $Q(\Omega,V)$ que usa
-la simulación de vuelo.
+predice, para el rotor base ($R=\SI{0.25}{m}$, $B=4$, $c=\SI{45}{mm}$, $\theta=\ang{-3}$,
+sin torsión) y con el drogue ya soltado, un descenso de $V_2\approx\SI{6.4}{m/s}$ a
+$\approx\num{1230}$~rpm con $m_2=\SI{0.49}{kg}$. Es el \SI{11}{\percent} más que la estimación
+simple de cantidad de movimiento con $C_R=1{,}2$ (\SI{5.7}{m/s}), porque el
+coeficiente de resistencia del rotor que resulta es $C_R\approx0{,}96$ y no 1,2. Este capítulo
+se rehízo para la configuración v2 (capítulo~\ref{cap:arq}): rotor solo, sin el drogue ni su
+cuerda, $R=\SI{0.25}{m}$ y cuerpo de Ø\,90. Deduce el modelo, discute el cierre de cantidad de
+movimiento en el estado de molino turbulento, lo valida (también con el libro de
+Bramwell~\cite{bramwell2001}), barre paso, cuerda, número de palas y torsión, y analiza el
+arranque desde $\Omega=0$ a \SI{13.4}{m/s}. También entrega el mapa $T(\Omega,V)$,
+$Q(\Omega,V)$ que usa la simulación de vuelo. Los resultados de la configuración anterior (v1:
+$R=\SI{0.20}{m}$, drogue atado, $m=\SI{0.50}{kg}$) se citan solo para comparar.
 
 \begin{resultado}[Resultados principales del capítulo]
 \begin{itemize}
-  \item Punto de diseño ($\theta=\ang{-3}$, $c=\SI{45}{mm}$, $B=4$, con drogue):
-        $V_2=\SI{6.94}{m/s}$, $\Omega=\SI{157.6}{rad/s}$ (\num{1505}~rpm), punta a
-        \SI{31.5}{m/s}, $T=\SI{3.58}{N}$, $C_R=0{,}97$, $V_2/v_h=2{,}03$. Sin aporte del
-        drogue: $V_2=\SI{7.9}{m/s}$. Ambos valores cumplen C4 ($5\pm\SI{3}{m/s}$).
+  \item Punto de diseño v2 ($R=\SI{0.25}{m}$, $\theta=\ang{-3}$, $c=\SI{45}{mm}$, $B=4$, rotor
+        solo, $m_2=\SI{0.49}{kg}$): $V_2=\SI{6.36}{m/s}$, $\Omega=\SI{128.7}{rad/s}$
+        (\num{1229}~rpm), punta a \SI{32.2}{m/s}, $T=\SI{4.68}{N}$, $C_R=0{,}96$,
+        $V_2/v_h=2{,}04$. Si el drogue no se soltara: $V_2=\SI{5.81}{m/s}$. Ambos valores cumplen
+        C4 ($5\pm\SI{3}{m/s}$). La configuración anterior daba \SI{6.94}{m/s} con drogue y
+        \SI{7.91}{m/s} sin él, a $R=\SI{0.20}{m}$.
   \item $C_R$ depende sobre todo del cierre de cantidad de movimiento en el estado de
         molino turbulento. La curva de helicópteros (Castles y Gray, polinomio de
-        Leishman) da $C_R=0{,}83$--$1{,}00$ y $V_2=6{,}9$--\SI{7.3}{m/s}. La corrección
-        de Glauert--Buhl de turbinas eólicas da $C_R=0{,}9$--$1{,}5$ y
-        $V_2=5{,}9$--\SI{7.2}{m/s}. Se adopta la primera porque fue medida en rotores en
-        descenso vertical. La incertidumbre de modelo es de unos $\pm\SI{0.6}{m/s}$.
-  \item Las rpm caen al subir el paso: \num{1840} a \ang{-8}, \num{1505} a \ang{-3} y
-        \num{1280} a \ang{0}. En cambio, $V_2$ apenas varía ($6{,}86$--\SI{7.33}{m/s}).
+        Leishman) da $C_R=0{,}94$--$1{,}00$ y $V_2=6{,}2$--\SI{6.4}{m/s}. La corrección
+        de Glauert--Buhl de turbinas eólicas da $C_R=1{,}2$ y $V_2=\SI{5.7}{m/s}$. Se adopta la
+        primera porque fue medida en rotores en descenso vertical. La incertidumbre de modelo
+        es de unos $\pm\SI{0.4}{m/s}$ y explica entre el 65 y el \SI{90}{\percent} de la varianza
+        de $V_2$ (capítulo~\ref{cap:sens}).
+  \item Las rpm caen al subir el paso: \num{1514} a \ang{-8}, \num{1229} a \ang{-3} y
+        \num{1043} a \ang{0}. En cambio, $V_2$ apenas varía ($6{,}24$--\SI{6.86}{m/s}).
         Con la sección trabajando a $C_l\approx0{,}47$ en $0{,}75R$, el valor de diseño
         $C_l\approx0{,}9$ del capítulo~\ref{cap:dim} no se alcanza.
   \item Arranque: con $\theta\le\ang{-1}$ el par a $\Omega=0$ y $V=\SI{13.4}{m/s}$ es
         positivo y $Q(\Omega)$ no tiene otra raíz que el equilibrio rápido. No hay rama
         lenta que trabe el rotor. Con $\theta\ge\ang{0}$ el rotor no arranca solo. Con
-        $\theta=\ang{-3}$, $Q_0=\SI{17.8}{mN.m}$ (no los \SI{26}{mN.m} de la fórmula
-        simplificada) y el rotor alcanza el \SI{90}{\percent} de su velocidad final en
-        \SI{2.3}{s}, tras caer unos \SI{25}{m}.
-  \item La torsión lineal no aporta: entre \ang{-8} y \ang{+8} cambia $V_2$ en menos de
-        \SI{0.1}{m/s}. Con $\theta=\ang{-2}$, la torsión positiva casi anula el par
-        mínimo de arranque. \textbf{Recomendación}: $\theta=\ang{-3}$ (tolerancia
-        $\pm\ang{1}$), $c=\SI{45}{mm}$, $B=4$, pala sin torsión.
+        $\theta=\ang{-3}$, $Q_0=\SI{30}{mN.m}$ (no los \SI{63}{mN.m} de la fórmula
+        simplificada) y el modelo cuasiestacionario alcanza el \SI{90}{\percent} de la
+        velocidad final en \SI{1.5}{s}, tras caer unos \SI{20}{m}, con un sobrepaso de
+        $\Omega$ del \SI{26}{\percent} (hasta \num{1554}~rpm) que fija la carga centrífuga
+        de diseño.
+  \item La torsión lineal no aporta a $V_2$: entre \ang{-8} y \ang{+8} cambia $V_2$ en menos
+        de \SI{0.2}{m/s}. La torsión positiva (raíz con más paso negativo) sube el par de
+        arranque (de \SI{20}{mN.m} a \SI{25}{mN.m} con \ang{+8} a $\theta=\ang{-2}$); la
+        negativa lo baja (\SI{11}{mN.m} con \ang{-8}). \textbf{Recomendación}:
+        $\theta=\ang{-3}$ (tolerancia $\pm\ang{1}$), $c=\SI{45}{mm}$, $B=4$, pala sin torsión.
 \end{itemize}
 \end{resultado}
 
@@ -225,8 +233,8 @@ congela fuera de ese rango.
 %=======================================================================================
 \section{Validación y convergencia}\label{sec:bemt-valid}
 
-El código reproduce la solución exacta de un caso analítico con un error de
-$3\times10^{-10}$ en $a$, y el empuje converge al \SI{0.2}{\percent} con 40 anillos.
+El código reproduce la solución exacta de un caso analítico con un error menor que
+$10^{-9}$ en $a$, y el empuje converge al \SI{0.4}{\percent} con 40 anillos.
 
 \paragraph{Caso 1: molino frenante con polar lineal.} Se toma $B=2$, $c=\SI{20}{mm}$,
 $\theta=\ang{-4}$, $C_l=2\pi\alpha$, $C_d=0$, sin pérdidas, con cierre $4a(1-a)$, a
@@ -239,16 +247,28 @@ $V=\SI{8}{m/s}$ y $\Omega=\SI{250}{rad/s}$. La solución de pequeños ángulos e
 \end{equation}
 con $\lambda_\infty=V/(\Omega R)$. Además se calculó una solución exacta escalar,
 independiente de la rutina vectorial. La figura~\ref{fig:bemt-valid} muestra el
-resultado. El BEMT coincide con la solución exacta a $3\times10^{-10}$ y da
-$T=\SI{2.9394}{N}$. La fórmula~\eqref{eq:bemt-anal} da \SI{2.9381}{N}: difiere en un
-\SI{0.05}{\percent} y en $a$ difiere en 0,006 en la raíz, donde $\phi$ llega a \ang{27}
-y la aproximación de pequeños ángulos falla.
+resultado. El BEMT coincide con la solución exacta a menos de $10^{-9}$ y da
+$T=\SI{4.2260}{N}$ (radio de la configuración v2). La fórmula~\eqref{eq:bemt-anal} da
+\SI{4.2284}{N}: difiere en un \SI{0.06}{\percent} y en $a$ difiere en 0,006 en la raíz, donde
+$\phi$ llega a \ang{26} y la aproximación de pequeños ángulos falla.
 
 \paragraph{Caso 2: autorrotación ideal.} Con $C_d=0$, sin pérdidas y con la curva de
 helicópteros, la autorrotación debe dar $a\approx1$ en todo el disco y
-$C_R\to C_T(a=1)=1{,}21$. El código da $a=0{,}87$--1,08 y $C_R=1{,}15$. La diferencia
-del \SI{5}{\percent} se debe a que, con paso constante, el ángulo de flujo no es
+$C_R\to C_T(a=1)=1{,}21$. El código da $a=0{,}84$--1,09 y $C_R=1{,}17$. La diferencia
+del \SI{3}{\percent} se debe a que, con paso constante, el ángulo de flujo no es
 uniforme: la raíz impulsa con $a<1$ y la punta frena con $a>1$.
+
+\paragraph{Caso 3: contraste con Bramwell.} El libro de Bramwell, Done y
+Balmford~\cite[\S2.3, ec.~2.17--2.18, fig.~2.8, p.~42--44]{bramwell2001} da, para la
+autorrotación ideal (flujo neto nulo, $V_c=-v_i$), $V/v_0=1{,}8$ y un coeficiente de
+resistencia del disco $C_D=4/1{,}8^2=1{,}23$: «el rotor se comporta como un paracaídas».
+El caso 2 reproduce ese valor ($C_R=1{,}17$ frente a 1,21 de la curva empírica). El rotor
+real, en cambio, tiene resistencia de perfil: la sección debe sostener un par
+impulsor y parte del disco trabaja con $a<1$. Por eso el punto de diseño cae en
+$V/v_h=2{,}04$ y $C_R=0{,}96$ (sección~\ref{sec:bemt-base}), más cerca del límite del
+estado de molino frenante ($V/v_h=2$) que de la autorrotación ideal. El cierre de
+Glauert--Buhl, que da $V/v_h=1{,}82$ y $C_R=1{,}21$, reproduce el valor ideal del libro,
+pero solo vale para un rotor sin pérdidas de perfil.
 
 \begin{figure}[H]
 \centering
@@ -276,30 +296,31 @@ uniforme: la raíz impulsa con $a<1$ y la punta frena con $a>1$.
 \end{figure}
 
 \paragraph{Convergencia.} En el punto de diseño se repitió el cálculo con 5 a 320 anillos
-(tabla~\ref{tab:bemt-malla}). Con 40 anillos el empuje está a \SI{0.23}{\percent} del
-valor con 320. El par residual de \SI{-0.15}{mN.m} desplaza la $\Omega$ de equilibrio en
-$\Delta\Omega=-Q/(\partial Q/\partial\Omega)\approx\SI{0.17}{rad/s}$, que es despreciable.
-La iteración converge en 25 pasos con el cierre de helicópteros y en 20 con Buhl, en los
-40 anillos sin recurrir a la bisección de respaldo. Una bisección independiente coincide
-a $2\times10^{-10}$. Un barrido fino de $a\in[-0{,}9;\,3{,}9]$ confirmó que cada anillo
-tiene una sola raíz.
+(tabla~\ref{tab:bemt-malla}). Con 40 anillos el empuje está a \SI{0.38}{\percent} del
+valor con 320. El par residual de \SI{0.23}{mN.m} (con 320 anillos) desplaza la $\Omega$ de
+equilibrio en $\Delta\Omega=-Q/(\partial Q/\partial\Omega)\approx\SI{0.1}{rad/s}$, que es
+despreciable. La iteración converge en 23 pasos con el cierre de helicópteros y en 18 con
+Buhl, en los 40 anillos sin recurrir a la bisección de respaldo. Una bisección independiente
+coincide a $10^{-9}$. Un barrido fino de $a\in[-0{,}9;\,3{,}9]$ mostró hasta tres raíces
+en algún anillo de la zona de pérdida profunda (la solución de punto fijo toma la rama de
+$a$ creciente, que es la continua con el vuelo estacionario).
 
 \begin{table}[H]
 \centering
 \caption{Convergencia con el número de anillos en el punto de diseño
-($\Omega=\SI{157.6}{rad/s}$, $V=\SI{6.94}{m/s}$).}
+($\Omega=\SI{128.7}{rad/s}$, $V=\SI{6.36}{m/s}$).}
 \label{tab:bemt-malla}
 \begin{tabular}{rccc}
 \toprule
 Anillos $N$ & $T$ [N] & $Q$ [mN·m] & Error de $T$ respecto de $N=320$ \\
 \midrule
-5   & 3,678 & 2,377  & \SI{2.95}{\percent} \\
-10  & 3,623 & 0,975  & \SI{1.42}{\percent} \\
-20  & 3,595 & 0,258  & \SI{0.62}{\percent} \\
-40  & 3,581 & 0,000  & \SI{0.23}{\percent} \\
-80  & 3,575 & $-0{,}104$ & \SI{0.08}{\percent} \\
-160 & 3,573 & $-0{,}139$ & \SI{0.02}{\percent} \\
-320 & 3,573 & $-0{,}152$ & --- \\
+5   & 4,762 & 3,769  & \SI{2.12}{\percent} \\
+10  & 4,704 & 1,909  & \SI{0.88}{\percent} \\
+20  & 4,689 & 0,390  & \SI{0.54}{\percent} \\
+40  & 4,681 & 0,000  & \SI{0.38}{\percent} \\
+80  & 4,669 & $-0{,}181$ & \SI{0.12}{\percent} \\
+160 & 4,665 & $-0{,}208$ & \SI{0.04}{\percent} \\
+320 & 4,663 & $-0{,}232$ & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -307,20 +328,22 @@ Anillos $N$ & $T$ [N] & $Q$ [mN·m] & Error de $T$ respecto de $N=320$ \\
 %=======================================================================================
 \section{Punto de diseño}\label{sec:bemt-base}
 
-Con $\theta=\ang{-3}$ el rotor desciende a \SI{6.94}{m/s} y gira a \num{1505}~rpm. El
-empuje es \SI{3.58}{N}. El drogue aporta \SI{1.16}{N} y el cuerpo \SI{0.17}{N}, y entre
-los tres equilibran $W=\SI{4.905}{N}$.
+Con $\theta=\ang{-3}$ el rotor desciende a \SI{6.36}{m/s} y gira a \num{1229}~rpm. El
+empuje es \SI{4.68}{N}; el cuerpo de Ø\,90 aporta \SI{0.13}{N} y entre los dos equilibran
+$W=\SI{4.807}{N}$ ($m_2=\SI{0.49}{kg}$). Si el drogue no se soltara aportaría \SI{0.9}{N} y la
+velocidad bajaría a \SI{5.81}{m/s} (\num{1127}~rpm).
 
 \subsection{Distribuciones radiales}
 
-La figura~\ref{fig:bemt-dist} muestra el estado de cada anillo. El \SI{77}{\percent}
-interior del radio ($0{,}22<r/R<0{,}78$) es impulsor y el \SI{22}{\percent} exterior es
-impulsado. No hay anillos en pérdida: $\alpha$ va de \ang{6.3} en la raíz a
-\ang{-0.6} en la punta, por debajo del $\alpha$ de $C_{l,\max}$. El factor $a$ va de 0,86
-en la raíz a 0,71 en la punta. $Re$ va de \num{21000} a \num{94000}, y en $0{,}75R$ vale
-\num{72000}, igual que en la base. En $0{,}75R$ la sección trabaja a
-$\alpha=\ang{1.5}$ y $C_l=0{,}47$, dentro del intervalo 0,42--0,53 del
-capítulo~\ref{cap:polares}. El $C_l$ medio ponderado con el empuje es 0,57.
+La figura~\ref{fig:bemt-dist} muestra el estado de cada anillo. El \SI{58}{\percent}
+interior del radio ($0{,}18<r/R<0{,}77$) es impulsor y el \SI{23}{\percent} exterior es
+impulsado. Salvo el anillo de la raíz, no hay anillos en pérdida: $\alpha$ va de \ang{5.9}
+en la raíz a \ang{-0.6} en la punta, por debajo del $\alpha$ de $C_{l,\max}$. El factor
+$a$ va de 0,86 en la raíz a 0,79 en la punta. $Re$ va de \num{18000} a \num{96000}, y en
+$0{,}75R$ vale \num{72000}, igual que en la configuración anterior (a menos rpm pero con
+más radio). En $0{,}75R$ la sección trabaja a $\alpha=\ang{1.6}$ y $C_l=0{,}47$, dentro del
+intervalo 0,42--0,53 del capítulo~\ref{cap:polares}. El $C_l$ medio ponderado con el
+empuje es 0,56.
 
 \begin{figure}[H]
 \centering
@@ -362,28 +385,29 @@ El área de $\mathrm{d}Q/\mathrm{d}r$ es nula: equilibrio de par.}
 
 $\mathrm{d}T/\mathrm{d}r$ crece casi linealmente hacia la punta y cae en el último
 \SI{5}{\percent} por la pérdida de Prandtl. El par impulsor máximo está en
-$r/R\approx0{,}45$; la punta, con $U_T$ grande y $\phi$ pequeño, es la que más frena. Con Buhl la zona
+$r/R\approx0{,}49$; la punta, con $U_T$ grande y $\phi$ pequeño, es la que más frena. Con Buhl la zona
 impulsora se acorta hasta $r/R=0{,}75$ y el empuje sube en toda la pala.
 
 \subsection{Comparación con la estimación base}
 
 \begin{table}[H]
 \centering
-\caption{Punto de diseño: BEMT frente a la estimación base (cap.~\ref{cap:dim}).}
+\caption{Punto de diseño v2 (rotor solo, $R=\SI{0.25}{m}$, $m_2=\SI{0.49}{kg}$): BEMT frente a
+la estimación simple de cantidad de movimiento con $C_R=1{,}2$ (cap.~\ref{cap:dim}).}
 \label{tab:bemt-base}
 \begin{tabular}{lccc}
 \toprule
-Magnitud & Base & BEMT (helicópteros) & BEMT (Buhl) \\
+Magnitud & Estimación simple & BEMT (helicópteros) & BEMT (Buhl) \\
 \midrule
-$V_2$ con drogue [m/s]   & 6,4  & 6,94 & 6,29 \\
-$V_2$ sin drogue [m/s]   & 7,8 ($C_R=1$) & 7,91 & --- \\
-$\Omega$ [rpm]           & \num{1150} & \num{1505} & \num{1548} \\
-Velocidad de punta [m/s] & 24 & 31,5 & 32,4 \\
-$T$ [N]                  & 3,78 & 3,58 & 3,82 \\
-$C_R$                    & 1,2 & 0,97 & 1,25 \\
-$V_2/v_h$                & 1,83 & 2,03 & 1,79 \\
-$C_l$ en $0{,}75R$       & 0,9 & 0,47 & 0,46 \\
-$Re$ en $0{,}75R$        & \num{72000} & \num{72000} & \num{73000}\\
+$V_2$, rotor solo [m/s]   & 5,71 & 6,36 & 5,68 \\
+$V_2$ con drogue atado [m/s] & 5,2 & 5,81 & --- \\
+$\Omega$ [rpm]           & \num{910} & \num{1229} & \num{1229} \\
+Velocidad de punta [m/s] & 23,8 & 32,2 & 32,2 \\
+$T$ [N]                  & 4,71 & 4,68 & 4,71 \\
+$C_R$                    & 1,2 & 0,96 & 1,21 \\
+$V_2/v_h$                & 1,82 & 2,04 & 1,82 \\
+$C_l$ en $0{,}75R$       & 0,9 & 0,47 & 0,47 \\
+$Re$ en $0{,}75R$        & \num{54000} & \num{72000} & \num{72000}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -391,34 +415,35 @@ $Re$ en $0{,}75R$        & \num{72000} & \num{72000} & \num{73000}\\
 La tabla~\ref{tab:bemt-base} resume las diferencias, que tienen dos causas:
 \begin{enumerate}
   \item \textbf{$C_R$ menor.} La base supone $C_R=1{,}2$, el valor de la autorrotación
-        ideal. El BEMT da 0,97, por dos motivos: la resistencia de perfil obliga a que
-        parte del disco trabaje con $a<1$ para impulsar, y $F$ reduce el empuje en la
-        punta y en la raíz. Con menos empuje del rotor, el drogue tiene que aportar más,
-        y para eso la velocidad sube a \SI{6.94}{m/s}. Con Buhl, $C_R=1{,}25$ y el
-        resultado queda cerca de la base.
+        ideal (\cite{bramwell2001}, p.~44: $C_D=1{,}23$). El BEMT da 0,96, por dos motivos:
+        la resistencia de perfil obliga a que parte del disco trabaje con $a<1$ para
+        impulsar, y $F$ reduce el empuje en la punta y en la raíz. Con menos resistencia del
+        disco, la velocidad de equilibrio sube de \SI{5.7}{m/s} a \SI{6.36}{m/s}. Con Buhl,
+        $C_R=1{,}21$ y el resultado queda en la base.
   \item \textbf{$C_l$ de trabajo menor.} La ec.~\eqref{eq:omega} supuso $C_l=0{,}9$. El
         equilibrio de par fija $\alpha$ cerca del ángulo de máxima eficiencia de
         autorrotación y no del de $C_l$ alto: con $\theta=\ang{-3}$ resulta $C_l=0{,}47$
         en $0{,}75R$. Para generar el mismo empuje con $C_l$ menor hacen falta más rpm:
-        $\Omega\propto C_l^{-1/2}$ da $1150\sqrt{0{,}9/0{,}57}\approx\num{1450}$~rpm,
-        cerca de las \num{1505} del BEMT.
+        $\Omega\propto C_l^{-1/2}$ da $910\sqrt{0{,}9/0{,}56}\approx\num{1150}$~rpm,
+        cerca de las \num{1229} del BEMT.
 \end{enumerate}
-Esto confirma la estimación de \num{1500}--\num{1700}~rpm del
-capítulo~\ref{cap:polares} y corrige las \num{1150}~rpm base. Las cargas centrífugas
-crecen con $\Omega^2$, un factor 1,71: unos \SI{22}{N} por pala en lugar de \SI{13}{N}.
+Esto confirma la estimación por sección neutra del capítulo~\ref{cap:polares} y corrige
+las rpm de la estimación simple. Las cargas centrífugas crecen con $\Omega^2$ y con el
+largo de la pala: unas \SI{23}{N} por pala en el régimen y hasta \SI{37}{N} en el sobrepaso
+del arranque (sección~\ref{sec:bemt-arranque}).
 
-La conicidad de \ang{6.1} del capítulo de estructura inclina el empuje de cada pala.
-Su componente vertical baja en $\cos\beta_0=0{,}994$ y el radio efectivo en el mismo
-factor. Al primer orden ($T\propto R^3\cos\beta_0$), eso equivale a perder un
-\SI{2}{\percent} de empuje a igual $\Omega$. Como el equilibrio se reajusta, $V_2$ sube
-unos \SI{0.05}{m/s}, menos que la incertidumbre de modelo.
+La conicidad del capítulo de estructura inclina el empuje de cada pala. Su componente
+vertical baja en $\cos\beta_0\approx0{,}99$ y el radio efectivo en el mismo factor. Al
+primer orden ($T\propto R^3\cos\beta_0$), eso equivale a perder un \SI{2}{\percent} de
+empuje a igual $\Omega$. Como el equilibrio se reajusta, $V_2$ sube unos \SI{0.05}{m/s},
+menos que la incertidumbre de modelo.
 
 %=======================================================================================
 \section{Barrido de paso, cuerda y número de palas}\label{sec:bemt-barrido}
 
 El paso controla las rpm y el arranque, pero casi no influye en la velocidad de
-descenso. Entre \ang{-8} y \ang{+2}, $V_2$ solo varía entre \SI{6.86}{m/s} y
-\SI{7.33}{m/s} (figuras~\ref{fig:bemt-barrido-c} y~\ref{fig:bemt-barrido-B}).
+descenso. Entre \ang{-8} y \ang{+2}, $V_2$ solo varía entre \SI{6.24}{m/s} y
+\SI{6.86}{m/s} (figuras~\ref{fig:bemt-barrido-c} y~\ref{fig:bemt-barrido-B}).
 
 \begin{figure}[H]
 \centering
@@ -426,22 +451,20 @@ descenso. Entre \ang{-8} y \ang{+2}, $V_2$ solo varía entre \SI{6.86}{m/s} y
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.7cm},
   width=0.47\textwidth, height=5.6cm, grid=major, xlabel={$\theta_{0,75}$ [\si{\degree}]},
   legend style={font=\scriptsize}, unbounded coords=jump, xmin=-8, xmax=2]
-\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=north east, ymin=6.7, ymax=7.6]
+\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=north east, ymin=5.9, ymax=7.4]
 \addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=theta, y=V_c35] {analysis/data/bemt_theta_c.dat};
 \addlegendentry{$c=\SI{35}{mm}$}
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=V_c45] {analysis/data/bemt_theta_c.dat};
 \addlegendentry{$c=\SI{45}{mm}$}
 \addplot[ccuerda, thick, mark=triangle*, mark size=1.5pt] table[x=theta, y=V_c55] {analysis/data/bemt_theta_c.dat};
 \addlegendentry{$c=\SI{55}{mm}$}
-\nextgroupplot[ylabel={$n$ [rpm]}, legend pos=north east, ymin=900, ymax=2200]
+\nextgroupplot[ylabel={$n$ [rpm]}, legend pos=north east, ymin=800, ymax=2100]
 \addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=theta, y=rpm_c35] {analysis/data/bemt_theta_c.dat};
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=rpm_c45] {analysis/data/bemt_theta_c.dat};
 \addplot[ccuerda, thick, mark=triangle*, mark size=1.5pt] table[x=theta, y=rpm_c55] {analysis/data/bemt_theta_c.dat};
-\addplot[cgris, dashed, domain=-8:2] {1150};
-\node[font=\scriptsize, cgris, anchor=south west] at (axis cs:-7.8,1150) {base 1150};
 \end{groupplot}
 \end{tikzpicture}
-\caption{Efecto del paso y de la cuerda ($B=4$, con drogue).}
+\caption{Efecto del paso y de la cuerda ($B=4$, rotor solo, $R=\SI{0.25}{m}$).}
 \label{fig:bemt-barrido-c}
 \end{figure}
 
@@ -451,7 +474,7 @@ descenso. Entre \ang{-8} y \ang{+2}, $V_2$ solo varía entre \SI{6.86}{m/s} y
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.7cm},
   width=0.47\textwidth, height=5.6cm, grid=major, xlabel={$\theta_{0,75}$ [\si{\degree}]},
   legend style={font=\scriptsize}, unbounded coords=jump, xmin=-8, xmax=2]
-\nextgroupplot[ylabel={$n$ [rpm]}, legend pos=north east, ymin=900, ymax=2200]
+\nextgroupplot[ylabel={$n$ [rpm]}, legend pos=north east, ymin=800, ymax=2100]
 \addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=theta, y=rpm_B3] {analysis/data/bemt_theta_B.dat};
 \addlegendentry{$B=3$}
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=rpm_B4] {analysis/data/bemt_theta_B.dat};
@@ -472,54 +495,55 @@ arranque a $\Omega=0$.}
 
 El barrido ($11\times3\times3=99$ configuraciones) muestra cuatro tendencias:
 \begin{itemize}
-  \item \textbf{Paso.} Cada grado de paso más negativo suma unas 70~rpm y unos
-        \SI{6}{mN.m} de par de arranque. También baja el $C_l$ de trabajo y, con él,
-        $C_R$ (0,83 a \ang{-8}), por lo que $V_2$ sube \SI{0.4}{m/s} entre \ang{-3} y
-        \ang{-8}. El mínimo de $V_2$ ($\approx\SI{6.86}{m/s}$) está en $\theta\approx\ang{0}$,
+  \item \textbf{Paso.} Cada grado de paso más negativo suma unas 57~rpm y unos
+        \SI{10}{mN.m} de par de arranque. También baja el $C_l$ de trabajo y, con él,
+        $C_R$ (0,82 a \ang{-8}), por lo que $V_2$ sube \SI{0.5}{m/s} entre \ang{-3} y
+        \ang{-8}. El mínimo de $V_2$ ($\approx\SI{6.24}{m/s}$) está en $\theta\approx\ang{0}$,
         pero ese paso no arranca.
   \item \textbf{Solidez.} Más cuerda o más palas bajan las rpm casi como
-        $(Bc)^{-1/2}$ y apenas mejoran $V_2$: \SI{0.08}{m/s} de \SI{35}{mm} a
+        $(Bc)^{-1/2}$ y apenas mejoran $V_2$: \SI{0.1}{m/s} de \SI{35}{mm} a
         \SI{55}{mm}. El $Re$ en $0{,}75R$ depende de $c\,\Omega$ y cambia poco.
   \item \textbf{Par de arranque.} $Q_0$ crece con $Bc$ y con $-\theta$. A \ang{0} es
         nulo para todas las configuraciones: con la polar extendida la pala a
         $\alpha=\ang{90}$ se comporta como placa plana simétrica.
   \item \textbf{Velocidad de punta.} Con $c=\SI{35}{mm}$ y $B=3$ supera los
-        \SI{40}{m/s} (\num{1960}~rpm), y con eso suben las cargas centrífugas y el ruido.
+        \SI{40}{m/s} (\num{1600}~rpm), y con eso suben las cargas centrífugas y el ruido.
         El rotor base queda en el centro del intervalo.
 \end{itemize}
 
 \begin{table}[H]
 \centering
-\caption{Resultados del barrido a $\theta=\ang{-3}$ (con drogue).}
+\caption{Resultados del barrido a $\theta=\ang{-3}$ (rotor solo, $R=\SI{0.25}{m}$).}
 \label{tab:bemt-barrido}
 \begin{tabular}{ccccccccc}
 \toprule
 $c$ [mm] & $B$ & $\sigma$ & $V_2$ [m/s] & rpm & $C_R$ & $C_l(0{,}75R)$ & $V_\text{punta}$ [m/s] & $Q_0$ [mN·m] \\
 \midrule
-35 & 3 & 0,167 & 7,06 & \num{1960} & 0,92 & 0,48 & 41,0 & 11,2 \\
-35 & 4 & 0,223 & 6,99 & \num{1710} & 0,95 & 0,47 & 35,9 & 14,7 \\
-35 & 5 & 0,279 & 6,94 & \num{1540} & 0,97 & 0,46 & 32,2 & 18,0 \\
-45 & 3 & 0,215 & 7,00 & \num{1710} & 0,94 & 0,49 & 35,9 & 13,7 \\
-\textbf{45} & \textbf{4} & \textbf{0,286} & \textbf{6,94} & \textbf{\num{1505}} & \textbf{0,97} & \textbf{0,47} & \textbf{31,5} & \textbf{17,8} \\
-45 & 5 & 0,358 & 6,90 & \num{1360} & 0,98 & 0,46 & 28,5 & 21,8 \\
-55 & 3 & 0,263 & 6,96 & \num{1540} & 0,96 & 0,49 & 32,3 & 15,9 \\
-55 & 4 & 0,350 & 6,90 & \num{1350} & 0,98 & 0,48 & 28,3 & 20,7 \\
-55 & 5 & 0,438 & 6,87 & \num{1230} & 0,99 & 0,46 & 25,7 & 25,2 \\
+35 & 3 & 0,134 & 6,50 & \num{1604} & 0,92 & 0,48 & 42,0 & 18,6 \\
+35 & 4 & 0,178 & 6,42 & \num{1403} & 0,94 & 0,47 & 36,7 & 24,5 \\
+35 & 5 & 0,223 & 6,36 & \num{1257} & 0,96 & 0,47 & 32,9 & 30,1 \\
+45 & 3 & 0,172 & 6,44 & \num{1403} & 0,94 & 0,49 & 36,7 & 23,0 \\
+\textbf{45} & \textbf{4} & \textbf{0,229} & \textbf{6,36} & \textbf{\num{1229}} & \textbf{0,96} & \textbf{0,47} & \textbf{32,2} & \textbf{30,1} \\
+45 & 5 & 0,286 & 6,30 & \num{1107} & 0,98 & 0,47 & 29,0 & 36,9 \\
+55 & 3 & 0,210 & 6,40 & \num{1262} & 0,95 & 0,50 & 33,0 & 27,0 \\
+55 & 4 & 0,280 & 6,32 & \num{1105} & 0,98 & 0,48 & 28,9 & 35,2 \\
+55 & 5 & 0,350 & 6,27 & \num{998} & 0,99 & 0,47 & 26,1 & 43,0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Sin el drogue (rotor solo con el cuerpo), $V_2$ sube a 7,8--\SI{8.5}{m/s} según el paso
-(\SI{7.91}{m/s} a \ang{-3}, con \num{1700}~rpm). Es el peor caso si el drogue se enreda
-o se suelta, y cumple C4 ($\le\SI{8}{m/s}$) con $\theta\ge\ang{-3}$, pero sin margen: con
-$\theta\le\ang{-4}$ ya lo supera (\SI{8.03}{m/s} a \ang{-4}).
+Si el drogue no se soltara (falla de la liberación), $V_2$ baja a 5,7--\SI{6.2}{m/s} según
+el paso (\SI{5.81}{m/s} a \ang{-3}, con \num{1127}~rpm). Es un modo degradado benigno: el
+rotor sigue cumpliendo C4 ($\ge\SI{2}{m/s}$) y gira un \SI{8}{\percent} más lento. El
+problema de ese modo no es la velocidad sino la estela y la cuerda del drogue
+sobre el rotor (capítulo~\ref{cap:estabilidad}).
 
 %=======================================================================================
 \section{Sensibilidad al modelo}\label{sec:bemt-sens}
 
 El cierre del molino turbulento domina la incertidumbre de $V_2$: con Buhl, $V_2$ baja
-entre \SI{0.6}{m/s} y \SI{0.9}{m/s}. Las demás hipótesis cambian $V_2$ en menos de
-\SI{0.1}{m/s} y las rpm en menos de un \SI{6}{\percent} (tabla~\ref{tab:bemt-sens}).
+\SI{0.7}{m/s}. Las demás hipótesis cambian $V_2$ en menos de \SI{0.15}{m/s} y las rpm en
+menos de un \SI{5}{\percent} (tabla~\ref{tab:bemt-sens}).
 
 \begin{table}[H]
 \centering
@@ -529,15 +553,15 @@ entre \SI{0.6}{m/s} y \SI{0.9}{m/s}. Las demás hipótesis cambian $V_2$ en meno
 \toprule
 Variante & $V_2$ [m/s] & rpm & $C_R$ \\
 \midrule
-Base: helicópteros, $F$ punta y raíz, polares $Re$ local, $a'=0$ & 6,94 & \num{1505} & 0,97 \\
-Cierre Glauert--Buhl                       & 6,29 & \num{1548} & 1,25 \\
-Exceso de $C_T$ de helicópteros $\times0{,}8$ & 7,00 & \num{1500} & 0,94 \\
-Exceso de $C_T$ de helicópteros $\times1{,}2$ & 6,87 & \num{1510} & 0,99 \\
-Sin pérdidas de Prandtl ($F=1$)            & 6,85 & \num{1520} & 1,00 \\
-Con inducción tangencial $a'$              & 6,94 & \num{1500} & 0,97 \\
-Polar única de $Re=\num{50000}$            & 6,98 & \num{1510} & 0,95 \\
-$C_d\times1{,}2$ (rugosidad, bordes)       & 6,98 & \num{1430} & 0,95 \\
-Polar 2D sin corrección rotacional         & 6,95 & \num{1500} & 0,96 \\
+Base: helicópteros, $F$ punta y raíz, polares $Re$ local, $a'=0$ & 6,36 & \num{1229} & 0,96 \\
+Cierre Glauert--Buhl                       & 5,68 & \num{1229} & 1,21 \\
+Exceso de $C_T$ de helicópteros $\times0{,}8$ & 6,43 & \num{1229} & 0,94 \\
+Exceso de $C_T$ de helicópteros $\times1{,}2$ & 6,29 & \num{1229} & 0,98 \\
+Sin pérdidas de Prandtl ($F=1$)            & 6,24 & \num{1231} & 1,00 \\
+Con inducción tangencial $a'$              & 6,33 & \num{1224} & 0,97 \\
+Polar única de $Re=\num{50000}$            & 6,40 & \num{1235} & 0,95 \\
+$C_d\times1{,}2$ (rugosidad, bordes)       & 6,41 & \num{1169} & 0,95 \\
+Polar 2D sin corrección rotacional         & 6,37 & \num{1228} & 0,96 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -548,15 +572,15 @@ Polar 2D sin corrección rotacional         & 6,95 & \num{1500} & 0,96 \\
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.7cm},
   width=0.47\textwidth, height=5.4cm, grid=major, xlabel={$\theta_{0,75}$ [\si{\degree}]},
   legend style={font=\scriptsize}, unbounded coords=jump, xmin=-8, xmax=2]
-\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=south west, ymin=5.6, ymax=7.6]
+\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=south west, ymin=5.0, ymax=7.2]
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=V_base] {analysis/data/bemt_modelos.dat};
 \addlegendentry{helicópteros}
 \addplot[cfreno, thick, dashed, mark=o, mark size=1.2pt] table[x=theta, y=V_buhl] {analysis/data/bemt_modelos.dat};
 \addlegendentry{Glauert--Buhl}
 \addplot[cfijo, thick, mark=square, mark size=1.2pt] table[x=theta, y=V_cd12] {analysis/data/bemt_modelos.dat};
 \addlegendentry{$C_d\times1{,}2$}
-\addplot[cgris, dashed, domain=-8:2] {6.4};
-\node[font=\scriptsize, cgris, anchor=south east] at (axis cs:1.8,6.4) {base 6,4};
+\addplot[cgris, dashed, domain=-8:2] {5.71};
+\node[font=\scriptsize, cgris, anchor=north east] at (axis cs:1.8,5.71) {estimación simple 5,7};
 \nextgroupplot[ylabel={$C_R$}, legend pos=north west, ymin=0.7, ymax=1.6]
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=theta, y=CR_base] {analysis/data/bemt_modelos.dat};
 \addplot[cfreno, thick, dashed, mark=o, mark size=1.2pt] table[x=theta, y=CR_buhl] {analysis/data/bemt_modelos.dat};
@@ -574,15 +598,17 @@ esa curva da $C_T=2$. Con helicópteros el $C_R$ se satura cerca de 1,0. Los ens
 publicados de autogiros y de rotores en descenso vertical dan $C_R\approx1{,}0$--1,3, y
 el polinomio de Leishman en autorrotación ideal da 1,2. En ese intervalo, Buhl es
 plausible a pasos moderados, pero sus valores de 1,4--1,5 a $\theta\ge\ang{0}$ ya son
-altos. Como cifra de diseño se adopta $V_2=\SI{6.9}{m/s}$, con un intervalo de
-\SI{6.3}{m/s} a \SI{7.0}{m/s} con drogue. El ensayo de caída del capítulo de ensayos
-(medición de $V_2$ y rpm) es lo que debe decidir entre los dos cierres.
+altos. Como cifra de diseño se adopta $V_2=\SI{6.4}{m/s}$ para el rotor solo, con un
+intervalo de \SI{5.7}{m/s} a \SI{6.4}{m/s}. El ensayo de caída del capítulo de ensayos
+(medición de $V_2$ y rpm) es lo que debe decidir entre los dos cierres. La
+varianza global de $V_2$ frente a todas las entradas, incluida esta, se analiza en el
+capítulo~\ref{cap:sens}.
 
 %=======================================================================================
 \section{Torsión de la pala}\label{sec:bemt-torsion}
 
-Una torsión lineal de \ang{-8} a \ang{+8} cambia $V_2$ en menos de \SI{0.1}{m/s} y las
-rpm en menos de un \SI{2}{\percent}. En la práctica, la torsión no mejora el descenso.
+Una torsión lineal de \ang{-8} a \ang{+8} cambia $V_2$ en menos de \SI{0.2}{m/s} y las
+rpm en menos de un \SI{1}{\percent}. En la práctica, la torsión no mejora el descenso.
 
 \begin{figure}[H]
 \centering
@@ -590,7 +616,7 @@ rpm en menos de un \SI{2}{\percent}. En la práctica, la torsión no mejora el d
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.7cm},
   width=0.47\textwidth, height=5.4cm, grid=major, xlabel={Torsión $\theta_{tw}$ [\si{\degree}]},
   legend style={font=\scriptsize}, xmin=-8, xmax=8]
-\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=north east, ymin=6.75, ymax=7.1]
+\nextgroupplot[ylabel={$V_2$ [m/s]}, legend pos=north east, ymin=6.1, ymax=6.6]
 \addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=tw, y=V_m4] {analysis/data/bemt_torsion.dat};
 \addlegendentry{$\theta=\ang{-4}$}
 \addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=tw, y=V_m3] {analysis/data/bemt_torsion.dat};
@@ -609,13 +635,14 @@ durante el arranque a \SI{13.4}{m/s}.}
 \label{fig:bemt-torsion}
 \end{figure}
 
-La torsión negativa (punta con menos paso) da más par en la raíz, pero también aumenta
-la zona impulsada. La positiva sube un poco $C_R$ (0,967 a 0,985 con \ang{+8} a
-\ang{-3}). El efecto importante está en el arranque. Con $\theta=\ang{-2}$ y torsión
-positiva, la raíz queda con paso casi nulo o positivo, y el par mínimo durante la
-aceleración baja de \SI{11.9}{mN.m} a \SI{0.25}{mN.m} con \ang{+2}. El rotor quedaría al
-borde de trabarse a pocas rpm. Una pala plana es además más fácil de fabricar, así que
-se recomienda \textbf{no torcer la pala}.
+Con la convención usada ($\theta_{tw}>0$ sube el paso de la punta respecto de $0{,}75R$, es
+decir, deja la raíz con más paso negativo), la torsión positiva sube $C_R$ de 0,94 a 0,99
+y, sobre todo, \emph{sube} el par de arranque: con $\theta=\ang{-2}$ el par mínimo durante
+la aceleración pasa de \SI{20.0}{mN.m} sin torsión a \SI{25.2}{mN.m} con \ang{+8}. La
+torsión negativa lo baja a \SI{11.1}{mN.m} con \ang{-8}, porque la raíz queda con paso
+cercano a cero o positivo (el capítulo~\ref{cap:arranque} confirma este sentido con la
+simulación). La ganancia de la torsión positiva es modesta frente al costo de un molde
+torsionado, así que se recomienda \textbf{no torcer la pala}.
 
 %=======================================================================================
 \section{Arranque y equilibrios múltiples}\label{sec:bemt-arranque}
@@ -673,7 +700,7 @@ de la fuerza normal en el plano empuja la pala hacia adelante: es el par de arra
 Al subir $\Omega$, $\alpha$ baja por la zona de pérdida profunda, donde el par se
 mantiene positivo y decrece en forma monótona hasta el equilibrio. Con
 $\theta\le\ang{-1}$ no aparece ningún mínimo local que cruce el cero. Con
-$\theta=\ang{+1}$, en cambio, $Q(0)<0$ y aparece una raíz inestable a 9--\SI{51}{rad/s}
+$\theta=\ang{+1}$, en cambio, $Q(0)<0$ y aparece una raíz inestable a 7--\SI{43}{rad/s}
 ($V=3$--\SI{16}{m/s}). El rotor solo llega a la rama rápida si algo lo lleva por encima
 de esa raíz. Si arranca parado, queda frenado en $\Omega=0$
 (fig.~\ref{fig:bemt-locus}). Esto confirma, con el modelo completo, la regla del
@@ -704,14 +731,14 @@ raíz inestable a bajas rpm que hace de umbral: por debajo de ella el rotor se f
 \label{fig:bemt-locus}
 \end{figure}
 
-\paragraph{Par a $\Omega=0$.} El BEMT da $Q_0=\SI{17.8}{mN.m}$ con \ang{-3} y
-\SI{11.9}{mN.m} con \ang{-2}. Son menos de la mitad del resultado de la fórmula
-simplificada~\eqref{eq:Q0} (\SI{26}{mN.m} con \ang{-2}). La fórmula usa
+\paragraph{Par a $\Omega=0$.} El BEMT da $Q_0=\SI{30}{mN.m}$ con \ang{-3} y
+\SI{20}{mN.m} con \ang{-2} (rotor de $R=\SI{0.25}{m}$). Son menos de la mitad del resultado
+de la fórmula simplificada~\eqref{eq:Q0} (\SI{42}{mN.m} con \ang{-2}). La fórmula usa
 $C_N=2\sin\alpha$ y la velocidad libre completa. El BEMT, en cambio, usa la polar
 extendida a \ang{90} ($C_N=1{,}17$, corregido por alargamiento, frente a 1,98 en 2D) e incluye el
 bloqueo del disco, que con el rotor parado frena el flujo ($a>1$ en la rama
 extrapolada). Con la polar 2D, sin corrección de alargamiento, $Q_0$ sube a
-\SI{25.7}{mN.m}. El arranque solo exige que $Q_0$ supere el par de rozamiento de los rodamientos y
+\SI{44}{mN.m} (\ang{-3}). El arranque solo exige que $Q_0$ supere el par de rozamiento de los rodamientos y
 los sellos, que no se midió; conviene medirlo en el banco (estimación: pocas décimas
 de mN·m a \SI{1}{mN.m}).
 
@@ -721,13 +748,16 @@ arranque cuasiestacionario:
   I_z\dot\Omega=Q(\Omega,V),\qquad m\dot V=W-T(\Omega,V)-\tfrac12\rho V^2(C_{D,d}A_d+C_{D,c}A_c),
   \label{eq:bemt-trans}
 \end{equation}
-con $I_z=\SI{5.1e-4}{kg.m^2}$ y condiciones iniciales $\Omega=0$, $V=\SI{13.4}{m/s}$. La
+con $I_z=\SI{8.5e-4}{kg.m^2}$ (rotor de $R=\SI{0.25}{m}$; sin el término del drogue en
+$m\dot V$) y condiciones iniciales $\Omega=0$, $V=\SI{13.4}{m/s}$. La
 figura~\ref{fig:bemt-trans} muestra la evolución. Durante el primer segundo la aceleración
-es lenta, porque el par es pequeño. Entre 1,5 y \SI{2.5}{s} la aceleración es fuerte.
-$\Omega$ supera el valor final en un \SI{4.5}{\percent}, con un máximo de
-\SI{164.8}{rad/s} a los \SI{2.95}{s}, y se estabiliza en \SI{157.8}{rad/s} y
-\SI{6.94}{m/s}. El \SI{90}{\percent} de $\Omega$ final se alcanza a los \SI{2.3}{s},
-tras caer \SI{25}{m}. A los \SI{6}{s} la caída acumulada es de \SI{52}{m}. La dinámica
+es lenta, porque el par es pequeño. Entre 1 y \SI{2}{s} la aceleración es fuerte.
+$\Omega$ supera el valor final en un \SI{26}{\percent}, con un máximo de
+\SI{162.7}{rad/s} (\num{1554}~rpm) a los \SI{1.9}{s}, y se estabiliza en \SI{128.9}{rad/s} y
+\SI{6.36}{m/s}. El sobrepaso es mayor que en la configuración anterior porque, sin el
+drogue, el rotor frena el descenso más rápido que lo que baja su velocidad de giro de
+equilibrio. El \SI{90}{\percent} de $\Omega$ final se alcanza a los \SI{1.5}{s}, tras caer
+\SI{20}{m}. A los \SI{6}{s} la caída acumulada es de \SI{51}{m}. La dinámica
 del batimiento, la apertura de las palas y la inercia del flujo (que el modelo
 cuasiestacionario ignora) se tratan en el capítulo de dinámica.
 
@@ -735,12 +765,12 @@ cuasiestacionario ignora) se tratan en el capítulo de dinámica.
 \centering
 \begin{tikzpicture}
 \begin{axis}[width=0.75\textwidth, height=5.8cm, grid=major, xlabel={$t$ [s]},
-  ylabel={$n$ [rpm]}, xmin=0, xmax=6, ymin=0, ymax=1800, axis y line*=left,
+  ylabel={$n$ [rpm]}, xmin=0, xmax=8, ymin=0, ymax=1800, axis y line*=left,
   legend style={font=\scriptsize}]
 \addplot[crot, very thick] table[x=t, y=rpm] {analysis/data/bemt_transitorio.dat};
 \label{pl:bemt-rpm}
 \end{axis}
-\begin{axis}[width=0.75\textwidth, height=5.8cm, xmin=0, xmax=6, ymin=0, ymax=15,
+\begin{axis}[width=0.75\textwidth, height=5.8cm, xmin=0, xmax=8, ymin=0, ymax=15,
   axis y line*=right, axis x line=none, ylabel={$V$ [m/s]},
   legend pos=north east, legend style={font=\scriptsize}]
 \addlegendimage{/pgfplots/refstyle=pl:bemt-rpm}\addlegendentry{rpm}
@@ -749,7 +779,7 @@ cuasiestacionario ignora) se tratan en el capítulo de dinámica.
 \end{axis}
 \end{tikzpicture}
 \caption{Arranque cuasiestacionario desde $\Omega=0$ y $V=\SI{13.4}{m/s}$
-($\theta=\ang{-3}$, con drogue).}
+($\theta=\ang{-3}$, rotor solo).}
 \label{fig:bemt-trans}
 \end{figure}
 
@@ -770,22 +800,22 @@ $Q\propto V^2$ a $\Omega/V$ constante, que es la similitud del molino.
 \begin{resultado}[Configuración recomendada]
 \begin{itemize}
   \item \textbf{Paso $\theta_{0,75}=\ang{-3}$}, aceptable entre \ang{-2} y \ang{-4}.
-        Con \ang{-2} el par de arranque baja a \SI{12}{mN.m}. Con \ang{-4} las rpm suben
-        a \num{1580} y $V_2$ a \SI{7.0}{m/s}. Nunca $\ge\ang{0}$.
+        Con \ang{-2} el par de arranque baja a \SI{20}{mN.m}. Con \ang{-4} las rpm suben
+        a \num{1291} y $V_2$ a \SI{6.44}{m/s}. Nunca $\ge\ang{0}$.
   \item \textbf{Cuerda \SI{45}{mm} y $B=4$}: se mantienen. Más solidez casi no mejora
         $V_2$ y agrega masa. Menos solidez sube la velocidad de punta por encima de
-        \SI{35}{m/s}.
-  \item \textbf{Sin torsión}: la ganancia es menor que \SI{0.1}{m/s}, y la torsión
-        positiva compromete el arranque.
-  \item \textbf{Prestaciones esperadas}: $V_2=\SI{6.9}{m/s}$ (intervalo de modelo
-        6,3--\SI{7.0}{m/s}) con drogue y \SI{7.9}{m/s} sin drogue, \num{1500}~rpm
-        (\num{1430}--\num{1550}) y arranque en $\approx\SI{2.3}{s}$.
-  \item \textbf{Cambios respecto de la base}: $V_2$ es \SI{0.5}{m/s} mayor
-        ($C_R=0{,}97$ en lugar de 1,2), las rpm son un \SI{30}{\percent} mayores
-        (\num{1505} en lugar de \num{1150}), la fuerza centrífuga sube a unos \SI{22}{N}
-        por pala y el par de arranque es de \SI{18}{mN.m} con \ang{-3} (no
-        \SI{26}{mN.m} con \ang{-2}). Los capítulos de estructura y de dinámica deben usar
-        estos valores.
+        \SI{36}{m/s}.
+  \item \textbf{Sin torsión}: la ganancia es menor que \SI{0.2}{m/s}, y la torsión
+        negativa compromete el arranque.
+  \item \textbf{Prestaciones esperadas} (rotor solo, $R=\SI{0.25}{m}$, $m_2=\SI{0.49}{kg}$):
+        $V_2=\SI{6.4}{m/s}$ (intervalo de modelo 5,7--\SI{6.4}{m/s}), \num{1229}~rpm
+        (\num{1170}--\num{1235}) y arranque en $\approx\SI{1.5}{s}$. El radio $R$ y la masa
+        $m_2$ son las palancas de diseño: $V_2\propto\sqrt{m_2}/R$ (capítulo~\ref{cap:arq}).
+  \item \textbf{Cambios respecto de la configuración anterior}: el rotor trabaja solo, así
+        que $V_2$ ya no depende del drogue ni de su cuerda; el radio sube a \SI{0.25}{m}
+        (la pala, a \SI{206}{mm}); las rpm bajan a \num{1229} (de \num{1505}); el par de
+        arranque sube a \SI{30}{mN.m} con \ang{-3}; y el sobrepaso del arranque llega a
+        \num{1554}~rpm, que es la velocidad que deben resistir las palas y el cubo.
 \end{itemize}
 \end{resultado}
 

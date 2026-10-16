@@ -13,7 +13,7 @@ from bemt_modelo import Rotor, bemt, TQ, equilibrio, raices_Q, guardar, log
 
 THETA_REC = -3.0          # paso recomendado (se fija tras el barrido)
 THETAS = list(range(-8, 3))
-CACHE = os.path.join(b.DATA, 'bemt_cache.json')
+CACHE = os.path.join(b.DATA, 'bemt_cache_%s.json' % b.cfg.CFG)
 
 
 def resumen(e, rot):
@@ -64,10 +64,11 @@ def _caso(args):
     elif extra.get('polar') == '2d':
         rot.polar = b.polar_2d()
     out = {}
-    e = equilibrio(rot, drogue=True)
+    e = equilibrio(rot, drogue=b.DROGUE_ATADO)
     out['con'] = resumen(e, rot)
     if extra.get('sin', False):
-        out['sin'] = resumen(equilibrio(rot, drogue=False), rot)
+        # 'sin' = la otra condición: en v1 sin drogue; en v2 con el drogue atado (falla de liberación)
+        out['sin'] = resumen(equilibrio(rot, drogue=not b.DROGUE_ATADO), rot)
     if extra.get('arr', True):
         out['arr'] = arranque(rot)
     return (th, c, B, extra.get('tag', 'base')), out
@@ -400,14 +401,14 @@ def et_transitorio():
     Tm = d[:, 2].reshape(len(Om), len(V)); Qm = d[:, 3].reshape(len(Om), len(V))
     fT = RegularGridInterpolator((Om, V), Tm, bounds_error=False, fill_value=None)
     fQ = RegularGridInterpolator((Om, V), Qm, bounds_error=False, fill_value=None)
-    I = 5.1e-4
-    k = b.K_DROGUE + b.K_CUERPO
+    I = b.cfg.Iz(np.radians(6.1))
+    k = b.K_CUERPO + (b.K_DROGUE if b.DROGUE_ATADO else 0.0)
     def rhs(t, y):
         o, v = y
         p = [[min(max(o, 0), 200), min(max(v, 2), 16)]]
         return [fQ(p)[0] / I, (b.W - fT(p)[0] - k * v * v) / b.M]
-    sol = solve_ivp(rhs, (0, 6), [0.0, 13.4], max_step=0.01, dense_output=True)
-    t = np.linspace(0, 6, 241)
+    sol = solve_ivp(rhs, (0, 8), [0.0, b.V_ETAPA1], max_step=0.01, dense_output=True)
+    t = np.linspace(0, 8, 321)
     y = sol.sol(t)
     T = [fT([[min(max(o, 0), 200), v]])[0] for o, v in zip(*y)]
     guardar('transitorio', ['t', 'Om', 'V', 'rpm', 'T'], [(ti, o, v, o * 30 / np.pi, Ti) for ti, o, v, Ti in zip(t, y[0], y[1], T)])
