@@ -10,7 +10,11 @@ ETQ = {'m2': r'masa de la etapa 2', 'R': r'radio $R$ (\textpm\,3\,mm)', 'rho': r
        'm1': r'masa en etapa 1', 'Cdd': r'$C_D$ del drogue', 'Dd': r'diámetro del drogue', 'f': r'fracción a $V_1$ (disparo)', 'ts': r'tiempo de arranque',
        'i_c3': 'MCU', 'i_sens': 'sensores', 'i_gps': 'GPS', 'i_lora': 'radio (LoRa)', 'i_sd': 'microSD', 'i_led': 'LED', 'i_cam': 'cámaras (c/u)',
        'i_servo': 'servos en reposo', 'eta_buck': r'rendimiento reductor', 'eta_boost': r'rendimiento elevador', 'frac_util': 'fracción útil de la celda',
-       'cap': 'capacidad de la celda', 'f_cap_T': 'efecto de la temperatura'}
+       'cap': 'capacidad de la celda', 'f_cap_T': 'efecto de la temperatura',
+       'Qf': r'rozamiento $Q_f$ (0,34 a 1,7\,mN.m)', 'V0': r'$V$ al abrir (10 a 16\,m/s)', 'Iz': r'inercia del rotor (\textpm\,30\,\%)',
+       'polar': 'polar en pérdida (XFOIL o 2D)', 'Cdc': r'arrastre de apertura $C_{dc}$'}
+ETQ['theta'] = r'paso $\theta$ (\ang{-4} a \ang{-2})'
+ETQ['m2'] = r'masa de la etapa 2'
 
 
 def tornado(nombre, archivo, titulo_x, nominal, cols=(1, 2), unidad='', cota=None, sort=True):
@@ -54,4 +58,6 @@ if __name__ == '__main__':
     tornado('V2_A2', 'sens_tornado_V2_A2.dat', r'$V_2$ de régimen [m/s] (Arq.~2)', R['A_A2']['V0'])
     tornado('Vg_A1', 'sens_tornado_Vg_A1.dat', r'velocidad media global [m/s] (Arq.~1)', R['B_A1']['Vg0'], cota=(8.0, r'límite 8'))
     tornado('Vg_A2', 'sens_tornado_Vg_A2.dat', r'velocidad media global [m/s] (Arq.~2)', R['B_A2']['Vg0'], cota=(8.0, r'límite 8'))
+    tornado('t90', 'sens_tornado_t90.dat', r'$t_{90}$ del arranque [s]', 1.552)
+    tornado('z90', 'sens_tornado_z90.dat', r'caída hasta $t_{90}$ [m]', 21.66)
     tornado('E7', 'sens_tornado_E7.dat', r'autonomía con todo encendido [h]', R['D']['h_todo_encendido'], cota=(2.0, r'E7: 2 h'))

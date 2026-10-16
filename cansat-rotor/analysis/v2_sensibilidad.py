@@ -42,15 +42,18 @@ def V1f(m1, rho, Cdd, Dd=0.25, Cdc=0.8):
     return np.sqrt(m1 * G / (0.5 * rho * (Cdd * np.pi * Dd**2 / 4 + Cdc * A_C)))
 
 
-def sobol(f, lows, highs, N=40000):
+def sobol(f, lows, highs, N=200000):
+    """Índices de Sobol de primer orden (Saltelli 2010) y totales (Jansen), con la salida centrada."""
     k = len(lows)
     A = rng.uniform(lows, highs, (N, k)); Bm = rng.uniform(lows, highs, (N, k))
     fA, fB = f(A), f(Bm)
+    mu = 0.5 * (fA.mean() + fB.mean())
+    fA, fB = fA - mu, fB - mu
     var = np.var(np.concatenate([fA, fB]))
     S1, ST = [], []
     for i in range(k):
         ABi = A.copy(); ABi[:, i] = Bm[:, i]
-        fAB = f(ABi)
+        fAB = f(ABi) - mu
         S1.append(np.mean(fB * (fAB - fA)) / var)
         ST.append(0.5 * np.mean((fA - fAB)**2) / var)
     return np.array(S1), np.array(ST), var

@@ -1,11 +1,13 @@
 \chapter{Dimensionamiento}\label{cap:dim}
 
-\begin{nota}[Valores refinados en capítulos posteriores]
-Este capítulo es el dimensionamiento base, con modelos simples. Los capítulos siguientes
-los refinan: la BEMT (cap.~\ref{cap:bemt}) da $\Vr\approx\SI{6.9}{m/s}$, $\approx\SI{1500}{rpm}$
-y $\CR\approx0{,}97$; el análisis estructural (cap.~\ref{cap:estructura}) da una conicidad
-de \ang{6.1}, pide un tope elástico a \ang{+15} y una pala con laminado a $\pm\ang{45}$ y
-varilla en el borde de ataque. Cuando haya diferencia, valen los valores refinados.
+\begin{nota}[Configuración v2 y valores refinados]
+Este capítulo es el dimensionamiento base, con modelos simples, rehecho para la
+configuración v2 (anexo con S2 = Ø\,90, drogue soltado antes de abrir el rotor, $R=\SI{0.25}{m}$;
+capítulo~\ref{cap:arq}). Los capítulos siguientes lo refinan: la BEMT (cap.~\ref{cap:bemt})
+da $\Vr\approx\SI{6.4}{m/s}$ con el rotor solo, $\approx\num{1230}$~rpm y $\CR\approx0{,}96$; el
+análisis estructural (cap.~\ref{cap:estructura}) da una conicidad de \ang{4.2}, pide una pala
+con laminado a $\pm\ang{45}$ y varilla en el borde de ataque y un tope elástico a \ang{+15}.
+Cuando haya diferencia, valen los valores refinados.
 \end{nota}
 
 \section{Datos de diseño}
@@ -15,21 +17,22 @@ varilla en el borde de ataque. Cuando haya diferencia, valen los valores refinad
 \begin{tabular}{@{}llr@{}}
 \toprule
 \textbf{Magnitud} & \textbf{Símbolo} & \textbf{Valor}\\\midrule
-Masa total (CanSat + contenedor)       & $m$        & \SI{0.500}{kg}\\
-Peso                                   & $W$        & \SI{4.905}{N}\\
+Masa total en la etapa 1 (CanSat + contenedor) & $m_1$ & \SI{0.500}{kg}\\
+Masa en la etapa 2 (sin el drogue soltado)  & $m_2$      & \SI{0.490}{kg}\\
+Peso en las etapas 1 y 2               & $W_1$, $W_2$ & \SI{4.905}{N}, \SI{4.807}{N}\\
 Densidad del aire                      & $\rho$     & \SI{1.225}{kg/m^3}\\
 Viscosidad cinemática                  & $\nu$      & \SI{1.5e-5}{m^2/s}\\
-Radio del rotor                        & $R$        & \SI{0.200}{m}\\
+Radio del rotor                        & $R$        & \SI{0.250}{m}\\
 Radio de la bisagra                    & $e$        & \SI{0.044}{m}\\
-Largo de pala                          & $L_b=R-e$  & \SI{0.156}{m}\\
+Largo de pala                          & $L_b=R-e$  & \SI{0.206}{m}\\
 Número de palas                        & $B$        & 4\\
 Cuerda                                 & $c$        & \SI{0.045}{m}\\
-Área del disco                         & $A_R=\pi R^2$ & \SI{0.1257}{m^2}\\
-Solidez                                & $\sigma=Bc/\pi R$ & 0,286\\
+Área del disco                         & $A_R=\pi R^2$ & \SI{0.1963}{m^2}\\
+Solidez                                & $\sigma=Bc/\pi R$ & 0,229\\
 Diámetro del drogue                    & $D_d$      & \SI{0.25}{m}\\
 Área del drogue                        & $A_d$      & \SI{0.0491}{m^2}\\
 Coeficiente del drogue                 & $C_{D,d}$  & 0,80\\
-Área frontal del cuerpo (Ø\,95)        & $A_c$      & \SI{0.00709}{m^2}\\
+Área frontal del cuerpo (Ø\,90)        & $A_c$      & \SI{0.00636}{m^2}\\
 Coeficiente del cuerpo                 & $C_{D,c}$  & 0,80\\
 \bottomrule
 \end{tabular}
@@ -48,13 +51,13 @@ completa:
   legend style={font=\footnotesize, at={(0.98,0.98)}, anchor=north east}]
   \fill[ccuerda!12] (axis cs:15,12) rectangle (axis cs:40,18);
   \node[font=\footnotesize, ccuerda!70!black, anchor=south east] at (axis cs:39.5,12.2) {\Req{C3}: \SIrange{12}{18}{m/s}};
-  \addplot[cfijo, thick, dashed, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.75*pi*(x/100)^2/4+0.8*0.007088)))};
+  \addplot[cfijo, thick, dashed, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.75*pi*(x/100)^2/4+0.8*0.006362)))};
   \addlegendentry{$C_{D,d}=0{,}75$}
-  \addplot[cfijo, very thick, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.80*pi*(x/100)^2/4+0.8*0.007088)))};
+  \addplot[cfijo, very thick, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.80*pi*(x/100)^2/4+0.8*0.006362)))};
   \addlegendentry{$C_{D,d}=0{,}80$}
-  \addplot[cfijo, thick, dotted, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.90*pi*(x/100)^2/4+0.8*0.007088)))};
+  \addplot[cfijo, thick, dotted, domain=15:40, samples=60] {sqrt(4.905/(0.6125*(0.90*pi*(x/100)^2/4+0.8*0.006362)))};
   \addlegendentry{$C_{D,d}=0{,}90$}
-  \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(25,13.35)};
+  \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(25,13.44)};
   \node[cfreno, font=\footnotesize, anchor=south west] at (axis cs:25.4,13.5) {Ø\,25\,cm: \SI{13.4}{m/s}};
 \end{axis}
 \end{tikzpicture}
@@ -64,22 +67,24 @@ completa:
 
 \begin{table}[H]
 \centering\small
-\caption{Velocidad de la etapa 1 (drogue + cuerpo, \SI{500}{g}).}\label{tab:drogue}
+\caption{Velocidad de la etapa 1 (drogue + cuerpo Ø\,90, \SI{500}{g}).}\label{tab:drogue}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
 $D_d$ [cm] & $A_d$ [m$^2$] & $C_{D,d}=0{,}75$ & $C_{D,d}=0{,}80$ & $C_{D,d}=0{,}90$ & \Req{C3}\\\midrule
-24 & 0,0452 & 14,2 & 13,8 & 13,1 & Cumple\\
-\textbf{25} & \textbf{0,0491} & \textbf{13,7} & \textbf{13,4} & \textbf{12,7} & \textbf{Cumple}\\
-27 & 0,0573 & 12,8 & 12,5 & 11,8 & No cumple con $C_D$ alto\\
-30 & 0,0707 & 11,7 & 11,3 & 10,8 & No cumple\\
+24 & 0,0452 & 14,3 & 13,9 & 13,2 & Cumple\\
+\textbf{25} & \textbf{0,0491} & \textbf{13,8} & \textbf{13,4} & \textbf{12,7} & \textbf{Cumple}\\
+27 & 0,0573 & 12,9 & 12,5 & 11,9 & No cumple con $C_D$ alto\\
+30 & 0,0707 & 11,7 & 11,4 & 10,8 & No cumple\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{resultado}[Drogue elegido]
 Ø\,\SI{25}{cm}, cruz o circular plano, $C_D\approx0{,}8$: $\Vd\approx\SI{13.4}{m/s}$.
-Queda dentro de \Req{C3} para todo el rango de $C_D$ esperable. Un drogue mayor mejoraría
-la etapa 2, pero a Ø\,\SI{27}{cm} la etapa 1 ya puede caer por debajo de \SI{12}{m/s}.
+Queda dentro de \Req{C3} para todo el rango de $C_D$ esperable. Con el drogue soltado
+antes de abrir el rotor, su tamaño ya no influye en la etapa 2; pero un drogue mayor
+bajaría la etapa 1 (y el promedio global de \Req{C4}), y a Ø\,\SI{27}{cm} la etapa 1 ya
+puede caer por debajo de \SI{12}{m/s}.
 \end{resultado}
 
 \paragraph{Carga de apertura.} Con la ecuación~\eqref{eq:apertura}, $C_D S=\SI{0.0393}{m^2}$:
@@ -87,27 +92,34 @@ a $V_{\text{ap}}=\SI{15}{m/s}$, $F_o\approx\SI{8}{N}$; a \SI{25}{m/s}, \SI{23}{N
 \SI{35}{m/s}, \SI{44}{N}. El CanSat sale del cohete cerca del apogeo, a baja velocidad, así
 que \SI{25}{m/s} es un caso conservador. Se especifica una cuerda de Dyneema de
 \SI{1.5}{mm} (carga de rotura del orden de \SI{1}{kN}) y un destorcedor de
-$\ge\SI{200}{N}$: factor de seguridad mayor que 4 aun a \SI{35}{m/s}.
+$\ge\SI{200}{N}$: factor de seguridad mayor que 4 aun a \SI{35}{m/s}. La cuerda termina en
+un lazo retenido por el pasador de liberación (capítulo~\ref{cap:arq}); ya no pasa por el
+eje del rotor.
 
 %=====================================================================
 \section{Etapa 2: rotor}\label{sec:dim-rotor}
 
 \subsection{Velocidad de descenso}
-Con la ecuación~\eqref{eq:equilibrio}, cada término aporta $k=\tfrac12\rho\,C\,A$ en
-\si{N/(m/s)^2}: rotor $k_R=0{,}0770\,\CR$, drogue $k_d=0{,}0241$, cuerpo $k_c=0{,}0035$.
+Con el drogue soltado, la etapa 2 es el rotor solo con el cuerpo: la
+ecuación~\eqref{eq:equilibrio} se reduce a $W_2=(k_R\CR+k_c)\Vr^2$ con
+$k_R=\tfrac12\rho A_R=0{,}1203$ y $k_c=0{,}0031$ en \si{N/(m/s)^2}. Para el rotor de
+$R=\SI{0.25}{m}$ y $m_2=\SI{0.49}{kg}$:
 
 \begin{table}[H]
 \centering\small
-\caption{Velocidad estabilizada de la etapa 2 (\SI{500}{g}, $R=\SI{0.20}{m}$, drogue Ø\,25).}\label{tab:rotor}
-\begin{tabular}{@{}lccc@{}}
+\caption{Velocidad estabilizada de la etapa 2 con $R=\SI{0.25}{m}$ (estimación simple de
+cantidad de movimiento). La Arquitectura~2 suelta además el contenedor ($m_2\approx\SI{0.36}{kg}$);
+la última columna es la falla de la liberación del drogue.}\label{tab:rotor}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Caso} & $\boldsymbol{\CR}$ & \textbf{Con drogue} & \textbf{Drogue sin aporte}\\\midrule
-Rotor pobre                    & 1,0 & 6,85 & 7,81\\
-Rotor real típico              & 1,1 & 6,61 & 7,46\\
-\textbf{Diseño}                & \textbf{1,2} & \textbf{6,40} & \textbf{7,15}\\
-Rotor muy bueno                & 1,3 & 6,20 & 6,88\\
+\textbf{Caso} & $\boldsymbol{\CR}$ & \textbf{Rotor solo, $m_2=0{,}49$} & \textbf{Arq.~2, $m_2=0{,}36$} & \textbf{Drogue atado, $m=0{,}50$}\\\midrule
+BEMT (cap.~\ref{cap:bemt})      & 0,96 & 6,37 & 5,46 & 5,86\\
+Rotor pobre                     & 1,0 & 6,24 & 5,35 & 5,77\\
+Rotor real típico               & 1,1 & 5,96 & 5,11 & 5,55\\
+\textbf{Estimación simple}      & \textbf{1,2} & \textbf{5,71} & \textbf{4,89} & \textbf{5,35}\\
+Rotor muy bueno                 & 1,3 & 5,49 & 4,71 & 5,17\\
 \bottomrule
-\multicolumn{4}{@{}l}{\footnotesize Velocidades en m/s. \Req{C4} admite hasta \SI{8}{m/s}.}
+\multicolumn{5}{@{}l}{\footnotesize Velocidades en m/s. \Req{C4} admite hasta \SI{8}{m/s}.}
 \end{tabular}
 \end{table}
 
@@ -118,62 +130,79 @@ Rotor muy bueno                & 1,3 & 6,20 & 6,88\\
   xlabel={Radio del rotor $R$ [m]}, ylabel={Velocidad etapa 2 [m/s]},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
   legend columns=2, legend style={font=\footnotesize, at={(0.5,-0.22)}, anchor=north, cells={anchor=west}}]
-  \fill[ccuerda!12] (axis cs:0.10,2) rectangle (axis cs:0.32,8);
-  \node[font=\footnotesize, ccuerda!70!black, anchor=south west] at (axis cs:0.255,2.2) {\Req{C4}: \SIrange{2}{8}{m/s}};
-  \fill[cfreno!8] (axis cs:0.20,2) rectangle (axis cs:0.32,14);
-  \node[font=\footnotesize, cfreno, anchor=north west, align=left] at (axis cs:0.203,13.7) {Fuera de la\\ restricción $R\le0{,}20$};
-  \addplot[crot, very thick, domain=0.10:0.32, samples=60] {sqrt(4.905/(0.6125*1.2*pi*x^2+0.02405+0.003473))};
-  \addlegendentry{$\CR=1{,}2$, con drogue}
-  \addplot[crot, thick, dashed, domain=0.10:0.32, samples=60] {sqrt(4.905/(0.6125*1.0*pi*x^2+0.02405+0.003473))};
-  \addlegendentry{$\CR=1{,}0$, con drogue}
-  \addplot[cfijo, thick, domain=0.10:0.32, samples=60] {sqrt(4.905/(0.6125*1.2*pi*x^2+0.003473))};
-  \addlegendentry{$\CR=1{,}2$, drogue sin aporte}
-  \addplot[cfijo, thick, dashed, domain=0.10:0.32, samples=60] {sqrt(4.905/(0.6125*1.0*pi*x^2+0.003473))};
-  \addlegendentry{$\CR=1{,}0$, drogue sin aporte (peor caso)}
-  \draw[black!60, dashed] (axis cs:0.10,5) -- (axis cs:0.32,5);
-  \node[font=\scriptsize, anchor=south west] at (axis cs:0.10,5) {objetivo \SI{5}{m/s}};
-  \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(0.20,6.40)};
-  \node[cfreno, font=\footnotesize, anchor=north east, fill=white, inner sep=1pt] at (axis cs:0.197,6.1) {diseño: \SI{6.4}{m/s}};
-  \addplot[only marks, mark=square*, mark size=2.5pt, cgris] coordinates {(0.20,7.81)};
-  \node[cgris, font=\footnotesize, anchor=west, fill=white, inner sep=1pt] at (axis cs:0.205,7.3) {peor caso: \SI{7.8}{m/s}};
+  \addplot[crot, very thick, domain=0.10:0.32, samples=60] {sqrt(4.807/(0.6125*0.96*pi*x^2+0.003117))};
+  \addlegendentry{$\CR=0{,}96$ (BEMT), $m_2=\SI{0.49}{kg}$}
+  \addplot[crot, thick, dashed, domain=0.10:0.32, samples=60] {sqrt(4.807/(0.6125*1.2*pi*x^2+0.003117))};
+  \addlegendentry{$\CR=1{,}2$, $m_2=\SI{0.49}{kg}$}
+  \addplot[cfijo, very thick, domain=0.10:0.32, samples=60] {sqrt(3.532/(0.6125*0.96*pi*x^2+0.003117))};
+  \addlegendentry{$\CR=0{,}96$, $m_2=\SI{0.36}{kg}$ (Arq.~2)}
+  \addplot[cfijo, thick, dashed, domain=0.10:0.32, samples=60] {sqrt(3.532/(0.6125*1.2*pi*x^2+0.003117))};
+  \addlegendentry{$\CR=1{,}2$, $m_2=\SI{0.36}{kg}$}
+  \addplot[cfreno, dotted, thick, domain=0.10:0.32] {8};
+  \node[font=\scriptsize, cfreno, anchor=south east] at (axis cs:0.315,8.05) {límite \Req{C4}: 8};
+  \addplot[cgris, dotted, thick, domain=0.10:0.32] {7.26};
+  \node[font=\scriptsize, cgris, anchor=north east] at (axis cs:0.315,7.2) {$V_2$ máx. para $\langle V\rangle\le8$: 7,26};
+  \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(0.25,6.36)};
+  \addplot[only marks, mark=square*, mark size=2.5pt, cgris] coordinates {(0.20,7.85)};
 \end{axis}
 \end{tikzpicture}
-\caption{Velocidad de la segunda etapa en función del radio. Con $R=\SI{0.20}{m}$ todos los
-casos quedan bajo \SI{8}{m/s}; llegar a \SI{5}{m/s} exactos pediría $R\approx\SI{0.27}{m}$.}
+\caption{Velocidad de la segunda etapa en función del radio. Con $R=\SI{0.25}{m}$ y el
+rotor solo, $\Vr=\SI{6.4}{m/s}$ (círculo). Con $R=\SI{0.20}{m}$ (cuadrado) el rotor solo da
+\SI{7.85}{m/s}, que supera el límite de $\langle V\rangle\le\SI{8}{m/s}$ si se lee el
+promedio sobre todo el descenso (sección~\ref{sec:dim-prom}). Llegar a \SI{5}{m/s}
+exactos pediría $R\approx\SI{0.29}{m}$.}
 \label{fig:VR}
 \end{figure}
 
+\subsection{Promedio de \texorpdfstring{\Req{C4}}{C4} sobre todo el descenso}\label{sec:dim-prom}
+El anexo pide un promedio de \SI{5}{m/s} ($\pm3$) \emph{durante todo el descenso}. Hay dos
+lecturas: la velocidad de régimen de la etapa 2, $\Vr$, o el promedio desde el apogeo, que
+incluye el \SI{20}{\percent} inicial a $\Vd$:
+\begin{equation}
+  \langle V\rangle=\frac{1}{0{,}2/\Vd+0{,}8/\Vr}.
+  \label{eq:promedio}
+\end{equation}
+No depende de la altura del apogeo. Con $\Vd=\SI{13.44}{m/s}$, $\langle V\rangle\le\SI{8}{m/s}$
+exige $\Vr\le\SI{7.26}{m/s}$. Con $\Vr=\SI{6.36}{m/s}$, $\langle V\rangle=\SI{7.11}{m/s}$; con
+la Arquitectura~2, $\Vr=\SI{5.47}{m/s}$ y $\langle V\rangle=\SI{6.2}{m/s}$. El rotor solo de
+$R=\SI{0.20}{m}$ ($\Vr=\SI{7.85}{m/s}$) daría $\SI{8.56}{m/s}$ y no cumpliría esa lectura:
+es la razón principal de subir el radio a \SI{0.25}{m}. Se diseña por la lectura más
+exigente y se consulta a la organización (capítulo~\ref{cap:arq}).
+
 \subsection{Verificación con la curva empírica}
-Con $\Vr=\SI{6.40}{m/s}$, el empuje del rotor es $T=W-(k_d+k_c)\Vr^2=\SI{3.78}{N}$ y la
-carga de disco $T/A_R=\SI{30.1}{N/m^2}$. Por la ecuación~\eqref{eq:vh},
-$\vh=\SI{3.50}{m/s}$ y $\Vr/\vh=1{,}83$. El polinomio~\eqref{eq:poly} da
-$\vi=\SI{6.34}{m/s}$, es decir un flujo neto a través del disco de
-$\SI{-0.06}{m/s}\approx0$: el punto de diseño es prácticamente la autorrotación ideal, lo
-que confirma que $\CR=1{,}2$ es consistente con los datos empíricos
-(figura~\ref{fig:estados}).
+Con la estimación simple $\CR=1{,}2$ ($\Vr=\SI{5.71}{m/s}$), el empuje del rotor es
+$T=W_2-k_c\Vr^2=\SI{4.71}{N}$ y la carga de disco $T/A_R=\SI{24.0}{N/m^2}$. Por la
+ecuación~\eqref{eq:vh}, $\vh=\SI{3.13}{m/s}$ y $\Vr/\vh=1{,}83$. El polinomio~\eqref{eq:poly}
+da $\vi=\SI{5.66}{m/s}$, es decir un flujo neto a través del disco de
+$\SI{0.05}{m/s}\approx0$: con $\CR=1{,}2$ el rotor es la autorrotación ideal, que Bramwell
+sitúa en $V/v_0=1{,}8$ con $C_D=1{,}23$~\cite[\S2.3, p.~44]{bramwell2001}
+(figura~\ref{fig:estados}). El rotor real, con resistencia de perfil, no llega a esa
+condición: la BEMT da $\CR=0{,}96$ y $\Vr/\vh=2{,}04$ (sección~\ref{sec:bemt-base}), un
+estado de molino frenante con algo de flujo neto.
 
 \subsection{Contraste con elemento de pala}
-Un modelo de elemento de pala con iteración de velocidad inducida (placa plana, 4 palas de
-\SI{35}{mm}, paso $\ang{-2}$), resuelto para par nulo, dio \SI{6.7}{m/s} con drogue y
-\SI{7.6}{m/s} sin él, a \SIrange{2300}{2800}{rpm}. Coincide con la tabla~\ref{tab:rotor}
-dentro del 5\,\%. Para perfiles muy curvados ese modelo pierde validez (predice $\CR>1{,}4$,
-físicamente imposible), por lo que para la placa del 7\,\% se usa el límite
-$\CR\approx1{,}2$ y la ecuación~\eqref{eq:omega} para las rpm.
+El modelo de elemento de pala del capítulo~\ref{cap:bemt} (4 palas de \SI{45}{mm}, placa curvada al
+7\,\%, paso $\ang{-3}$, par nulo) da \SI{6.36}{m/s} para el rotor solo y \SI{5.81}{m/s}
+con el drogue atado, a \num{1229} y \num{1127}~rpm. Es un \SI{11}{\percent} más que la
+estimación simple de la tabla~\ref{tab:rotor}. La diferencia es el $\CR$ menor (0,96 contra
+1,2), que el modelo simple no captura. Para la rama de molino turbulento la
+incertidumbre de modelo es de $\pm\SI{0.4}{m/s}$ (cap.~\ref{cap:bemt}) y manda sobre
+el resultado (cap.~\ref{cap:sens}).
 
 %=====================================================================
 \section{Perfil y velocidad de giro}\label{sec:dim-perfil}
 
 \begin{table}[H]
 \centering\small
-\caption{Velocidad de giro según el perfil, con $T=\SI{3.78}{N}$ (ecuación~\ref{eq:omega}).}\label{tab:rpm}
+\caption{Velocidad de giro según el perfil, con $T=\SI{4.68}{N}$ y $R=\SI{0.25}{m}$ (ecuación~\ref{eq:omega}, estimación simple; la BEMT da \num{1229}~rpm para la placa de \SI{45}{mm}).}\label{tab:rpm}
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
 \textbf{Perfil} & $\boldsymbol{c}$ [mm] & $\boldsymbol{\bar C_l}$ & $\boldsymbol{\Omega}$ [rad/s] & \textbf{rpm} & $\boldsymbol{\Omega R}$ [m/s] & $\boldsymbol{Re}$ \textbf{punta}\\\midrule
-Placa plana 3\,\%            & 35 & 0,3 & 236 & 2253 & 47,2 & \num{110000}\\
-Fondo plano                  & 35 & 0,6 & 167 & 1593 & 33,4 & \num{78000}\\
-Placa curvada 7\,\%          & 35 & 0,9 & 136 & 1301 & 27,2 & \num{64000}\\
-\textbf{Placa curvada 7\,\%} & \textbf{45} & \textbf{0,9} & \textbf{120} & \textbf{1147} & \textbf{24,0} & \textbf{\num{72000}}\\
-Placa curvada 7\,\%          & 50 & 1,0 & 108 & 1033 & 21,6 & \num{72000}\\
+Placa plana 3\,\%            & 35 & 0,3 & 187 & 1790 & 46,9 & \num{109000}\\
+Fondo plano                  & 35 & 0,6 & 132 & 1265 & 33,1 & \num{77000}\\
+Placa curvada 7\,\%          & 35 & 0,9 & 108 & 1033 & 27,0 & \num{63000}\\
+\textbf{Placa curvada 7\,\%} & \textbf{45} & \textbf{0,9} & \textbf{95} & \textbf{911} & \textbf{23,9} & \textbf{\num{72000}}\\
+Placa curvada 7\,\%          & 50 & 1,0 & 86 & 820 & 21,5 & \num{72000}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -181,13 +210,13 @@ Placa curvada 7\,\%          & 50 & 1,0 & 108 & 1033 & 21,6 & \num{72000}\\
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.88\textwidth, height=6.4cm, xmin=0.008, xmax=0.052, ymin=500, ymax=3000,
+\begin{axis}[width=0.88\textwidth, height=6.4cm, xmin=0.008, xmax=0.052, ymin=500, ymax=2200,
   xlabel={Producto $c\,\bar C_l$ [m]}, ylabel={Velocidad de giro [rpm]},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=3},
   scaled x ticks=false]
-  \addplot[crot, very thick, domain=0.008:0.052, samples=80] {9.5493*sqrt(584.6/x)};
+  \addplot[crot, very thick, domain=0.008:0.052, samples=80] {9.5493*sqrt(368.7/x)};
   \addplot[only marks, mark=*, mark size=2.5pt, cfijo] coordinates
-    {(0.0105,2253) (0.021,1593) (0.0315,1301) (0.0405,1147) (0.050,1033)};
+    {(0.0105,1790) (0.021,1265) (0.0315,1033) (0.0405,911) (0.050,820)};
   \node[font=\scriptsize, anchor=south west] at (axis cs:0.0105,2253) {placa plana};
   \node[font=\scriptsize, anchor=south west] at (axis cs:0.021,1593) {fondo plano};
   \node[font=\scriptsize, anchor=south west] at (axis cs:0.0315,1301) {curvada, $c=35$};
@@ -201,10 +230,11 @@ misma velocidad de caída).}
 \end{figure}
 
 \begin{resultado}[Perfil elegido]
-Placa curvada al 7\,\%, cuerda \SI{45}{mm}, $\bar C_l\approx0{,}9$:
-$\Omega\approx\SI{120}{rad/s}$ ($\approx\SI{1150}{rpm}$), velocidad de punta
-\SI{24}{m/s}, $Re\approx\num{36000}$ en media pala y \num{72000} en la punta. La velocidad
-de caída no cambia respecto de la placa plana; lo que cambia es la rpm, a la mitad. Las
+Placa curvada al 7\,\%, cuerda \SI{45}{mm}. La estimación simple, con $\bar C_l\approx0{,}9$, da
+$\Omega\approx\SI{95}{rad/s}$ ($\approx\SI{910}{rpm}$) y velocidad de punta \SI{24}{m/s}; la
+BEMT, con $C_l\approx0{,}47$ en $0{,}75R$, da $\Omega=\SI{128.7}{rad/s}$ ($\num{1229}$~rpm),
+punta a \SI{32}{m/s}, $Re\approx\num{72000}$ en $0{,}75R$ y \num{96000} en la punta. La
+velocidad de caída no cambia respecto de la placa plana; lo que cambia es la rpm. Las
 rpm tienen una incertidumbre de $\pm$20\,\% y se miden en el ensayo con ventilador.
 \end{resultado}
 
@@ -219,21 +249,23 @@ Para $c=\SI{45}{mm}$ y 7\,\% ($s=\SI{3.15}{mm}$), $R_c=\SI{81.9}{mm}$. Un caño 
 Ø\,\SI{160}{mm} ($R_c=\SI{80}{mm}$) da $s=\SI{3.23}{mm}$, o sea 7,2\,\%: es el molde.
 
 \paragraph{Material y masa.} Placa de carbono de \SI{0.5}{mm} ($\rho\approx\SI{1550}{kg/m^3}$):
-$156\times45\times0{,}5$\,mm da \SI{5.4}{g}; con portapala y refuerzo de raíz,
-$m_b\approx\SI{7.4}{g}$. Alternativa: balsa de \SIrange{1}{1.5}{mm} laminada con tejido de
+$206\times45\times0{,}5$\,mm da \SI{7.2}{g}; con portapala y refuerzo de raíz,
+$m_b\approx\SI{9.0}{g}$ (\SI{10.2}{g} con la varilla de BV). Con espesor de perfil
+(capítulo~\ref{cap:polares}) la masa sube y la rigidez a torsión mejora mucho. Alternativa: balsa de \SIrange{1}{1.5}{mm} laminada con tejido de
 carbono.
 
 \paragraph{Detalles.} Borde de ataque redondeado; borde de fuga afilado; centro de masa de
 la sección cerca del 25\,\% de la cuerda (si queda más atrás, agregar una varilla de
 carbono de \SI{1}{mm} en el borde de ataque) para evitar flameo; sin torsión en la primera
-versión.
+versión. Con la pala de \SI{206}{mm} esa varilla es obligatoria (configuración BV del
+capítulo~\ref{cap:estructura}).
 
 \paragraph{Paso.} Se fija en el portapala. Por la sección~\ref{sec:arranque} debe ser
 $\theta\le\ang{0}$; se fabrican portapalas de $\ang{-6}$, $\ang{-4}$, $\ang{-2}$ y $\ang{0}$
 y se elige en el ensayo con ventilador.
 
 %=====================================================================
-\section{Plegado dentro de Ø\,95}\label{sec:plegado}
+\section{Plegado dentro de Ø\,90}\label{sec:plegado}
 Las palas cuelgan plegadas contra el cuerpo con la cuerda en dirección tangencial y la
 cara cóncava hacia adentro. Al girar \ang{90} hacia afuera sobre la bisagra, esa cara
 pasa a ser la inferior: la curvatura queda en el sentido correcto para sustentar.
@@ -241,30 +273,32 @@ pasa a ser la inferior: la curvatura queda en el sentido correcto para sustentar
 Para una pala de cuerda $c$ y flecha $s$ cuyo punto medio exterior está a radio $r_m$, los
 bordes quedan a
 \begin{equation}
-  r_{\text{borde}} = \sqrt{(r_m-s)^2 + (c/2)^2} \le \SI{47.5}{mm}
-  \;\Rightarrow\; r_m \le s + \sqrt{47{,}5^2 - 22{,}5^2} = \SI{44.98}{mm}.
+  r_{\text{borde}} = \sqrt{(r_m-s)^2 + (c/2)^2} \le \SI{45}{mm}
+  \;\Rightarrow\; r_m \le s + \sqrt{45^2 - 22{,}5^2} = \SI{42.1}{mm}.
 \end{equation}
-Con espesor de \SI{0.5}{mm}, la cara interior queda a \SI{44.5}{mm} del eje: el cuerpo
-puede tener \textbf{Ø\,\SI{88}{mm}} (radio \SI{44}{mm}) con \SI{0.5}{mm} de juego. Cada
-pala ocupa $2\arcsin(22{,}5/47{,}5)=\ang{56.5}$ del perímetro; las cuatro, \ang{226}.
-Quedan cuatro huecos de \ang{33.5} ($\approx\SI{27}{mm}$ de arco) para
-los orificios de los interruptores y los paneles solares.
+Con espesor de \SI{0.5}{mm}, la cara interior queda a \SI{41.6}{mm} del eje: el cuerpo
+impreso puede tener hasta Ø\,\SI{83}{mm}. Se adopta \textbf{Ø\,\SI{81}{mm}} (radio
+\SI{40.5}{mm}, interior de Ø\,77 con pared de \SI{2}{mm}), con $\approx\SI{1.0}{mm}$ de
+juego radial al envolvente de Ø\,90. Cada pala ocupa $2\arcsin(22{,}5/45)=\ang{60}$ del
+perímetro; las cuatro, \ang{240}. Quedan cuatro huecos de \ang{30} ($\approx\SI{21}{mm}$ de
+arco) para los orificios de los interruptores (\Req{E5}, $\le\SI{10}{mm}$) y los paneles
+solares. Esta es la Arquitectura~1; en la Arquitectura~2 las palas se pliegan dentro del
+contenedor, sin pared impresa (\Req{S6} no aplica), y pueden tener espesor de perfil
+(capítulo~\ref{cap:arq}).
 
 %=====================================================================
 \section{Batimiento y conicidad}\label{sec:dim-batimiento}
-Con $L=T/B=\SI{0.945}{N}$ por pala aplicada a $0{,}75R$, el brazo respecto de la bisagra es
-$0{,}75R-e=\SI{0.106}{m}$ y $M_L=\SI{0.100}{N.m}$; el peso de la pala aporta
-$M_W=\SI{0.006}{N.m}$. Con $m_b=\SI{7.4}{g}$ y $\Omega=\SI{120}{rad/s}$, la rigidez
-centrífuga es $m_b\Omega^2\overline{r(r-e)}=\SI{1.24}{N.m/rad}$ y, por~\eqref{eq:conicidad},
-\begin{equation*}
-  \beta_0 \approx \frac{0{,}100-0{,}006}{1{,}24} = \SI{0.076}{rad} \approx \ang{4.4}.
-\end{equation*}
-El número de Lock~\eqref{eq:lock} es $\gamma\approx8{,}3$ (dentro del rango de los
-helicópteros) y la frecuencia de batimiento~\eqref{eq:nubeta},
-$\nu_\beta/\Omega=1{,}19$: no hay resonancia con la excitación de 1 vez por vuelta.
+Con $L=T/B=\SI{1.17}{N}$ por pala aplicada a $0{,}75R$, el brazo respecto de la bisagra es
+$0{,}75R-e=\SI{0.144}{m}$ y $M_L=\SI{0.168}{N.m}$; el peso de la pala aporta
+$M_W=\SI{0.009}{N.m}$. Con $m_b=\SI{9.0}{g}$, $I_b=\SI{1.0e-4}{kg.m^2}$ y
+$\Omega=\SI{128.7}{rad/s}$ (cap.~\ref{cap:estructura}), la conicidad de equilibrio
+por~\eqref{eq:conicidad} es $\beta_0\approx\ang{4.2}$ (\ang{3.6} con BV). El número de
+Lock~\eqref{eq:lock} es $\gamma\approx12{,}6$ y la frecuencia de
+batimiento~\eqref{eq:nubeta}, $\nu_\beta/\Omega=1{,}16$: no hay resonancia con la excitación
+de 1 vez por vuelta.
 
 \begin{resultado}[Topes de la bisagra]
-Tope superior a \ang{+10}: en vuelo la pala trabaja libre en $\approx\ang{4.4}$ y el tope
+Tope superior a \ang{+15}: en vuelo la pala trabaja libre en $\approx\ang{4.2}$ y el tope
 solo actúa en el arranque y en ráfagas. Sin tope inferior en el rango de vuelo (la pala
 debe poder plegarse \ang{90} hacia abajo para el almacenamiento). El resorte de apertura
 ($\approx\SI{0.005}{N.m}$) desplaza el equilibrio menos de \ang{0.3}.
@@ -272,8 +306,9 @@ debe poder plegarse \ang{90} hacia abajo para el almacenamiento). El resorte de 
 
 %=====================================================================
 \section{Arranque}\label{sec:arranque}
-En la liberación el CanSat cae a $\Vd\approx\SI{13.4}{m/s}$. Con la
-ecuación~\eqref{eq:Q0}:
+En la liberación el CanSat cae a $\Vd\approx\SI{13.4}{m/s}$ y, al soltar el drogue, gana
+\SIrange{1.7}{2.5}{m/s} mientras abren las palas (capítulo~\ref{cap:arq}). Con la
+ecuación~\eqref{eq:Q0} (modelo simple):
 
 \begin{table}[H]
 \centering\small
@@ -281,18 +316,20 @@ ecuación~\eqref{eq:Q0}:
 \begin{tabular}{@{}lccccc@{}}
 \toprule
 Paso $\theta$ & $\ang{-6}$ & $\ang{-4}$ & $\ang{-2}$ & $\ang{0}$ & $\ang{+2}$\\\midrule
-$Q_0$ [N\,m] & 0,078 & 0,052 & 0,026 & 0 & $-0{,}026$\\
+$Q_0$ [N\,m] & 0,124 & 0,083 & 0,042 & 0 & $-0{,}042$\\
 Arranca solo & Sí & Sí & Sí & No & No (gira al revés)\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-La inercia polar del rotor es $I\approx\SI{5.1e-4}{kg.m^2}$ y su energía a régimen,
-$\tfrac12 I\Omega^2=\SI{3.7}{J}$. El par disminuye a medida que el rotor acelera (se anula
-en el equilibrio); con un par medio de \SIrange{0.01}{0.02}{N.m}, el tiempo de arranque es
-$t=I\Omega/\bar Q\approx\SIrange{3}{6}{s}$, durante los cuales se pierden unos
-\SIrange{30}{60}{m} de altura. Con apogeo de \SI{700}{m}, la liberación ocurre a
-\SI{560}{m}: el margen es amplio.
+La BEMT da la mitad de esos pares (por ejemplo \SI{20}{mN.m} con \ang{-2}; cap.~\ref{cap:bemt}).
+La inercia polar del rotor es $I\approx\SI{8.6e-4}{kg.m^2}$ y su energía a régimen,
+$\tfrac12 I\Omega^2=\SI{7.1}{J}$. El par disminuye a medida que el rotor acelera (se anula
+en el equilibrio); con un par medio de \SIrange{0.03}{0.06}{N.m}, el tiempo de arranque es
+$t=I\Omega/\bar Q\approx\SIrange{2}{4}{s}$. La simulación con la apertura de las palas
+(capítulo~\ref{cap:arranque}) da \SI{1.6}{s} hasta el \SI{90}{\percent} de las rpm y
+\SI{22}{m} de caída. Con apogeo de \SI{700}{m}, la liberación ocurre a \SI{560}{m}: el
+margen es amplio.
 
 %=====================================================================
 \section{Cargas y resistencia de los componentes}\label{sec:cargas}
@@ -303,42 +340,42 @@ $t=I\Omega/\bar Q\approx\SIrange{3}{6}{s}$, durante los cuales se pierden unos
 \begin{tabularx}{\textwidth}{@{}lcY@{}}
 \toprule
 \textbf{Carga} & \textbf{Valor} & \textbf{Verificación}\\\midrule
-Fuerza centrífuga por pala ($m_b r_g\Omega^2$) & \SI{13.1}{N} & Pasador de acero Ø\,2 en doble corte: $\tau=\SI{2.1}{MPa}$, frente a $\approx\SI{300}{MPa}$\\
-Sustentación total & \SI{3.78}{N} & Rodamientos 688ZZ: capacidad dinámica del orden de \SI{1}{kN}; vida ilimitada\\
-Momento en la raíz (tope en el arranque) & $\le\SI{0.10}{N.m}$ & Carbono \SI{0.5}{mm}, $45\times0{,}5^2/6=\SI{1.9}{mm^3}$: \SI{53}{MPa} frente a $\approx\SI{500}{MPa}$; reforzar raíz con portapala de \SIrange{15}{20}{mm}\\
-Desbalance \SI{0.1}{g} a \SI{0.12}{m} & \SI{0.17}{N} & Aceptable (3,5\,\% del peso)\\
-Desbalance \SI{1}{g} a \SI{0.12}{m} & \SI{1.73}{N} & Inaceptable: balancear a $\pm\SI{0.1}{g}$\\
-Inercia de una pala a 30\,G (\Req{S5}) & \SI{2.2}{N} & Pestaña de acero inoxidable de \SI{0.5}{mm} y diente del anillo; sin riesgo\\
-Apertura del drogue (\SI{25}{m/s}) & \SI{23}{N} & Va al anclaje en la estructura, no a los rodamientos\\
+Fuerza centrífuga por pala ($m_b r_g\Omega^2$) & \SI{18.9}{N} (\SI{30.2}{N} en el sobrepaso del arranque) & Pasador de acero Ø\,2 en doble corte: $\tau=\SIrange{3.0}{4.8}{MPa}$, frente a $\approx\SI{300}{MPa}$\\
+Sustentación total & \SI{4.68}{N} & Rodamientos 688ZZ: capacidad dinámica del orden de \SI{1}{kN}; vida ilimitada\\
+Momento en la raíz (tope en el arranque) & $\le\SI{0.17}{N.m}$ & Carbono \SI{0.5}{mm}, $45\times0{,}5^2/6=\SI{1.9}{mm^3}$: \SI{91}{MPa} frente a $\approx\SI{500}{MPa}$; reforzar raíz con portapala de \SIrange{15}{20}{mm}\\
+Desbalance \SI{0.1}{g} a \SI{0.12}{m} & \SI{0.20}{N} & Aceptable (4\,\% del peso)\\
+Desbalance \SI{1}{g} a \SI{0.12}{m} & \SI{2.0}{N} & Inaceptable: balancear a $\pm\SI{0.1}{g}$\\
+Inercia de una pala a 30\,G (\Req{S5}) & \SI{2.7}{N} & Pestaña de acero inoxidable de \SI{0.5}{mm} y diente del anillo; sin riesgo\\
+Apertura del drogue (\SI{25}{m/s}) & \SI{23}{N} & Va al pasador de liberación y a la tapa superior (capítulo~\ref{cap:arq}), no a los rodamientos ni al eje\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 %=====================================================================
 \section{Estructura}\label{sec:estructura}
-Tubo de PETG Ø\,88 con pared de \SI{2}{mm} (\Req{S6}). Bajo 30\,G con \SI{0.5}{kg}, la
-fuerza axial es \SI{147}{N} y la tensión
-$\sigma=\SI{0.25}{MPa}$. La tensión crítica de pandeo de un cilindro de pared delgada,
-con factor de reducción 0,3 por imperfecciones~\cite{timoshenko1961},
+Tubo de PETG Ø\,81 con pared de \SI{2}{mm} (\Req{S6}). Bajo 30\,G con \SI{0.49}{kg}, la
+fuerza axial es \SI{144}{N} y la tensión $\sigma=\SI{0.29}{MPa}$. La tensión crítica de
+pandeo de un cilindro de pared delgada, con factor de reducción 0,3 por
+imperfecciones~\cite{timoshenko1961},
 \begin{equation}
   \sigma_{cr} = 0{,}3\,\frac{E\,t}{R_m\sqrt{3(1-\nu^2)}}
-  = 0{,}3\,\frac{\SI{2}{GPa}\cdot\SI{2}{mm}}{\SI{46.5}{mm}\cdot1{,}60} \approx \SI{16}{MPa},
+  = 0{,}3\,\frac{\SI{2}{GPa}\cdot\SI{2}{mm}}{\SI{39.5}{mm}\cdot1{,}60} \approx \SI{19}{MPa},
 \end{equation}
-da un margen de 64 veces. La pared no flexiona ni se deforma bajo las cargas del anexo; el
+da un margen de 65 veces. La pared no flexiona ni se deforma bajo las cargas del anexo; el
 punto débil son las uniones (tapas y anillos), que se atornillan con insertos roscados.
 
 %=====================================================================
 \section{Tiempos de descenso}
 \begin{table}[H]
 \centering\small
-\caption{Tiempos con liberación al 80\,\% del apogeo ($\Vd=\SI{13.4}{m/s}$,
-$\Vr=\SI{6.4}{m/s}$; se desprecia el arranque).}\label{tab:tiempos}
-\begin{tabular}{@{}cccccc@{}}
+\caption{Tiempos con liberación al 80\,\% del apogeo ($\Vd=\SI{13.44}{m/s}$,
+$\Vr=\SI{6.36}{m/s}$; se desprecia el arranque).}\label{tab:tiempos}
+\begin{tabular}{@{}ccccccc@{}}
 \toprule
-\textbf{Apogeo} [m] & \textbf{Liberación} [m] & \textbf{Etapa 1} [s] & \textbf{Etapa 2} [s] & \textbf{Total} [s] & \textbf{Video necesario}\\\midrule
-500  & 400 & 7,5  & 62,5  & 70  & $\approx$\,2 min\\
-700  & 560 & 10,4 & 87,5  & 98  & $\approx$\,2 min\\
-1000 & 800 & 15,0 & 125,0 & 140 & $\approx$\,3 min\\
+\textbf{Apogeo} [m] & \textbf{Liberación} [m] & \textbf{Etapa 1} [s] & \textbf{Etapa 2} [s] & \textbf{Total} [s] & $\langle V\rangle$ [m/s] & \textbf{Video necesario}\\\midrule
+500  & 400 & 7,4  & 62,9  & 70  & 7,11 & $\approx$\,2 min\\
+700  & 560 & 10,4 & 88,1  & 99  & 7,11 & $\approx$\,2 min\\
+1000 & 800 & 14,9 & 125,8 & 141 & 7,11 & $\approx$\,3 min\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -349,72 +386,94 @@ $\Vr=\SI{6.4}{m/s}$; se desprecia el arranque).}\label{tab:tiempos}
 \subsection{Masa}
 \begin{table}[H]
 \centering\small
-\caption{Presupuesto de masa estimado.}\label{tab:masa}
+\caption{Presupuesto de masa de abajo hacia arriba, con la electrónica real del equipo
+(\SI{177}{g} de la planilla). El lastre ajusta el total a \SI{500}{g}.}\label{tab:masa}
 \begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Componente} & \textbf{Config. A} [g] & \textbf{Config. B} [g]\\\midrule
-Cuerpo PETG Ø\,88 (B: Ø\,83), pared \SI{2}{mm}, \SI{205}{mm} & 141 & 133\\
-Tapas y anillos internos                                   & 25 & 25\\
-Camisa (contenedor) PETG Ø\,95/91, \SI{205}{mm}            & --- & 152\\
-Rotor: 4 palas con portapala                               & 30 & 30\\
-Rotor: cubo, eje, rodamientos, tuerca, resortes, sensor    & 24 & 24\\
-Drogue, copa, cuerda y destorcedor                         & 18 & 18\\
-Traba: anillo interno, servo, pestañas                       & 16 & 16\\
-Electrónica (MCU, IMU, barómetro, GPS, radio, SD, PCB)     & 47 & 47\\
-Batería 18650 y portapila                                  & 55 & 55\\
-Cámaras (2)                                                & 20 & 20\\
-Baliza con pila propia                                     & 8 & 8\\
-Paneles solares (2)                                        & 8 & 8\\
-Cables, tornillos e insertos                               & 25 & 25\\\midrule
-\textbf{Subtotal}                                          & \textbf{417} & \textbf{561}\\
-Lastre (abajo, ajustable)                                  & 83 & ---\\
-\textbf{Total frente a \SI{500 \pm 10}{g}}                 & \textbf{500} & \textbf{561 (excede 51)}\\
+\textbf{Componente} & \textbf{Arq.~1} [g] & \textbf{Arq.~2} [g]\\\midrule
+Cuerpo PETG Ø\,81, pared \SI{2}{mm}, \SI{205}{mm}          & 130 & ---\\
+Chasis (esqueleto) de la carga útil                        & --- & 30\\
+Contenedor: tubo de aluminio \SI{0.8}{mm} Ø\,90 y tapa (se suelta) & --- & 157\\
+Tapas y anillos internos                                   & 25 & ---\\
+Rotor: 4 palas con portapala ($L_b=\SI{206}{mm}$)          & 38 & 38\\
+Rotor: cubo, eje, rodamientos, tope, resortes              & 26 & 26\\
+Drogue, cuerda y destorcedor (se suelta)                   & 10 & 10\\
+Copa del drogue y pasador de liberación                    & 8 & ---\\
+Traba (anillo y pestañas) o pestillo y guías               & 8 & 6\\
+Electrónica real (planilla): MCU, sensores, GPS, radio, 2 cámaras, 2 servos, panel, baliza, 18650 & 177 & 177\\
+Cableado, tornillos, insertos y placas                     & 37 & 37\\
+Anillo amortiguador de aterrizaje                          & 8 & 8\\\midrule
+\textbf{Subtotal}                                          & \textbf{467} & \textbf{489}\\
+Lastre (abajo; en la Arq.~2, dentro del contenedor)        & 33 & 11\\
+\textbf{Total frente a \SI{500 \pm 10}{g}}                 & \textbf{500} & \textbf{500}\\
+\textbf{Masa en la etapa 2, $m_2$}                         & \textbf{490} & \textbf{322}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-La configuración A tiene \SI{83}{g} de margen, que se usa como lastre en el fondo (baja el
-centro de masa y estabiliza el descenso). La B excede el límite; solo sería viable con una
-camisa no impresa (cartón o fibra, a la que no aplica \Req{S6}) o con ventanas grandes.
+La planilla del equipo declara 177~g de electrónica como el \SI{28.4}{\percent} del peso
+permitido; es el \SI{35.4}{\percent} de \SI{500}{g}, y su «margen de 358~g» tampoco cierra
+(500$-$177 = 323~g). El panel solar figura con \SI{37}{g}; es el dato más dudoso (un panel
+flexible de $120\times60$~mm suele pesar \SIrange{5}{10}{g}) y aporta más de la mitad de la
+varianza del presupuesto (capítulo~\ref{cap:sens}). Pesarlo es lo primero. Con la
+electrónica real el lastre baja de \SI{83}{g} (configuración anterior) a \SI{33}{g}. En la
+Arquitectura~2 la masa que se va con el contenedor y el drogue no vuela con el rotor:
+$m_2=\SI{322}{g}$ (capítulo~\ref{cap:arq}).
 
 \subsection{Largo}
 \begin{table}[H]
 \centering\small
-\caption{Distribución del largo (configuración A, medido desde el fondo).}\label{tab:largo}
+\caption{Distribución del largo (Arquitectura~1, medido desde el fondo). Con $R=\SI{0.25}{m}$ las
+palas (\SI{206}{mm}) cuelgan desde las bisagras a \SI{231}{mm} hasta \SI{25}{mm}, y la copa
+del drogue se aplana a Ø\,75 $\times$ \SI{10}{mm}.}\label{tab:largo}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 \textbf{Tramo} & \textbf{Desde--hasta} [mm] & \textbf{Largo} [mm]\\\midrule
-Tapa inferior y cámara nadir & 0--3 & 3\\
-Baliza, lastre y cámara nadir & 3--40 & 37\\
-Anillo de traba y servo (pestañas a \SI{60}{mm}) & 40--70 & 30\\
-Batería 18650 vertical & 70--140 & 70\\
-Electrónica (pila de PCB) & 140--195 & 55\\
-Tapa superior y cámara cenit & 195--205 & 10\\
-Cubo del rotor (bisagras a \SI{213}{mm}) & 205--222 & 17\\
-Copa del drogue (contenedor mínimo) & 222--250 & 28\\\midrule
+Anillo amortiguador (espuma) y cámara nadir & 0--25 & 25\\
+Anillo de traba y servo (pestañas a \SI{25}{mm}) & 25--55 & 30\\
+Baliza, lastre y batería 18650 vertical & 55--125 & 70\\
+Electrónica (pila de PCB y cámaras) & 125--215 & 90\\
+Tapa superior y cámara cenit & 215--225 & 10\\
+Cubo del rotor (bisagras a \SI{231}{mm}) & 225--240 & 15\\
+Copa aplanada del drogue (Ø\,75) & 240--250 & 10\\\midrule
 \textbf{Total} & & \textbf{250}\\
 \bottomrule
 \end{tabular}
 \end{table}
 
+Con la pala de \SI{206}{mm} el largo queda en el límite de \Req{S3}: no hay reserva. La
+copa del drogue de Ø\,44$\times$\SI{25}{mm} de la configuración anterior no cabe, por eso se
+aplana. En la Arquitectura~2 el contenedor mide \SIrange{235}{245}{mm} y no tiene copa.
+
 \subsection{Energía}
 \begin{table}[H]
 \centering\small
-\caption{Consumo estimado.}\label{tab:energia}
-\begin{tabular}{@{}lr@{}}
+\caption{Consumo con los componentes de la planilla del equipo (corrientes de los rieles
+de 3,3 y 5~V; el rendimiento de conversión se aplica después).}\label{tab:energia}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Consumo} & \textbf{Potencia} [W]\\\midrule
-Microcontrolador & 0,30\\
-Radio (ráfagas a 1\,Hz, promedio) & 0,25\\
-GPS & 0,10\\
-Sensores (IMU, barómetro, corriente, hall) & 0,02\\
-Cámaras (2) & 1,80\\
-Servo en reposo & 0,03\\\midrule
-\textbf{Total} & \textbf{2,50}\\
+\textbf{Consumo} & \textbf{Corriente} [mA] & \textbf{Riel} [V]\\\midrule
+ESP32-C3 (promedio, picos de 200 mA) & 85 & 3,3\\
+Sensores (BMP280, AHT20, MPU6050, QMC5883L, INA219) & 8,8 & 3,3\\
+GPS NEO-7M & 35 & 3,3\\
+Radio LR2021 (valor de planilla, transmisión continua) & 105 & 3,3\\
+Lector microSD y LED & 35 & 3,3\\
+2 cámaras ESP32-CAM & 600 & 5\\
+Servos SG90 en reposo (pico de 500 mA cada uno al moverse) & 20 & 5\\
 \bottomrule
 \end{tabular}
 \end{table}
-Una celda 18650 de \SI{3000}{mAh} y \SI{3.6}{V} guarda \SI{10.8}{Wh}; con 85\,\% de
-eficiencia de conversión da \SI{9.2}{Wh}, es decir unas \SI{3.7}{h} con todo encendido. Si
-las cámaras se encienden recién en \texttt{ASCENT}, la espera en la plataforma puede superar
-las \SI{10}{h}.
+La planilla del equipo suma 888~mA mezclando rieles de 3,3 y 5~V; eso no es el consumo de la
+batería. En la topología de la planilla (batería $\to$ elevador a 5~V $\to$ reductor mini560
+a 3,3~V) la conversión doble tiene un rendimiento de $\approx0{,}77$. Con la celda de
+\SI{3400}{mAh} (\SI{11.0}{Wh} útiles al \SI{90}{\percent}):
+\begin{itemize}
+  \item con todo encendido desde la rampa, el consumo de la batería es \SI{4.8}{W} y la
+        autonomía \SI{2.3}{h}: \textbf{no cumple con margen} \Req{E7} (2\,h); la simulación
+        de sensibilidad da un \SI{53}{\percent} de probabilidad de bajar de 2\,h
+        (capítulo~\ref{cap:sens});
+  \item con las cámaras apagadas hasta detectar el lanzamiento, \SI{1.3}{W} y
+        \SI{8.6}{h} en la rampa (hasta \SI{12}{h} si la radio solo transmite a \SI{1}{Hz}).
+\end{itemize}
+La conclusión de diseño es encender las cámaras al detectar el despegue (estado
+\texttt{ASCENT}), no antes.

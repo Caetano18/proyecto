@@ -1,0 +1,58 @@
+{
+ "crit": [
+  "C4 con margen",
+  "Riesgo normativo (consulta)",
+  "Complejidad mec\u00e1nica",
+  "Masa y energ\u00eda de aterrizaje",
+  "Robustez ante falla de liberaci\u00f3n",
+  "Fabricabilidad y costo",
+  "Integraci\u00f3n con antenas",
+  "Validaci\u00f3n y ensayos"
+ ],
+ "w0": [
+  0.25,
+  0.15,
+  0.1,
+  0.1,
+  0.15,
+  0.1,
+  0.05,
+  0.1
+ ],
+ "A1": [
+  3.0,
+  5.0,
+  3.0,
+  2.0,
+  4.0,
+  3.0,
+  4.0,
+  3.0
+ ],
+ "A2": [
+  5.0,
+  2.0,
+  4.0,
+  5.0,
+  3.0,
+  4.0,
+  3.0,
+  3.0
+ ],
+ "S1": 3.4,
+ "S2": 3.75,
+ "P_A2_mejor": 0.80506,
+ "P_A2_mejor_uniforme": 0.6729,
+ "w_norm_empate": 0.24,
+ "dif_base": 0.35000000000000003,
+ "efecto_peso": {
+  "C4 con margen": 0.1833333333333334,
+  "Riesgo normativo (consulta)": -0.23372093023255805,
+  "Complejidad mec\u00e1nica": 0.030952380952380898,
+  "Masa y energ\u00eda de aterrizaje": 0.1261904761904763,
+  "Robustez ante falla de liberaci\u00f3n": -0.09418604651162787,
+  "Fabricabilidad y costo": 0.030952380952380953,
+  "Integraci\u00f3n con antenas": -0.03292682926829266,
+  "Validaci\u00f3n y ensayos": -0.01666666666666672
+ }
+}

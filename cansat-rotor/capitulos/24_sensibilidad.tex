@@ -1,0 +1,301 @@
+\chapter{Sensibilidad global del diseño v2}\label{cap:sens}
+
+Este capítulo aplica estudios de sensibilidad a las magnitudes que deciden si el diseño
+cumple: la velocidad de descenso, el promedio de \Req{C4}, el arranque del rotor, la
+autonomía de \Req{E7}, la masa, la altura de liberación, la fuerza centrífuga, el flameo y el
+margen frente al anillo de vórtices. El objetivo es saber qué entradas conviene conocer mejor
+primero. El resultado principal es que casi todo el riesgo aerodinámico viene de una sola
+entrada, el coeficiente de resistencia del rotor $C_R$ (la incertidumbre del modelo), seguida
+por la densidad del aire; que el arranque depende sobre todo de la inercia del rotor y del
+paso; que \Req{E7} se cumple solo si las cámaras se encienden al despegar; y que el flameo de la
+pala depende de dónde queda el centro de masa. Los cálculos están en
+\texttt{analysis/v2\_sensibilidad.py}, \texttt{v2\_sens\_arranque.py} y
+\texttt{v2\_descenso.py}.
+
+\begin{resultado}[Lo más sensible, en orden]
+\begin{enumerate}[leftmargin=*]
+  \item $V_2$ y $\langle V\rangle$: el $C_R$ del rotor explica el 79\,\% (Arq.~1) y el 65\,\% (Arq.~2) de
+        la varianza de $V_2$; la densidad del aire, el 15 y el 12\,\%; la masa de la etapa 2, el 18\,\%
+        en la Arq.~2. Paso, cuerda, número de palas, radio de fabricación y $C_D$ del cuerpo
+        suman menos del 8\,\%.
+  \item Arranque: la inercia del rotor ($\pm30$\,\% cambia $t_{90}$ de 1,1 a 2,0~s) y el paso
+        ($\ang{-2}$ a $\ang{-4}$: 2,0 a 1,3~s). El rozamiento de los rodamientos cambia
+        $t_{90}$ en \SI{0.04}{s}.
+  \item Autonomía: las cámaras son el \SI{73}{\percent} de la potencia; con todo encendido
+        desde la rampa la autonomía es \SI{2.3}{h} y la probabilidad de no llegar a 2\,h es
+        del \SI{54}{\percent}.
+  \item Masa de la carga útil: el panel solar de la planilla (\SI{37}{g}, dato dudoso) pesa
+        el \SI{56}{\percent} de la varianza.
+  \item Altura de liberación: el retardo del filtro y el error del puerto de presión
+        (\SI{2.3}{m} cada uno); el error de escala de la atmósfera estándar se cancela al usar
+        el \SI{80}{\percent} del apogeo medido con el mismo sensor.
+  \item Flameo: la posición del centro de masa de la pala ($\ge0{,}45c$ lo acerca a
+        $2{,}5\Omega$); fuerza centrífuga: la velocidad de giro al cuadrado, y el sobrepaso
+        del arranque la sube un \SI{60}{\percent}.
+  \item Anillo de vórtices: una ráfaga ascendente de \SI{1}{m/s} lleva $V/v_h$ a 1,7.
+\end{enumerate}
+\end{resultado}
+
+%=====================================================================
+\section{Método}\label{sec:sens-metodo}
+
+Para cada respuesta se aplican cuatro herramientas.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Elasticidad} local, $E_x=\partial\ln V/\partial\ln x$, por diferencias
+        centrales. Dice cuánto cambia la respuesta por cada \SI{1}{\percent} de cambio de $x$.
+  \item \textbf{Tornado}: cada entrada recorre su rango plausible con las demás en el valor
+        nominal. Ordena el efecto \emph{para ese rango}, que importa tanto como la
+        elasticidad.
+  \item \textbf{Índices de Sobol} de primer orden $S_i$ y total $S_{T_i}$ (estimadores de
+        Saltelli y de Jansen, $2\times10^5$ muestras) para entradas independientes con distribución
+        uniforme en el rango: $S_i$ es la parte de la varianza que explica $x_i$ sola, y
+        $S_{T_i}-S_i$ la que explica por interacciones. Los $S_i$ suman 1,0 en los casos
+        siguientes: el modelo es casi aditivo.
+  \item \textbf{PRCC} (correlación parcial de rangos) como control de la monotonía.
+\end{itemize}
+Las entradas y sus rangos se fijan por ingeniería y se listan en cada sección. La
+respuesta de $V_2$ usa el equilibrio $V_2=\sqrt{m_2g/(\tfrac12\rho C_R\pi R^2+\tfrac12\rho C_{D,c}A_c)}$
+con $C_R$ del BEMT y sus respuestas lineales al paso, la cuerda y el número de palas medidas en el
+barrido del capítulo~\ref{cap:bemt}: $\partial C_R/\partial\theta=\num{0.021}$/\si{\degree},
+$\partial C_R/\partial c=\num{0.0017}$/mm y $\partial C_R/\partial B=\num{0.0205}$/pala.
+
+%=====================================================================
+\section{Velocidad de régimen $V_2$}\label{sec:sens-V2}
+
+\begin{table}[H]
+\centering\small
+\caption{Elasticidades y rangos de $V_2$ (Arquitectura~1, $V_2=\SI{6.36}{m/s}$).}\label{tab:sens-elast}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Entrada} & \textbf{Elasticidad} $\partial\ln V_2/\partial\ln x$ & \textbf{Rango} & \textbf{$V_2$ en el rango} [m/s]\\\midrule
+$C_R$ del modelo (incertidumbre) & $-0{,}49$ & $\pm15$\,\% & 5,94--6,88\\
+Densidad del aire & $-0{,}50$ & 1,10--\SI{1.25}{kg/m^3} & 6,29--6,71\\
+Radio de fabricación $R$ & $-0{,}97$ & $\SI{250}{mm}\pm\SI{3}{mm}$ & 6,28--6,43\\
+Paso $\theta$ & $-0{,}03$ & \ang{-4} a \ang{-2} & 6,29--6,43\\
+Número de palas & $-0{,}04$ & 3 a 5 & 6,29--6,42\\
+Masa $m_2$ & $+0{,}50$ & 0,48--\SI{0.50}{kg} & 6,29--6,42\\
+Cuerda & $-0{,}04$ & 40 a \SI{50}{mm} & 6,33--6,38\\
+$C_D$ del cuerpo & $-0{,}01$ & 0,6--1,0 & 6,34--6,38\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\input{figuras/tornado_V2_A1}
+\caption{Tornado de $V_2$ de régimen, Arquitectura~1 (azul: valor bajo de la entrada;
+naranja: valor alto; línea de trazos: nominal).}
+\label{fig:sens-tornado-V2}
+\end{figure}
+
+La elasticidad del radio es $-0{,}97$: $V_2$ baja casi \SI{1}{\percent} por cada \SI{1}{\percent} de
+radio. Pero el radio se fabrica con tolerancia de milímetros, y en el rango de fabricación
+pesa \SI{0.15}{m/s}, mientras que la incertidumbre de $C_R$ pesa \SI{0.94}{m/s}. Por eso la
+palanca de diseño es el radio y el factor de riesgo es el $C_R$.
+
+\begin{table}[H]
+\centering\small
+\caption{Índices de Sobol de $V_2$ (primer orden $S_i$; los totales difieren en menos de 0,02).}\label{tab:sens-sobol-V2}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Entrada} & \textbf{Arq.~1} $S_i$ & \textbf{Arq.~2} $S_i$ & PRCC (Arq.~1)\\\midrule
+$C_R$ del modelo & 0,79 & 0,65 & $-0{,}99$\\
+Densidad del aire & 0,15 & 0,12 & $-0{,}77$\\
+Masa $m_2$ & 0,01 & 0,18 & $+0{,}33$\\
+Radio, paso, cuerda, palas, $C_{D,c}$ & 0,05 & 0,05 & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En la Arquitectura~2 la masa pesa más porque su incertidumbre es mayor (\SI{15}{g}, de la
+suma de componentes, contra \SI{6}{g} del pesaje en la Arquitectura~1). \textbf{Consecuencia
+para los ensayos:} medir $C_R$ (caída instrumentada, ensayo E3 del capítulo~\ref{cap:ensayos}) reduce la
+varianza de $V_2$ en tres cuartas partes; medir el paso o el radio con más precisión casi no
+aporta.
+
+\begin{figure}[H]
+\centering
+\input{figuras/tornado_V2_A2}
+\caption{Tornado de $V_2$, Arquitectura~2 ($m_2=\SI{0.325}{kg}$).}
+\label{fig:sens-tornado-V2b}
+\end{figure}
+
+%=====================================================================
+\section{Promedio de \texorpdfstring{\Req{C4}}{C4} sobre todo el descenso}\label{sec:sens-Vg}
+
+El promedio global~\eqref{eq:promedio} suma a lo anterior las entradas de la etapa 1
+(masa de pesaje, $C_D$ y diámetro del drogue), la fracción de altura recorrida a $V_1$ (el
+error del disparo del 80\,\%, de 17 a 23\,\%) y el tiempo de arranque (2,5 a \SI{5}{s}).
+
+\begin{figure}[H]
+\centering
+\input{figuras/tornado_Vg_A1}
+\caption{Tornado del promedio global, Arquitectura~1 (nominal \SI{7.38}{m/s}; el límite de
+\SI{8}{m/s} se indica con puntos).}
+\label{fig:sens-tornado-Vg}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Índices de Sobol del promedio global.}\label{tab:sens-sobol-Vg}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Entrada} & \textbf{Arq.~1} $S_i$ & \textbf{Arq.~2} $S_i$\\\midrule
+$C_R$ del modelo & 0,71 & 0,60\\
+Densidad del aire & 0,18 & 0,15\\
+Masa $m_2$ & 0,01 & 0,16\\
+Fracción de altura a $V_1$ (disparo del 80\,\%) & 0,05 & 0,06\\
+Etapa 1 ($m_1$, $C_{D,d}$, $D_d$, $C_{D,c}$) y arranque & 0,03 & 0,03\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La etapa 1 casi no importa para el promedio: $m_1$, $C_D$ y el diámetro del drogue suman menos
+del \SI{3}{\percent} de la varianza. La probabilidad de superar \SI{8}{m/s} con estas entradas
+es del \SI{3.5}{\percent} para la Arquitectura~1 y nula para la 2, menor que el
+\SI{13}{\percent} del Monte Carlo de la sección~\ref{sec:arq-mc} porque allí la densidad se
+muestrea con la altura del sitio y la temperatura (más cola superior).
+
+%=====================================================================
+\section{Arranque del rotor}\label{sec:sens-arranque}
+
+\begin{figure}[H]
+\centering
+\input{figuras/tornado_t90}
+\caption{Tornado del tiempo de arranque $t_{90}$ (capítulo~\ref{cap:arranque}, caso base
+\SI{1.55}{s}).}
+\label{fig:sens-tornado-t90}
+\end{figure}
+
+La inercia del rotor es la entrada más sensible: un \SI{30}{\percent} más de inercia
+alarga el arranque de 1,55 a \SI{2.0}{s} y la caída de 22 a \SI{28}{m}. Como la inercia
+depende de la masa de las palas (portapala y varilla de BV incluidos) y de su centro de masa,
+\textbf{pesar y balancear las palas} es la medida más barata. Le sigue el paso: de \ang{-2} a
+\ang{-4} el arranque va de 2,0 a \SI{1.3}{s}. La polar en pérdida (XFOIL contra 2D) cambia
+\SI{0.17}{s}; la velocidad al abrir, \SI{0.4}{s}; el rozamiento, \SI{0.04}{s}; la masa de la
+etapa 2 y el arrastre de la apertura, menos de \SI{0.1}{s}. En cambio la \emph{existencia} del
+arranque (paso crítico $\theta_c\approx\ang{0}$) casi no depende de ninguno: solo importa que
+el paso sea negativo.
+
+%=====================================================================
+\section{Autonomía y \texorpdfstring{\Req{E7}}{E7}}\label{sec:sens-energia}
+
+\begin{figure}[H]
+\centering
+\input{figuras/tornado_E7}
+\caption{Tornado de la autonomía con todo encendido desde la rampa (planilla del equipo;
+topología batería $\to$ elevador a 5\,V $\to$ reductor a 3,3\,V; nominal \SI{2.29}{h}).}
+\label{fig:sens-tornado-E7}
+\end{figure}
+
+El consumo de las cámaras (\SI{300}{mA} a \SI{5}{V} cada una, \SI{3}{W} en total) es el
+\SI{73}{\percent} de la potencia de la batería. Con todo encendido desde la rampa y los
+valores de la planilla, la autonomía es de \SI{2.29}{h} y el Monte Carlo de las trece
+entradas da \SI{2.0}{h} de media, \SI{1.5}{h} en el percentil 5 y un \SI{54}{\percent} de
+probabilidad de no llegar a las 2\,h de \Req{E7}. Cambiar de \SI{300}{mA} a \SI{180}{mA} por
+cámara sube la autonomía a \SI{3.2}{h}; las pérdidas de la doble conversión (0,77) cuestan
+unos \SI{0.1}{h}.
+
+\begin{table}[H]
+\centering\small
+\caption{Autonomía según la política de energía (celda de \SI{3400}{mAh}, \SI{90}{\percent} útil).}\label{tab:sens-energia}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Política} & \textbf{Potencia} [W] & \textbf{Autonomía} [h] & \Req{E7}\\\midrule
+Todo encendido desde la rampa, 3,3\,V vía 5\,V & 4,81 & 2,3 & Justo\\
+Ídem, 3,3\,V directo de la batería (buck-boost) & 4,63 & 2,4 & Justo\\
+Cámaras apagadas en la rampa, radio continua (105\,mA) & 1,28 & 8,6 & Cumple\\
+Cámaras apagadas en la rampa, radio a 1\,Hz (20\,mA) & 0,91 & 12,1 & Cumple\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La conclusión de diseño es encender las cámaras al detectar el despegue (por aceleración o por
+presión) y mantener la rampa a $\approx\SI{1}{W}$. Con esa política las 2 horas de \Req{E7} se cubren con un factor
+4 (rampa) más los 3 a 10 minutos de vuelo con las cámaras encendidas.
+
+%=====================================================================
+\section{Masa, altura de liberación y fuerza centrífuga}\label{sec:sens-masa}
+
+\paragraph{Masa.} La tabla~\ref{tab:masa} del capítulo~\ref{cap:dim} suma $467\pm20$~g
+(Arq.~1) antes del lastre. Si todos los componentes se pesan con las desviaciones de la
+tabla, el lastre necesario es de $33\pm20$~g y hay \SI{6}{\percent} de probabilidad de
+sobrepeso (lastre negativo) y \SI{10}{\percent} de necesitar más de \SI{60}{g}; $V_2$ queda
+en $6{,}36\pm0{,}04$~m/s. El panel solar explica el \SI{56}{\percent} de la varianza (planilla:
+\SI{37}{g}; típico: \SI{6}{g}).
+
+\paragraph{Altura de liberación.} El error de la altura a la que se suelta el rotor
+resulta de: retardo del filtro $\times$ $V_1$ (\SI{2.3}{m}), error del puerto estático por
+la presión dinámica del aire a \SI{13}{m/s} (\SI{2.4}{m}), deriva térmica del offset del
+BMP280 (\SI{0.7}{m}), deriva meteorológica en la rampa (\SI{0.4}{m}), ruido (\SI{0.15}{m}) y
+pico de ruido al buscar el máximo (\SI{0.18}{m}). Suman un error medio de $+\SI{7.2}{m}$
+(se libera más abajo) con \SI{3.4}{m} de desviación y \SI{12.9}{m} en el percentil 95:
+\SI{1.9}{\percent} de la altura. Eso mueve el promedio global menos de \SI{0.12}{m/s}.
+Si el umbral fuera absoluto, el error de escala de la atmósfera estándar ($\pm4$\,\%) daría
+\SI{31}{m}; al usar el \SI{80}{\percent} del apogeo medido con el mismo sensor, ese error se
+cancela. El diseño del puerto de presión (venteado, lejos de la corriente) y la
+frecuencia de muestreo importan más que la calidad del sensor.
+
+\paragraph{Fuerza centrífuga y flameo.} La fuerza centrífuga por pala vale
+$F_c=m_b\Omega^2r_g$. La velocidad de giro es la entrada que domina: el sobrepaso del
+arranque ($\Omega=\SI{162.6}{rad/s}$ contra \SI{128.7}{rad/s} de régimen) multiplica $F_c$ por
+1,60 (de \SI{18.9}{N} a \SI{30.2}{N} en la pala A). Una incertidumbre de \SI{15}{\percent} en
+$m_b$ cambia $F_c$ lo mismo. Para el flameo, la posición del centro de masa de la pala domina:
+
+\begin{table}[H]
+\centering\small
+\caption{Velocidad de flameo $\Omega_F/\Omega$ (a \SI{128.7}{rad/s}) según la posición del
+centro de masa $y_{cm}/c$ (modelo p-k del capítulo~\ref{cap:estructura}).}\label{tab:sens-flameo}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+$y_{cm}/c$ & 0,40 & 0,425 & 0,45 & 0,50 & 0,55\\\midrule
+Pala A & $\infty$ & 1,47 & 1,17 & 0,97 & 0,86\\
+Pala BV & 3,34 & 2,75 & 2,47 & 2,20 & 2,12\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con BV, un centro de masa corrido de $0{,}44c$ a $0{,}55c$ baja el margen de 2,6 a 2,1; con A,
+cualquier posición por detrás de $0{,}41c$ da flameo en régimen o muy cerca. El centro de masa
+se mide con el ensayo de balanceo sobre filo (capítulo~\ref{cap:estructura}).
+
+%=====================================================================
+\section{Anillo de vórtices y ráfagas}\label{sec:sens-vrs}
+
+El cociente $V/v_h$ en régimen es 2,04, que no depende de la masa ni del radio: la
+sensibilidad es solo a la ráfaga vertical $w$.
+\begin{table}[H]
+\centering\small
+\caption{Ráfaga ascendente $w$ necesaria para llevar $V/v_h$ a 1,7 y a 1,5.}\label{tab:sens-gust}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Arquitectura} & $v_h$ [m/s] & $w$ hasta $1{,}7\,v_h$ [m/s] & $w$ hasta $1{,}5\,v_h$ [m/s]\\\midrule
+1 ($m_2=\SI{0.49}{kg}$) & 3,12 & 1,05 & 1,68\\
+2 ($m_2=\SI{0.325}{kg}$) & 2,54 & 0,86 & 1,37\\
+\bottomrule
+\end{tabular}
+\end{table}
+La Arquitectura~2 tiene menos margen absoluto porque $v_h$ es menor. Ambos valores son
+pocos para turbulencia fuerte, pero la perturbación dura la constante de tiempo vertical
+(\SI{0.3}{s}) y el sistema se aleja solo de la región (capítulo~\ref{cap:estabilidad}).
+
+%=====================================================================
+\section{Qué medir primero}\label{sec:sens-prioridad}
+
+\begin{table}[H]
+\centering\small
+\caption{Prioridad de mediciones según la sensibilidad.}\label{tab:sens-prioridad}
+\begin{tabularx}{\textwidth}{@{}lYY@{}}
+\toprule
+\textbf{Respuesta} & \textbf{Entrada dominante} & \textbf{Qué hacer}\\\midrule
+$V_2$, $\langle V\rangle$ & $C_R$ (60--80\,\% de la varianza); luego densidad & Caída instrumentada con dron (E3); fijar la altura del sitio\\
+Arranque, $t_{90}$ & Inercia del rotor; paso & Pesar y balancear las palas; portapalas de \ang{-3} a \ang{-4}\\
+Autonomía & Cámaras (73\,\% de la potencia) & Encenderlas al despegar; medir su consumo real\\
+Masa & Panel solar (56\,\%) & Pesarlo antes que nada\\
+Altura de liberación & Retardo del filtro y puerto estático & Ventear el puerto; muestrear a \SI{20}{Hz} o más\\
+Flameo & Posición del centro de masa & Balanceo sobre filo de cada pala\\
+Fuerza centrífuga & Sobrepaso de $\Omega$ & Diseñar a \num{1553}~rpm\\
+Anillo de vórtices & Ráfaga & Sin acción; vigilar $V/v_h$ en los ensayos\\
+\bottomrule
+\end{tabularx}
+\end{table}

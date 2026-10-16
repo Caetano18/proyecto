@@ -1,0 +1,610 @@
+\chapter{Reconfiguración v2: requisitos, contenedor y liberación del drogue}\label{cap:arq}
+\usepgfplotslibrary{groupplots}
+
+El anexo A cambió, y el equipo aclaró dos libertades de diseño: el drogue puede soltarse
+antes de abrir el segundo sistema de descenso, y el anexo no exige una pared si el
+CanSat va dentro de un contenedor que elige el equipo. Este capítulo reúne lo que eso cambia
+en el modelo aerodinámico y en el diseño. El resultado principal es que, con el drogue
+soltado, la etapa 2 es el rotor solo, y el radio y la masa que vuela con el rotor pasan a
+ser las dos palancas de diseño: $V_2\propto\sqrt{m_2}/R$. Con $R=\SI{0.25}{m}$ el rotor
+solo da $V_2=\SI{6.4}{m/s}$ ($\langle V\rangle=\SI{7.1}{m/s}$ sobre todo el descenso). Si la
+organización permite separar el contenedor con el drogue, la masa que vuela baja a unos
+\SI{0.32}{kg} y $V_2$ a \SI{5.2}{m/s}. Los demás capítulos (BEMT, arranque, estabilidad,
+estructura) se recalcularon con estos datos.
+
+\begin{resultado}[Resumen del capítulo]
+\begin{itemize}
+  \item \textbf{El promedio de \Req{C4} importa.} Leído sobre todo el descenso desde el
+        apogeo, $\langle V\rangle=1/(0{,}2/V_1+0{,}8/V_2)$ y exige $V_2\le\SI{7.26}{m/s}$. El
+        rotor solo de $R=\SI{0.20}{m}$ ($V_2=\SI{7.85}{m/s}$) no lo cumple; el de
+        $R=\SI{0.25}{m}$ sí ($\SI{7.11}{m/s}$), con un margen de \SI{0.9}{m/s}.
+  \item \textbf{Dos arquitecturas con el mismo rotor.} La Arquitectura~1 mantiene el cuerpo
+        impreso (Ø\,81) con las palas exteriores y suelta el drogue con un pasador, después de
+        confirmar que el anillo de traba giró. La Arquitectura~2 usa un contenedor tubular no
+        impreso que se separa con el drogue: la carga útil cae por el extremo abierto en
+        \SI{0.15}{s}, las palas quedan libres y la masa del contenedor no vuela con el
+        rotor ($m_2\approx\SI{0.32}{kg}$).
+  \item \textbf{Con la Arquitectura~2:} $V_2=\SI{5.5}{m/s}$, $\langle V\rangle=\SI{6.2}{m/s}$ y
+        \SI{5}{J} de energía de aterrizaje (contra \SI{10}{J}); el perfil de la pala puede
+        tener espesor ($t/c$ hasta 11\,\% con chasis Ø\,72). Requiere que la organización
+        permita separar el contenedor: es una consulta, no un hecho.
+  \item \textbf{Simulación de cumplimiento} (Monte Carlo, $2\times10^5$ corridas): con la
+        Arquitectura~1 y $R=\SI{0.25}{m}$, \Req{C4} se cumple como régimen en el
+        \SI{99.7}{\percent} de los casos y como promedio global en el \SI{87}{\percent};
+        con la Arquitectura~2, en el \SI{100}{\percent} y el \SI{99.9}{\percent}.
+  \item \textbf{Recomendación.} Fijar $R=\SI{0.25}{m}$ (rotor común) y llevar adelante la
+        Arquitectura~1 como base, con la Arquitectura~2 lista para activarse si la organización
+        responde que sí. La matriz de decisión da ventaja a la 2 con el \SI{81}{\percent} de
+        probabilidad frente a variaciones de los pesos; el factor decisivo es el riesgo
+        normativo.
+\end{itemize}
+\end{resultado}
+
+%=====================================================================
+\section{Qué cambió y qué hay que consultar}\label{sec:arq-cambios}
+
+\begin{table}[H]
+\centering\small
+\caption{Cambios del anexo~A (v2) y de las condiciones de diseño, y su efecto.}\label{tab:arq-cambios}
+\begin{tabularx}{\textwidth}{@{}lYYY@{}}
+\toprule
+\textbf{Tema} & \textbf{Antes (v1)} & \textbf{Ahora (v2)} & \textbf{Efecto}\\\midrule
+\Req{S2} diámetro & \SI{95}{mm} (las bases dicen $95\times200$) & \SI{90}{mm} & Plegado rehecho; cuerpo Ø\,81 (sec.~\ref{sec:arq-geom}); inconsistencia a consultar\\
+\Req{E7} autonomía & --- & mínimo 2\,h integrado en el cohete & Cámaras al despegue, no en la rampa (sec.~\ref{sec:dim-prom} y cap.~\ref{cap:sens})\\
+\Req{X3} & --- & comando automático al separarse del cohete & El firmware detecta la separación (cap.~\ref{cap:electronica})\\
+\Req{X5} & aceleraciones & aceleraciones y rotaciones en 3 ejes, GPS & MPU6050 cubre el giroscopio (cap.~\ref{cap:sensores})\\
+Trama y estados & definidos en el anexo & a criterio del equipo & Se mantienen los estados propios del equipo\\
+\Req{S6} pared & $\ge\SI{2}{mm}$ & $\ge\SI{2}{mm}$ \emph{si se imprime} & No hay pared obligatoria en un contenedor no impreso\\
+Drogue & atado, cuerda por el eje & puede soltarse antes de abrir el rotor & Etapa 2 con el rotor solo\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Las aclaraciones del equipo tienen tres consecuencias de diseño. Primera, la etapa 2 deja de
+tener el aporte del drogue y su estela, y pierde el \SI{2}{\percent} de masa del drogue y
+su cuerda; el rotor solo con $R=\SI{0.20}{m}$ no alcanza (sección~\ref{sec:dim-prom}). Segunda, si
+el contenedor es nuestro, se puede elegir un tubo delgado no impreso, y las palas ya no
+necesitan arrollarse sobre un cuerpo de pared de \SI{2}{mm}: caben con espesor de
+perfil. Tercera, si además el contenedor puede separarse con el drogue, la masa que lleva
+el rotor se reduce.
+
+\paragraph{Consultas a la organización.}
+\begin{enumerate}[leftmargin=*]
+  \item \Req{S2}: ¿el diámetro es \SI{90}{mm} (anexo v2) o $95\times200$ (bases y condiciones)?
+  \item \Req{C4}: ¿el promedio de $5\pm\SI{3}{m/s}$ se mide sobre todo el descenso desde el
+        apogeo o solo desde la liberación del segundo sistema?
+  \item ¿Se puede soltar el drogue antes de desplegar el segundo sistema, de modo que caiga
+        aparte del CanSat?
+  \item ¿Se puede separar el contenedor del CanSat en vuelo (con el drogue)? La masa de
+        \Req{S1} ¿se verifica combinada solo en el pesaje?
+  \item \Req{S6}: ¿la pared mínima de \SI{2}{mm} aplica solo a piezas impresas en 3D, y se
+        admite un contenedor tubular no impreso (aluminio, fibra de vidrio, PVC)?
+  \item Altura sobre el mar del sitio de lanzamiento y apogeo esperado (la densidad del
+        aire es la segunda variable de $V_2$; capítulo~\ref{cap:sens}).
+  \item \Req{X3}: ¿«separación» es la salida del CanSat del cohete?
+\end{enumerate}
+
+%=====================================================================
+\section{Dos arquitecturas con el mismo rotor}\label{sec:arq-dos}
+
+El rotor es común: $R=\SI{0.25}{m}$, pala de \SI{206}{mm}, $B=4$, $c=\SI{45}{mm}$,
+$\theta=\ang{-3}$, bisagra con tope elástico a \ang{+15}. Las arquitecturas difieren en el
+cuerpo, la liberación y la masa que vuela.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.40mm, y=0.40mm]
+  % ================= Arquitectura 1
+  \begin{scope}
+    \node[font=\small\bfseries] at (0,270) {Arquitectura 1};
+    % cuerpo
+    \filldraw[fijo] (-40.5,25) rectangle (40.5,225);
+    % espuma
+    \filldraw[pattern=north east lines, pattern color=cgris] (-40.5,0) rectangle (40.5,25);
+    \draw[fijo] (-40.5,0) rectangle (40.5,25);
+    \node[font=\scriptsize, cgris, fill=white, inner sep=1pt] at (0,12) {espuma 25};
+    % palas plegadas
+    \filldraw[rot] (-44.5,25) rectangle (-40.5,231);
+    \filldraw[rot] (40.5,25) rectangle (44.5,231);
+    % anillo de traba
+    \draw[act, line width=1.2pt] (-38,40) -- (38,40);
+    \node[font=\scriptsize, cfreno, anchor=west] at (46,40) {anillo de traba (SG90)};
+    % bateria y electronica
+    \filldraw[fill=white, draw=cgris] (-9,60) rectangle (9,125);
+    \node[font=\scriptsize, cgris] at (0,92) {18650};
+    \filldraw[fill=white, draw=cgris] (-32,135) rectangle (32,205);
+    \node[font=\scriptsize, cgris, align=center] at (0,170) {electrónica\\y cámaras};
+    % cubo
+    \filldraw[rot] (-22,225) rectangle (22,240);
+    \draw[eje] (0,215) -- (0,250);
+    % copa del drogue y pasador
+    \filldraw[cont, fill=ccont!15] (-37.5,240) rectangle (37.5,250);
+    \draw[cuerda, line width=1.4pt] (0,243) -- (0,262) node[above, font=\scriptsize, ccuerda] {drogue};
+    \filldraw[act] (-8,244) rectangle (8,247);
+    \node[font=\scriptsize, cfreno, anchor=west] at (46,246) {pasador (SG90)};
+    \draw[cota] (-45,-12) -- (45,-12) node[midway, fill=white, font=\scriptsize] {Ø\,90 (S2)};
+    \draw[cota] (-58,0) -- (-58,250) node[midway, fill=white, font=\scriptsize, rotate=90] {250 (S3)};
+  \end{scope}
+  % ================= Arquitectura 2
+  \begin{scope}[shift={(230,0)}]
+    \node[font=\small\bfseries] at (0,270) {Arquitectura 2};
+    % contenedor: tubo
+    \draw[cont, line width=1.0pt] (-45,0) -- (-45,240);
+    \draw[cont, line width=1.0pt] (45,0) -- (45,240);
+    \filldraw[cont, fill=ccont!25] (-45,240) rectangle (45,250);
+    \node[font=\scriptsize, ccont, anchor=west] at (50,120) {contenedor (tubo)};
+    % chasis
+    \draw[fijo] (-36,0) rectangle (36,226);
+    \filldraw[pattern=north east lines, pattern color=cgris] (-36,0) rectangle (36,22);
+    % palas plegadas en el espacio anular
+    \filldraw[rot] (-44,22) rectangle (-37,226);
+    \filldraw[rot] (37,22) rectangle (44,226);
+    % pestillo
+    \filldraw[act] (-6,226) rectangle (6,240);
+    \node[font=\scriptsize, cfreno, anchor=west] at (50,233) {pestillo (SG90)};
+    % cubo
+    \filldraw[rot] (-18,212) rectangle (18,226);
+    % electrónica
+    \filldraw[fill=white, draw=cgris] (-9,55) rectangle (9,120);
+    \node[font=\scriptsize, cgris] at (0,88) {18650};
+    \filldraw[fill=white, draw=cgris] (-30,130) rectangle (30,200);
+    \node[font=\scriptsize, cgris, align=center] at (0,165) {electrónica\\y cámaras};
+    \draw[cuerda, line width=1.4pt] (0,250) -- (0,262) node[above, font=\scriptsize, ccuerda] {drogue};
+    \draw[flecha, cfreno] (0,-8) -- (0,-35) node[below, font=\scriptsize, cfreno, align=center] {la carga útil\\sale por abajo};
+    \draw[cota] (-45,-52) -- (45,-52) node[midway, fill=white, font=\scriptsize] {Ø\,90 (S2)};
+  \end{scope}
+\end{tikzpicture}
+\caption{Las dos arquitecturas, plegadas (cortes longitudinales, medidas en mm). En la
+primera, las palas (naranja) cuelgan por fuera del cuerpo impreso y un anillo interno las
+retiene; el drogue sale de la copa al soltar un pasador. En la segunda, las palas se pliegan
+en el espacio anular entre el chasis y un tubo no impreso; al soltar el pestillo, el
+drogue arrastra el contenedor hacia arriba y la carga útil cae por el extremo abierto.}
+\label{fig:arq-dos}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Comparación de las dos arquitecturas.}\label{tab:arq-comparacion}
+\begin{tabularx}{\textwidth}{@{}lYY@{}}
+\toprule
+ & \textbf{Arquitectura 1} & \textbf{Arquitectura 2}\\\midrule
+Cuerpo & PETG Ø\,81, pared \SI{2}{mm} (\Req{S6}) & Chasis esqueleto + tubo no impreso Ø\,90\\
+Palas & Placa de \SI{0.5}{mm} arrollada por fuera & Perfil con espesor, en el espacio anular\\
+Traba de las palas & Anillo interno con servo + pasador del drogue (2 servos) & El propio contenedor; un pestillo (el segundo servo es redundante)\\
+Drogue & Se suelta con un pasador tras confirmar el anillo & Atado al contenedor, que se separa\\
+Masa en la etapa 2 & \SI{0.49}{kg} & $\approx\SI{0.32}{kg}$\\
+$V_2$, $\langle V\rangle$ ($R=\SI{0.25}{m}$) & \SI{6.4}{m/s}, \SI{7.1}{m/s} & \SI{5.5}{m/s}, \SI{6.2}{m/s}\\
+Energía de aterrizaje & \SI{10}{J} & \SI{5}{J}\\
+Dependencia normativa & Ninguna adicional & Separar el contenedor en vuelo\\
+Largo & En el límite de \Req{S3} (copa aplanada) & Tubo de \SIrange{235}{245}{mm}\\
+Antenas (GPS, LoRa) & Cuerpo plástico: transparente & Contenedor de fibra de vidrio o PVC: transparente\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Geometría: plegado en Ø\,90 y espacio para un perfil con espesor}\label{sec:arq-geom}
+
+\paragraph{Arquitectura 1.} Una pala de cuerda $c$ y flecha $s=0{,}07c$, apoyada por el centro
+sobre un cuerpo de radio $\rho$ con la cara cóncava hacia él, tiene el borde exterior a
+\begin{equation}
+  r_\text{borde}=\sqrt{(\rho-s+t)^2+(c/2)^2},
+  \label{eq:arq-rborde}
+\end{equation}
+con $t$ el espesor. Para $\rho=\SI{40.5}{mm}$, $c=\SI{45}{mm}$ y $t=\SI{0.5}{mm}$,
+$r_\text{borde}=\SI{44.03}{mm}$: el envolvente es Ø\,88,1, con \SI{1.0}{mm} de juego
+radial hasta Ø\,90. El cuerpo no puede pasar de $\rho=\SI{41.6}{mm}$ (Ø\,83). Con cuerda
+de \SI{50}{mm} el límite baja a \SI{40.4}{mm} (Ø\,80,8) y con \SI{40}{mm} sube a
+\SI{42.6}{mm}. La figura~\ref{fig:arq-geom}(a) muestra la relación.
+
+\paragraph{Arquitectura 2.} Con un tubo de Ø\,90 y pared de \SI{0.8}{mm}, el radio interior
+es \SI{44.2}{mm}. Si el chasis tiene radio $\rho_c$, el espesor máximo del perfil que cabe
+plegado es
+\begin{equation}
+  t_\text{máx}=\sqrt{R_i^2-(c/2)^2}-(\rho_c-s).
+  \label{eq:arq-tmax}
+\end{equation}
+Con un chasis de Ø\,72 ($\rho_c=\SI{36}{mm}$) y $c=\SI{45}{mm}$, $t_\text{máx}=\SI{5.2}{mm}$ (11,5\,\% de la
+cuerda); con Ø\,76, \SI{3.2}{mm} (7\,\%); con Ø\,68, \SI{7.2}{mm}
+(figura~\ref{fig:arq-geom}(b)). Un perfil de 3 a 6\,\% de espesor entra con holgura. El
+espesor sube la rigidez a torsión de la pala como $t^3$, que es lo que falta a la pala
+de \SI{206}{mm} (capítulo~\ref{cap:estructura}), y permite un perfil de carbono sobre núcleo de
+espuma o un perfil impreso hueco; el efecto aerodinámico se estudia en el
+capítulo~\ref{cap:polares}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.8cm},
+  width=0.47\textwidth, height=5.6cm, grid=major, legend style={font=\scriptsize}]
+\nextgroupplot[xlabel={Radio del cuerpo $\rho$ [mm]}, ylabel={Radio del borde $r_\text{borde}$ [mm]},
+  title={\footnotesize (a) Arquitectura 1}, xmin=36, xmax=44, ymin=40, ymax=48, legend pos=north west]
+\addplot[cfijo, thick] table[x=rho, y=c40] {analysis/data/v2_geom_env.dat};
+\addlegendentry{$c=\SI{40}{mm}$}
+\addplot[crot, very thick] table[x=rho, y=c45] {analysis/data/v2_geom_env.dat};
+\addlegendentry{$c=\SI{45}{mm}$}
+\addplot[ccuerda, thick] table[x=rho, y=c50] {analysis/data/v2_geom_env.dat};
+\addlegendentry{$c=\SI{50}{mm}$}
+\addplot[cfreno, dashed, thick, domain=36:44] {45};
+\node[font=\scriptsize, cfreno, anchor=south east] at (axis cs:43.8,45.1) {Ø\,90};
+\addplot[only marks, mark=*, mark size=2.5pt, cfreno] coordinates {(40.5,44.03)};
+\nextgroupplot[xlabel={Radio del chasis $\rho_c$ [mm]}, ylabel={$t_\text{máx}$ [mm]},
+  title={\footnotesize (b) Arquitectura 2}, xmin=30, xmax=41, ymin=0, ymax=12, legend pos=north east]
+\addplot[cfijo, thick] table[x=rho, y=t_c40_w08] {analysis/data/v2_geom_anillo.dat};
+\addlegendentry{$c=\SI{40}{mm}$}
+\addplot[crot, very thick] table[x=rho, y=t_c45_w08] {analysis/data/v2_geom_anillo.dat};
+\addlegendentry{$c=\SI{45}{mm}$}
+\addplot[ccuerda, thick] table[x=rho, y=t_c50_w08] {analysis/data/v2_geom_anillo.dat};
+\addlegendentry{$c=\SI{50}{mm}$}
+\addplot[cgris, dashed] coordinates {(30,2.7) (41,2.7)};
+\node[font=\scriptsize, cgris, anchor=south west] at (axis cs:30.2,2.8) {6\,\% de $c=45$};
+\end{groupplot}
+\end{tikzpicture}
+\caption{(a) Radio del borde de la pala plegada frente al radio del cuerpo (ec.~\ref{eq:arq-rborde},
+$t=\SI{0.5}{mm}$). (b) Espesor máximo del perfil en el espacio anular del contenedor
+(ec.~\ref{eq:arq-tmax}, pared de \SI{0.8}{mm}).}
+\label{fig:arq-geom}
+\end{figure}
+
+\paragraph{Largo.} Con $R=\SI{0.25}{m}$ las palas cuelgan \SI{206}{mm} desde las bisagras; en la
+Arquitectura~1 eso obliga a poner las bisagras a \SI{231}{mm}, la copa del drogue a
+\SI{10}{mm} y el total en \SI{250}{mm}, el límite de \Req{S3} (tabla~\ref{tab:largo}). Es
+el punto más ajustado de esa arquitectura. En la Arquitectura~2 el contenedor mide
+\SIrange{235}{245}{mm}.
+
+%=====================================================================
+\section{Contenedor, masa y energía}\label{sec:arq-masa}
+
+En la Arquitectura~2 el contenedor es un tubo no impreso. La elección del material
+decide la masa que se va con él, la transparencia a las antenas y el costo.
+
+\begin{table}[H]
+\centering\small
+\caption{Tubos candidatos para el contenedor (Ø\,90 $\times$ \SI{225}{mm}; masa del tubo solo,
+sin tapa; densidades típicas).}\label{tab:arq-tubos}
+\begin{tabularx}{\textwidth}{@{}lccYY@{}}
+\toprule
+\textbf{Material} & \textbf{Pared} [mm] & \textbf{Masa} [g] & \textbf{RF (GPS, LoRa)} & \textbf{Observaciones}\\\midrule
+Aluminio 6061 & 0,8 & 137 & Bloquea: antenas fuera o ventana & Mecanizable; liviano para su rigidez\\
+Fibra de vidrio (GRP) & 0,6 & 73 & Transparente & Liviano; el lastre va en la tapa\\
+Carbono & 0,5 & 49 & Bloquea & Rígido; costo alto\\
+PVC (caño) & 1,8 & 160 & Transparente & Barato y pesado: útil como lastre que se va\\
+Cartón técnico & 1,5 & 76 & Transparente & Débil al aplastamiento; sensible a la humedad\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Como el contenedor se va con el drogue, un contenedor más pesado \emph{baja} la masa que
+vuela con el rotor, siempre que el total siga en $500\pm\SI{10}{g}$ (\Req{S1}). Eso
+favorece un tubo transparente a las antenas (GRP o PVC) más un lastre de acero o plomo en la
+tapa: la telemetría debe funcionar durante la etapa 1, con el contenedor cerrado
+(\Req{X3}). Un tubo metálico o de carbono exigiría una ventana o una antena exterior.
+
+La tabla~\ref{tab:masa} del capítulo~\ref{cap:dim} da los presupuestos de ambas
+arquitecturas con la electrónica real del equipo (\SI{177}{g}): la carga útil de la
+Arquitectura~2 pesa \SI{322}{g} y el resto, hasta \SI{500}{g}, lo pone el contenedor, el
+drogue y el lastre que se van. Con $m_2=\SI{0.32}{kg}$ y $R=\SI{0.25}{m}$ resulta
+$V_2=\SI{5.2}{m/s}$ y una energía de aterrizaje de \SI{4.4}{J}.
+
+\paragraph{Sensibilidad de la masa.} El panel solar (\SI{37}{g} en la planilla, dato dudoso)
+aporta el \SI{65}{\percent} de la varianza de la masa de la carga útil en la
+Arquitectura~2 (\SI{56}{\percent} en la 1); le siguen el cableado (14 y 12\,\%) y, en la 1,
+el cuerpo impreso (16\,\%). En la Arquitectura~1, la masa en la etapa 2 queda fijada
+por el pesaje ($500\pm10$, menos el drogue) porque el lastre se ajusta al final; en la
+Arquitectura~2 depende de la suma de los componentes de la carga útil, con una desviación de
+\SI{15}{g} que cambia $V_2$ en solo \SI{0.12}{m/s} (capítulo~\ref{cap:sens}).
+
+%=====================================================================
+\section{Mapa aerodinámico: radio, masa y promedio de \texorpdfstring{\Req{C4}}{C4}}\label{sec:arq-mapa}
+
+Con la BEMT en equilibrio de fuerzas ($T+D_\text{cuerpo}=W_2$) y par nulo, para
+$B=4$, $c=\SI{45}{mm}$, $\theta=\ang{-3}$:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.8cm},
+  width=0.47\textwidth, height=6.4cm, grid=major, xlabel={Masa en la etapa 2 $m_2$ [kg]},
+  xmin=0.30, xmax=0.51, legend style={font=\scriptsize}]
+\nextgroupplot[ylabel={$V_2$ de régimen [m/s]}, ymin=4.8, ymax=8.4, legend pos=north west]
+\addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=m2, y=V_R20] {analysis/data/v2_mapa_ancho.dat};
+\addlegendentry{$R=\SI{0.20}{m}$}
+\addplot[ccuerda, thick, mark=triangle*, mark size=1.5pt] table[x=m2, y=V_R23] {analysis/data/v2_mapa_ancho.dat};
+\addlegendentry{$R=\SI{0.23}{m}$}
+\addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=m2, y=V_R25] {analysis/data/v2_mapa_ancho.dat};
+\addlegendentry{$R=\SI{0.25}{m}$}
+\addplot[cfreno, dotted, thick, domain=0.30:0.51] {8};
+\addplot[cgris, dotted, thick, domain=0.30:0.51] {7.26};
+\node[font=\scriptsize, cgris, anchor=north west] at (axis cs:0.31,7.22) {7,26};
+\nextgroupplot[ylabel={Promedio global $\langle V\rangle$ [m/s]}, ymin=5.4, ymax=9.2, legend pos=north west]
+\addplot[cfijo, thick, mark=square*, mark size=1.2pt] table[x=m2, y=Vg_R20] {analysis/data/v2_mapa_ancho.dat};
+\addplot[ccuerda, thick, mark=triangle*, mark size=1.5pt] table[x=m2, y=Vg_R23] {analysis/data/v2_mapa_ancho.dat};
+\addplot[crot, very thick, mark=*, mark size=1.2pt] table[x=m2, y=Vg_R25] {analysis/data/v2_mapa_ancho.dat};
+\addplot[cfreno, dotted, thick, domain=0.30:0.51] {8};
+\node[font=\scriptsize, cfreno, anchor=south west] at (axis cs:0.31,8.05) {límite 8};
+\draw[cgris, dashed] (axis cs:0.49,5.4) -- (axis cs:0.49,9.2);
+\draw[cgris, dashed] (axis cs:0.322,5.4) -- (axis cs:0.322,9.2);
+\node[font=\scriptsize, cgris, rotate=90, anchor=south] at (axis cs:0.49,5.6) {Arq.~1};
+\node[font=\scriptsize, cgris, rotate=90, anchor=south] at (axis cs:0.322,5.6) {Arq.~2};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Velocidad de régimen y promedio global de \Req{C4} frente a la masa que vuela en la
+etapa 2, para tres radios (BEMT, rotor solo, $V_1=\SI{13.44}{m/s}$). Las líneas
+punteadas son el límite de \SI{8}{m/s} y, en la izquierda, el $V_2$ máximo que da
+$\langle V\rangle=\SI{8}{m/s}$.}
+\label{fig:arq-mapa}
+\end{figure}
+
+\begin{table}[H]
+\centering\small
+\caption{Rotor solo (BEMT) para tres radios y las dos masas de las arquitecturas.}\label{tab:arq-mapa}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+$R$ [m] & $m_2$ [kg] & $V_2$ [m/s] & rpm & $\langle V\rangle$ [m/s] & $E_\text{aterr.}$ [J] & Cumple lectura global\\\midrule
+0,20 & 0,49 & 7,85 & \num{1692} & 8,56 & 15,1 & No\\
+0,23 & 0,49 & 6,88 & \num{1387} & 7,63 & 11,6 & Sí (margen \SI{0.4}{m/s})\\
+\textbf{0,25} & \textbf{0,49} & \textbf{6,36} & \textbf{\num{1229}} & \textbf{7,11} & \textbf{9,9} & \textbf{Sí (\SI{0.9}{m/s})}\\
+0,20 & 0,33 & 6,47 & \num{1408} & 7,22 & 6,9 & Sí\\
+0,23 & 0,33 & 5,67 & \num{1150} & 6,41 & 5,3 & Sí\\
+0,25 & 0,33 & 5,24 & \num{1017} & 5,97 & 4,5 & Sí\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Cómo se llega al valor de diseño.}
+\begin{itemize}
+  \item $R=\SI{0.25}{m}$ es el menor radio con el que la Arquitectura~1 cumple ambas lecturas
+        de \Req{C4} con margen. Con $R=\SI{0.23}{m}$ el promedio global queda a
+        \SI{0.4}{m/s} del límite, menos que la incertidumbre de la BEMT.
+  \item El radio de \SI{0.25}{m} cabe: la pala de \SI{206}{mm} ocupa el largo del cuerpo y
+        el largo total queda en el límite de \Req{S3}.
+  \item Con la Arquitectura~2, $R=\SI{0.23}{m}$ ya da $\langle V\rangle=\SI{6.4}{m/s}$ y reduciría
+        la pala a \SI{186}{mm}. Se mantiene \SI{0.25}{m} para no cambiar el rotor entre
+        arquitecturas.
+  \item Subir el diámetro del drogue o cambiar $V_1$ casi no mueve el promedio global: de
+        $V_1=\SI{12}{m/s}$ a \SI{18}{m/s} el promedio varía \SI{0.1}{m/s}
+        (figura~\ref{fig:arq-prom}).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.8\textwidth, height=6cm, grid=major, xlabel={$V_2$ de régimen [m/s]},
+  ylabel={Promedio global $\langle V\rangle$ [m/s]}, xmin=4, xmax=9, ymin=4, ymax=11,
+  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}]
+\addplot[cfijo, thick] table[x=V2, y=Vg_V12] {analysis/data/v2_promedio.dat};
+\addlegendentry{$V_1=\SI{12}{m/s}$}
+\addplot[crot, very thick] table[x=V2, y=Vg_V134] {analysis/data/v2_promedio.dat};
+\addlegendentry{$V_1=\SI{13.44}{m/s}$}
+\addplot[ccuerda, thick] table[x=V2, y=Vg_V15] {analysis/data/v2_promedio.dat};
+\addlegendentry{$V_1=\SI{15}{m/s}$}
+\addplot[cfreno, thick, dashed] table[x=V2, y=Vg_V18] {analysis/data/v2_promedio.dat};
+\addlegendentry{$V_1=\SI{18}{m/s}$}
+\addplot[cfreno, dotted, thick, domain=4:9] {8};
+\end{axis}
+\end{tikzpicture}
+\caption{Promedio global de \Req{C4} (ec.~\ref{eq:promedio}) en función de $V_2$ para varias
+velocidades de la etapa 1.}
+\label{fig:arq-prom}
+\end{figure}
+
+%=====================================================================
+\section{Secuencia de liberación y soltado del drogue}\label{sec:arq-secuencia}
+
+\subsection{Caída libre al soltar}
+Al soltar el drogue el cuerpo acelera hasta que las palas frenan. Con el cuerpo de Ø\,90
+($C_D=0{,}8$) la velocidad terminal sin rotor es \SI{39}{m/s} ($m=\SI{0.49}{kg}$). La
+tabla~\ref{tab:arq-libre} da lo que se gana en cada retardo.
+
+\begin{table}[H]
+\centering\small
+\caption{Caída libre desde $V_1=\SI{13.44}{m/s}$ sin drogue ni rotor.}\label{tab:arq-libre}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Retardo [s] & 0,1 & 0,2 & 0,3 & 0,5 & 1,0\\\midrule
+Velocidad ($m=\SI{0.49}{kg}$) [m/s] & 14,3 & 15,1 & 16,0 & 17,6 & 21,3\\
+Caída [m] & 1,4 & 2,9 & 4,4 & 7,8 & 17,5\\
+Velocidad ($m=\SI{0.36}{kg}$) [m/s] & 14,3 & 15,0 & 15,8 & 17,3 & 20,6\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Soltar el drogue \emph{antes} de que las palas empiecen a abrir es peligroso: si las palas
+no abren (traba o anillo atascado), el CanSat acelera hacia \SI{39}{m/s} y no hay segundo
+sistema que lo frene. El rotor, en cambio, frena sin problema desde \SIrange{14}{16}{m/s}
+(capítulo~\ref{cap:arranque}). Por eso la secuencia lleva un enclavamiento: el drogue
+\emph{no} se suelta hasta que el mecanismo de las palas confirme su liberación.
+
+\subsection{Arquitectura 1: anillo, confirmación y pasador}
+\begin{enumerate}[leftmargin=*]
+  \item $t=0$: el servo del anillo gira \ang{15} (el SG90 gira \ang{60} en \SI{0.1}{s}, por lo
+        que son $\approx\SI{0.03}{s}$). Las palas quedan libres y empiezan a abrirse por el
+        resorte y el aire.
+  \item $t\approx\SI{0.1}{s}$: un fin de carrera o el sensor hall confirma que el anillo giró.
+        Si no confirma en \SI{0.3}{s}, se reintenta dos veces y, si falla, el drogue
+        \textbf{no} se suelta (modo degradado seguro: el CanSat sigue a \SI{13}{m/s}, cumple
+        \Req{C3} pero no \Req{C4}).
+  \item $t\approx\SI{0.15}{s}$: el segundo servo retira el pasador y el lazo de la cuerda se
+        libera. La tensión del drogue a $V_1$ es \SI{4.3}{N}; el drogue se va hacia arriba
+        con una aceleración relativa muy alta y cae a $\approx\SI{2}{m/s}$.
+  \item $t\approx\SI{0.3}{s}$: las palas terminan de abrir ($\SI{0.18}{s}$ de apertura) a
+        \SIrange{14}{15}{m/s}; el rotor arranca (cap.~\ref{cap:arranque}).
+\end{enumerate}
+El pasador retirado con un servo sufre una fuerza de extracción $\mu F$ ($\mu=0{,}2$--0,4)
+con $F=\SI{4.3}{N}$ en régimen: un par de \SIrange{10}{21}{mN.m} en un horn de \SI{12}{mm},
+contra los \SI{180}{mN.m} del SG90~\cite{arq-sg90} (margen 8,6 a 17). En la apertura del
+drogue (hasta \SI{23}{N} a \SI{25}{m/s}) el par subiría a \SIrange{55}{110}{mN.m}, con margen
+1,6 a 3,3: por eso el pasador va en un carro con retén que toma la carga de apertura y el
+servo solo lo mueve cuando la tensión es la de régimen (\Req{M3}). El anillo de traba usa el
+segundo SG90; si el engranaje de plástico fuera un riesgo, se cambia por un MG90S de engranajes
+metálicos (misma huella, \SI{13}{g}). Ningún mecanismo usa calor ni pirotecnia (\Req{M1}, \Req{M2}).
+
+\subsection{Arquitectura 2: separación del contenedor}
+Un pestillo (hoz o bola retenida) sujeta la carga útil al contenedor. Al soltarlo, el drogue
+frena el contenedor ($D_d=\SI{4.3}{N}$ contra su peso de $\SI{1.75}{N}$) y la carga útil, más
+pesada, cae por el extremo abierto. La integración de las dos aceleraciones da
+(figura~\ref{fig:arq-sabot}):
+\begin{itemize}
+  \item la carga útil sale del tubo ($\SI{230}{mm}$ de recorrido relativo) en \SI{0.15}{s}, con el
+        contenedor a \SI{11.6}{m/s} y la carga útil a \SI{14.6}{m/s};
+  \item un contenedor más liviano sale antes (\SI{0.11}{s} con \SI{0.10}{kg}) y uno más
+        pesado después (\SI{0.18}{s} con \SI{0.25}{kg});
+  \item las palas empiezan a abrirse cuando salen del tubo; con \SI{0.18}{s} de apertura el
+        rotor está abierto a los $\approx\SI{0.35}{s}$ del pestillo, a \SIrange{14}{15}{m/s}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.8cm},
+  width=0.47\textwidth, height=5.4cm, grid=major, xlabel={Tiempo desde el pestillo [s]}, legend style={font=\scriptsize}]
+\nextgroupplot[ylabel={Velocidad [m/s]}, legend pos=north west, xmin=0, xmax=0.15]
+\addplot[cfijo, very thick] table[x=t, y=vp] {analysis/data/v2_sabot.dat};
+\addlegendentry{carga útil}
+\addplot[ccont, very thick] table[x=t, y=vc] {analysis/data/v2_sabot.dat};
+\addlegendentry{contenedor + drogue}
+\nextgroupplot[ylabel={Recorrido relativo [mm]}, xmin=0, xmax=0.15, legend pos=north west]
+\addplot[crot, very thick] table[x=t, y expr=\thisrow{z}*1000] {analysis/data/v2_sabot.dat};
+\addplot[cfreno, dashed, domain=0:0.15] {230};
+\node[font=\scriptsize, cfreno, anchor=south east] at (axis cs:0.148,235) {largo del tubo};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Separación del contenedor (Arquitectura~2): velocidades y recorrido relativo de la
+carga útil de \SI{0.32}{kg} dentro del contenedor de \SI{0.18}{kg} (con drogue).}
+\label{fig:arq-sabot}
+\end{figure}
+
+\subsection{Cronología}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=118mm, y=1cm]
+  \draw[->] (0,0) -- (0.62,0) node[right, font=\scriptsize] {$t$ [s]};
+  \foreach \x in {0,0.1,0.2,0.3,0.4,0.5}{\draw (\x,0.07) -- (\x,-0.07) node[below, font=\scriptsize] {\x};}
+  % arquitectura 1
+  \node[font=\scriptsize\bfseries, anchor=east] at (-0.01,2.2) {Arq. 1};
+  \fill[cfreno!50] (0,2.0) rectangle (0.03,2.4);          \node[font=\tiny, anchor=west] at (0.03,2.2) {anillo};
+  \fill[cfijo!40] (0.03,1.5) rectangle (0.10,1.9);         \node[font=\tiny, anchor=west] at (0.10,1.7) {confirmación};
+  \fill[cfreno!50] (0.13,1.0) rectangle (0.20,1.4);        \node[font=\tiny, anchor=west] at (0.20,1.2) {pasador: se va el drogue};
+  \fill[crot!50] (0.03,0.5) rectangle (0.21,0.9);          \node[font=\tiny, anchor=west] at (0.21,0.7) {palas abren (0,18 s)};
+  % arquitectura 2
+  \node[font=\scriptsize\bfseries, anchor=east] at (-0.01,-1.0) {Arq. 2};
+  \fill[cfreno!50] (0,-1.2) rectangle (0.08,-0.8);         \node[font=\tiny, anchor=west] at (0.08,-1.0) {pestillo};
+  \fill[ccont!40] (0.08,-1.7) rectangle (0.23,-1.3);       \node[font=\tiny, anchor=west] at (0.23,-1.5) {sale del tubo (0,15 s)};
+  \fill[crot!50] (0.23,-2.2) rectangle (0.41,-1.8);        \node[font=\tiny, anchor=west] at (0.41,-2.0) {palas abren};
+\end{tikzpicture}
+\caption{Cronología de la liberación, de \SI{0}{} a \SI{0.5}{s}. Desde que las palas están
+abiertas, el arranque del rotor dura \SI{1.5}{s} más (capítulo~\ref{cap:arranque}).}
+\label{fig:arq-cronologia}
+\end{figure}
+
+\subsection{Modos de falla de la liberación}
+\begin{table}[H]
+\centering\small
+\caption{Fallas de la liberación y su efecto.}\label{tab:arq-fallas}
+\begin{tabularx}{\textwidth}{@{}lYYY@{}}
+\toprule
+\textbf{Falla} & \textbf{Arq.~1} & \textbf{Arq.~2} & \textbf{Consecuencia}\\\midrule
+No libera la traba & Anillo trabado: no se suelta el drogue (enclavamiento) & Pestillo trabado: sigue todo junto a \SI{13}{m/s} & Cumple \Req{C3}, no \Req{C4}; seguro\\
+No suelta el drogue & Pasador trabado: rotor con drogue atado, $V_2=\SI{5.8}{m/s}$ & (se separa con el contenedor) & Cumple \Req{C4}; riesgo de enredo con la cuerda\\
+Palas abren y no arrancan & Rotor parado: cae a \SI{14}{m/s} & Ídem & No cumple \Req{C4}; sin freno extra\\
+Contenedor roza las palas & --- & Tubo o rieles frenan las palas al salir & Apertura lenta; ensayo de caída\\
+Liberación prematura (lógica) & Mismo árbol que en v1 (cap.~\ref{cap:confiabilidad}) & Ídem & Votación 2 de 3 y respaldo por tiempo\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%=====================================================================
+\section{Cumplimiento de C3 y C4: simulación Monte Carlo}\label{sec:arq-mc}
+
+Se simularon $2\times10^5$ descensos por caso con variación de la masa de pesaje
+(490--510~g), la masa en la etapa 2, la densidad del aire (temperatura de 5 a 35\,°C y altura del
+sitio de 0 a \SI{800}{m}), $C_D$ del drogue (0,75--0,90), el apogeo (500 a \SI{1000}{m}), el
+tiempo de arranque (2,5 a \SI{5}{s}) y una incertidumbre relativa del \SI{12}{\percent}
+en $C_R$ (la de la BEMT).
+
+\begin{table}[H]
+\centering\small
+\caption{Resultados del Monte Carlo (media $\pm$ desviación; percentiles; probabilidades de cumplir).}\label{tab:arq-mc}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Caso} & $V_2$ [m/s] & $V_2$ p95 & $\langle V\rangle$ p95 & $P(\text{C4, régimen})$ & $P(\text{C4, global})$\\\midrule
+Arq.~1, $R=\SI{0.25}{m}$ & $6{,}60\pm0{,}42$ & 7,35 & 8,27 & 99,7\,\% & 87\,\%\\
+Arq.~1, $R=\SI{0.23}{m}$ & $7{,}15\pm0{,}45$ & 7,94 & 8,84 & 95,9\,\% & 48\,\%\\
+Arq.~1, $R=\SI{0.20}{m}$ & $8{,}15\pm0{,}51$ & 9,05 & 9,86 & 41,1\,\% & 1\,\%\\
+Arq.~2, $R=\SI{0.25}{m}$ & $5{,}66\pm0{,}38$ & 6,32 & 7,26 & 100\,\% & 99,9\,\%\\
+Arq.~2, $R=\SI{0.23}{m}$ & $6{,}13\pm0{,}41$ & 6,84 & 7,77 & 99,96\,\% & 98\,\%\\
+Arq.~2, $R=\SI{0.20}{m}$ & $6{,}99\pm0{,}46$ & 7,79 & 8,69 & 97,6\,\% & 61\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+\Req{C3} ($V_1$ entre 12 y 18 m/s) se cumple en el \SI{100}{\percent} de los casos.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.85\textwidth, height=6.2cm, grid=major, xlabel={Velocidad [m/s]}, ylabel={Densidad de probabilidad},
+  xmin=3, xmax=10, ymin=0, legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}]
+\addplot[crot, very thick] table[x=V, y=pdf_V2] {analysis/data/v2_hist_A1_R25.dat};
+\addlegendentry{$V_2$, Arq.~1}
+\addplot[crot, thick, dashed] table[x=V, y=pdf_Vg] {analysis/data/v2_hist_A1_R25.dat};
+\addlegendentry{$\langle V\rangle$, Arq.~1}
+\addplot[cfijo, very thick] table[x=V, y=pdf_V2] {analysis/data/v2_hist_A2_R25.dat};
+\addlegendentry{$V_2$, Arq.~2}
+\addplot[cfijo, thick, dashed] table[x=V, y=pdf_Vg] {analysis/data/v2_hist_A2_R25.dat};
+\addlegendentry{$\langle V\rangle$, Arq.~2}
+\addplot[cfreno, dotted, very thick] coordinates {(8,0) (8,1.2)};
+\end{axis}
+\end{tikzpicture}
+\caption{Distribución de $V_2$ y de $\langle V\rangle$ con $R=\SI{0.25}{m}$. La línea
+punteada vertical es el límite de \SI{8}{m/s}.}
+\label{fig:arq-hist}
+\end{figure}
+
+La cola superior de la Arquitectura~1 en la lectura global (13\,\% de casos sobre 8~m/s) la
+produce casi toda la densidad del aire: en un sitio a \SI{800}{m} la densidad es un
+\SI{7}{\percent} menor que al nivel del mar y $V_2$ sube \SI{4}{\percent}. Por eso conviene
+conocer la altura del sitio (consulta~6).
+
+%=====================================================================
+\section{Decisión}\label{sec:arq-decision}
+
+\begin{table}[H]
+\centering\small
+\caption{Matriz de decisión (puntaje de 1 a 5 y pesos).}\label{tab:arq-matriz}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Arq.~1} & \textbf{Arq.~2}\\\midrule
+\Req{C4} con margen & 0,25 & 3 & 5\\
+Riesgo normativo (consulta) & 0,15 & 5 & 2\\
+Complejidad mecánica & 0,10 & 3 & 4\\
+Masa y energía de aterrizaje & 0,10 & 2 & 5\\
+Robustez ante falla de liberación & 0,15 & 4 & 3\\
+Fabricabilidad y costo & 0,10 & 3 & 4\\
+Integración con antenas & 0,05 & 4 & 3\\
+Validación y ensayos & 0,10 & 3 & 3\\\midrule
+\textbf{Total} & 1,00 & \textbf{3,40} & \textbf{3,75}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con pesos de Dirichlet centrados en los de la tabla, la Arquitectura~2 gana en el
+\SI{81}{\percent} de los casos (\SI{67}{\percent} con pesos al azar). Los puntajes son
+juicios de ingeniería, no mediciones; el criterio más influyente es el riesgo normativo:
+subir su peso de 0,15 a 0,24 empata las dos arquitecturas. Es decir, la decisión depende de
+la respuesta de la organización más que de la técnica.
+
+\begin{resultado}[Recomendación]
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Radio $R=\SI{0.25}{m}$, rotor común} (pala de \SI{206}{mm}, BV con varilla): $V_2=\SI{6.4}{m/s}$
+        y $\langle V\rangle=\SI{7.1}{m/s}$ con $m_2=\SI{0.49}{kg}$.
+  \item \textbf{Soltar el drogue con enclavamiento}: anillo $\to$ confirmación $\to$ pasador;
+        nunca soltarlo antes de saber que las palas están libres.
+  \item \textbf{Base: Arquitectura~1}, que no depende de ningún permiso. Preparar la
+        Arquitectura~2 (tubo de fibra de vidrio o PVC, pestillo redundante) como mejora si la
+        organización responde las consultas 3--5 en sentido favorable.
+  \item \textbf{Consultar} diámetro, definición del promedio, soltado del drogue y del
+        contenedor, \Req{S6} y altura del sitio, antes del PDR.
+  \item \textbf{Lo que más conviene medir} es $C_R$ del rotor (ensayo E3): explica entre el 60 y
+        el \SI{80}{\percent} de la varianza de $V_2$ (capítulo~\ref{cap:sens}).
+\end{enumerate}
+\end{resultado}

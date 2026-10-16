@@ -1,0 +1,866 @@
+{
+ "Presión y altitud": {
+  "criterios": [
+   "precisión relativa",
+   "ruido y resolución",
+   "deriva térmica",
+   "consumo y masa",
+   "costo y disponibilidad",
+   "herencia y software",
+   "compatibilidad con el equipo"
+  ],
+  "pesos": [
+   0.25,
+   0.2,
+   0.15,
+   0.05,
+   0.15,
+   0.1,
+   0.1
+  ],
+  "candidatos": [
+   "BMP280 (equipo)",
+   "BMP388",
+   "MS5611",
+   "BME280"
+  ],
+  "puntajes": [
+   [
+    3.0,
+    3.0,
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+   ],
+   [
+    4.0,
+    5.0,
+    4.0,
+    4.0,
+    3.0,
+    4.0,
+    4.0
+   ],
+   [
+    2.0,
+    4.0,
+    3.0,
+    4.0,
+    3.0,
+    5.0,
+    4.0
+   ],
+   [
+    3.0,
+    3.0,
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+   ]
+  ],
+  "suma": [
+   3.8,
+   4.05,
+   3.3,
+   3.8
+  ],
+  "topsis": [
+   0.4486257593755453,
+   0.7132754039599973,
+   0.2258554756666077,
+   0.4486257593755453
+  ],
+  "prob_ganador": [
+   0.20466,
+   0.79534,
+   0.0,
+   0.0
+  ],
+  "ganador": "BMP388",
+  "cambia_con_peso": []
+ },
+ "Temperatura interna (SN2)": {
+  "criterios": [
+   "precisión",
+   "pines e integración",
+   "costo",
+   "consumo",
+   "herencia",
+   "valor adicional"
+  ],
+  "pesos": [
+   0.30000000000000004,
+   0.20000000000000004,
+   0.20000000000000004,
+   0.10000000000000002,
+   0.10000000000000002,
+   0.10000000000000002
+  ],
+  "candidatos": [
+   "AHT20 (equipo)",
+   "SHT31",
+   "DS18B20",
+   "temperatura del BMP280"
+  ],
+  "puntajes": [
+   [
+    4.0,
+    5.0,
+    4.0,
+    5.0,
+    4.0,
+    4.0
+   ],
+   [
+    5.0,
+    5.0,
+    3.0,
+    4.0,
+    4.0,
+    4.0
+   ],
+   [
+    3.0,
+    3.0,
+    5.0,
+    4.0,
+    5.0,
+    1.0
+   ],
+   [
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    1.0
+   ]
+  ],
+  "suma": [
+   4.300000000000001,
+   4.300000000000001,
+   3.5000000000000004,
+   4.000000000000001
+  ],
+  "topsis": [
+   0.6372967891877266,
+   0.6791734231034746,
+   0.3138894515166016,
+   0.411626441680605
+  ],
+  "prob_ganador": [
+   0.3934,
+   0.49542,
+   0.0,
+   0.11118
+  ],
+  "ganador": "AHT20 (equipo)",
+  "cambia_con_peso": [
+   "precisión"
+  ]
+ },
+ "Acelerómetro y giroscopio (SN5, X5)": {
+  "criterios": [
+   "rango frente a S5",
+   "ruido",
+   "consumo y masa",
+   "costo y disponibilidad",
+   "software",
+   "compatibilidad",
+   "extras"
+  ],
+  "pesos": [
+   0.2,
+   0.15,
+   0.05,
+   0.2,
+   0.15,
+   0.1,
+   0.15
+  ],
+  "candidatos": [
+   "MPU6050 (equipo)",
+   "ICM-20948",
+   "LSM6DSO",
+   "MPU6050 + ADXL375"
+  ],
+  "puntajes": [
+   [
+    2.0,
+    3.0,
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    1.0
+   ],
+   [
+    2.0,
+    4.0,
+    3.0,
+    3.0,
+    4.0,
+    3.0,
+    5.0
+   ],
+   [
+    2.0,
+    4.0,
+    5.0,
+    3.0,
+    4.0,
+    3.0,
+    1.0
+   ],
+   [
+    5.0,
+    3.0,
+    3.0,
+    3.0,
+    4.0,
+    4.0,
+    2.0
+   ]
+  ],
+  "suma": [
+   3.4,
+   3.4000000000000004,
+   2.9000000000000004,
+   3.5
+  ],
+  "topsis": [
+   0.3006499634466289,
+   0.4815258067315806,
+   0.1371895474506683,
+   0.4987804235542815
+  ],
+  "prob_ganador": [
+   0.30412,
+   0.29074,
+   0.00224,
+   0.4029
+  ],
+  "ganador": "MPU6050 + ADXL375",
+  "cambia_con_peso": [
+   "costo y disponibilidad",
+   "extras"
+  ]
+ },
+ "Magnetómetro": {
+  "criterios": [
+   "rango y resolución",
+   "inmunidad a interferencias",
+   "costo",
+   "consumo",
+   "software",
+   "compatibilidad"
+  ],
+  "pesos": [
+   0.25,
+   0.2,
+   0.2,
+   0.1,
+   0.15,
+   0.1
+  ],
+  "candidatos": [
+   "QMC5883L (equipo)",
+   "LIS3MDL",
+   "MMC5983MA",
+   "AK09916 (en ICM-20948)"
+  ],
+  "puntajes": [
+   [
+    3.0,
+    2.0,
+    5.0,
+    5.0,
+    4.0,
+    5.0
+   ],
+   [
+    4.0,
+    3.0,
+    3.0,
+    4.0,
+    4.0,
+    4.0
+   ],
+   [
+    5.0,
+    4.0,
+    2.0,
+    4.0,
+    3.0,
+    3.0
+   ],
+   [
+    3.0,
+    3.0,
+    3.0,
+    4.0,
+    4.0,
+    3.0
+   ]
+  ],
+  "suma": [
+   3.75,
+   3.6,
+   3.6,
+   3.25
+  ],
+  "topsis": [
+   0.5060852021686252,
+   0.43767035365389667,
+   0.4939147978313748,
+   0.32959609365267833
+  ],
+  "prob_ganador": [
+   0.61546,
+   0.02144,
+   0.3631,
+   0.0
+  ],
+  "ganador": "QMC5883L (equipo)",
+  "cambia_con_peso": [
+   "rango y resolución",
+   "inmunidad a interferencias"
+  ]
+ },
+ "Tensión y corriente (SN3, SN8, X6)": {
+  "criterios": [
+   "rango de corriente",
+   "resolución y precisión",
+   "costo",
+   "compatibilidad",
+   "software",
+   "funciones (alerta)"
+  ],
+  "pesos": [
+   0.25,
+   0.25,
+   0.15,
+   0.15,
+   0.1,
+   0.1
+  ],
+  "candidatos": [
+   "INA219 (equipo)",
+   "INA226",
+   "ADC del ESP32 + shunt"
+  ],
+  "puntajes": [
+   [
+    3.0,
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    2.0
+   ],
+   [
+    4.0,
+    5.0,
+    4.0,
+    4.0,
+    5.0,
+    5.0
+   ],
+   [
+    3.0,
+    1.0,
+    5.0,
+    4.0,
+    4.0,
+    1.0
+   ]
+  ],
+  "suma": [
+   3.7,
+   4.45,
+   2.85
+  ],
+  "topsis": [
+   0.4551867594729633,
+   0.8747685141783,
+   0.08835962256296305
+  ],
+  "prob_ganador": [
+   0.00616,
+   0.99384,
+   0.0
+  ],
+  "ganador": "INA226",
+  "cambia_con_peso": []
+ },
+ "GPS (SN4, X5)": {
+  "criterios": [
+   "sensibilidad y adquisición",
+   "consumo",
+   "masa",
+   "costo y disponibilidad",
+   "soporte",
+   "dinámica (modelo aéreo)",
+   "antena integrada"
+  ],
+  "pesos": [
+   0.25,
+   0.1,
+   0.05,
+   0.2,
+   0.15,
+   0.15,
+   0.1
+  ],
+  "candidatos": [
+   "NEO-7M (equipo)",
+   "NEO-M8N",
+   "ATGM336H"
+  ],
+  "puntajes": [
+   [
+    3.0,
+    4.0,
+    3.0,
+    3.0,
+    5.0,
+    4.0,
+    4.0
+   ],
+   [
+    5.0,
+    3.0,
+    3.0,
+    3.0,
+    5.0,
+    5.0,
+    4.0
+   ],
+   [
+    3.0,
+    5.0,
+    5.0,
+    5.0,
+    3.0,
+    3.0,
+    3.0
+   ]
+  ],
+  "suma": [
+   3.65,
+   4.199999999999999,
+   3.7
+  ],
+  "topsis": [
+   0.32519555636503933,
+   0.5841966689336956,
+   0.4158033310663045
+  ],
+  "prob_ganador": [
+   0.00022,
+   0.8838,
+   0.11598
+  ],
+  "ganador": "NEO-M8N",
+  "cambia_con_peso": []
+ },
+ "Radio (X1, X2, C5)": {
+  "criterios": [
+   "potencia y sensibilidad",
+   "banda de X1",
+   "integración (módulo listo)",
+   "consumo",
+   "costo",
+   "herencia en CanSat",
+   "software"
+  ],
+  "pesos": [
+   0.25,
+   0.15,
+   0.2,
+   0.1,
+   0.1,
+   0.1,
+   0.1
+  ],
+  "candidatos": [
+   "LR2021 (equipo)",
+   "RFM95W (SX1276)",
+   "XBee-PRO 900HP",
+   "ESP-NOW (2,4 GHz)"
+  ],
+  "puntajes": [
+   [
+    5.0,
+    5.0,
+    2.0,
+    3.0,
+    3.0,
+    2.0,
+    3.0
+   ],
+   [
+    4.0,
+    5.0,
+    5.0,
+    3.0,
+    5.0,
+    5.0,
+    5.0
+   ],
+   [
+    5.0,
+    5.0,
+    5.0,
+    2.0,
+    1.0,
+    5.0,
+    4.0
+   ],
+   [
+    2.0,
+    4.0,
+    5.0,
+    4.0,
+    5.0,
+    2.0,
+    4.0
+   ]
+  ],
+  "suma": [
+   3.5,
+   4.55,
+   4.2,
+   3.6
+  ],
+  "topsis": [
+   0.5233077382481278,
+   0.7733794166761436,
+   0.6596709809980322,
+   0.47880372068617955
+  ],
+  "prob_ganador": [
+   0.00022,
+   0.89544,
+   0.10432,
+   2e-05
+  ],
+  "ganador": "RFM95W (SX1276)",
+  "cambia_con_peso": []
+ },
+ "Cámaras (C6, C7, SN6, SN7)": {
+  "criterios": [
+   "confiabilidad del registro",
+   "calidad de video",
+   "consumo",
+   "masa y tamaño",
+   "costo",
+   "integración con el sistema"
+  ],
+  "pesos": [
+   0.25,
+   0.15,
+   0.2,
+   0.1,
+   0.15,
+   0.15
+  ],
+  "candidatos": [
+   "ESP32-CAM OV2640 (equipo)",
+   "ESP32-S3 + OV5640",
+   "Raspberry Pi Zero 2 W + cámara",
+   "Microcámara de acción"
+  ],
+  "puntajes": [
+   [
+    2.0,
+    2.0,
+    4.0,
+    5.0,
+    5.0,
+    4.0
+   ],
+   [
+    3.0,
+    3.0,
+    3.0,
+    5.0,
+    4.0,
+    4.0
+   ],
+   [
+    3.0,
+    4.0,
+    1.0,
+    4.0,
+    3.0,
+    3.0
+   ],
+   [
+    5.0,
+    5.0,
+    2.0,
+    3.0,
+    2.0,
+    3.0
+   ]
+  ],
+  "suma": [
+   3.45,
+   3.5,
+   2.8499999999999996,
+   3.45
+  ],
+  "topsis": [
+   0.5078232078829353,
+   0.5134668319405783,
+   0.29639224626377814,
+   0.5654969354809546
+  ],
+  "prob_ganador": [
+   0.38258,
+   0.1838,
+   0.0,
+   0.43362
+  ],
+  "ganador": "ESP32-S3 + OV5640",
+  "cambia_con_peso": [
+   "confiabilidad del registro",
+   "calidad de video",
+   "consumo",
+   "costo"
+  ]
+ },
+ "Computadora de vuelo": {
+  "criterios": [
+   "periféricos y pines",
+   "determinismo",
+   "consumo",
+   "costo",
+   "ecosistema",
+   "herencia",
+   "tamaño"
+  ],
+  "pesos": [
+   0.30000000000000004,
+   0.15000000000000002,
+   0.10000000000000002,
+   0.10000000000000002,
+   0.15000000000000002,
+   0.10000000000000002,
+   0.10000000000000002
+  ],
+  "candidatos": [
+   "ESP32-C3 Super Mini (equipo)",
+   "ESP32-S3 mini",
+   "RP2040 (Pico/Zero)",
+   "STM32F411 (Black Pill)"
+  ],
+  "puntajes": [
+   [
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    5.0,
+    4.0,
+    5.0
+   ],
+   [
+    4.0,
+    3.0,
+    3.0,
+    4.0,
+    5.0,
+    4.0,
+    4.0
+   ],
+   [
+    4.0,
+    5.0,
+    4.0,
+    5.0,
+    5.0,
+    4.0,
+    4.0
+   ],
+   [
+    5.0,
+    5.0,
+    3.0,
+    3.0,
+    4.0,
+    5.0,
+    3.0
+   ]
+  ],
+  "suma": [
+   3.6000000000000005,
+   3.900000000000001,
+   4.4,
+   4.250000000000001
+  ],
+  "topsis": [
+   0.2470433078279475,
+   0.5783112236975105,
+   0.6852055705475564,
+   0.7529566921720524
+  ],
+  "prob_ganador": [
+   0.00042,
+   0.0,
+   0.73198,
+   0.2676
+  ],
+  "ganador": "RP2040 (Pico/Zero)",
+  "cambia_con_peso": []
+ },
+ "Actuador de liberación": {
+  "criterios": [
+   "par disponible",
+   "masa",
+   "picos de corriente",
+   "robustez frente a M3",
+   "costo",
+   "disponibilidad"
+  ],
+  "pesos": [
+   0.25,
+   0.1,
+   0.15,
+   0.2,
+   0.1,
+   0.2
+  ],
+  "candidatos": [
+   "SG90 (equipo)",
+   "MG90S (engranajes metálicos)",
+   "Solenoide de traba"
+  ],
+  "puntajes": [
+   [
+    3.0,
+    5.0,
+    3.0,
+    3.0,
+    5.0,
+    5.0
+   ],
+   [
+    4.0,
+    4.0,
+    3.0,
+    4.0,
+    4.0,
+    5.0
+   ],
+   [
+    2.0,
+    3.0,
+    1.0,
+    4.0,
+    3.0,
+    3.0
+   ]
+  ],
+  "suma": [
+   3.8,
+   4.050000000000001,
+   2.6500000000000004
+  ],
+  "topsis": [
+   0.6541855328727311,
+   0.8684898738917537,
+   0.1902689800651653
+  ],
+  "prob_ganador": [
+   0.07402,
+   0.92598,
+   0.0
+  ],
+  "ganador": "MG90S (engranajes metálicos)",
+  "cambia_con_peso": []
+ },
+ "Sensor de rpm y de estado de las trabas (nuevo)": {
+  "criterios": [
+   "compatibilidad con 3,3 V",
+   "robustez",
+   "masa",
+   "costo",
+   "rango de rpm",
+   "inmunidad a la luz"
+  ],
+  "pesos": [
+   0.25,
+   0.2,
+   0.1,
+   0.15,
+   0.15,
+   0.15
+  ],
+  "candidatos": [
+   "Hall con imán (DRV5013)",
+   "Hall A3144 (4,5 V)",
+   "Reflectivo IR (TCRT5000)",
+   "Interruptor de lámina (reed)"
+  ],
+  "puntajes": [
+   [
+    5.0,
+    5.0,
+    5.0,
+    4.0,
+    5.0,
+    5.0
+   ],
+   [
+    2.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0,
+    5.0
+   ],
+   [
+    4.0,
+    3.0,
+    4.0,
+    5.0,
+    4.0,
+    2.0
+   ],
+   [
+    5.0,
+    3.0,
+    4.0,
+    5.0,
+    3.0,
+    5.0
+   ]
+  ],
+  "suma": [
+   4.85,
+   4.25,
+   3.65,
+   4.2
+  ],
+  "topsis": [
+   0.8836942230047596,
+   0.47323351289224164,
+   0.448432721904313,
+   0.6320794661686695
+  ],
+  "prob_ganador": [
+   0.98344,
+   0.01384,
+   0.0,
+   0.00272
+  ],
+  "ganador": "Hall con imán (DRV5013)",
+  "cambia_con_peso": []
+ }
+}
