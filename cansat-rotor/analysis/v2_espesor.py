@@ -10,7 +10,7 @@ sys.argv = [sys.argv[0]]
 import bemt_modelo as bm
 import polares_post as pp
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-PERF = [('placa7', 1.55), ('placa7_t20', 2.07), ('placa7_t50', 5.14), ('placa7_t80', 8.17), ('placa7_t115', 11.71)]
+PERF = [('placa7', 1.55), ('placa7_t20', 2.07), ('placa7_t50', 5.14), ('placa7_t80', 8.17), ('placa7_t115', 11.71), ('arco7_n80', 8.05)]
 RES = (50, 75)
 filas, js = [], {}
 for p, t in PERF:

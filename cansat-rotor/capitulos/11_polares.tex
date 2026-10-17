@@ -36,6 +36,18 @@ polares extendidas a $\pm\ang{180}$ que necesita la teoría de elemento de pala 
 \end{itemize}
 \end{resultado}
 
+\begin{nota}[Condiciones de trabajo en la versión 2]
+Las polares de este capítulo no dependen del radio y se conservan. Cambian las condiciones de trabajo del rotor de $R=\SI{0.25}{m}$
+(BEMT del capítulo~\ref{cap:bemt}, paso \ang{-3}, rotor solo): la velocidad de giro de equilibrio es de \num{1229}~rpm ($\Omega=\SI{128.7}{rad/s}$) y la
+pala trabaja entre $Re\approx\num{17000}$ en la raíz y \num{97000} en la punta; el número de Reynolds ponderado por el empuje es
+\num{66000} (en la versión~1, \num{56000}). A $0{,}75R$ el ángulo de ataque es de \ang{1.6} con $C_l=0{,}48$ y $C_l/C_d=13$; el
+$C_l$ ponderado por el empuje, $0{,}56$; es decir, la misma rama baja de la polar que antes. Las cifras de rpm de 1150 a 1900 de esta
+sección y de la~\ref{sec:polares-trabajo} corresponden al rotor de $R=\SI{0.20}{m}$ y a la estimación de sección representativa; el
+resultado vigente es el de la BEMT. Las polares extendidas se construyeron con $C_{D,\max}$ de una pala de alargamiento 3,5 (versión~1); con el
+alargamiento 4,6 de la pala de \SI{206}{mm} sube 0,02, lo que solo afecta a las secciones fuera de la zona de trabajo.
+La sección~\ref{sec:polares-espesor} agrega el efecto de dar espesor al perfil, posible si el contenedor es propio.
+\end{nota}
+
 %=====================================================================
 \section{Régimen de trabajo de la pala}\label{sec:polares-regimen}
 
@@ -889,6 +901,56 @@ $N_{\text{crit}}=9$.}
 \label{fig:polares-espesor}
 \end{figure}
 
+\subsection{Perfiles con espesor (versión 2)}\label{sec:polares-espesor-v2}
+Si el CanSat va dentro de un contenedor propio y no hay una pared de \SI{2}{mm} que respetar, la pala puede tener espesor, con ventajas
+estructurales (más rigidez a flexión y a torsión por el espesor al cubo, lo que aleja el flameo; capítulo~\ref{cap:estructura}). Con la misma
+cadena de XFOIL y de BEMT se estudiaron, a $Re=\num{50000}$ y \num{75000}, dos familias con la misma curvatura del \SI{7}{\percent}: (i) una
+placa de espesor constante con nariz redonda y bisel de fuga (el modelo de esta sección con $t=2$, 5, 8 y \SI{11.5}{\percent}) y (ii) un
+perfil con la distribución de espesor de un NACA de cuatro dígitos (nariz redonda, espesor máximo al \SI{30}{\percent} de la cuerda) de
+$t=\SI{8}{\percent}$ sobre la línea media circular. La tabla~\ref{tab:polares-espesor-v2} da las polares y el resultado de la BEMT del rotor solo
+de $R=\SI{0.25}{m}$ con paso \ang{-3} (\texttt{analysis/v2\_espesor.py}).
+
+\begin{table}[H]
+\centering\small
+\caption{Efecto del espesor. Polares de XFOIL ($N_{\text{crit}}=9$; $(C_l/C_d)_{\max}$ y $C_l(\alpha=\ang{2})$ a $Re=\num{75000}$) y rotor solo
+con la BEMT interpolada entre $Re=\num{50000}$ y \num{75000}: $V_2$ y rpm para $m_2=\SI{0.49}{kg}$ (Arq.~1) y $V_2$ para \SI{0.36}{kg} (Arq.~2).}\label{tab:polares-espesor-v2}
+\begin{tabular}{@{}lrcccccccc@{}}
+\toprule
+\textbf{Perfil} & $\boldsymbol{t/c}$ [\%] & $\boldsymbol{C_{l,\max}}$ & $\boldsymbol{(C_l/C_d)_{\max}}$ & $\boldsymbol{C_l(\ang{2})}$ & $\boldsymbol{V_2}$ & \textbf{rpm} & $\boldsymbol{C_R}$ & $\boldsymbol{V_2}$ (Arq.~2)\\\midrule
+Placa curvada (base) & 1,5 & 1,41 & 41,6 & 0,52 & 6,40 & 1249 & 0,949 & 5,49\\
+Placa curvada & 2,1 & 1,39 & 40,7 & 0,45 & 6,44 & 1270 & 0,938 & 5,52\\
+Placa curvada & 5,1 & 1,38 & 34,5 & 0,07 & 6,65 & 1323 & 0,878 & 5,71\\
+Placa curvada & 8,2 & 1,49 & 29,9 & $-0{,}15$ & 6,80 & 1362 & 0,837 & 5,84\\
+Placa curvada & 11,7 & 1,48 & 27,4 & $-0{,}47$ & 6,89 & 1331 & 0,817 & 5,90\\
+\textbf{Arco 7\,\% con espesor NACA} & \textbf{8,1} & \textbf{1,59} & \textbf{47,8} & \textbf{0,62} & \textbf{6,34} & \textbf{1155} & \textbf{0,968} & \textbf{5,45}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Una placa gruesa de espesor constante cuesta caída.} Con \SI{11.7}{\percent} de espesor, $C_l/C_d$ baja de 42 a 27 y el $C_l$ a \ang{2}
+        pasa de $+0{,}52$ a $-0{,}47$ (el ángulo de sustentación nula sube unos \ang{5}); con el mismo paso la BEMT da $V_2=\SI{6.89}{m/s}$, \SI{0.5}{m/s} (\SI{7.6}{\percent}) más
+        que la placa fina, y $C_R=0{,}82$. Con \SI{5}{\percent} la pérdida es de \SI{0.25}{m/s}.
+  \item \textbf{Un perfil con forma de perfil no la tiene.} Con la distribución de espesor NACA, el espesor de \SI{8}{\percent} da el mismo $V_2$ (\SI{6.34}{m/s},
+        $C_R=0{,}97$) y un $C_{l,\max}$ y una eficiencia mayores. Las rpm bajan de 1249 a 1155: la carga centrífuga, que va con $\Omega^2$, cae un
+        \SI{14}{\percent}. Es la razón por la que, si hay espesor, conviene un perfil y no una placa gruesa.
+  \item \textbf{Límites.} En la Arq.~1 el espesor lo limita la holgura de \SI{0.97}{mm} a Ø\,90: cada milímetro de espesor adelanta el borde unos \SI{0.9}{mm}, así que
+        el tope es de $\approx\SI{1}{mm}$ ($t/c\approx2$--\SI{3}{\percent}). En la Arq.~2 el anillo disponible permite hasta unos \SI{5}{mm} ($\approx\SI{11.5}{\percent}$;
+        capítulo~\ref{cap:arq}). Un perfil grueso agrega masa (núcleo de espuma o laminado de mayor espesor) que la BEMT no incluye.
+  \item \textbf{Beneficio estructural (estimación de primer orden).} Un perfil con espesor es una cáscara cerrada, y la torsión de una sección cerrada es
+        mucho mayor que la de una placa abierta. Con la teoría de pared delgada (Bredt--Batho) y el laminado~B del capítulo~\ref{cap:estructura}, un perfil de
+        \SI{8}{\percent} con piel de \SI{0.25}{mm} (el mismo apilado a la mitad de espesor) y núcleo de espuma de \SI{32}{kg/m^3} da $GJ\approx\SI{2.1}{N.m^2}$
+        (46 veces el de la pala abierta B, \SI{0.045}{N.m^2}; con piel de \SI{0.5}{mm}, \SI{4.1}{N.m^2}), $EI_{\text{bat}}\approx\SI{4.3}{N.m^2}$
+        (3 veces; la pala BV con varilla tiene \SI{5.1}{N.m^2}) y una masa de \SI{8.0}{g} por pala, igual que la de la BV (\SI{8.2}{g}). Con la piel de \SI{0.5}{mm} la masa
+        sube a \SI{15}{g} por pala (\SI{+31}{g} en el rotor). Con esa rigidez a torsión la divergencia y el flameo salen del intervalo de
+        trabajo (\texttt{analysis/v2\_pala\_cerrada.py}). Es una estimación que no incluye el borde de fuga ni el pegado de las mitades, y la fabricación de una piel de
+        \SI{0.25}{mm} sobre núcleo hay que probarla.
+  \item \textbf{Fiabilidad de estas polares.} XFOIL converge peor con las placas gruesas a $Re=\num{50000}$ (la de \SI{11.7}{\percent} tiene 11 ángulos sin solución,
+        completados por interpolación) y la burbuja de separación laminar a este $Re$ es la parte más incierta del modelo (sección~\ref{sec:polares-validez}). Los números sirven para
+        la tendencia, no para el segundo decimal. Hay que fabricar y medir al menos una pala gruesa antes de adoptarla.
+\end{itemize}
+Con la misma cuerda, el perfil NACA de \SI{8}{\percent} es una opción de diseño para la Arquitectura~2; para la Arquitectura~1 se mantiene la placa fina.
+
 %=====================================================================
 \section{Validez de XFOIL y comparación con la literatura}\label{sec:polares-validez}
 
@@ -1295,7 +1357,9 @@ bastante menor que 0,9, y cerca del salto inferior.
   \item \textbf{Perfil}: mantener la placa curvada al \SI{7}{\percent}. Tiene el mayor
         $C_{l,\max}$ (1,42), la mejor eficiencia de las secciones finas, y es la menos
         sensible a $Re$ y a la turbulencia ambiente. Ninguno de los perfiles gruesos
-        justifica su mayor masa y su fabricación más compleja.
+        justifica su mayor masa y su fabricación más compleja en la Arquitectura~1. Con un
+        contenedor propio (Arquitectura~2) se puede dar espesor sin costo de caída si el perfil
+        tiene forma de perfil (espesor NACA de \SI{8}{\percent}; sección~\ref{sec:polares-espesor-v2}) y no de placa gruesa.
   \item \textbf{Intervalo de $\alpha$}: en autorrotación estacionaria la sección trabaja
         entre \ang{0} y \ang{3}; la pala debe operar por debajo de \ang{7}
         ($C_{l,\max}$) con margen. La zona de \ang{3} a \ang{5} es biestable a
