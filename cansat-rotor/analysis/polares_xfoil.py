@@ -51,7 +51,7 @@ ITER = 120
 TIMEOUT = 60.0
 TOL_CL = 0.08
 RES = [20000, 35000, 50000, 75000, 100000]
-CURVOS = {"placa7", "placa4", "clarky", "naca6412", "placa7_t11", "placa7_t20"}
+CURVOS = {"placa7", "placa4", "clarky", "naca6412", "placa7_t11", "placa7_t20", "placa7_t50", "placa7_t80", "placa7_t115", "arco7_n80"}
 
 
 def shim():
@@ -253,6 +253,15 @@ def casos():
             add(p, re_, 5)
     for p in ["placa7_t11", "placa7_t20"]:
         add(p, 50000, 9)
+    # v2: barrido de espesor (placa curvada al 7 %) para un contenedor que deje espesor al perfil
+    for p in ["arco7_n80"]:
+        for re_ in (50000, 75000):
+            add(p, re_, 9)
+    for p in ["placa7_t20", "placa7_t50", "placa7_t80", "placa7_t115"]:
+        for re_ in (50000, 75000, 100000):
+            if p == "placa7_t20" and re_ == 50000:
+                continue
+            add(p, re_, 9)
     return L
 
 

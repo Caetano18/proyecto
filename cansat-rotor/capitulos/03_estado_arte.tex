@@ -124,9 +124,10 @@ anillo de vórtices, el régimen peligroso que un rotor libre atraviesa al arran
         cuerda) y oscilación pendular, que afecta el video.
   \item[(b) Parapente.] Planea con fineza 3--5: deriva lejos del sitio de lanzamiento y
         es difícil de plegar en \SI{250}{mm}.
-  \item[(c) Autogiro de 4 palas.] Rotor libre con bisagras de batimiento. Cumple \Req{C4}
-        con $R=\SI{0.20}{m}$, mantiene el eje libre para la cuerda del drogue y tiene
-        antecedentes directos~\cite{cansat2019,cansat2025,ventura2022}.
+  \item[(c) Autogiro de 4 palas.] Rotor libre con bisagras de batimiento. Con el drogue
+        soltado y $R=\SI{0.25}{m}$ cumple \Req{C4} también como promedio de todo el descenso
+        (\SI{7.1}{m/s}), no necesita la cuerda por el eje y tiene antecedentes
+        directos~\cite{cansat2019,cansat2025,ventura2022}.
   \item[(d) Monocóptero.] Una sola pala, como la sámara~\cite{norberg1973}. Muy elegante,
         pero todo el CanSat gira a la velocidad del rotor: las cámaras no sirven y la
         cuerda del drogue se retuerce.
@@ -156,9 +157,9 @@ Cumplimiento de \Req{C4}         & 25 & 5 & 4 & 4 & 3 & 4 & 1 & 3\\
 Riesgo técnico (5 = bajo)        & 20 & 5 & 2 & 3 & 2 & 2 & 5 & 2\\
 Masa y volumen                   & 15 & 5 & 4 & 4 & 4 & 3 & 5 & 3\\
 Fabricación y complejidad        & 15 & 5 & 2 & 3 & 3 & 2 & 5 & 2\\
-Compatibilidad con $R\le0{,}20$ y drogue atado & 10 & 4 & 3 & 5 & 2 & 4 & 5 & 3\\
+Compatibilidad con Ø\,90, \SI{250}{mm} y contenedor propio & 10 & 4 & 3 & 4 & 2 & 4 & 5 & 3\\
 Valor técnico e innovación       & 15 & 1 & 4 & 5 & 5 & 5 & 1 & 4\\\midrule
-\textbf{Total}                   &    & \textbf{430} & 320 & \textbf{390} & 315 & 330 & 340 & 280\\
+\textbf{Total}                   &    & \textbf{430} & 320 & \textbf{380} & 315 & 330 & 340 & 280\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -166,7 +167,7 @@ Valor técnico e innovación       & 15 & 1 & 4 & 5 & 5 & 5 & 1 & 4\\\midrule
 \begin{resultado}[Lectura de la matriz]
 El paracaídas (a) obtiene el puntaje más alto: es la opción más segura y por eso queda
 como \textbf{plan~B}. Entre los sistemas que no son paracaídas, el autogiro (c) gana con
-claridad (390 puntos, 60 por encima del siguiente) y es la opción que el equipo eligió
+claridad (380 puntos, 40 por encima del siguiente, las aletas, que no llegan a \Req{C4}) y es la opción que el equipo eligió
 desarrollar. El resto del documento dimensiona el autogiro.
 \end{resultado}
 
@@ -177,15 +178,16 @@ desarrollar. El resto del documento dimensiona el autogiro.
 \begin{tabularx}{\textwidth}{@{}lYY@{}}
 \toprule
 \textbf{Variante} & \textbf{Ventaja} & \textbf{Resultado}\\\midrule
-$R=\SI{0.27}{m}$ & Caída de \SI{5}{m/s} casi exacta & Descartada: excede $R\le\SI{0.20}{m}$\\
-Freno del rotor con servo & Regula la velocidad & Descartada: frenar solo acelera la caída, y con $R=\SI{0.20}{m}$ ya se está por encima de \SI{5}{m/s}\\
+$R=\SI{0.20}{m}$ (versión~1) & Cabe sin cambios en Ø\,95 & Descartada en la v2: el rotor solo da \SI{7.85}{m/s} y no cumple el promedio de \Req{C4} sobre todo el descenso\\
+$R=\SI{0.27}{m}$ & Caída de \SI{5}{m/s} casi exacta & Descartada: la pala de \SI{226}{mm} plegada no cabe en los \SI{250}{mm} de \Req{S3}\\
+Freno del rotor con servo & Regula la velocidad & Descartada: frenar solo acelera la caída, y con $R=\SI{0.25}{m}$ ya se está por encima de \SI{5}{m/s} (\SI{6.4}{m/s})\\
 Paso colectivo con servo & Regula en los dos sentidos & Descartada: varillaje en un cubo de \SI{40}{mm}\\
 Hilo de nicrom en las puntas & Muy liviano & Descartada: calor expuesto (\Req{M2})\\
-Rebaje del cuerpo para alojar palas & Palas al ras & Descartada: pared bajo \SI{2}{mm} (\Req{S6})\\
-Camisa (contenedor) que baja y queda colgando & Cumple la palabra \emph{contenedor}; protege las palas & Configuración B, si la organización la exige; excede la masa con pared impresa de \SI{2}{mm}\\
-Placa plana (paso $-2^\circ$) & Fácil de fabricar & Gira a $\approx\SI{2250}{rpm}$; sirve para el primer prototipo\\
+Rebaje del cuerpo para alojar palas & Palas al ras & Descartada: pared bajo \SI{2}{mm} (\Req{S6}, que rige solo si se imprime)\\
+Camisa (contenedor) que baja y queda colgando & Cumple la palabra \emph{contenedor}; protege las palas & Versión~1: configuración B, que excede la masa con pared impresa. Versión~2: tubo no impreso que se separa con el drogue (Arquitectura~2, cap.~\ref{cap:arq}); requiere consulta\\
+Placa plana (paso $-2^\circ$) & Fácil de fabricar & Gira a $\approx\SI{2250}{rpm}$ con $R=\SI{0.20}{m}$; sirve para el primer prototipo\\
 Placa curvada al 9,5\,\% (molde Ø\,95) & Molde disponible & Más resistencia y momento de picado que la de 7\,\%\\
-\textbf{Placa curvada al 7\,\%, cuerda \SI{45}{mm}} & \textbf{$\approx\SI{1150}{rpm}$, cargas bajas} & \textbf{Elegida}\\
+\textbf{Placa curvada al 7\,\%, cuerda \SI{45}{mm}} & \textbf{$\approx\SI{1230}{rpm}$ con $R=\SI{0.25}{m}$, cargas bajas} & \textbf{Elegida}\\
 \bottomrule
 \end{tabularx}
 \end{table}

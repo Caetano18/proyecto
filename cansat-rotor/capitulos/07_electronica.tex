@@ -68,6 +68,19 @@ umbrales son valores iniciales a ajustar en ensayo.}
 \label{fig:estados-sw}
 \end{figure}
 
+\subsection{Suelta del drogue (versión 2)}\label{sec:elec-suelta}
+En la versión~2 la orden \texttt{PROBE\_RELEASE} abarca la secuencia con enclavamiento del
+capítulo~\ref{cap:arq} (sección~\ref{sec:arq-secuencia}), en este orden: (1)~el servo del
+anillo gira \ang{15} y las palas quedan libres; (2)~un microinterruptor o el sensor Hall
+confirma el giro del anillo en $\le\SI{0.3}{s}$ (hasta dos reintentos); (3)~solo entonces el segundo
+servo retira el pasador y el drogue se va; (4)~con las palas abiertas y más de
+\SI{600}{rpm} se pasa a \texttt{PAYLOAD\_RELEASE}. Si la confirmación falla, el drogue \textbf{no} se
+suelta: el CanSat sigue a \SI{13}{m/s} (cumple \Req{C3}, no \Req{C4}). Los estados del anexo no
+cambian; la suelta se registra en dos campos opcionales de la trama, \texttt{LATCH} (anillo) y
+\texttt{DROGUE} (0 atado, 1 soltado). La confirmación del drogue por el cambio de tensión de la
+cuerda no se mide: queda la lectura del pasador y la caída libre en la IMU (aceleración
+cercana a cero durante \SIrange{0.2}{0.3}{s}).
+
 \section{Detección del 80\,\% de la altitud}
 \begin{itemize}
   \item La altitud sale del barómetro (\Req{SN1}), leído a \SI{50}{Hz} y filtrado (media

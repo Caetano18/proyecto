@@ -36,13 +36,27 @@ describen.
         precargue los rodamientos. El juego axial del cubo es el interno del rodamiento
         fijo (\SIrange{0.01}{0.05}{mm}, valor supuesto); el huelgo cubo--tapa, de
         \SIrange{0.35}{0.94}{mm} en el peor caso.
-  \item \textbf{Costo:} entre \num{364000} y \num{1064000} pesos (2026, orientativo, con
+  \item \textbf{Costo (versión~2):} entre \num{434000} y \num{828000} pesos (2026, orientativo, con
         precios de referencia en dólares y un tipo de cambio supuesto de 1300 a 1700
-        pesos por dólar); valor central $\approx\num{680000}$. El rotor y la traba
-        cuestan de \num{121000} a \num{321000}. \Req{C9} se cumple en el escenario
-        central, pero no en el extremo alto: la radio y las cámaras deciden.
+        pesos por dólar; la electrónica ya comprada, a precio real); valor central
+        $\approx\num{630000}$. El rotor y la traba cuestan de \num{121000} a \num{321000}.
+        \Req{C9} se cumple en el escenario central y en el alto sin imprevistos; con precios
+        altos más \SI{30}{\percent} de imprevistos se llega a $\num{1.08e6}$.
 \end{itemize}
 \end{resultado}
+
+\begin{nota}[Actualización a la versión 2]
+Este capítulo se escribió para la geometría de la versión~1 (envolvente Ø\,95, pala de
+\SI{156}{mm}, cuerpo de Ø\,87--88). Se conservan los procesos, tolerancias de proceso y listas de control, que no
+dependen del tamaño. Cambiaron tres cosas que sí dependen de él: (i) la cadena de la envolvente
+(sección~\ref{sec:fabricacion-cadenaB}): con el cuerpo de Ø\,81 dentro de Ø\,90 deja
+\SI{0.97}{mm} de holgura nominal, con \SI{0.14}{mm} de desviación (\num{6.8}\,$\sigma$) y sin interferencias en
+$4\times10^5$ casos, de modo que se pueden relajar la tolerancia de flecha y el reparto de
+la cadena; (ii) el costo y la lista de materiales, que usan ahora los precios reales de la
+electrónica del equipo (sección~\ref{sec:fabricacion-costos}); (iii) las masas: palas de
+\SI{206}{mm} de \SI{9.5}{g} cada una. Las cotas de los planos de fabricación son las de la
+versión~1 y deben reescalarse al redibujar los planos (capítulo~\ref{cap:concl}).
+\end{nota}
 
 %=====================================================================
 \section{Criterios de fabricación}\label{sec:fabricacion-criterios}
@@ -1307,7 +1321,20 @@ radial de pocas micras, lo que da del orden de \ang{0.1}. El límite del sensor 
 una suposición para un imán de Ø\,\SI{3}{mm} y un hall de tipo conmutador; se verifica en
 el banco antes de cerrar la tapa.
 
-\subsection{Pala plegada dentro de Ø\,95}
+\subsection{Pala plegada dentro de Ø\,95}\label{sec:fabricacion-cadenaB}
+
+\paragraph{Versión 2 (Ø\,90).} Con el cuerpo impreso de Ø\,81 ($R_b=\SI{40.5}{mm}$) y la misma pala
+(\SI{45}{mm} de cuerda, \SI{3.15}{mm} de flecha, \SI{0.5}{mm} de espesor), el borde de la pala plegada queda a
+\SI{44.03}{mm} del eje: \SI{0.97}{mm} de holgura a la envolvente de \SI{45}{mm}
+(\texttt{analysis/v2\_geometria.py}). La cadena de tolerancias de este apartado (mismas
+tolerancias de posición, flecha, cuerda y espesor) da, con $4\times10^5$ casos, una holgura de
+\SI{0.967}{mm} con \SI{0.142}{mm} de desviación para la asignación base (flecha $\pm0{,}30$) y de
+\SI{0.095}{mm} con la propuesta (flecha $\pm0{,}15$): \num{6.8}\,$\sigma$ y \num{10}\,$\sigma$ respectivamente, sin ninguna interferencia
+(\texttt{analysis/v2\_tol\_env.py}). La envolvente ya no es la cadena crítica: el cuerpo más chico
+(Ø\,81 en lugar de Ø\,88) devolvió el margen que en la versión~1 había que ganar acercando la pala al eje
+y apretando la flecha. La cadena crítica pasa a ser el largo de \SI{250}{mm} (\Req{S3}). El resto del
+apartado corresponde a la versión~1 y se conserva como método.
+
 
 Con la geometría del anteproyecto, la mitad de los rotores fabricados tendrían el borde de
 alguna pala fuera de Ø\,\SI{95}{mm}. La causa es geométrica: la pala tiene radio de
@@ -1548,12 +1575,14 @@ $\square$ & Integración en el cohete & sin forzar; nada se engancha en la boca 
 %=====================================================================
 \section{Lista de materiales y costos}\label{sec:fabricacion-costos}
 
-El costo estimado del CanSat está entre \num{364000} y \num{1064000} pesos, con un valor
-central cercano a \num{680000}: \Req{C9} se cumple en el escenario central y deja de
-cumplirse si coinciden precios altos y un tipo de cambio alto. Los precios no son
-cotizaciones. Son rangos de mercado minorista en dólares, con recargo de importación,
-convertidos con un tipo de cambio \emph{supuesto} de 1300 a 1700 pesos por dólar; ambos
-deben reemplazarse por presupuestos reales antes de comprar. El cálculo está en
+El costo estimado del CanSat está entre \num{434000} y \num{828000} pesos, con un valor
+central cercano a \num{630000}: \Req{C9} se cumple en el escenario central y en el alto, y deja de
+cumplirse solo si a los precios altos se suma el \SI{30}{\percent} de imprevistos
+(\num{1.08e6}). La electrónica del equipo (planilla de octubre de 2026,
+\num{215124} pesos, o \num{244737} si el precio del panel solar es 29\,643 y no 29,643) entra a precio
+real; el resto son rangos de mercado minorista en dólares, con recargo de importación,
+convertidos con un tipo de cambio \emph{supuesto} de 1300 a 1700 pesos por dólar. Esos
+rangos deben reemplazarse por presupuestos reales antes de comprar. El cálculo está en
 \texttt{analysis/fabricacion\_costos.py}. Según \Req{C9}, las herramientas y el soporte
 en tierra no entran en el costo; los repuestos de vuelo y los consumibles de fabricación sí
 se incluyen (criterio conservador).
@@ -1581,15 +1610,12 @@ Adhesivos (epoxi estructural, retención, cianoacrilato) & 1 & 15--30 & 20--51\\
 Filamento PETG (\SI{1}{kg}, todas las piezas), insertos, tornillos, lastre, espuma & 1 & 26--47 & 34--80\\\midrule
 \multicolumn{4}{@{}l}{\textit{Drogue y cuerda} (\SI{18}{g})}\\
 Ripstop, Dyneema Ø\,1,5, destorcedor de bolas & 1 & 11--27 & 14--46\\\midrule
-\multicolumn{4}{@{}l}{\textit{Electrónica y cámaras} (\SI{138}{g})}\\
-Microcontrolador & 1 & 8--25 & 10--43\\
-Radio XBee de la carga & 1 & 45--90 & 59--153\\
-Sensores (MS5611, IMU, INA219, FRAM, RTC) y GPS & 1+1 & 25--65 & 33--111\\
-Cámaras con grabación y tarjetas & 2 & 40--100 & 52--170\\
-Batería 18650, protección, regulador, interruptores, baliza, paneles & 1 & 17--43 & 22--73\\
-Placas de circuito y conectores & 3 & 15--40 & 20--68\\
-\textbf{Subtotal electrónica} & & \textbf{150--363} & \textbf{195--617}\\\midrule
-\textbf{Total} & & \textbf{280--626} & \textbf{364--1064}\\
+\multicolumn{4}{@{}l}{\textit{Electrónica} (\SI{177}{g} de la planilla, más los módulos nuevos del capítulo~\ref{cap:sensores})}\\
+Electrónica de la planilla del equipo (precios reales del 1.º de octubre de 2026) & 1 & --- & 215--245\\
+Módulos nuevos: RP2040, FRAM, RTC, Hall con imanes, microinterruptores & 1 & 20--45 & 26--77\\
+Opcionales: BMP388 y ADXL375 & 1 & 18--35 & 23--60\\
+\textbf{Subtotal electrónica} & & \textbf{38--80} & \textbf{265--381}\\\midrule
+\textbf{Total} & & \textbf{168--343 más planilla} & \textbf{434--828}\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1627,23 +1653,23 @@ Placas de circuito y conectores & 3 & 15--40 & 20--68\\
 \end{tikzpicture}
 \caption{Total según el tipo de cambio supuesto.}
 \end{subfigure}
-\caption{Costo orientativo. Banda verde: tipo de cambio supuesto. Con precios centrales
-\Req{C9} se cumple hasta $\approx2200$ pesos por dólar; con precios altos más 30\,\% de
-imprevistos, solo hasta $\approx1230$.}
+\caption{Costo orientativo (la electrónica de la planilla es un término fijo en pesos). Banda
+verde: tipo de cambio supuesto. Con precios centrales \Req{C9} se cumple hasta $\approx3000$
+pesos por dólar; con precios altos más 30\,\% de imprevistos, solo hasta $\approx1530$.}
 \label{fig:fabricacion-costo}
 \end{figure}
 
-La electrónica y las cámaras son algo más de la mitad del costo (54 a 58\,\%); el rotor
-y la traba, que son la parte nueva del diseño, alrededor de un tercio (30 a 33\,\%). Si el presupuesto real se acerca al
-límite, las palancas son, en orden: cámaras más simples (\num{50000} a \num{100000} pesos
-menos), comprar los repuestos con fondos de ensayo y no de vuelo, y una radio de menor
-costo compatible con la estación terrena.
+La electrónica es entre el 46 y el 61\,\% del costo; el rotor y la traba, que son la parte
+nueva del diseño, entre el 28 y el 39\,\%. La electrónica ya está comprada o elegida, así que si el
+presupuesto real se acerca al límite las palancas son los repuestos del rotor (comprarlos con
+fondos de ensayo y no de vuelo), los opcionales de la tabla y los consumibles de laminado.
 
 \paragraph{Masa del rotor.} La estimación detallada de la cabeza del rotor con palas da
-\SI{66}{g} (palas con varilla \SI{32.8}{g}, cubo \SI{12}{g}, rodamientos \SI{7}{g}, eje
-\SI{5.5}{g}, tuercas \SI{5.1}{g}, resto \SI{3.4}{g}), \SI{12}{g} más que los \SI{54}{g} de
-la tabla~\ref{tab:masa}. La diferencia sale del lastre (\SI{83}{g} disponibles) y no
-compromete \Req{S1}; las tuercas de aluminio en la copa y bajo la tapa ya ahorran
+\SI{71}{g} (palas con varilla \SI{38}{g}, cubo \SI{12}{g}, rodamientos \SI{7}{g}, eje
+\SI{5.5}{g}, tuercas \SI{5.1}{g}, resto \SI{3.4}{g}), \SI{7}{g} más que los \SI{64}{g} de
+la tabla~\ref{tab:masa}. La diferencia sale del lastre (\SI{33}{g} en la Arq.~1, quedan
+\SI{26}{g}) y se suma a los \SI{16}{g} del capítulo~\ref{cap:sensores}: el lastre queda en
+\SI{10}{g}, sin margen para una segunda celda; las tuercas de aluminio en la copa y bajo la tapa ya ahorran
 \SI{4}{g} frente a acero. Las masas de los rodamientos (\SI{3.5}{g} c/u) son un valor
 típico de catálogo para la serie, no pesadas.
 
@@ -1729,9 +1755,9 @@ en compuestos; la primera placa conviene tomarla como prueba.
         pestañas pegadas con plantilla; así la cadena cierra en peor caso en las
         direcciones axial y tangencial; la radial se corrige en el montaje.
   \item \textbf{Llave:} el collar coaxial del portapala impide el montaje invertido.
-  \item \textbf{Costo:} \num{364000} a \num{1064000} pesos (orientativo); \Req{C9} se
-        cumple en el escenario central. Hay que pedir presupuestos de radio y cámaras
-        antes de cerrar el diseño.
+  \item \textbf{Costo:} \num{434000} a \num{828000} pesos (orientativo, versión~2); \Req{C9} se
+        cumple en el escenario central. Hay que pedir presupuestos de los módulos
+        nuevos y de los consumibles antes de cerrar el diseño.
   \item \textbf{Pendiente de medir:} cierre por curado de la placa, contracción del PETG en
         los asientos, juego axial interno real de los 688ZZ, deslizamiento del aro libre,
         umbral del sensor hall y

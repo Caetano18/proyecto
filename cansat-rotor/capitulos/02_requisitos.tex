@@ -1,11 +1,13 @@
 \chapter{Requisitos que condicionan el descenso}\label{cap:req}
 
-El anexo de requisitos técnicos~\cite{anexo} contiene más de 60 requisitos. La
+El anexo de requisitos técnicos~\cite{anexo} (versión~A modificada, que reemplaza a la usada en la
+primera versión de este documento) contiene más de 60 requisitos. La
 tabla~\ref{tab:req} reúne los que fijan el diseño del sistema de descenso y lo que cada uno
-implica. El texto de cada requisito está resumido; la fuente es el anexo.
+implica. El texto de cada requisito está resumido; la fuente es el anexo. Los requisitos de
+sensores, comunicaciones y energía se tratan en el capítulo~\ref{cap:sensores}.
 
 \begin{longtable}{@{}p{1.25cm}p{6.3cm}p{6.9cm}@{}}
-\caption{Requisitos del anexo que condicionan el sistema de descenso.}\label{tab:req}\\
+\caption{Requisitos del anexo que condicionan el sistema de descenso (anexo~A modificado).}\label{tab:req}\\
 \toprule
 \textbf{Req.} & \textbf{Qué pide} & \textbf{Consecuencia para el diseño}\\\midrule
 \endfirsthead
@@ -14,46 +16,56 @@ implica. El texto de cada requisito está resumido; la fuente es el anexo.
 \endhead
 \bottomrule
 \endfoot
-\Req{C2} & CanSat y contenedor se despliegan del cohete con la carga de expulsión. & El drogue debe abrirse solo, sin orden del software.\\
+\Req{C1}, \Req{C2} & El contenedor va en la parte superior del fuselaje del cohete; CanSat y contenedor se despliegan con la carga de expulsión. & El drogue debe abrirse solo, sin orden del software.\\
 \Req{C3} & Tras el despliegue, descenso a \SI{15 \pm 3}{m/s} con paracaídas automático. & Drogue entre \SIlist{12;18}{m/s} con la masa completa (\S\ref{sec:dim-drogue}).\\
-\Req{C4} & Al 80\,\% de la altitud máxima se libera otro sistema; descenso promedio \SI{5 \pm 3}{m/s}. & El rotor debe dejar la caída bajo \SI{8}{m/s} en el peor caso (\S\ref{sec:dim-rotor}).\\
+\Req{C4} & Al 80\,\% de la altitud máxima se libera otro sistema que asegura un \emph{promedio} de \SI{5}{m/s} durante todo el descenso, $\pm\SI{3}{m/s}$. & El promedio de todo el descenso exige $V_2\le\SI{7.3}{m/s}$ (\S\ref{sec:dim-prom}); rotor de $R=\SI{0.25}{m}$.\\
 \Req{C5} & Telemetría a \SI{1}{Hz}. & La liberación no puede depender de la telemetría: el control lee el barómetro a 20--50\,Hz.\\
 \Req{C6}, \Req{C7} & Video de todo el descenso, hacia el cenit y hacia el nadir, que muestre la activación de los sistemas de descenso. & Cámara cenit fuera del eje, que vea palas y drogue; cámara nadir en el fondo.\\
-\Req{C8} & Baliza audible con alimentación independiente. & Pila propia en el fondo de la carga útil.\\
+\Req{C8} & Baliza audible que se enciende por separado, independiente de la batería y la electrónica. & Pila propia en el fondo de la carga útil.\\
+\Req{C9} & Costo del CanSat menor a \$\,1\,000\,000. & Cumple con holgura (cap.~\ref{cap:sensores}).\\
 \Req{S1} & Masa de CanSat y contenedor: \SI{500 \pm 10}{g}. & Presupuesto de masa (\S\ref{sec:masa}); rotor completo $\le\SI{65}{g}$.\\
-\Req{S2} & Diámetro del CanSat: \SI{95}{mm}. & Palas plegadas dentro de Ø\,95 (\S\ref{sec:plegado}).\\
-\Req{S3} & Largo total, incluidos los sistemas de descenso: \SIrange{200}{250}{mm}. & Palas de \SI{156}{mm} plegadas a lo largo del cuerpo.\\
-\Req{S4}, \Req{S5} & Soportar vibración de 15\,G y choque de 30\,G. & Traba positiva de las palas; pasadores de acero (\S\ref{sec:cargas}).\\
-\Req{S6} & Pared exterior impresa $\ge\SI{2}{mm}$, sin flexión ni deformación. & Sin rebajes en la pared; verificación de pandeo (\S\ref{sec:estructura}).\\
-\Req{S7} & El cilindro puede sostener piezas desplegables, pero debe salir libre del cohete. & Palas al ras de Ø\,95; sin salientes.\\
+\Req{S2} & Diámetro del CanSat: \SI{90}{mm} (antes \SI{95}{mm}). & Palas plegadas dentro de Ø\,90 (\S\ref{sec:plegado}); cuerpo impreso de Ø\,81.\\
+\Req{S3} & Largo total, incluidos los sistemas de descenso: \SIrange{200}{250}{mm}. & Palas de \SI{206}{mm} plegadas a lo largo del cuerpo.\\
+\Req{S4}, \Req{S5} & Soportar vibraciones de 15\,G y un choque de 30\,G. & Traba positiva de las palas; pasadores de acero (\S\ref{sec:cargas}).\\
+\Req{S6} & Pared exterior de al menos \SI{2}{mm} \emph{cuando se imprima en 3D}, sin flexión ni deformación. & Aplica solo a las piezas impresas; un contenedor no impreso no la tiene.\\
+\Req{S7} & El cilindro puede sostener piezas desplegables, pero debe deslizarse libre fuera del cohete. & Palas al ras del diámetro exterior; sin salientes.\\
 \Req{S8} & Todo fijado con soportes, tornillos o adhesivos. & Electrónica atornillada a anillos internos.\\
-\Req{M1} & Sin actuadores pirotécnicos ni químicos. & Liberación con servo.\\
-\Req{M2} & Mecanismos con calor (nicrom) no expuestos al exterior. & Se descarta el hilo que se quema en las puntas.\\
-\Req{M3} & Los mecanismos mantienen su estado bajo todas las fuerzas. & Traba mecánica que el choque no puede abrir.\\
-\Req{E1}, \Req{E2} & Sin LiPo; litio solo en carcasa metálica (18650). & Batería 18650 Li-ion.\\
-\Req{E3} & Paneles solares que emiten señal al recibir radiación. & Paneles en las zonas libres del cuerpo, visibles tras desplegar.\\
-\Req{E4}, \Req{E5}, \Req{E9} & Interruptores accesibles a través del contenedor, orificios $\le\SI{10}{mm}$. & Orificios de \SI{8}{mm} entre palas.\\
-\Req{SN5} & Medir aceleración y velocidad angular. & La IMU también registra el giro del cuerpo.\\
-\Req{SN6}, \Req{SN7} & Video del despliegue en color, $\ge 640\times480$. & Cámaras mini con tarjeta propia.\\
-\Req{F5} & Estados de configuración persistentes ante reinicios. & La altitud máxima y el estado de la traba se guardan en memoria no volátil.\\
+\Req{S9} & Materiales del contenedor no contaminantes. & Piezas impresas, tubo y cinta sin componentes contaminantes; confirmar con la organización qué materiales acepta.\\
+\Req{M1}, \Req{M2} & Sin actuadores pirotécnicos ni químicos; los mecanismos con calor (nicrom) no deben estar expuestos. & Liberación con servo; se descarta el hilo que se quema.\\
+\Req{M3} & Los mecanismos mantienen su estado bajo todas las fuerzas. & Traba mecánica que el choque no puede abrir; servo con engranajes de metal.\\
+\Req{M4} & Sin contactos de resorte para las baterías (el choque puede desconectarlas). & Celdas con lengüetas soldadas; también la pila de la baliza.\\
+\Req{E1}, \Req{E2} & Sin LiPo; litio solo en carcasa metálica (18650); se permiten pilas de botón. & Batería 18650 Li-ion; excluye cámaras con LiPo interna.\\
+\Req{E3} & Paneles solares que emiten una señal al recibir radiación. & Panel en una zona libre del cuerpo; su señal también sirve para detectar la separación.\\
+\Req{E4}--\Req{E6}, \Req{E9} & Interruptores de encendido accesibles a través del contenedor (orificios $\le\SI{10}{mm}$) e indicador de encendido. & Orificios de \SI{8}{mm} entre palas.\\
+\Req{E7} & Funcionar al menos dos horas integrado en el cohete. & Presupuesto de energía; cámaras al despegar o segunda celda (\S\ref{sec:sens-bat}).\\
+\Req{X1}--\Req{X4} & Radios en 915--\SI{928}{MHz} o 2400--\SI{2483.5}{MHz}, sin difusión; comando automático al separarse del cohete; 1\,Hz. & LoRa a 915\,MHz; la separación se detecta con la luz del panel y la IMU (\S\ref{sec:sens-faltan}).\\
+\Req{X5}, \Req{X6} & Telemetría con altitud, presión, temperatura, aceleraciones y \emph{rotaciones} en tres ejes y GPS; estado de batería y señal del panel por telecomando. & MPU6050 aporta el giroscopio; INA219 y entrada analógica del panel.\\
+\Req{SN1}--\Req{SN8} & Altitud por presión, temperatura, tensión y corriente de batería, GPS, aceleración y rotación, video en color de al menos $640\times480$. & Selección y justificación en el capítulo~\ref{cap:sensores}.\\
+\Req{F1}, \Req{F2}, \Req{F5} & Contador de paquetes, tiempo de misión y estados de configuración persistentes ante reinicios. & FRAM y RTC con pila (los estados guardan $h_{\max}$ y el estado de la traba).\\
 \end{longtable}
 
 \section{Estados del software de vuelo}
-El campo \texttt{STATE} de la telemetría admite los valores \texttt{LAUNCH\_PAD},
-\texttt{ASCENT}, \texttt{APOGEE}, \texttt{DESCENT}, \texttt{PROBE\_RELEASE},
-\texttt{PAYLOAD\_RELEASE} y \texttt{LANDED}~\cite{anexo}. En la sección~\ref{sec:estados}
-se propone cómo asignarlos al rotor.
+El formato de la telemetría y de los comandos ya no está en el anexo~A y queda a criterio del
+equipo; los estados de este diseño se mantienen:
+\texttt{LAUNCH\_PAD}, \texttt{ASCENT}, \texttt{APOGEE}, \texttt{DESCENT}, \texttt{PROBE\_RELEASE},
+\texttt{PAYLOAD\_RELEASE} y \texttt{LANDED}. En la sección~\ref{sec:estados} se explica cómo
+se asignan al rotor, y en el capítulo~\ref{cap:arq} el estado adicional de suelta del drogue.
 
-\section{Restricciones del equipo}
+\section{Restricciones y libertades del equipo}
 \begin{itemize}
-  \item Radio del rotor $R\le\SI{0.20}{m}$.
-  \item Drogue atado al CanSat durante todo el vuelo.
-  \item Rotor de pocas rpm (del orden de \SI{1000}{rpm}).
+  \item Radio del rotor limitado por el diámetro del CanSat (Ø\,90) y por el largo
+        (\SI{250}{mm}); se adopta $R=\SI{0.25}{m}$.
+  \item El drogue puede soltarse antes de abrir el rotor; la etapa~2 es el rotor solo.
+  \item El CanSat puede ir dentro de un contenedor que elige el equipo, sin pared mínima si no
+        es impreso.
+  \item Rotor de pocas rpm (del orden de \SI{1200}{rpm}).
 \end{itemize}
 
 \begin{nota}[Interpretación de C4]
-El anexo pide un \emph{promedio} de \SI{5}{m/s} durante el descenso de la segunda etapa,
-con margen de $\pm\SI{3}{m/s}$. Este documento toma como criterio de cumplimiento que la
-velocidad estabilizada de la segunda etapa quede entre \SIlist{2;8}{m/s} y como objetivo
-acercarla a \SI{5}{m/s} tanto como permitan $R\le\SI{0.20}{m}$ y la masa de \SI{500}{g}.
+El anexo pide un \emph{promedio} de \SI{5}{m/s} durante todo el descenso, con margen de
+$\pm\SI{3}{m/s}$. Este documento adopta la lectura más exigente: el promedio se calcula
+sobre el descenso completo desde el apogeo, con el 20\,\% inicial a la velocidad del drogue
+y el 80\,\% restante con el rotor (ecuación~\ref{eq:promedio}); exige $V_2\le\SI{7.3}{m/s}$.
+Si la organización lo mide solo desde la liberación del segundo sistema, el criterio es
+$V_2\in[2,8]$\,m/s. La pregunta está entre las consultas del capítulo~\ref{cap:arq}.
 \end{nota}

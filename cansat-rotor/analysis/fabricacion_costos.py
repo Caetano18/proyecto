@@ -37,25 +37,20 @@ bom = [
  ('E', 'Lastre de acero y espuma de aterrizaje', 1, 0.0, 2, 5),
  ('D', 'Drogue: ripstop 0,3 m2, hilo, costura', 1, 0.0, 5, 12),
  ('D', 'Cuerda Dyneema Ø1,5 (3 m) y destorcedor de bolas', 1, 0.0, 6, 15),
- ('X', 'Microcontrolador (placa de desarrollo)', 1, 0.0, 8, 25),
- ('X', 'Radio XBee de la carga (900 MHz o XBee 3)', 1, 0.0, 45, 90),
- ('X', 'Altímetro MS5611, IMU, INA219, FRAM, RTC', 1, 0.0, 15, 35),
- ('X', 'Receptor GPS con antena', 1, 0.0, 10, 30),
- ('X', 'Cámaras con grabación (cenit y nadir) y tarjetas microSD', 2, 0.0, 20, 50),
- ('X', 'Celda 18650, protección, regulador, interruptores', 1, 0.0, 10, 25),
- ('X', 'Baliza sonora con pila propia', 1, 0.0, 3, 8),
- ('X', 'Placas de circuito (fabricación, 3 placas) y conectores', 1, 0.0, 15, 40),
- ('X', 'Paneles solares pequeños (2)', 1, 0.0, 4, 10),
+ ('X', 'Módulos nuevos (v2): RP2040 Pico, FRAM MB85RC256V, RTC DS3231, Hall y 2 imanes, 2 microinterruptores', 1, 0.0, 20, 45),
+ ('X', 'Opcionales (v2): BMP388 y ADXL375', 1, 0.0, 18, 35),
 ]
 names = {'R': 'Rotor y traba', 'E': 'Estructura impresa y fijaciones',
-         'D': 'Drogue y cuerda', 'X': 'Electrónica y cámaras'}
+         'D': 'Drogue y cuerda', 'X': 'Electrónica (planilla del equipo y módulos nuevos)'}
 
+PLANILLA_LO, PLANILLA_HI = 215123.74, 244737.1    # electronica real del equipo (ARS); el panel 29,643 puede ser 29.643
 rows = []
 sub = {k: [0.0, 0.0] for k in names}
 for s, it, q, m, lo, hi in bom:
     a_lo, a_hi = q*lo*TC_LO, q*hi*TC_HI
     sub[s][0] += a_lo; sub[s][1] += a_hi
     rows.append((s, it, q, lo, hi, a_lo, a_hi))
+sub['X'][0] += PLANILLA_LO; sub['X'][1] += PLANILLA_HI
 tot_lo = sum(v[0] for v in sub.values()); tot_hi = sum(v[1] for v in sub.values())
 usd_lo = sum(q*lo for _, _, q, _, lo, _ in bom); usd_hi = sum(q*hi for _, _, q, _, _, hi in bom)
 for s, it, q, lo, hi, a, b in rows:
@@ -64,8 +59,9 @@ for k, v in sub.items():
     print(f'{names[k]:35s} {v[0]/1e3:7.1f} - {v[1]/1e3:7.1f} kARS')
 print(f'TOTAL USD {usd_lo:.0f}-{usd_hi:.0f};  ARS {tot_lo:,.0f} - {tot_hi:,.0f};'
       f'  alto+{100*IMPREV:.0f}% = {tot_hi*(1+IMPREV):,.0f}')
-tc_break = LIM/(usd_hi*(1+IMPREV))
-tc_break_nom = LIM/(0.5*(usd_lo+usd_hi))
+# la planilla del equipo está en pesos (no depende del tipo de cambio)
+tc_break = (LIM/(1+IMPREV) - PLANILLA_HI)/usd_hi
+tc_break_nom = (LIM - 0.5*(PLANILLA_LO + PLANILLA_HI))/(0.5*(usd_lo+usd_hi))
 print(f'TC que hace alto+imprev = 1e6: {tc_break:.0f} ARS/USD; medio sin imprev: {tc_break_nom:.0f}')
 
 with open(os.path.join(D, 'fabricacion_costo_sub.dat'), 'w') as f:
@@ -75,8 +71,8 @@ with open(os.path.join(D, 'fabricacion_costo_sub.dat'), 'w') as f:
 with open(os.path.join(D, 'fabricacion_costo_tc.dat'), 'w') as f:
     f.write('tc lo mid hi himp\n')
     for tc in np.linspace(800, 2400, 33):
-        f.write(f'{tc:.0f} {usd_lo*tc/1e3:.1f} {0.5*(usd_lo+usd_hi)*tc/1e3:.1f} '
-                f'{usd_hi*tc/1e3:.1f} {usd_hi*tc*(1+IMPREV)/1e3:.1f}\n')
+        f.write(f'{tc:.0f} {(usd_lo*tc + PLANILLA_LO)/1e3:.1f} {(0.5*(usd_lo+usd_hi)*tc + 0.5*(PLANILLA_LO+PLANILLA_HI))/1e3:.1f} '
+                f'{(usd_hi*tc + PLANILLA_HI)/1e3:.1f} {(usd_hi*tc + PLANILLA_HI)*(1+IMPREV)/1e3:.1f}\n')
 with open(os.path.join(D, 'fabricacion_bom.dat'), 'w') as f:
     f.write('sub q usd_lo usd_hi ars_lo ars_hi\n')
     for s, it, q, lo, hi, a, b in rows:
@@ -88,7 +84,7 @@ rho_al, rho_st = 2.70e-3, 7.85e-3          # g/mm3
 eje = np.pi/4*(8**2-5**2)*67*rho_al
 nut = lambda rho: (0.866*13**2 - np.pi/4*8**2)*4*rho   # tuerca baja M8, entre caras 13, alto 4
 mrot = {
- 'Palas con portapala, varilla y pestaña (4)': 4*8.2,
+ 'Palas con portapala, varilla y pestaña (4)': 4*9.5,
  'Cubo con almohadillas, imán y contrapeso': 12.0,
  'Rodamientos 688ZZ (2)': 2*3.5,
  'Eje Al 6061 Ø8x5x67': eje,
@@ -100,7 +96,7 @@ mrot = {
 tot = 0
 for k, v in mrot.items():
     tot += v; print(f'{k:45s} {v:6.2f} g')
-print(f'Cabeza del rotor + palas: {tot:.1f} g  (tab:masa: 30 + 24 = 54 g) -> diferencia {tot-54:+.1f} g')
+print(f'Cabeza del rotor + palas: {tot:.1f} g  (tab:masa v2: 38 + 26 = 64 g) -> diferencia {tot-64:+.1f} g')
 with open(os.path.join(D, 'fabricacion_masa_rotor.dat'), 'w') as f:
     f.write('item masa_g\n')
     for i, (k, v) in enumerate(mrot.items()):

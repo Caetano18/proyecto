@@ -45,6 +45,38 @@ capítulo~\ref{cap:riesgos} de 9 a 37 modos. Agrega árboles de fallas cuantific
 diagrama de bloques de la liberación, los peligros para las personas, la gestión de
 configuración y los criterios de vuelo.
 
+\begin{nota}[Actualización a la versión 2: qué cambia en los números]
+Las probabilidades del párrafo anterior, los árboles y las tablas de este capítulo corresponden al diseño de la
+versión~1 (rotor de $R=\SI{0.20}{m}$ con el drogue atado, $C_R\sim N(1{,}2;\,0{,}1)$, arranque de 3 a 6\,s,
+CanSat de Ø\,95). Se reejecutó el mismo modelo con los datos de la versión~2 (script \texttt{confiabilidad\_fta.py}
+con \texttt{CANSAT\_CFG=v2}; salidas \texttt{confiabilidad\_*\_v2.dat}): rotor solo de $R=\SI{0.25}{m}$,
+$m_2=\SI{0.49}{kg}$, $C_R\sim N(0{,}963;\,0{,}116)$ de la BEMT, arranque de 1 a \SI{2.2}{s} y drogue soltado. Cambios en el
+árbol: la cuerda por el eje desaparece ($x_{13}$ baja de \num{5e-3} a \num{1e-3}: queda el lazo residual tras soltar) y aparece el evento $x_{27}$
+(falsa ausencia de confirmación del giro del anillo, \num{3e-3}, que deja el drogue sin soltar y la caída a \SI{13}{m/s}). Resultados:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{«La etapa 2 no cumple \Req{C4}» (TOP1).} Depende de cómo se lea el promedio. Leído como
+        \emph{promedio de todo el descenso} (la lectura adoptada en el capítulo~\ref{cap:req}), el evento de
+        rendimiento $x_{17}$ pasa a \SI{12.9}{\percent} con la Arquitectura~1 (del Monte Carlo del
+        capítulo~\ref{cap:arq}) y TOP1 es de \SI{15.3}{\percent} puntual y \SI{23.5}{\percent} de media (intervalo
+        de 90\,\%: \SIrange{6.5}{67}{\percent}); $x_{17}$ explica el \SI{82}{\percent} (FV). Leído como velocidad de régimen de la
+        etapa~2, $x_{17}=\SI{0.33}{\percent}$ y TOP1 es de $\approx\SI{3.0}{\percent}$, como en la versión~1. Con la
+        Arquitectura~2, $x_{17}=\SI{0.15}{\percent}$ y TOP1 $\approx\SI{2.8}{\percent}$.
+  \item \textbf{Pérdida del CanSat (TOP2):} \SI{2.1}{\percent} puntual y \SI{3.2}{\percent} de media (\SIrange{1.6}{5.6}{\percent}); la
+        recuperación (baliza muda, zona inaccesible: $x_{23}$, FV 47\,\%) pesa más que cualquier falla de la liberación.
+  \item \textbf{Cadena de liberación:} con la configuración E (reintentos, watchdog, FRAM y comando manual)
+        $Q=\SI{1.46}{\percent}$ (contra \SI{5.5}{\percent} en serie); el bloque dominante es la traba ($Q_{\text{traba}}=\SI{0.68}{\percent}$ con reintentos).
+  \item \textbf{Consecuencia para el diseño:} lo que más baja el riesgo no es una redundancia, sino \emph{margen aerodinámico} para el promedio
+        global: separar el contenedor (Arq.~2), bajar la masa o agrandar el rotor. La sensibilidad a la incertidumbre de $C_R$ (archivo
+        \texttt{confiabilidad\_sens\_v2.dat}): con $\sigma_{C_R}=0{,}14$ y $\mu=0{,}963$, la probabilidad de superar \SI{8}{m/s} como promedio de la etapa~2 es de \SI{0.76}{\percent};
+        con $\sigma=0{,}2$, de \SI{4.3}{\percent}.
+  \item \textbf{AMFE:} los modos de la cuerda en el eje (M28) ya no aplican. Aparecen otros, tratados en los capítulos~\ref{cap:arq} y~\ref{cap:sensores}: falla del
+        enclavamiento y del pasador de suelta, caída libre con tensión residual, engranaje de plástico del SG90 ante choque
+        (se cambia por MG90S), archivo de video cortado, faltantes de pines en la ESP32-C3 y pérdida de hora de misión sin RTC.
+  \item \textbf{Criterios de vuelo (E2--E4):} las rpm esperadas son $\num{1230}\pm\num{250}$; el criterio de \Req{C4} pasa a un límite inferior (95\,\%)
+        de $C_R\ge0{,}80$ (con \SI{0.73}{} bastaría a $\rho=\SI{1.225}{kg/m^3}$, y $\approx0{,}79$ a \SI{35}{\celsius}) y a caídas con el rotor solo.
+\end{itemize}
+\end{nota}
+
 \begin{nota}[Qué significan estos números]
 Ningún ensayo se ha hecho todavía. Todas las probabilidades son \emph{estimaciones de
 ingeniería} por vuelo, para el diseño con las acciones del AMFE aplicadas y la campaña

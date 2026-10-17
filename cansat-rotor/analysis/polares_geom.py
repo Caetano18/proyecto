@@ -91,6 +91,17 @@ def naca4(code, n=NSIDE, te_cerrado=False):
     return junta(xu, yu, xl, yl)
 
 
+def arco_naca(h, t, n=NSIDE):
+    """Línea media en arco circular de flecha relativa h con la distribución de espesor NACA de 4 dígitos (borde de fuga cerrado)."""
+    x = xcos(n)
+    yc, dy = arco(x, h)
+    yt = 5 * t * (0.2969 * np.sqrt(x) - 0.1260 * x - 0.3516 * x ** 2 + 0.2843 * x ** 3 - 0.1036 * x ** 4)
+    th = np.arctan(dy)
+    xu, yu = x - yt * np.sin(th), yc + yt * np.cos(th)
+    xl, yl = x + yt * np.sin(th), yc - yt * np.cos(th)
+    return junta(xu, yu, xl, yl)
+
+
 # Ordenadas clásicas del Clark Y en % de cuerda, referidas al fondo plano.
 CY_X = np.array([0, 1.25, 2.5, 5, 7.5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]) / 100
 CY_U = np.array([3.50, 5.45, 6.50, 7.90, 8.85, 9.60, 10.68, 11.36, 11.70, 11.40, 10.52,
@@ -156,6 +167,10 @@ PERFILES = {
     "naca0012": ("NACA 0012", lambda: naca4("0012")),
     "placa7_t11": ("Placa curvada 7 % (t 1,1 %)", lambda: placa(0.07, 0.011)),
     "placa7_t20": ("Placa curvada 7 % (t 2,0 %)", lambda: placa(0.07, 0.020)),
+    "placa7_t50": ("Placa curvada 7 % (t 5 %)", lambda: placa(0.07, 0.05)),
+    "placa7_t80": ("Placa curvada 7 % (t 8 %)", lambda: placa(0.07, 0.08)),
+    "placa7_t115": ("Placa curvada 7 % (t 11,5 %)", lambda: placa(0.07, 0.115)),
+    "arco7_n80": ("Arco 7 % con espesor NACA 8 %", lambda: arco_naca(0.07, 0.08)),
     "placa7_ba4": ("Placa curvada 7 % (t 1,5 %, nariz aguda)", lambda: placa(0.07, 0.015, a_rel=0.5)),
 }
 

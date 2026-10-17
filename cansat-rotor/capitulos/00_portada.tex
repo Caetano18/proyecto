@@ -10,12 +10,10 @@
 
 % Ilustración de portada: rotor desplegado con drogue
 \begin{tikzpicture}[scale=0.62]
-  % drogue
-  \draw[cuerda, fill=ccuerda!12] (-2.2,7.0) .. controls (-1.6,8.2) and (1.6,8.2) .. (2.2,7.0)
-        .. controls (1.2,6.7) and (-1.2,6.7) .. (-2.2,7.0);
-  \foreach \x in {-2.2,-1.1,0,1.1,2.2}{\draw[ccuerda, line width=0.4pt] (\x,7.0) -- (0,5.2);}
-  \draw[cuerda] (0,5.2) -- (0,2.4);
-  \fill[ccuerda] (0,5.2) circle (2.5pt);
+  % drogue ya soltado (cae aparte)
+  \draw[cuerda, fill=ccuerda!12, dashed] (2.4,6.4) .. controls (3.0,7.5) and (5.2,7.5) .. (5.8,6.4)
+        .. controls (4.9,6.1) and (3.3,6.1) .. (2.4,6.4);
+  \node[ccuerda, font=\scriptsize] at (4.1,5.5) {drogue soltado};
   % disco del rotor
   \draw[crot, dashed, line width=0.6pt] (0,2.1) ellipse (6.0 and 0.9);
   \foreach \a in {20,110,200,290}{
@@ -28,23 +26,24 @@
   \draw[fijo] (-0.95,-3.6) rectangle (0.95,1.85);
   \draw[fijo] (-0.95,-3.6) arc (180:360:0.95 and 0.22);
   \draw[cfijo] (0,1.85) ellipse (0.95 and 0.22);
-  \node[font=\scriptsize, cgris] at (0,-1.0) {\rotatebox{90}{CanSat Ø\,95}};
+  \node[font=\scriptsize, cgris] at (0,-1.0) {\rotatebox{90}{CanSat Ø\,90}};
   % flecha de giro
   \draw[crot, -{Latex}, line width=0.8pt] (3.6,3.6) arc (60:120:3.2 and 0.9);
-  \node[crot, font=\small] at (4.7,3.4) {$\approx$\,1500 rpm};
-  \draw[flecha, cgris] (4.2,-1.5) -- (4.2,-3.5) node[midway, right, font=\small] {$\approx$\,6,9 m/s};
+  \node[crot, font=\small] at (4.7,3.4) {$\approx$\,1230 rpm};
+  \draw[flecha, cgris] (4.2,-1.5) -- (4.2,-3.5) node[midway, right, font=\small] {$\approx$\,6,4 m/s};
 \end{tikzpicture}
 
 \vfill
 \begin{tabular}{rl}
-  \textbf{Rotor:} & 4 palas libres, $R=\SI{0.20}{m}$, placa curvada al 7\,\%, cuerda \SI{45}{mm}\\
-  \textbf{Drogue:} & Ø\,\SI{25}{cm}, atado al CanSat por el eje hueco del rotor\\
-  \textbf{Velocidades:} & etapa 1 $\approx\SI{13.4}{m/s}$ · etapa 2 $\approx\SI{6.9}{m/s}$ (BEMT)\\
-  \textbf{Masa:} & \SI{500 \pm 10}{g} · Ø\,\SI{95}{mm} · largo \SI{250}{mm}\\
+  \textbf{Rotor:} & 4 palas libres, $R=\SI{0.25}{m}$, placa curvada al 7\,\%, cuerda \SI{45}{mm}\\
+  \textbf{Drogue:} & Ø\,\SI{25}{cm}; se suelta antes de abrir el rotor (etapa 2: rotor solo)\\
+  \textbf{Velocidades:} & etapa 1 $\approx\SI{13.4}{m/s}$ · etapa 2 $\approx\SI{6.4}{m/s}$ (BEMT) · promedio $\approx\SI{7.1}{m/s}$\\
+  \textbf{Masa:} & \SI{500 \pm 10}{g} · Ø\,\SI{90}{mm} · largo \SI{250}{mm}\\
+  \textbf{Configuración:} & anexo~A v2 y electrónica real del equipo (caps.~\ref{cap:arq}--\ref{cap:sensores})\\
 \end{tabular}
 \vspace{1cm}
 
-{\large 2 de octubre de 2026}
+{\large 16 de octubre de 2026}
 \end{titlepage}
 
 \chapter*{Resumen}
@@ -53,38 +52,61 @@
 Este documento investiga, dimensiona y especifica la segunda etapa de descenso del CanSat
 2026--2027 mediante un \textbf{rotor libre} (autogiro en descenso vertical), que el anexo
 de requisitos técnicos exige activar al 80\,\% de la altitud máxima y que debe llevar la
-velocidad de caída a $\SI{5}{m/s}\pm\SI{3}{m/s}$ (\Req{C4}). El equipo impuso dos
-restricciones adicionales: radio del rotor de \SI{0.20}{m} como máximo y el drogue atado
-al CanSat durante todo el vuelo.
+velocidad de caída a $\SI{5}{m/s}\pm\SI{3}{m/s}$ (\Req{C4}). Esta versión incorpora el anexo~A
+modificado (diámetro del CanSat de \SI{90}{mm}, autonomía de dos horas, comando automático
+al separarse del cohete, telemetría con rotaciones), la electrónica real del equipo y dos
+libertades de diseño aclaradas por el equipo: el drogue puede soltarse \emph{antes} de abrir
+el rotor, y el CanSat puede ir dentro de un contenedor que elige el equipo. El radio del
+rotor ya no está limitado a \SI{0.20}{m}.
 
 \paragraph{Resultado principal.} Un rotor de 4 palas finas curvadas (placa de carbono de
-\SI{0.5}{mm}, curvatura del 7\,\%, cuerda de \SI{45}{mm}, largo de \SI{156}{mm}), con
-bisagra de batimiento y sin freno, combinado con un drogue de Ø\,\SI{25}{cm}, da:
+\SI{0.5}{mm}, curvatura del 7\,\%, cuerda de \SI{45}{mm}, largo de \SI{206}{mm}, $R=\SI{0.25}{m}$),
+con bisagra de batimiento y sin freno, combinado con un drogue de Ø\,\SI{25}{cm} que se
+suelta, da:
 \begin{itemize}
   \item etapa 1 (drogue): $\Vd\approx\SI{13.4}{m/s}$, dentro de $15\pm3$ (\Req{C3});
-  \item etapa 2 (rotor + drogue): $\Vr\approx\SI{6.4}{m/s}$ con la estimación base y
-        $\approx\SI{6.9}{m/s}$ con el modelo de elemento de pala (BEMT, cap.~\ref{cap:bemt}),
-        dentro de $5\pm3$ (\Req{C4});
-        peor caso analizado, \SI{7.8}{m/s};
-  \item velocidad de giro $\approx\SI{1500}{rpm}$ según la BEMT (la estimación base daba
-        $\approx\SI{1150}{rpm}$), conicidad de equilibrio $\approx\ang{6.1}$ y número de Lock
-        $\approx11{,}5$ con la distribución de masa real (cap.~\ref{cap:estructura}).
+  \item etapa 2 (rotor solo): $\Vr\approx\SI{6.4}{m/s}$ y $\approx\num{1230}$~rpm con el modelo de
+        elemento de pala (BEMT, cap.~\ref{cap:bemt}); el rotor frena como un disco de
+        $\CR\approx0{,}96$. Con el drogue sin soltar (falla del mecanismo) la caída sería de
+        $\SI{5.8}{m/s}$;
+  \item promedio sobre todo el descenso desde el apogeo: $\langle V\rangle\approx\SI{7.1}{m/s}$,
+        dentro de $5\pm3$ con \SI{0.9}{m/s} de margen (el rotor solo de $R=\SI{0.20}{m}$,
+        con \SI{7.9}{m/s}, no lo cumpliría);
+  \item arranque en \SI{1.6}{s} (\SI{22}{m} de caída) con un pico de giro del 26\,\% por
+        encima del régimen (cap.~\ref{cap:arranque}); conicidad de equilibrio de \ang{4.2}, número
+        de Lock $\approx12{,}6$ y todos los modos de estabilidad estables
+        (caps.~\ref{cap:estabilidad}--\ref{cap:estructura}).
 \end{itemize}
 
-\paragraph{Arquitectura.} Eje central hueco y fijo; la cuerda del drogue baja por su
-interior hasta un anclaje en la estructura. El cubo gira sobre dos rodamientos 688ZZ. Las
-palas cuelgan plegadas contra el cuerpo (Ø\,\SI{88}{mm}, pared de \SI{2}{mm}) y un anillo
-interno, girado por un micro servo, retiene sus puntas. No hay calor ni pirotecnia
-(\Req{M1}, \Req{M2}).
+\paragraph{Arquitectura.} Se estudian dos (cap.~\ref{cap:arq}). La Arquitectura~1 mantiene el
+cuerpo impreso (Ø\,\SI{81}{mm}) con las palas plegadas por fuera, un anillo de traba y un
+pasador que suelta el drogue después de confirmar que el anillo giró. La Arquitectura~2 usa
+un contenedor tubular no impreso que se separa con el drogue y deja caer la carga útil: baja
+la masa que vuela a \SI{0.32}{kg} y la velocidad a \SI{5.2}{m/s}, pero requiere que la
+organización permita separar el contenedor. Se recomienda llevar la Arquitectura~1 como base
+y tener lista la 2.
+
+\paragraph{Lo más sensible.} Los estudios de sensibilidad (cap.~\ref{cap:sens}) muestran que
+el coeficiente de resistencia del rotor explica el 79\,\% de la varianza de la velocidad
+de caída; que el arranque depende de la inercia del rotor y del paso; que \Req{E7} no se
+cumple con holgura si las cámaras graban desde la rampa; y que la pala de laminado simple
+es inestable al flameo y debe llevar laminado a $\pm\ang{45}$ con varilla.
+
+\paragraph{Electrónica.} El análisis de sensores y módulos (cap.~\ref{cap:sensores}) compara
+al menos dos alternativas por función. Concluye que la ESP32-C3 no tiene pines suficientes
+(19 líneas contra 13), que faltan funciones (separación, memoria y reloj, rpm), y propone
+cambios de bajo costo.
 
 \paragraph{Alcance y límites.} Los cálculos combinan teoría de cantidad de movimiento,
 datos empíricos de descenso axial y teoría de elemento de pala. Tienen una incertidumbre
 estimada de $\pm$15--20\,\% y se cierran con el plan de ensayos del
-capítulo~\ref{cap:riesgos}. Los planos son de anteproyecto: fijan disposición, medidas
-principales e interfaces; el detalle de fabricación se cierra en CAD.
+capítulo~\ref{cap:riesgos}. Los planos de los capítulos~\ref{cap:planos} y~\ref{cap:planos-conjunto}
+corresponden a la geometría anterior (Ø\,95, $R=\SI{0.20}{m}$) y no se redibujaron; las
+dimensiones vigentes están en los capítulos de dimensionamiento y arquitectura.
 
-\paragraph{Decisión abierta.} El anexo menciona un \emph{contenedor} (\Req{C2},
-\Req{S1}, \Req{E4}, \Req{E5}, \Req{E9}). Se propone la configuración A (contenedor
-mínimo: copa del drogue) y se documenta la configuración B (camisa completa) por si la
-organización la exige; la B excede el presupuesto de masa en unos \SI{50}{g} con pared
-impresa de \SI{2}{mm}.
+\paragraph{Consultas abiertas a la organización.} (i) El diámetro: \SI{90}{mm} (anexo~A) o
+$95\times200$ (bases). (ii) Si el promedio de \Req{C4} se mide sobre todo el descenso o solo
+desde la liberación del segundo sistema. (iii) Si se puede soltar el drogue antes de abrir
+el rotor y separar el contenedor en vuelo. (iv) Qué evento define la separación de \Req{X3}.
+(v) Si \Req{E7} exige que las cámaras graben durante las dos horas. La lista completa está en
+el capítulo~\ref{cap:arq}.

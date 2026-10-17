@@ -12,6 +12,34 @@ ese valor pese menos de \SI{24.5}{\percent} del total, y el peso base
 (\SI{24.3}{\percent}) queda apenas por debajo. Con los pesos de la tabla~\ref{tab:pugh}
 el AHP elige el paracaídas con claridad.
 
+\begin{nota}[Actualización a la versión 2]
+Las puntuaciones, los juicios y los resultados del AHP y de TOPSIS de este capítulo se obtuvieron con los datos de la versión~1:
+elementos rígidos de $R\le\SI{0.20}{m}$, Ø\,95 y un drogue atado que aporta una fracción $f$ de su arrastre. En la versión~2 el drogue se suelta
+($f=0$), la envolvente es Ø\,90 y el rotor, de $R=\SI{0.25}{m}$, tiene el $C_R$ de la BEMT ($0{,}963\pm12\,\%$). Se reejecutó el modelo cuantitativo de
+las siete alternativas con esos datos (\texttt{decision\_alternativas.py} con \texttt{CANSAT\_CFG=v2}); no se recalcularon el AHP ni TOPSIS.
+Para la etapa~2 sola ($m_2=\SI{0.49}{kg}$, objetivo \SI{5}{m/s}), las velocidades (mediana y percentiles 5--95) y la probabilidad de
+caer entre 2 y \SI{8}{m/s} son:
+
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Alternativa} & \textbf{V v1} [m/s] & \textbf{V v2} [m/s] & \textbf{P(2--8) v2} & \textbf{Masa v2} [g]\\\midrule
+(a) Paracaídas & 5,27 (4,97--5,62) & 5,16 (4,89--5,46) & 1,00 & 52\\
+(b) Parapente & 4,29 (2,86--5,82) & 5,16 (3,80--7,03) & 1,00 & 40\\
+(c) Autogiro & 7,01 (6,48--7,67) & 6,56 (5,97--7,33) & 0,997 & 80\\
+(d) Monocóptero & 7,77 (6,99--8,84) & 7,39 (6,73--8,25) & 0,89 & 42\\
+(e) Coaxial & 6,95 (6,40--7,64) & 6,49 (5,91--7,25) & 0,998 & 154\\
+(f) Aletas rígidas & 10,86 (9,60--12,70) & 11,22 (10,53--12,00) & 0,00 & 71\\
+(g) Inflable & 13,35 (11,30--16,96) & 17,70 (16,72--18,76) & 0,00 & 98\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El autogiro gana margen (\SI{7.0}{} a \SI{6.6}{m/s}) y ya no depende del aporte incierto del drogue, pero sigue siendo más lento que el
+paracaídas en cumplir \Req{C4}: lo que decide su elección sigue siendo el valor técnico, como en la versión~1. El resto del capítulo se conserva como método y como
+registro de la decisión de partida; los nuevos criterios de la versión~2 (separación del contenedor, energía, pines) están en los capítulos~\ref{cap:arq} y~\ref{cap:sensores}.
+\end{nota}
+
 \begin{nota}[Alcance de los números]
 No se hizo ningún ensayo. Las velocidades salen de modelos de bibliografía; las masas y
 volúmenes son estimaciones de diseño preliminar; las probabilidades de falla son

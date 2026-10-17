@@ -13,10 +13,22 @@ descenso por sustentación en lugar de hacerlo por arrastre de tela. El document
   \item el dimensionamiento completo con los números del proyecto
         (capítulo~\ref{cap:dim});
   \item los planos de anteproyecto (capítulo~\ref{cap:planos});
-  \item la electrónica y la lógica de vuelo asociadas al sistema (capítulo~\ref{cap:elec});
+  \item la electrónica y la lógica de vuelo asociadas al sistema (capítulos~\ref{cap:elec}
+        y~\ref{cap:electronica});
+  \item la reconfiguración al anexo~A v2 (drogue soltado antes del rotor, contenedor propio,
+        dos arquitecturas; capítulo~\ref{cap:arq}), los estudios de sensibilidad del diseño
+        (capítulo~\ref{cap:sens}) y la selección de sensores y módulos del equipo
+        (capítulo~\ref{cap:sensores});
   \item riesgos, ensayos y la matriz de cumplimiento (capítulos~\ref{cap:riesgos}
         y~\ref{cap:cumpl}).
 \end{enumerate}
+
+Esta es la segunda versión del documento. La primera suponía un rotor de $R\le\SI{0.20}{m}$,
+un drogue atado a lo largo del vuelo y un CanSat de Ø\,95. El anexo cambió y el equipo aclaró
+dos libertades de diseño (sección~\ref{sec:arq-cambios}), de modo que los modelos de los
+capítulos de aerodinámica, arranque, estabilidad y estructura se recalcularon con los datos
+nuevos; los planos de los capítulos~\ref{cap:planos} y~\ref{cap:planos-conjunto} conservan la
+geometría anterior y llevan un aviso.
 
 \section{Por qué un rotor}
 Un paracaídas cumple \Req{C4} con menos riesgo, y queda como plan~B. El rotor se elige
@@ -29,26 +41,34 @@ porque:
   \item se apoya en un fenómeno muy estudiado, tanto en helicópteros~\cite{glauert1926,
         leishman2006,johnson1980} como en semillas autorrotantes~\cite{norberg1973,
         azuma1989,lentink2009};
-  \item no usa tela, así que no se enreda con la cuerda del drogue si se mantiene el eje
-        libre.
+  \item no usa tela, y como el drogue se suelta antes de abrirlo no hay cuerda que se
+        enrede con las palas.
 \end{itemize}
 
-\section{Restricciones del equipo}
-Además del anexo, el equipo fijó:
+\section{Restricciones y libertades del equipo}
+Además del anexo, el equipo fijó (versión 2):
 \begin{description}[style=nextline]
-  \item[Radio máximo del rotor: \SI{0.20}{m}.] Condiciona todo el dimensionamiento: con
-        ese radio la caída queda en \SIrange{6.2}{6.9}{m/s} y no en \SI{5}{m/s} exactos.
-  \item[Drogue atado al CanSat todo el vuelo.] La cuerda pasa por el centro del eje del
-        rotor, que por eso es hueco y fijo.
+  \item[Radio del rotor.] La versión~1 lo limitaba a \SI{0.20}{m}. Ya no es una restricción
+        del equipo: lo limita el diámetro del CanSat (\Req{S2}, Ø\,90) y el largo (\Req{S3},
+        \SI{250}{mm}). Con \SI{0.20}{m} el rotor solo no cumple el promedio de \Req{C4} leído sobre
+        todo el descenso; se adopta $R=\SI{0.25}{m}$ (capítulo~\ref{cap:arq}).
+  \item[Drogue liberable.] El drogue puede soltarse antes de abrir el segundo sistema. La
+        etapa~2 es el rotor solo y el eje deja de necesitar la cuerda por dentro. Sigue
+        siendo un modo de falla que el drogue no se suelte (capítulos~\ref{cap:estabilidad}
+        y~\ref{cap:confiabilidad}).
+  \item[Contenedor propio.] El anexo no exige una pared si el CanSat va dentro de un
+        contenedor que elige el equipo (\Req{S6} aplica a lo impreso). Se estudian el cuerpo
+        impreso con las palas por fuera y un tubo no impreso que podría separarse
+        (capítulo~\ref{cap:arq}).
   \item[Pocas rpm.] Se busca que el rotor gire lento (en torno a \SI{1000}{rpm}) para
         reducir cargas, vibración y riesgos en ensayos; esto lleva a un perfil fino de
-        alta sustentación.
+        alta sustentación. Con $R=\SI{0.25}{m}$ el rotor gira a unas \SI{1230}{rpm}.
 \end{description}
 
 \section{Convenciones}
 Se usa el Sistema Internacional. Aire estándar al nivel del mar:
 $\rho=\SI{1.225}{kg/m^3}$, $\nu=\SI{1.5e-5}{m^2/s}$, $g=\SI{9.81}{m/s^2}$. La masa de
-diseño es $m=\SI{0.500}{kg}$ ($W=\SI{4.905}{N}$). Las velocidades de descenso se dan en
+diseño es $m_1=\SI{0.500}{kg}$ ($W_1=\SI{4.905}{N}$) en la etapa~1 y $m_2=\SI{0.490}{kg}$ en la etapa~2 (sin el drogue soltado). Las velocidades de descenso se dan en
 módulo. Los colores de los planos tienen significado fijo:
 \textcolor{cfijo}{\textbf{azul}} partes fijas al CanSat,
 \textcolor{crot}{\textbf{naranja}} partes que giran,

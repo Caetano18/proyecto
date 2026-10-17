@@ -25,6 +25,30 @@ de la expulsión.
 \end{itemize}
 \end{resultado}
 
+\begin{nota}[Actualización a la electrónica real del equipo (versión 2)]
+Este capítulo se desarrolló con un conjunto de componentes de referencia (barómetro MS5611, radio
+XBee, celda de \SI{3000}{mAh}, cámaras de bajo consumo). La planilla del equipo, el anexo~A modificado y la
+reconfiguración del capítulo~\ref{cap:arq} cambian varias conclusiones, que valen como sigue; el método
+(filtro de Kalman, votación 2 de 3, recuperación tras reinicios) se conserva:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Energía:} el factor de margen de 3,9 ya no vale. Con las cámaras de \SI{300}{mA} de la planilla, una
+        celda da \SI{2.3}{h} con todo encendido y el \SI{53}{\percent} de los casos queda bajo las 2\,h de
+        \Req{E7}; con las cámaras encendidas al despegar, \SI{8.6}{h} (capítulos~\ref{cap:sens} y~\ref{cap:sensores}).
+  \item \textbf{Radio:} el equipo usa un LR2021 (LoRa); el enlace con LoRa y su tiempo en el aire están en la
+        sección~\ref{sec:sens-radio}. Con el mismo método de este capítulo, el margen a \SI{2}{km} es de
+        \SIrange{49}{63}{dB} y de \SI{27.8}{dB} en el nulo de la antena (SF7), y el alcance sobre el suelo, de
+        \SIrange{1.8}{4.0}{km}.
+  \item \textbf{Barómetro:} el equipo tiene un BMP280 (deriva térmica $\pm\SI{1.5}{Pa/K}$ y ruido por medir), no el
+        MS5611 con que se sintonizó el filtro (\SI{0.10}{m}); hay que medir su ruido y reajustar la sintonía.
+  \item \textbf{Microcontrolador:} la ESP32-C3 no tiene los 19 pines necesarios; se propone un RP2040
+        (sección~\ref{sec:sens-mcu}). El mapa I$^2$C y los módulos nuevos (FRAM, RTC, Hall) están en la
+        sección~\ref{sec:sens-sintesis}.
+  \item \textbf{Servo:} el MG90S de este capítulo es el propuesto también por el capítulo~\ref{cap:sensores}.
+  \item \textbf{Suelta del drogue y separación (\Req{X3}):} la secuencia de la sección~\ref{sec:elec-suelta} se
+        agrega a la lógica de liberación; la separación se detecta con la luz del panel y la IMU.
+\end{itemize}
+\end{nota}
+
 \begin{nota}[Alcance]
 Todo lo que sigue es análisis y simulación; no hay ensayos. Los componentes marcados como
 «verificado» tienen sus datos tomados de la hoja de datos citada; el resto son

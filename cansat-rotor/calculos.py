@@ -1,17 +1,20 @@
-"""Cálculos del sistema de descenso de dos etapas (drogue + rotor libre).
+"""Cálculos del sistema de descenso de dos etapas (drogue + rotor libre), versión 2:
+CanSat de Ø90, rotor de R = 0,25 m y drogue soltado antes de abrir el rotor (etapa 2 = rotor solo).
 Uso: python3 calculos.py  -> imprime todos los valores usados en el informe."""
 import math as m
 
 rho, g = 1.225, 9.81            # aire ISA nivel del mar, gravedad
-M = 0.500                        # masa total CanSat + contenedor [kg]
+M = 0.500                        # masa total CanSat + contenedor, etapa 1 [kg]
 W = M * g
+M2 = 0.490                       # masa de la etapa 2, sin el drogue soltado [kg]
+W2 = M2 * g
 # --- geometría ---
-R, e, B, c = 0.20, 0.044, 4, 0.045      # radio, radio de bisagra, palas, cuerda
+R, e, B, c = 0.25, 0.044, 4, 0.045      # radio, radio de bisagra, palas, cuerda
 L = R - e                               # largo de pala
 A_R = m.pi * R**2                       # área del disco
 D_d, Cd_d = 0.25, 0.80                  # drogue
 A_d = m.pi * D_d**2 / 4
-D_c, Cd_c = 0.095, 0.80                 # cuerpo
+D_c, Cd_c = 0.090, 0.80                 # cuerpo (Ø90)
 A_c = m.pi * D_c**2 / 4
 sigma = B * c / (m.pi * R)              # solidez
 
@@ -39,13 +42,13 @@ for Vdep in (15, 25, 35):
 print("\n== Etapa 2: rotor (cantidad de movimiento) ==")
 k_d = 0.5*rho*Cd_d*A_d; k_c = 0.5*rho*Cd_c*A_c
 P("k drogue", k_d, "N/(m/s)^2"); P("k cuerpo", k_c, "N/(m/s)^2")
-for CR in (1.0, 1.1, 1.2, 1.3):
+for CR in (0.96, 1.0, 1.1, 1.2, 1.3):
     kR = 0.5*rho*CR*A_R
-    P(f"V rotor+drogue+cuerpo C_R={CR}", m.sqrt(W/(kR+k_d+k_c)), "m/s")
-    P(f"V rotor+cuerpo (drogue sin aporte) C_R={CR}", m.sqrt(W/(kR+k_c)), "m/s")
+    P(f"V rotor solo + cuerpo (m2=0,49) C_R={CR}", m.sqrt(W2/(kR+k_c)), "m/s")
+    P(f"V rotor + drogue atado + cuerpo (falla, m=0,50) C_R={CR}", m.sqrt(W/(kR+k_d+k_c)), "m/s")
 CR = 1.2
-V2 = m.sqrt(W/(0.5*rho*CR*A_R + k_d + k_c))
-T = W - (k_d + k_c)*V2**2
+V2 = m.sqrt(W2/(0.5*rho*CR*A_R + k_c))
+T = W2 - k_c*V2**2
 P("V2 recomendada", V2, "m/s"); P("empuje del rotor T", T, "N")
 vh = m.sqrt(T/(2*rho*A_R))
 P("velocidad inducida de vuelo estacionario v_h", vh, "m/s")
@@ -105,9 +108,9 @@ for dm in (0.0001, 0.0005, 0.001):
 
 print("\n== Estructura ==")
 for G in (15, 30):
-    F = M*G*g; A = m.pi*0.093*0.002
+    F = M*G*g; A = m.pi*0.081*0.002
     P(f"esfuerzo axial pared 2 mm a {G} G", F/A/1e6, "MPa")
-E_petg, nu = 2.0e9, 0.38; t, Rm = 0.002, 0.0465
+E_petg, nu = 2.0e9, 0.38; t, Rm = 0.002, 0.0405
 scr = 0.3*E_petg*t/(Rm*m.sqrt(3*(1-nu**2)))
 P("tensión crítica de pandeo (knockdown 0.3)", scr/1e6, "MPa")
 P("carga por pala en choque 30 G", mb*30*g, "N")
@@ -120,6 +123,8 @@ for hmax in (500, 700, 1000):
     t1 = (hmax - h80)/V1; t2 = h80/V2
     Vavg = hmax/(t1+t2)
     print(f"  apogeo {hmax} m: etapa1 {t1:5.1f} s, etapa2 {t2:5.1f} s, total {t1+t2:5.1f} s, V media total {Vavg:4.2f} m/s, V media etapa2 {V2:.2f}")
+V2b = 6.36   # rotor solo con el C_R de la BEMT (cap. 12)
+P("promedio de todo el descenso con V2 de la BEMT", 1/(0.2/V1 + 0.8/V2b), "m/s")
 P("V etapa 1 (drogue 25 cm + cuerpo)", V1, "m/s")
 for Cd in (0.75, 0.9):
     P(f"V etapa 1 con Cd={Cd}", m.sqrt(2*W/(rho*(Cd*A_d + Cd_c*A_c))), "m/s")

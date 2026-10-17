@@ -29,6 +29,15 @@ $\Vr$, las rpm, la conicidad $\beta_0$ y el par de arranque $Q_0$. La
 tabla~\ref{tab:ensayos-magnitudes} fija para cada uno el valor esperado, la incertidumbre
 que hace falta para decidir y el ensayo que lo mide.
 
+\begin{nota}[Actualización a la versión 2]
+Los valores esperados de la tabla siguiente son los de la versión~2 (rotor solo de $R=\SI{0.25}{m}$, $\CR\approx0{,}96$). El resto del
+capítulo se conserva como método de ensayo, con estos cambios: (i) el chorro del ventilador debe tener al menos el doble del diámetro del rotor, ahora
+\SI{1.0}{m}, y el rotor de \SI{0.25}{m} de radio exige un banco mayor o un auto a \SI{20}{km/h}; (ii) la maqueta del cuerpo es de Ø\,81 (Arq.~1) o
+Ø\,90 (Arq.~2), no de Ø\,95, y ya no hay cuerda del drogue por el eje (el vástago de la celda de carga va por el eje, sin cuerda); (iii) la caída E4
+se hace con el rotor solo (promedio global) y con el drogue atado; (iv) se agregan el ensayo de la secuencia de suelta del drogue (E7) y los de electrónica (E8) del
+capítulo~\ref{cap:riesgos}. Las rpm de la maqueta de pruebas y el pico de arranque ($+26\,\%$) son los de los capítulos~\ref{cap:arranque} y~\ref{cap:estructura}.
+\end{nota}
+
 \begin{table}[H]
 \centering\small
 \caption{Magnitudes clave, valor esperado e incertidumbre objetivo ($k\approx2$).}
@@ -36,12 +45,12 @@ que hace falta para decidir y el ensayo que lo mide.
 \begin{tabularx}{\textwidth}{@{}llcYc@{}}
 \toprule
 \textbf{Magnitud} & \textbf{Esperado} & \textbf{$U$ objetivo} & \textbf{Para qué se necesita} & \textbf{Ensayo}\\\midrule
-$\CR$ del rotor & 1,2 & $\pm5$\,\% & $\Vr$ por análisis; $\pm5$\,\% en $\CR$ es $\pm2{,}5$\,\% en $\Vr$ & E3\\
-$\Vr$ con drogue & \SI{6.4}{m/s} & \SI{\pm0.3}{m/s} & Cumplimiento directo de \Req{C4} & E4\\
-rpm de equilibrio & \num{1150} & $\pm2$\,\% & Validar la ecuación~\eqref{eq:omega} y el $C_l$ de la placa & E2\\
-Conicidad $\beta_0$ & \ang{4.4} & $\pm\ang{0.3}$ & Validar la ecuación~\eqref{eq:conicidad}; margen al tope de \ang{10} & E2\\
-Par de arranque $Q_0$ & \SI{0.026}{N.m} & $\pm20$\,\% & Elegir el paso; riesgo n.º~1 del AMFE & E2, E2b\\
-Tiempo de arranque & \SIrange{3}{6}{s} & \SI{\pm0.5}{s} & Altura perdida antes de frenar & E2b, E4\\
+$\CR$ del rotor & 0,96 & $\pm5$\,\% & $\Vr$ por análisis; $\pm5$\,\% en $\CR$ es $\pm2{,}5$\,\% en $\Vr$ & E3\\
+$\Vr$ con el rotor solo & \SI{6.4}{m/s} (\SI{5.8}{m/s} con el drogue atado) & \SI{\pm0.3}{m/s} & Cumplimiento directo de \Req{C4} (promedio global \SI{7.1}{m/s}) & E4\\
+rpm de equilibrio & \num{1230} & $\pm2$\,\% & Validar la ecuación~\eqref{eq:omega} y el $C_l$ de la placa & E2\\
+Conicidad $\beta_0$ & \ang{4.2} & $\pm\ang{0.3}$ & Validar la ecuación~\eqref{eq:conicidad}; margen al tope de \ang{15} & E2\\
+Par de arranque $Q_0$ & \SI{0.030}{N.m} & $\pm20$\,\% & Elegir el paso; riesgo n.º~1 del AMFE & E2, E2b\\
+Tiempo de arranque ($t_{90}$) & \SI{1.55}{s} (\SIrange{1.1}{2.0}{s}) & \SI{\pm0.3}{s} & Altura perdida antes de frenar (\SI{22}{m}) & E2b, E4\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -302,12 +311,12 @@ margen (tabla~\ref{tab:rotor}).
 El auto da gratis el rango de \SIrange{10}{14}{m/s} (\SIrange{36}{50}{km/h}), que el
 ventilador no alcanza; por eso se usa para el arranque, no para medir $\CR$. A velocidad
 constante el rotor no se queda en las rpm de diseño: tiende a la misma relación de
-velocidad de punta $\lambda_d\approx3{,}76$, es decir a unas \num{2400}~rpm a
-\SI{13.4}{m/s} (punta a \SI{50}{m/s}, fuerza centrífuga de \SI{57}{N} por pala, 4,4 veces
-la de diseño). En vuelo eso no ocurre porque el CanSat frena mientras el rotor acelera
-(figura~\ref{fig:ensayos-caida}: máximo de unas \num{1220}~rpm). Cada tramo en auto mide
-entonces solo el arranque, de 0 a \num{1150}~rpm, y al llegar a ese valor el auto baja a
-\SI{25}{km/h} (unas \num{1250}~rpm de equilibrio). El rotor va
+velocidad de punta $\lambda_d\approx3{,}76$, es decir a unas \num{1930}~rpm a
+\SI{13.4}{m/s} (punta a \SI{50}{m/s}, fuerza centrífuga de \SI{53}{N} por pala, 2,4 veces
+la de régimen de la versión~2). En vuelo eso no ocurre porque el CanSat frena mientras el rotor acelera
+(figura~\ref{fig:ensayos-caida}, de la versión~1: máximo de unas \num{1220}~rpm; en la versión~2, con el pico de arranque, unas \num{1550}~rpm). Cada tramo en auto mide
+entonces solo el arranque, de 0 a \num{1230}~rpm, y al llegar a ese valor el auto baja a
+\SI{31}{km/h} (\SI{8.6}{m/s}: \num{1230}~rpm de equilibrio). El rotor va
 con el eje horizontal, alineado con la marcha, en un mástil a \SI{1}{m} o más sobre el
 techo (figura~\ref{fig:ensayos-auto}).
 
@@ -334,10 +343,10 @@ techo (figura~\ref{fig:ensayos-auto}).
 Solo en un predio cerrado (pista, aeródromo o estacionamiento vacío), nunca en la vía
 pública; máximo \SI{50}{km/h}. Mástil sujeto a las barras de techo con cintas con
 trinquete; malla de protección alrededor del disco. Nadie en el plano de giro: una pala
-suelta de \SI{7.4}{g} lleva \SI{0.8}{J} a \num{1150}~rpm y \SI{3.5}{J} a \num{2400}~rpm
-(velocidad de su centro de masa, a \SI{123}{mm} del eje). Antes del primer tramo, cada
-portapala se prueba con una carga estática de \SI{60}{N} (la centrífuga a \num{2400}~rpm).
-Si el hall pasa de \num{1500}~rpm, el auto frena. El conductor solo conduce; un
+suelta de \SI{9.5}{g} lleva \SI{1.5}{J} a \num{1230}~rpm y \SI{3.6}{J} a \num{1930}~rpm
+(velocidad de su centro de masa, a \SI{136}{mm} del eje). Antes del primer tramo, cada
+portapala se prueba con una carga estática de \SI{60}{N} (la centrífuga a \num{1930}~rpm es de \SI{53}{N}).
+Si el hall pasa de \num{1600}~rpm, el auto frena. El conductor solo conduce; un
 segundo operador maneja la adquisición, y antes de cada tramo se revisan pasadores y
 portapalas.
 \end{nota}

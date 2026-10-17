@@ -16,13 +16,16 @@ ensayos y se actualizan con cada resultado.
 \bottomrule
 \endfoot
 El rotor no arranca & Caída a $\approx\SI{13}{m/s}$; falla \Req{C4} & 9 & 4 & 4 & 144 & Paso $\le\ang{-2}$ (tabla~\ref{tab:arranque}); ensayo E2 de 10 arranques; reintento del servo\\
+Archivo de video cortado por una caída de tensión & Se pierde el registro de \Req{C6}, \Req{C7} & 5 & 4 & 5 & 100 & Grabar en segmentos de \SI{10}{s}; ensayo de 2\,h con corte forzado (cap.~\ref{cap:sensores})\\
+Servo de plástico pierde dientes por el choque & La traba o el pasador se mueven (\Req{M3}) & 8 & 3 & 4 & 96 & Servo MG90S con engranajes metálicos; E5 con carga en el eje\\
 La traba no suelta & Rotor no se despliega & 9 & 3 & 3 & 81 & Servo con engranajes metálicos; 20 liberaciones en E1; reintento automático\\
-Drogue en la estela del rotor & Caída hasta \SI{7.8}{m/s} & 5 & 5 & 3 & 75 & Cuerda de \SI{1.5}{m}; E4 mide con y sin drogue\\
+El drogue no se suelta & Con el anillo girado, caída a \SI{5.8}{m/s} (cumple); sin confirmación, a \SI{13}{m/s} & 5 & 3 & 3 & 45 & Secuencia con enclavamiento y reintentos (cap.~\ref{cap:arq}); E4 mide con y sin drogue\\
 Liberación prematura & Etapa 1 corta; \Req{C4} dudoso & 7 & 2 & 5 & 70 & Solo en \texttt{DESCENT}; $h_{\max}$ en FRAM; filtro de 50\,Hz\\
 Palas que se abren en el ascenso & Daño, despliegue fuera de tiempo & 8 & 2 & 4 & 64 & Traba positiva; espuma detrás de las palas; E5 vibración\\
-Cuerda que se retuerce o roza & Rotura de la cuerda & 7 & 2 & 4 & 56 & Destorcedor; borde del eje redondeado y pulido\\
+Autonomía menor a 2\,h (\Req{E7}) & Falla \Req{E7}; el CanSat se apaga en la rampa & 6 & 5 & 2 & 60 & Medir la corriente de las cámaras; cámaras al despegar o segunda celda (cap.~\ref{cap:sensores})\\
+Lazo de la cuerda del drogue en las palas tras soltarlo & Frena o desbalancea el rotor & 7 & 2 & 4 & 56 & Cuerda corta en el drogue; pasador de suelta limpio; E4 y video\\
 Desbalance de palas & Vibración, video inutilizable & 4 & 4 & 2 & 32 & Balanceo a $\pm\SI{0.1}{g}$; palas marcadas\\
-Conicidad excesiva o flameo & Menos área efectiva, rotura & 6 & 2 & 3 & 36 & Tope a \ang{+10}; centro de masa al 25\,\%\\
+Conicidad excesiva o flameo & Menos área efectiva, rotura & 6 & 2 & 3 & 36 & Tope elástico a \ang{+15}; pala BV (laminado $\pm\ang{45}$ con varilla); centro de masa al 25\,\%\\
 Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto en CAD; lastre ajustable\\
 \end{longtable}
 
@@ -35,11 +38,13 @@ Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto
 \toprule
 \textbf{N.º} & \textbf{Ensayo} & \textbf{Qué se mide} & \textbf{Criterio de aceptación}\\\midrule
 E1 & Banco: mecanismo & Giro libre a mano, balanceo, 20 liberaciones de la traba & Gira libre $>\SI{5}{s}$; 20 de 20 liberaciones\\
-E2 & Ventilador vertical (o auto a \SI{20}{km/h}) & Arranque desde cero, rpm, conicidad (video), paso óptimo & 10 de 10 arranques en $<\SI{5}{s}$; rpm medidas $\pm$20\,\% de 1150\\
-E3 & Balanza de empuje en túnel o ventilador & Empuje frente a velocidad del aire: obtiene $\CR$ real & $\CR\ge1{,}0$\\
-E4 & Caída desde drone (\SIrange{30}{60}{m}) & Velocidad con barómetro, con y sin drogue & $\Vr\le\SI{7.5}{m/s}$ sin drogue; $\le\SI{7}{m/s}$ con drogue\\
+E2 & Ventilador vertical (o auto a \SI{20}{km/h}) & Arranque desde cero, rpm, conicidad (video), paso óptimo & 10 de 10 arranques en $<\SI{3}{s}$; rpm medidas $\pm$20\,\% de 1230\\
+E3 & Balanza de empuje en túnel o ventilador & Empuje frente a velocidad del aire: obtiene $\CR$ real & $\CR\ge0{,}80$ (límite inferior al 95\,\%; nominal 0,96)\\
+E4 & Caída desde drone (\SIrange{30}{60}{m}) & Velocidad con barómetro, con el rotor solo y con el drogue atado & $\Vr\le\SI{7.3}{m/s}$ con el rotor solo (promedio global $\le\SI{8}{m/s}$); $\le\SI{6.3}{m/s}$ con el drogue atado\\
 E5 & Vibración y choque & 15\,G y 30\,G (\Req{S4}, \Req{S5}) & Nada se suelta; traba sigue cerrada\\
 E6 & Integración completa & Secuencia de estados, video, telemetría & Todos los estados en el CSV; video de las dos etapas\\
+E7 & Secuencia de suelta del drogue (y del contenedor en la Arq.~2) & Enclavamiento, tiempos del anillo y del pasador, caída libre, nueva apertura del rotor & 20 de 20 sueltas; $<\SI{0.5}{s}$ hasta las palas abiertas; sin lazo de cuerda en las palas\\
+E8 & Electrónica & Cámaras 2\,h con corte, LR2021 en banco y alcance, ruido del BMP280, calibración del magnetómetro, pesaje (lista del cap.~\ref{cap:sensores}) & Los umbrales de cada ensayo del cap.~\ref{cap:sensores}\\
 \bottomrule
 \end{tabularx}
 \end{table}

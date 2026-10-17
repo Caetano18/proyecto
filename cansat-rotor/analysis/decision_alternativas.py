@@ -25,6 +25,9 @@ import os
 import numpy as np
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+MODO_V2 = os.environ.get("CANSAT_CFG", "v1") == "v2"   # v2: Ø90, rotor R = 0,25 con C_R de la BEMT, drogue soltado (no aporta)
+SUF = "_v2" if MODO_V2 else ""
+F_CR = 0.963 / 1.2 if MODO_V2 else 1.0
 rng = np.random.default_rng(20261005)
 N = 200_000
 
@@ -32,17 +35,17 @@ N = 200_000
 # Datos comunes (fuente única del informe)
 # --------------------------------------------------------------------------
 G = 9.80665
-M = 0.500
+M = 0.490 if MODO_V2 else 0.500
 W = M * G                      # 4,905 N
 RHO = 1.225
 NU = 1.5e-5
 A_DRO = np.pi * 0.125**2       # drogue Ø 0,25 m
 CD_DRO = 0.8
-A_CUE = np.pi * 0.0475**2      # cuerpo Ø 95 mm
+A_CUE = np.pi * (0.045 if MODO_V2 else 0.0475)**2      # cuerpo Ø 90 mm (v2) o Ø 95 mm
 CD_CUE = 0.8
-K_DRO = CD_DRO * A_DRO         # m2
+K_DRO = 0.0 if MODO_V2 else CD_DRO * A_DRO         # m2 (v2: el drogue se soltó)
 K_CUE = CD_CUE * A_CUE
-R_MAX = 0.200                  # radio máximo de elementos rígidos
+R_MAX = 0.250 if MODO_V2 else 0.200                  # radio máximo de elementos rígidos
 A_R = np.pi * R_MAX**2
 V_OBJ = 5.0
 V_MIN, V_MAX = 2.0, 8.0
@@ -64,7 +67,7 @@ def comunes(n):
     m = rng.uniform(0.490, 0.510, n)
     rho = rng.uniform(1.10, 1.25, n)       # 0-700 m, 5-30 °C
     cdd = rng.uniform(0.75, 0.85, n)
-    f = rng.uniform(0.0, 1.0, n)           # drogue en la estela: 0 = sin aporte
+    f = np.zeros(n) if MODO_V2 else rng.uniform(0.0, 1.0, n)           # drogue en la estela: 0 = sin aporte (v2: soltado)
     return m * G, rho, cdd * A_DRO * f + K_CUE
 
 
@@ -150,12 +153,15 @@ vol_pp = (2.6 * S_PP * GRAM_TELA + 16 * 0.5 * 0.6) / 0.30 + 30
 # ----------------------------- (c) autogiro -------------------------------
 def mc_rot(n, cr_lo=1.0, cr_hi=1.3, area=A_R):
     w, rho, k = comunes(n)
-    cr = rng.uniform(cr_lo, cr_hi, n)
+    if MODO_V2:
+        cr = 0.963 * 0.5 * (cr_lo + cr_hi) / 1.15 * rng.normal(1.0, 0.12, n)   # C_R de la BEMT, incertidumbre relativa del 12 %
+    else:
+        cr = rng.uniform(cr_lo, cr_hi, n)
     return v_desc(cr * area + k, w, rho)
 
 
-V_ROT = v_desc(1.2 * A_R + K_DRO + K_CUE)
-m_rot = 30 + 24 + 16                    # palas, cubo y eje, traba (tab:masa)
+V_ROT = v_desc(1.2 * F_CR * A_R + K_DRO + K_CUE)
+m_rot = (38 + 26 + 16) if MODO_V2 else (30 + 24 + 16)                    # palas, cubo y eje, traba (tab:masa)
 vol_rot = 40.0
 
 
@@ -166,7 +172,7 @@ def mc_mono(n):
     return mc_rot(n, 0.7, 1.1)
 
 
-V_MONO = v_desc(0.9 * A_R + K_DRO + K_CUE)
+V_MONO = v_desc(0.9 * F_CR * A_R + K_DRO + K_CUE)
 m_mono = 0.15 * 0.08 * 0.0005 * 1600 * 1e3 + 8 + 8 + 16
 vol_mono = 30.0
 # rotación del cuerpo: relación de velocidad de punta lambda = Omega R / V ~ 2-4
@@ -178,13 +184,13 @@ def mc_coax(n):
     return mc_rot(n, 1.0, 1.35)         # mismo tubo de corriente; algo más de solidez
 
 
-V_COAX = v_desc(1.25 * A_R + K_DRO + K_CUE)
-m_coax = 2 * (30 + 24) + 16 + 10
+V_COAX = v_desc(1.25 * F_CR * A_R + K_DRO + K_CUE)
+m_coax = 2 * ((38 + 26) if MODO_V2 else (30 + 24)) + 16 + 10
 vol_coax = 70.0
 
 
 # ----------------------------- (f) aletas ---------------------------------
-L_AL = R_MAX - 0.0475                   # 152,5 mm de largo radial
+L_AL = R_MAX - (0.045 if MODO_V2 else 0.0475)                   # largo radial
 C_AL = 0.065                            # ancho que cabe plegado (4 x 65 mm < 276 mm)
 N_AL = 4
 CD_AL = 1.15                            # placa normal con interferencia del cuerpo
@@ -258,11 +264,11 @@ def curvas_tamano():
     r = np.linspace(0.05, 0.45, 81)
     k = K_DRO + K_CUE
     v_par = v_desc(CD0_PAR * np.pi * r**2 + k)            # r = radio nominal del paracaídas
-    v_rot = v_desc(1.2 * np.pi * r**2 + k)
-    v_mono = v_desc(0.9 * np.pi * r**2 + k)
-    v_al = v_desc(CD_AL * N_AL * np.clip(r - 0.0475, 0, None) * C_AL + k)
+    v_rot = v_desc(1.2 * F_CR * np.pi * r**2 + k)
+    v_mono = v_desc(0.9 * F_CR * np.pi * r**2 + k)
+    v_al = v_desc(CD_AL * N_AL * np.clip(r - (0.045 if MODO_V2 else 0.0475), 0, None) * C_AL + k)
     v_esf = v_desc(CD_ESF * np.pi * r**2 + k)
-    with open(os.path.join(DATA, "decision_tamano.dat"), "w") as fh:
+    with open(os.path.join(DATA, "decision_tamano" + SUF + ".dat"), "w") as fh:
         fh.write("r Vpar Vrot Vmono Val Vesf\n")
         for i in range(len(r)):
             fh.write(f"{r[i]:.4f} {v_par[i]:.4f} {v_rot[i]:.4f} {v_mono[i]:.4f} "
@@ -272,7 +278,7 @@ def curvas_tamano():
 def histogramas(res):
     bins = np.linspace(2.0, 14.0, 97)
     centros = 0.5 * (bins[1:] + bins[:-1])
-    with open(os.path.join(DATA, "decision_vhist.dat"), "w") as fh:
+    with open(os.path.join(DATA, "decision_vhist" + SUF + ".dat"), "w") as fh:
         fh.write("V " + " ".join(ALT) + "\n")
         hs = [np.histogram(res[a]["v"], bins=bins, density=True)[0] for a in ALT]
         for i, c in enumerate(centros):
@@ -284,7 +290,7 @@ if __name__ == "__main__":
     res = resumen()
     curvas_tamano()
     histogramas(res)
-    with open(os.path.join(DATA, "decision_alternativas.dat"), "w") as fh:
+    with open(os.path.join(DATA, "decision_alternativas" + SUF + ".dat"), "w") as fh:
         fh.write("idx alt Vmed Vp5 Vp95 errlo errhi Pin Err masa vol piezas ang\n")
         for i, a in enumerate(ALT):
             r = res[a]

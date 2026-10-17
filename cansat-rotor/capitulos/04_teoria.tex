@@ -19,6 +19,19 @@ donde $A_R=\pi R^2$ es el área del disco del rotor, $\CR$ su coeficiente de res
 equivalente, $A_d$ y $C_{D,d}$ los del drogue y $A_c$ y $C_{D,c}$ los del cuerpo. Todo el
 problema se reduce a conocer $\CR$, lo que desarrollan las secciones siguientes.
 
+En la versión~2 el drogue se suelta antes de abrir el rotor. Hay entonces dos equilibrios. En la
+etapa~1 solo actúan el drogue y el cuerpo ($\CR A_R=0$, masa $m_1$); en la etapa~2 actúan el rotor y el cuerpo ($A_d=0$,
+masa $m_2<m_1$ por el drogue soltado):
+\begin{equation}
+  V_1=\sqrt{\dfrac{2 m_1 g}{\rho\left(C_{D,d} A_d + C_{D,c} A_c\right)}},\qquad
+  V_2=\sqrt{\dfrac{2 m_2 g}{\rho\left(\CR A_R + C_{D,c} A_c\right)}}.
+  \label{eq:equilibrio-dos}
+\end{equation}
+La ecuación~\eqref{eq:equilibrio} completa vale solo en el modo de falla en que el drogue
+queda atado; el promedio de \Req{C4} sobre todo el descenso combina $V_1$ y $V_2$
+(ecuación~\ref{eq:promedio}). Con el drogue suelto, $V_2\propto\sqrt{m_2}/R$: el radio y la masa
+que vuela con el rotor son las dos palancas de diseño (capítulo~\ref{cap:arq}).
+
 %=====================================================================
 \section{Teoría de cantidad de movimiento en vuelo axial}\label{sec:momento}
 
@@ -388,4 +401,4 @@ de reducción por masa finita~\cite{knacke1992}. Se toma $C_x=1{,}5$ y $X_1=1$
 \section{Resistencia del cuerpo}
 Un cilindro romo moviéndose según su eje tiene $C_D\approx0{,}8$--1,0 para relaciones de
 aspecto de 2 a 3~\cite{hoerner1965}. Se usa $C_{D,c}=0{,}8$ sobre el área frontal de
-Ø\,\SI{95}{mm}. Su aporte es menor al 3\,\% de la resistencia total en la segunda etapa.
+Ø\,\SI{90}{mm}. Su aporte es de $\approx2{,}6$\,\% de la resistencia total en la segunda etapa (rotor solo).

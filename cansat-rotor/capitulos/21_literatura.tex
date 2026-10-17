@@ -177,11 +177,11 @@ Ventura~\cite{ventura2022} & 2022 & NACA~6412, CFD y caída de \SI{39}{m} & --- 
 Shukla~\cite{literatura-shukla2022} & 2022 & Dos cargas tipo semilla de arce & 1 c/u & --- & --- & ---\\
 Run2Sat~\cite{literatura-rivadeneira2023,literatura-rivadeneira2025} & 2023--25 & Dos pares contrarrotantes & 2+2 & --- & --- & ---\\
 Villacorta~\cite{literatura-villacorta2025} & 2025 & Seis palas; caídas desde drone y edificio & 6 & --- & --- & ---\\\midrule
-\textbf{Este diseño} & 2026 & Placa curvada \SI{7}{\percent}, bisagra, drogue atado & 4 & \SI{500}{g} & \SI{6.4}{m/s}\,$^{a}$ & \num{1150}\,$^{a}$\\
+\textbf{Este diseño (v2)} & 2026 & Placa curvada \SI{7}{\percent}, bisagra, $R=\SI{0.25}{m}$, drogue soltado & 4 & \SI{500}{g} & \SI{6.4}{m/s}\,$^{a}$ & \num{1230}\,$^{a}$\\
 \bottomrule
 \end{tabularx}
 
-\smallskip\raggedright\footnotesize $^{a}$ Estimación (capítulo~\ref{cap:dim}), no medida.
+\smallskip\raggedright\footnotesize $^{a}$ Estimación con la BEMT (capítulo~\ref{cap:bemt}), no medida.
 \end{table}
 
 %=====================================================================
@@ -338,6 +338,22 @@ drogue atado no es redundante, es el que da margen.
 \end{nota}
 
 %=====================================================================
+\section{Un texto de helicópteros como referencia: Bramwell}\label{sec:literatura-bramwell}
+El equipo aportó el libro de Bramwell, Done y Balmford~\cite{bramwell2001}. Se usó para tres puntos concretos, citados con la sección y la página de la edición de 2001:
+\begin{itemize}
+  \item \textbf{Autorrotación ideal en descenso vertical} (\S2.3, p.~42--44). Bramwell describe el estado de estela turbulenta y da la condición de
+        \emph{autorrotación ideal}, sin flujo neto a través del rotor, a $V_c/v_0\approx-1{,}8$, equivalente a un disco romo con $C_D\approx1{,}23$,
+        cercano al de un disco plano. \emph{Aporte}: es el valor de referencia con el que se contrasta el $\CR=0{,}96$ de la BEMT (caso~3 del
+        capítulo~\ref{cap:bemt} y sección~\ref{sec:dim-prom}); el rotor de este proyecto frena un 22\,\% menos que el disco ideal.
+  \item \textbf{Definición de autorrotación} (\S4.3.3, p.~132--134). La autorrotación es la rotación sostenida sin par aplicado ($Q=0$) a expensas de la energía
+        potencial, y exige un flujo \emph{ascendente} a través del disco para que haya una componente de sustentación que equilibre la resistencia de la pala
+        (figura~4.18). Por eso el paso colectivo es menor que en vuelo propulsado. \emph{Aporte}: respalda el paso negativo de \ang{-3} y el análisis de
+        arranque del capítulo~\ref{cap:arranque}.
+  \item \textbf{Dinámica de palas articuladas.} El libro desarrolla el número de Lock y el batimiento con bisagra, base de las ecuaciones del capítulo~\ref{cap:teoria}
+        (lista de símbolos del libro); no se citan páginas concretas porque el cálculo del capítulo usa también a Johnson~\cite{johnson1980} y
+        Leishman~\cite{leishman2006}.
+\end{itemize}
+
 \section{Sámaras y robots inspirados en sámaras}\label{sec:literatura-samaras}
 Las sámaras demuestran que un rotor de paso fijo, muy fino y algo curvado arranca solo,
 se estabiliza solo y es poco sensible a perturbaciones. Las tres lecciones que se
@@ -472,12 +488,12 @@ fluctúa con fuerza.
         (\SIrange{0.23}{0.28}{m} de diámetro, frente a \SI{0.4}{m} aquí).
 \end{itemize}
 
-\paragraph{Consecuencia cuantitativa.} A \num{1150} rpm, 20 a 50 vueltas duran de
-\num{1.0} a \SI{2.6}{s}. Si el rotor cayera en anillo de vórtices, la carga del cubo
-podría oscilar con ese período. La estimación de diseño, $V_2/\vh=1{,}83$, ubica al rotor en
+\paragraph{Consecuencia cuantitativa.} A \num{1230} rpm, 20 a 50 vueltas duran de
+\num{1.0} a \SI{2.4}{s}. Si el rotor cayera en anillo de vórtices, la carga del cubo
+podría oscilar con ese período. La estimación de diseño (BEMT, versión~2), $V_2/\vh=2{,}04$, ubica al rotor en
 el estado de estela turbulenta, cerca de la autorrotación ideal. Queda fuera de la zona
 de fluctuaciones de Washizu ($V/\vh\le1{,}25$), con un margen de
-$0{,}58\,\vh\approx\SI{2}{m/s}$. Esta lectura coincide con los modelos del borde del anillo de vórtices de
+$0{,}79\,\vh\approx\SI{2.5}{m/s}$. Esta lectura coincide con los modelos del borde del anillo de vórtices de
 Leishman y colaboradores y de Johnson~\cite{leishman2004,johnson2005}. Por eso el
 arranque a velocidad alta (\SI{13.4}{m/s}, $V/\vh\approx3{,}8$) es favorable: el rotor
 entra desde el estado de molino y no desde el vuelo estacionario. Como $V/\vh=2/\sqrt{\CR}$
@@ -603,16 +619,21 @@ $V(1-a)\approx\SI{2.5}{m/s}$. El polinomio de Leishman da $a=0{,}98$, con flujo 
 casi nulo. El balance de energía con la estimación base de rpm pide un valor intermedio,
 $a\approx0{,}72$--$0{,}91$, con $\phi_{75}\approx\ang{2}$--\ang{6}. Con
 $\theta=\ang{-3}$ eso da $\alpha=\phi+\theta\approx\ang{-1}$ a \ang{3}, donde una placa
-con \SI{7}{\percent} de curvatura puede dar $C_l\approx0{,}9$. La estimación de
-\num{1150} rpm (ecuación~\eqref{eq:omega}) es entonces coherente, pero no la elige
-ninguna de las dos curvas. Cerrado con Buhl, el mismo rotor bajaría a
-\SIrange{5.5}{6.1}{m/s}; con Leishman, a \SIrange{6.5}{6.7}{m/s}. Ambos casos cumplen
+con \SI{7}{\percent} de curvatura puede dar $C_l\approx0{,}9$. La estimación base de
+rpm de la versión~1 (\num{1150}, ecuación~\eqref{eq:omega}; la BEMT da \num{1230}) es entonces coherente, pero no la elige
+ninguna de las dos curvas. Cerrado con Buhl, el mismo rotor ($R=\SI{0.25}{m}$, rotor solo) bajaría a
+\SI{5.7}{m/s}; con Leishman, a \SI{6.4}{m/s}. Ambos casos cumplen
 \Req{C4}; la diferencia, de casi \SI{1}{m/s}, es la incertidumbre de modelo que hoy
 tiene $\Vr$. Las mediciones de rpm (E2) y de $\CR$ (E3) deciden.
 \end{resultado}
 
 %=====================================================================
 \section{Paracaídas pequeños y drogue atado}\label{sec:literatura-paracaidas}
+\begin{nota}[Versión 2: el drogue se suelta]
+En la versión~2 el drogue se suelta antes de abrir el rotor, de modo que la interacción drogue--rotor que se discute en esta sección pasa de caso de diseño a
+\emph{modo de falla} (el drogue que no se suelta, capítulo~\ref{cap:arq}). Sigue sin haber antecedentes de la suelta de un drogue \emph{antes} de abrir un rotor autorrotante: el cálculo de caída libre y de arranque de los capítulos~\ref{cap:arq} y~\ref{cap:arranque} es propio.
+\end{nota}
+
 Para paracaídas pequeños los manuales dan $C_D\approx0{,}75$--$0{,}8$ para el
 paracaídas plano circular referido al área nominal~\cite{knacke1992}, y los ensayos
 advierten sobre dos fenómenos que la estimación cuasi estática ignora: la
@@ -686,9 +707,9 @@ no hay mediciones publicadas de un rotor como este.
 Placa de carbono curvada \SI{7}{\percent} & Laitone~\cite{literatura-laitone1997}, Bruining~\cite{literatura-bruining1979}, Pelletier y Mueller~\cite{pelletier2000}; Martiarena~\cite{literatura-martiarena2015}: la curvatura baja las rpm pero no cambia $C_{\mathrm{eq}}$ & B\\
 Paso $-2$ a \ang{-4}, sin control & Jung y Rezgui~\cite{literatura-jung2024}, Seter y Rosen~\cite{literatura-seter2014}, Marques~\cite{literatura-marques2024}; el Autobody~\cite{literatura-brindejonc2007} necesitó además $\delta_3$ y preconicidad & B/C\\
 $\CR=1{,}2$ para dimensionar & Castles y Gray~\cite{castles1951}, Leishman~\cite{leishman2006}; el Autobody sugiere margen~\cite{literatura-brindejonc2007}; el cierre de energía da 1,05 a 1,75 según la curva & B\\
-Bisagra, conicidad \ang{4.4} & Jung y Rezgui (conicidad \ang{5}--\ang{15})~\cite{literatura-jung2024}; teoría~\cite{johnson1980} & B\\
+Bisagra, conicidad \ang{4.2} & Jung y Rezgui (conicidad \ang{5}--\ang{15})~\cite{literatura-jung2024}; teoría~\cite{johnson1980} & B\\
 $B=4$, $\sigma=0{,}286$ & Veismann y col.~\cite{literatura-veismann2022} (paramétrico); sin dato directo & C\\
-Drogue atado & Ningún antecedente directo; manuales~\cite{knacke1992,literatura-scher1971} & C\\
+Drogue (atado o soltado antes del rotor) & Ningún antecedente directo; manuales~\cite{knacke1992,literatura-scher1971} & C\\
 Arranque a \SI{13.4}{m/s} & Estela turbulenta y anillo de vórtices~\cite{literatura-stack2005,literatura-shetty2011,leishman2004} & B\\
 Traba con servo & SwifTurk~\cite{literatura-swifturk2019} (un servo abre la tapa y libera las palas) & B\\
 Sensor Hall para rpm & CDR 2019~\cite{literatura-swifturk2019}, guía 2025~\cite{cansat2025} & B\\
@@ -717,8 +738,8 @@ previstos en el capítulo~\ref{cap:ensayos}, sin costo adicional relevante.
         pasivo~\cite{literatura-jain2022}, pero no del tiempo de arranque de un rotor
         de cuatro palas con bisagra soltado a \SI{13}{m/s}. La cámara cenit y el sensor
         Hall pueden medirlo.
-  \item \textbf{Drogue atado sobre un rotor.} No se encontró ningún estudio de esta
-        combinación. Un ensayo con y sin drogue (misma caída) separaría su aporte.
+  \item \textbf{Drogue sobre un rotor, atado o soltado antes de abrirlo.} No se encontró ningún estudio de esta
+        combinación. Un ensayo con y sin drogue (misma caída) separaría su aporte, y la secuencia de suelta (ensayo E7) mediría la caída libre y la nueva apertura.
 \end{enumerate}
 
 \begin{nota}[Límites de esta revisión]

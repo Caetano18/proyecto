@@ -22,15 +22,18 @@ import os
 import numpy as np
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+import json
+MODO_V2 = os.environ.get("CANSAT_CFG", "v1") == "v2"      # v2: rotor solo R = 0,25 m, drogue soltado, Ø90
+SUF = "_v2" if MODO_V2 else ""
 rng = np.random.default_rng(20261002)
 
 # ---------------------------------------------------------------------------
 # 1. Rendimiento aerodinámico: P(Vmedia_etapa2 > 8 m/s | rotor sano)
 # ---------------------------------------------------------------------------
 g = 9.80665
-A_R = np.pi * 0.200**2            # disco del rotor
+A_R = np.pi * (0.250 if MODO_V2 else 0.200)**2            # disco del rotor
 A_d = np.pi * 0.125**2            # drogue Ø 0,25 m
-A_c = np.pi * 0.0475**2           # cuerpo Ø 95 mm
+A_c = np.pi * (0.045 if MODO_V2 else 0.0475)**2           # cuerpo Ø 90 mm (v2) o Ø 95 mm (v1)
 CD_C = 0.8
 P_ATM = 101325.0
 R_AIRE = 287.05
@@ -38,13 +41,13 @@ R_AIRE = 287.05
 
 def muestras_entorno(n, rng):
     """Variables comunes: masa, densidad, Cd del drogue, apogeo, t de arranque."""
-    m = rng.uniform(0.490, 0.510, n)
+    m = rng.uniform(0.480, 0.500, n) if MODO_V2 else rng.uniform(0.490, 0.510, n)   # v2: masa de la etapa 2 (sin el drogue)
     T = rng.uniform(278.15, 308.15, n)         # 5 a 35 °C, sitio cercano al nivel del mar
     rho = P_ATM / (R_AIRE * T)
     cd_d = rng.uniform(0.75, 0.90, n)
     hmax = rng.uniform(500.0, 1000.0, n)
-    ts = rng.uniform(3.0, 6.0, n)              # arranque (cap. de dimensionamiento)
-    kd = rng.uniform(0.0, 1.0, n)              # fracción del arrastre del drogue que se conserva
+    ts = rng.uniform(1.0, 2.2, n) if MODO_V2 else rng.uniform(3.0, 6.0, n)   # arranque (v2: t90 del cap. de arranque, +-40 %)
+    kd = np.zeros(n) if MODO_V2 else rng.uniform(0.0, 1.0, n)              # fracción del arrastre del drogue que se conserva (v2: soltado)
     return m, rho, cd_d, hmax, ts, kd
 
 
@@ -63,49 +66,49 @@ N = 400_000
 m, rho, cd_d, hmax, ts, kd = muestras_entorno(N, rng)
 z = rng.standard_normal(N)                     # números aleatorios comunes para C_R
 
-mu_CR, sd_CR = 1.20, 0.10
+mu_CR, sd_CR = (0.963, 0.116) if MODO_V2 else (1.20, 0.10)
 CR = np.clip(mu_CR + sd_CR * z, 0.5, 2.0)
 Vm, V2, V1 = v_media_etapa2(CR, m, rho, cd_d, hmax, ts, kd)
 p_perf = float(np.mean(Vm > 8.0))
 p_perf_V2 = float(np.mean(V2 > 8.0))
 
 # Umbral de V2 estacionaria que lleva la media a 8 m/s (determinista, rho=1,225)
-def umbral_V2(hmax_, ts_, V1_=13.35):
+def umbral_V2(hmax_, ts_, V1_=13.44 if MODO_V2 else 13.35):
     hr = 0.8 * hmax_
     # hr / (ts + (hr - (V1+V2)/2 ts)/V2) = 8  ->  V2 (hr/8 - ts/2) = hr - V1 ts/2 ... resolver
     # hr/8 * V2 = ts V2 + hr - (V1+V2) ts/2 ->  V2 (hr/8 - ts/2) = hr - V1 ts/2
     return (hr - V1_ * ts_ / 2) / (hr / 8 - ts_ / 2)
 
-umbrales = {(h, t): umbral_V2(h, t) for h in (500, 700, 1000) for t in (3, 6)}
+umbrales = {(h, t): umbral_V2(h, t) for h in (500, 700, 1000) for t in ((1, 2) if MODO_V2 else (3, 6))}
 
 # Sensibilidad a la incertidumbre de C_R
 sig = np.round(np.arange(0.02, 0.2501, 0.01), 3)
 sens_rows = []
 for s in sig:
     row = [s]
-    for mu in (1.10, 1.20, 1.30):
+    for mu in ((0.85, 0.963, 1.10) if MODO_V2 else (1.10, 1.20, 1.30)):
         CRs = np.clip(mu + s * z, 0.3, 2.5)
         row.append(np.mean(v_media_etapa2(CRs, m, rho, cd_d, hmax, ts, kd)[0] > 8.0))
     # peor caso del drogue (kd = 0) con mu = 1,20
-    CRs = np.clip(1.20 + s * z, 0.3, 2.5)
+    CRs = np.clip((0.963 if MODO_V2 else 1.20) + s * z, 0.3, 2.5)
     row.append(np.mean(v_media_etapa2(CRs, m, rho, cd_d, hmax, ts, 0.0 * kd)[0] > 8.0))
     sens_rows.append(row)
 sens = np.array(sens_rows)
 # piso para graficar en escala logarítmica
 sens_plot = sens.copy()
 sens_plot[:, 1:] = np.maximum(sens_plot[:, 1:], 1e-5)
-np.savetxt(os.path.join(DATA, "confiabilidad_sens.dat"), sens_plot,
+np.savetxt(os.path.join(DATA, "confiabilidad_sens" + SUF + ".dat"), sens_plot,
            header="sigma P110 P120 P130 P120kd0", comments="", fmt="%.5g")
 
 # C_R mínimo (verdadero) con drogue sin aporte para P(Vm>8) <= 1 %
 def p_falla_CR_fijo(CRv, kdv=0.0):
     return np.mean(v_media_etapa2(CRv, m, rho, cd_d, hmax, ts, kdv)[0] > 8.0)
 
-CR_grid = np.arange(0.90, 1.30, 0.0025)
+CR_grid = np.arange(0.60 if MODO_V2 else 0.90, 1.30, 0.0025)
 pf_grid = np.array([p_falla_CR_fijo(c) for c in CR_grid])
 CR_min_1pc = float(CR_grid[np.argmax(pf_grid <= 0.01)])
 # V2 estacionaria (sin drogue) que deja P(Vm>8) <= 1 % frente a apogeo y arranque
-V2_grid = np.arange(7.0, 8.0, 0.005)
+V2_grid = np.arange(6.0 if MODO_V2 else 7.0, 8.0, 0.005)
 hr_ = 0.8 * hmax
 V1_ = np.sqrt(m * g / (0.5 * rho * (cd_d * A_d + CD_C * A_c)))
 pV = []
@@ -148,6 +151,12 @@ EB = {
     "x26": (0.3, 2),     # palas rotas al abrir a velocidad balística (condicional)
 }
 EB["x17"] = (round(p_perf, 4), 5)
+if MODO_V2:
+    EB["x13"] = (1e-3, 10)    # lazo o resto de cuerda del drogue en el plano del rotor tras soltarlo (ya no pasa por el eje)
+    EB["x27"] = (3e-3, 5)     # falsa ausencia de confirmación del giro del anillo: el drogue no se suelta (13 m/s)
+    _mc = json.load(open(os.path.join(DATA, "v2_resumen.json")))["mc"]["A1_R25"]
+    EB["x17"] = (round(1.0 - _mc["P_C4_global"], 4), 5)    # promedio de todo el descenso > 8 m/s (Arq. 1, R = 0,25)
+    P_REGIMEN = round(1.0 - _mc["P_C4_regimen"], 4)
 
 GATES = {
     "TOP1": ("OR", ["G1", "G2", "G3", "x17", "x18"]),
@@ -155,7 +164,7 @@ GATES = {
     "G11":  ("OR", ["x1", "x2", "x3", "G111"]),
     "G111": ("OR", ["G112", "x6"]),
     "G112": ("AND", ["x4", "x5"]),
-    "G12":  ("OR", ["x7", "x8", "x9"]),
+    "G12":  ("OR", ["x7", "x8", "x9"] + (["x27"] if MODO_V2 else [])),
     "G2":   ("OR", ["x11", "x12", "x13"]),
     "G3":   ("OR", ["x14", "x15", "x16"]),
     "GR":   ("OR", ["G1", "G2", "G3"]),           # el rotor no frena
@@ -267,13 +276,13 @@ Ps_post_x23["x23"] = np.minimum(Ps["x23"] * 0.5, 1.0)
 unc_post_x23 = float(np.mean(p_top("TOP2", Ps_post_x23)))
 q = np.linspace(0.005, 0.995, 199)
 idx = (q * (NS - 1)).astype(int)
-np.savetxt(os.path.join(DATA, "confiabilidad_cdf.dat"),
+np.savetxt(os.path.join(DATA, "confiabilidad_cdf" + SUF + ".dat"),
            np.column_stack([q, cdf_cols[0][idx], cdf_cols[1][idx]]),
            header="F P1 P2", comments="", fmt="%.5g")
 
 # Importancias para el gráfico de barras (TOP1 y TOP2, ordenadas por FV de TOP1)
 codes = sorted(EB, key=lambda e: -res["TOP1"]["imp"].get(e, {"FV": 0})["FV"])
-with open(os.path.join(DATA, "confiabilidad_eventos.dat"), "w") as f:
+with open(os.path.join(DATA, "confiabilidad_eventos" + SUF + ".dat"), "w") as f:
     f.write("n code P EF FV1 RAW1 FV2 RAW2\n")
     for i, e in enumerate(codes):
         i1 = res["TOP1"]["imp"].get(e, dict(FV=0, RAW=1))
@@ -281,18 +290,18 @@ with open(os.path.join(DATA, "confiabilidad_eventos.dat"), "w") as f:
         f.write(f"{i} {e} {EB[e][0]:.4g} {EB[e][1]} {i1['FV']:.4g} {i1['RAW']:.4g} "
                 f"{i2['FV']:.4g} {i2['RAW']:.4g}\n")
 top_fv = [e for e in codes if res["TOP1"]["imp"].get(e, {"FV": 0})["FV"] > 0][:12]
-with open(os.path.join(DATA, "confiabilidad_fv.dat"), "w") as f:
+with open(os.path.join(DATA, "confiabilidad_fv" + SUF + ".dat"), "w") as f:
     f.write("n code lab FV1 FV2\n")
     for i, e in enumerate(reversed(top_fv)):
         f.write(f"{i} {e} $x_{{{e[1:]}}}$ {res['TOP1']['imp'][e]['FV']:.4g} "
                 f"{res['TOP2']['imp'].get(e, dict(FV=0))['FV']:.4g}\n")
 top_fv2 = sorted([e for e in res["TOP2"]["imp"] if res["TOP2"]["imp"][e]["FV"] > 0.02],
                  key=lambda e: res["TOP2"]["imp"][e]["FV"])
-with open(os.path.join(DATA, "confiabilidad_fv2.dat"), "w") as f:
+with open(os.path.join(DATA, "confiabilidad_fv2" + SUF + ".dat"), "w") as f:
     f.write("n code lab FV2\n")
     for i, e in enumerate(top_fv2):
         f.write(f"{i} {e} $x_{{{e[1:]}}}$ {res['TOP2']['imp'][e]['FV']:.4g}\n")
-with open(os.path.join(DATA, "confiabilidad_cortes.dat"), "w") as f:
+with open(os.path.join(DATA, "confiabilidad_cortes" + SUF + ".dat"), "w") as f:
     f.write("top orden cut P\n")
     for top in ("TOP1", "TOP2"):
         for c, p in res[top]["cuts"]:
@@ -334,7 +343,7 @@ rbd = []
 for code, name, kw in configs:
     Q, bl = cadena(**kw)
     rbd.append((code, name, Q, bl))
-with open(os.path.join(DATA, "confiabilidad_rbd.dat"), "w") as f:
+with open(os.path.join(DATA, "confiabilidad_rbd" + SUF + ".dat"), "w") as f:
     f.write("conf Q alim orden traba palas arranque\n")
     for code, name, Q, bl in rbd:
         f.write(f"{code} {Q:.4g} " + " ".join(f"{bl[k]:.4g}" for k in
