@@ -4,8 +4,8 @@
 Confiabilidad del sistema de descenso de dos etapas (rotor libre + drogue).
 
 1. Probabilidad de que la etapa 2 no cumpla C4 con el rotor sano (evento x17),
-   por Monte Carlo sobre C_R, aporte del drogue, densidad, masa, apogeo y
-   duración del arranque.
+   por Monte Carlo sobre C_R, aporte del drogue, densidad, masa y duración del
+   arranque, con el apogeo fijo h_max = H_lib/0,8 (C4 libera al 80 % de la altitud máxima).
 2. Árboles de fallas: "la etapa 2 no cumple C4" (TOP1) y "pérdida del CanSat"
    (TOP2). Cortes mínimos (MOCUS), probabilidad exacta, cota de cortes mínimos,
    medidas de importancia (Fussell-Vesely, Birnbaum, RAW, RRW) y propagación de
@@ -16,6 +16,12 @@ Todas las probabilidades de eventos básicos son ESTIMACIONES DE INGENIERÍA por
 vuelo, para el diseño con las acciones del AMFE aplicadas y la campaña E1-E6
 aprobada. No son datos de campo.
 
+Altura: CANSAT_HLIB = altura de liberación del rotor [m] (por defecto 500, apogeo de diseño 625 m).
+Con el valor por defecto se regeneran los archivos que lee el documento; con otro valor (p. ej.
+CANSAT_HLIB=400, lectura alternativa «el apogeo es 500 m») las salidas llevan el sufijo _H<H_lib> y no
+pisan las del caso base. Modo v2 (CANSAT_CFG=v2): x17 sale de analysis/data/v2_resumen[_H<H_lib>].json
+(correr antes v2_descenso.py con la misma CANSAT_HLIB).
+
 Salida: analysis/data/confiabilidad_*.dat y un resumen por pantalla.
 """
 import os
@@ -24,7 +30,10 @@ import numpy as np
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 import json
 MODO_V2 = os.environ.get("CANSAT_CFG", "v1") == "v2"      # v2: rotor solo R = 0,25 m, drogue soltado, Ø90
-SUF = "_v2" if MODO_V2 else ""
+H_LIB = float(os.environ.get("CANSAT_HLIB", "500"))      # altura de liberación del rotor [m]
+HMAX = H_LIB / 0.8                                       # apogeo de diseño [m]: C4 libera al 80 % de la altitud máxima
+SUF_H = "" if H_LIB == 500.0 else "_H%g" % H_LIB         # sufijo del caso alternativo (igual que v2_descenso.py)
+SUF = ("_v2" if MODO_V2 else "") + SUF_H
 rng = np.random.default_rng(20261002)
 
 # ---------------------------------------------------------------------------
@@ -40,12 +49,13 @@ R_AIRE = 287.05
 
 
 def muestras_entorno(n, rng):
-    """Variables comunes: masa, densidad, Cd del drogue, apogeo, t de arranque."""
+    """Variables comunes: masa, densidad, Cd del drogue, apogeo (fijo), t de arranque."""
     m = rng.uniform(0.480, 0.500, n) if MODO_V2 else rng.uniform(0.490, 0.510, n)   # v2: masa de la etapa 2 (sin el drogue)
     T = rng.uniform(278.15, 308.15, n)         # 5 a 35 °C, sitio cercano al nivel del mar
     rho = P_ATM / (R_AIRE * T)
     cd_d = rng.uniform(0.75, 0.90, n)
-    hmax = rng.uniform(500.0, 1000.0, n)
+    _ = rng.uniform(500.0, 1000.0, n)          # se descarta (antes: apogeo U(500, 1000) m): no desplaza la secuencia aleatoria
+    hmax = np.full(n, HMAX)                    # apogeo fijo = H_lib/0,8
     ts = rng.uniform(1.0, 2.2, n) if MODO_V2 else rng.uniform(3.0, 6.0, n)   # arranque (v2: t90 del cap. de arranque, +-40 %)
     kd = np.zeros(n) if MODO_V2 else rng.uniform(0.0, 1.0, n)              # fracción del arrastre del drogue que se conserva (v2: soltado)
     return m, rho, cd_d, hmax, ts, kd
@@ -57,9 +67,9 @@ def v_media_etapa2(CR, m, rho, cd_d, hmax, ts, kd):
     V1 = np.sqrt(W / (q * (cd_d * A_d + CD_C * A_c)))
     V2 = np.sqrt(W / (q * (CR * A_R + kd * cd_d * A_d + CD_C * A_c)))
     hr = 0.8 * hmax
-    Vs = 0.5 * (V1 + V2)                       # velocidad media durante el arranque
+    Vs = 0.5 * (V1 + V2)                       # velocidad media durante el arranque (aproximación)
     t2 = ts + (hr - Vs * ts) / V2
-    return hr / t2, V2, V1
+    return hr / t2, V2, V1                     # promedio de la etapa 2 sola, V2 y V1
 
 
 N = 400_000
@@ -79,7 +89,15 @@ def umbral_V2(hmax_, ts_, V1_=13.44 if MODO_V2 else 13.35):
     # hr/8 * V2 = ts V2 + hr - (V1+V2) ts/2 ->  V2 (hr/8 - ts/2) = hr - V1 ts/2
     return (hr - V1_ * ts_ / 2) / (hr / 8 - ts_ / 2)
 
-umbrales = {(h, t): umbral_V2(h, t) for h in (500, 700, 1000) for t in ((1, 2) if MODO_V2 else (3, 6))}
+def umbral_V2_global(hmax_, ts_, V1_=13.44 if MODO_V2 else 13.35):
+    """V2 estacionaria con la que el promedio de TODO el descenso, hmax/(t1+t2) con t1 = 0,2 hmax/V1, vale 8 m/s."""
+    return (0.8 * hmax_ - V1_ * ts_ / 2) / (hmax_ / 8 - 0.2 * hmax_ / V1_ - ts_ / 2)
+
+
+# apogeos de interés: 625 m (liberación a 500 m, caso base) y 500 m (liberación a 400 m, alternativa)
+TS_UMB = (1.0, 1.55, 2.2) if MODO_V2 else (3, 6)
+umbrales = {(h, t): umbral_V2(h, t) for h in (500, 625) for t in TS_UMB}
+umbrales_g = {(h, t): umbral_V2_global(h, t) for h in (500, 625) for t in TS_UMB}
 
 # Sensibilidad a la incertidumbre de C_R
 sig = np.round(np.arange(0.02, 0.2501, 0.01), 3)
@@ -154,9 +172,12 @@ EB["x17"] = (round(p_perf, 4), 5)
 if MODO_V2:
     EB["x13"] = (1e-3, 10)    # lazo o resto de cuerda del drogue en el plano del rotor tras soltarlo (ya no pasa por el eje)
     EB["x27"] = (3e-3, 5)     # falsa ausencia de confirmación del giro del anillo: el drogue no se suelta (13 m/s)
-    _mc = json.load(open(os.path.join(DATA, "v2_resumen.json")))["mc"]["A1_R25"]
+    _mcs = json.load(open(os.path.join(DATA, "v2_resumen" + SUF_H + ".json")))["mc"]   # misma H_lib que esta corrida
+    _mc = _mcs["A1_R25"]
     EB["x17"] = (round(1.0 - _mc["P_C4_global"], 4), 5)    # promedio de todo el descenso > 8 m/s (Arq. 1, R = 0,25)
-    P_REGIMEN = round(1.0 - _mc["P_C4_regimen"], 4)
+    P_REGIMEN = round(1.0 - _mc["P_C4_regimen"], 4)         # lectura alternativa: velocidad de régimen de la etapa 2
+    X17_A2 = round(1.0 - _mcs["A2_R25"]["P_C4_global"], 4)  # Arquitectura 2 (promedio de todo el descenso)
+    X17_A2_REG = round(1.0 - _mcs["A2_R25"]["P_C4_regimen"], 4)
 
 GATES = {
     "TOP1": ("OR", ["G1", "G2", "G3", "x17", "x18"]),
@@ -354,16 +375,46 @@ with open(os.path.join(DATA, "confiabilidad_rbd" + SUF + ".dat"), "w") as f:
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     print("== Rendimiento (x17) ==")
-    print(f"C_R ~ N({mu_CR}, {sd_CR}); kd ~ U(0,1); T 5-35 C; hmax 500-1000 m; ts 3-6 s")
-    print(f"P(Vmedia2 > 8) = {p_perf:.4f}   P(V2 estac. > 8) = {p_perf_V2:.4f}")
+    print(f"H_lib = {H_LIB:.0f} m, hmax = {HMAX:.0f} m (salidas con sufijo '{SUF}')")
+    print(f"C_R ~ N({mu_CR}, {sd_CR}); " + ("kd = 0 (drogue soltado)" if MODO_V2 else "kd ~ U(0,1)") +
+          f"; T 5-35 C; hmax = {HMAX:.0f} m; ts {ts.min():.1f}-{ts.max():.1f} s")
+    print(f"P(Vmedia2 > 8) = {p_perf:.4f}   P(V2 estac. > 8) = {p_perf_V2:.4f}   "
+          f"error estándar = {np.sqrt(p_perf*(1-p_perf)/N):.2e}   cociente = {p_perf/p_perf_V2:.2f}")
     print(f"V2 media muestral = {np.mean(V2):.3f}, p95 = {np.percentile(V2,95):.3f}, "
           f"Vm p95 = {np.percentile(Vm,95):.3f}, V1 media = {np.mean(V1):.3f}")
     for k, v in umbrales.items():
-        print(f"  umbral V2 para media 8: hmax={k[0]} ts={k[1]} -> {v:.3f} m/s")
+        print(f"  umbral V2 para media 8 (etapa 2 sola): hmax={k[0]} ts={k[1]} -> {v:.3f} m/s")
+    for k, v in umbrales_g.items():
+        print(f"  umbral V2 para media 8 (todo el descenso): hmax={k[0]} ts={k[1]} -> {v:.3f} m/s")
     print(f"C_R mínimo verdadero (kd=0) para P<=1%: {CR_min_1pc:.3f}")
     print(f"V2 estacionaria máxima (a rho de vuelo) para P<=1%: {V2_max_1pc:.3f}")
     rho_min = P_ATM / (R_AIRE * 308.15)
-    print(f"rho_min = {rho_min:.4f}; factor sqrt(1.225/rho_min) = {np.sqrt(1.225/rho_min):.4f}")
+    print(f"rho_min = {rho_min:.4f}; factor sqrt(1.225/rho_min) = {np.sqrt(1.225/rho_min):.4f}; "
+          f"V2_max_1pc a rho=1,225: {V2_max_1pc * np.sqrt(rho_min / 1.225):.3f} m/s")
+    # C_R que da exactamente el umbral V2* (drogue soltado, k_d = 0), con la masa nominal de la etapa 2
+    M_NOM = 0.490 if MODO_V2 else 0.500
+    for etiqueta, f_umb in (("etapa 2 sola", umbral_V2), ("todo el descenso", umbral_V2_global)):
+        for hh in (625, 500):
+            for tt in TS_UMB:
+                vs = f_umb(hh, tt)
+                crs = [(M_NOM * g / (0.5 * rr * vs**2) - CD_C * A_c) / A_R for rr in (1.225, rho_min)]
+                print(f"  C_R para V2* ({etiqueta}; hmax={hh}, ts={tt}): rho=1,225 -> {crs[0]:.3f}; "
+                      f"rho={rho_min:.4f} (35 C) -> {crs[1]:.3f}")
+    # límite sin transitorio (ts = 0) para la lectura de todo el descenso: no depende de la altura
+    V1_ref = 13.44 if MODO_V2 else 13.35
+    print(f"  límite sin transitorio, todo el descenso: V2 <= {0.8 / (1 / 8 - 0.2 / V1_ref):.3f} m/s (V1 = {V1_ref})")
+    # caída sin ningún freno (x26, modo de emergencia): v = vt tanh(g t/vt); z = (vt^2/g) ln cosh(g t/vt)
+    vt = np.sqrt(2 * M_NOM * g / (1.225 * CD_C * A_c))
+    print(f"  caída sin freno: vt = {vt:.2f} m/s (cota); a 0,2 hmax = {0.2*HMAX:.0f} m bajo el apogeo: "
+          f"v = {vt*np.sqrt(1-np.exp(-2*g*0.2*HMAX/vt**2)):.1f} m/s, "
+          f"t = {vt/g*np.arccosh(np.exp(g*0.2*HMAX/vt**2)):.1f} s")
+    t25 = vt / g * np.arctanh(25 / vt)                       # modo de emergencia: 25 m/s y 2 s de confirmación
+    te = t25 + 2.0
+    ve, ze = vt * np.tanh(g * te / vt), vt**2 / g * np.log(np.cosh(g * te / vt))
+    vn = vt * np.sqrt(1 - np.exp(-2 * g * 0.2 * HMAX / vt**2))
+    print(f"    tiempo para 25 m/s: {t25:.2f} s; emergencia a t = {te:.2f} s: v = {ve:.1f} m/s, z = {ze:.1f} m bajo el apogeo, "
+          f"cargas {100*(ve/vt)**2:.0f} % de las de vt; liberación normal ({0.2*HMAX:.0f} m): cargas {100*(vn/vt)**2:.0f} %, "
+          f"el modo de emergencia gana {0.2*HMAX - ze:.0f} m")
     print("sens (sigma, P110, P120, P130, P120kd0):")
     for r in sens[::3]:
         print("   " + " ".join(f"{x:.4g}" for x in r))
@@ -383,6 +434,17 @@ if __name__ == "__main__":
         print(f"  incertidumbre: media {u['mean']:.3e}, p05 {u['p05']:.3e}, p50 {u['p50']:.3e}, p95 {u['p95']:.3e}")
     print(f"\n  medias con EF=3 en x13, x14, x17: TOP1 {unc_post['TOP1']:.4f}, TOP2 {unc_post['TOP2']:.4f}")
     print(f"  ídem y mediana de x23 = 5e-3: media de TOP2 {unc_post_x23:.4f}")
+    # P(T1) si la cadena de liberación fuera la configuración E: Q_E + G3 (x14-x16) + x17 + x18
+    Q_E = rbd[-1][2]
+    p_t1_E = 1 - (1 - Q_E) * (1 - gate_p["G3"]) * (1 - P0["x17"]) * (1 - P0["x18"])
+    print(f"  P(T1) con la configuración E (Q_E = {Q_E:.3e}): {p_t1_E:.4e}")
+    if MODO_V2:
+        print("\n== x17 de la versión 2 (de v2_resumen%s.json) ==" % SUF_H)
+        print(f"  x17 (A1, promedio de todo el descenso) = {P0['x17']:.4f}; (A1, régimen de la etapa 2) = {P_REGIMEN:.4f}; "
+              f"(A2, todo el descenso) = {X17_A2:.4f}; (A2, régimen) = {X17_A2_REG:.4f}")
+        for etiqueta, x in (("A1 régimen", P_REGIMEN), ("A2 todo el descenso", X17_A2), ("A2 régimen", X17_A2_REG)):
+            Pa = dict(P0); Pa["x17"] = x
+            print(f"  TOP1 con x17 = {x:.4f} ({etiqueta}): {p_top('TOP1', Pa):.4e}")
     print("\n== compuertas ==")
     for k, v in gate_p.items():
         print(f"  {k:5s} {v:.3e}")

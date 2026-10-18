@@ -19,6 +19,11 @@ elementos rígidos desplegados con radio <= 0,20 m como el rotor):
 Todos los coeficientes son ESTIMACIONES de bibliografía o de ingeniería;
 ninguno viene de ensayos propios (no se hicieron).
 
+Altura: CANSAT_HLIB = altura de liberación de la etapa 2 [m] (por defecto 500; apogeo de diseño
+H_lib/0,8 = 625 m). Solo fija la deriva horizontal del parapente (V_x/V_z * H_lib, resumen por
+pantalla); los archivos de datos no dependen de la altura, así que con CANSAT_HLIB distinto de 500
+(p. ej. 400, lectura alternativa «el apogeo es 500 m») no se reescribe ninguno.
+
 Salida: analysis/data/decision_*.dat y un resumen por pantalla.
 """
 import os
@@ -49,7 +54,7 @@ R_MAX = 0.250 if MODO_V2 else 0.200                  # radio máximo de elemento
 A_R = np.pi * R_MAX**2
 V_OBJ = 5.0
 V_MIN, V_MAX = 2.0, 8.0
-H_LIB = 0.8 * 700.0            # liberación al 80 % de un apogeo de 700 m
+H_LIB = float(os.environ.get("CANSAT_HLIB", "500"))   # altura de liberación de la etapa 2 [m] = 80 % del apogeo (625 m)
 
 
 def v_desc(cda_total, w=W, rho=RHO):
@@ -65,7 +70,7 @@ CDA_DISP = CDA_5 - K_DRO - K_CUE    # lo que debe aportar el sistema de etapa 2
 def comunes(n):
     """Variables comunes: masa, densidad, Cd del drogue y fracción de su aporte."""
     m = rng.uniform(0.490, 0.510, n)
-    rho = rng.uniform(1.10, 1.25, n)       # 0-700 m, 5-30 °C
+    rho = rng.uniform(1.10, 1.25, n)       # 0-625 m, 5-30 °C (rango conservado; ver rho_isa en el resumen)
     cdd = rng.uniform(0.75, 0.85, n)
     f = np.zeros(n) if MODO_V2 else rng.uniform(0.0, 1.0, n)           # drogue en la estela: 0 = sin aporte (v2: soltado)
     return m * G, rho, cdd * A_DRO * f + K_CUE
@@ -288,16 +293,21 @@ def histogramas(res):
 if __name__ == "__main__":
     os.makedirs(DATA, exist_ok=True)
     res = resumen()
-    curvas_tamano()
-    histogramas(res)
-    with open(os.path.join(DATA, "decision_alternativas" + SUF + ".dat"), "w") as fh:
-        fh.write("idx alt Vmed Vp5 Vp95 errlo errhi Pin Err masa vol piezas ang\n")
-        for i, a in enumerate(ALT):
-            r = res[a]
-            fh.write(f"{i} {a} {r['vmed']:.3f} {r['p5']:.3f} {r['p95']:.3f} "
-                     f"{r['vmed']-r['p5']:.3f} {r['p95']-r['vmed']:.3f} "
-                     f"{r['pin']:.4f} {r['err']:.3f} {MASA[i]:.1f} {VOL[i]:.0f} "
-                     f"{PIEZAS[i]} {ANG[i]}\n")
+    if H_LIB == 500.0:                      # nada de lo que se escribe depende de la altura: solo el caso base
+        curvas_tamano()
+        histogramas(res)
+        with open(os.path.join(DATA, "decision_alternativas" + SUF + ".dat"), "w") as fh:
+            fh.write("idx alt Vmed Vp5 Vp95 errlo errhi Pin Err masa vol piezas ang\n")
+            for i, a in enumerate(ALT):
+                r = res[a]
+                fh.write(f"{i} {a} {r['vmed']:.3f} {r['p5']:.3f} {r['p95']:.3f} "
+                         f"{r['vmed']-r['p5']:.3f} {r['p95']-r['vmed']:.3f} "
+                         f"{r['pin']:.4f} {r['err']:.3f} {MASA[i]:.1f} {VOL[i]:.0f} "
+                         f"{PIEZAS[i]} {ANG[i]}\n")
+    def rho_isa(h, T):
+        return 101325.0 * (1 - 2.25577e-5 * h)**5.25588 / (287.05 * T)
+    print(f"H_lib = {H_LIB:.0f} m (apogeo {H_LIB/0.8:.0f} m); rho ISA: 0 m y 5 C = {rho_isa(0, 278.15):.3f}, "
+          f"{H_LIB/0.8:.0f} m y 30 C = {rho_isa(H_LIB/0.8, 303.15):.3f}, {H_LIB:.0f} m y 30 C = {rho_isa(H_LIB, 303.15):.3f} kg/m3")
     print(f"CdA para 5 m/s = {CDA_5:.4f} m2; a aportar por etapa 2 = {CDA_DISP:.4f} m2")
     print(f"(a) S0 = {S0_PAR:.4f} m2, D0 = {D0_PAR:.3f} m, masa = {m_par:.1f} g, vol = {vol_par:.0f} cm3")
     print(f"(b) S = {S_PP:.4f} m2, vz = {VZ_PP:.2f}, vx = {VX_PP:.2f} m/s, deriva en {H_LIB:.0f} m = "

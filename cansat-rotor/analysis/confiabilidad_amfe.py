@@ -11,6 +11,11 @@ AMFE (análisis de modos de falla y efectos) del sistema de descenso.
   argumento y un resumen numérico en analysis/data/confiabilidad_amfe.dat.
 
 Valores: estimaciones del equipo antes de los ensayos.
+
+Correr con las mismas variables de entorno que la corrida base de confiabilidad_fta.py (modo v1,
+CANSAT_HLIB=500): al importar EB se vuelve a ejecutar ese script. Con la altura de liberación de 500 m
+(o 400 m) x17 queda en (5e-3, 1e-2] y todas las O' son las mismas. No corre en modo v2 (x17 = 0,14 hace
+fallar el assert de M32).
 """
 import os
 import sys
@@ -78,7 +83,7 @@ M = [
   5, 2, 2, None),
  ("M11", "E", "Radio", "pérdida del enlace",
   "telemetría incompleta (\\Req{C5}); sin comando manual", 7, 5, 4,
-  "ensayo de alcance a \\SI{1.5}{km}; registro en SD",
+  "ensayo de alcance del enlace (sección~\\ref{sec:electronica-rf}); registro en SD",
   7, 4, 3, None),
  # ---------------- Traba
  ("M12", "T", "Servo MG90S", "no gira (motor, engranaje roto, cable cortado)",

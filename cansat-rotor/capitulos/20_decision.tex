@@ -36,7 +36,16 @@ caer entre 2 y \SI{8}{m/s} son:
 \end{center}
 
 El autogiro gana margen (\SI{7.0}{} a \SI{6.6}{m/s}) y ya no depende del aporte incierto del drogue, pero sigue siendo más lento que el
-paracaídas en cumplir \Req{C4}: lo que decide su elección sigue siendo el valor técnico, como en la versión~1. El resto del capítulo se conserva como método y como
+paracaídas en cumplir \Req{C4}: lo que decide su elección sigue siendo el valor técnico, como en la versión~1.
+
+La columna $P(2\text{--}8)$ y el resto del capítulo leen \Req{C4} sobre la velocidad de régimen de la etapa~2. Con el promedio de todo
+el descenso (sección~\ref{sec:dim-prom}) y el apogeo de diseño de \SI{625}{m} (liberación a \SI{500}{m}, sección~\ref{sec:dim-tiempos}),
+$V_2$ debe ser menor que \SI{7.19}{m/s}, con el arranque (capítulo~\ref{cap:confiabilidad}). Con ese límite el autogiro de la Arquitectura~1
+cumple en el \SI{86}{\percent} de los casos (sección~\ref{sec:arq-mc}); el paracaídas, con \SI{5.5}{m/s} en el percentil~95, queda muy por
+debajo. No se rehizo el AHP con ese límite. En la versión~2 el parapente se queda sin drogue: con $S=\SI{0.068}{m^2}$ avanza a \SI{11.8}{m/s} y deriva
+unos \SI{1180}{m} desde la liberación, contra unos \SI{640}{m} con el drogue atado (sección~\ref{sec:decision-pp}).
+
+El resto del capítulo se conserva como método y como
 registro de la decisión de partida; los nuevos criterios de la versión~2 (separación del contenedor, energía, pines) están en los capítulos~\ref{cap:arq} y~\ref{cap:sensores}.
 \end{nota}
 
@@ -76,8 +85,8 @@ un elemento rígido no.
 
 \paragraph{Incertidumbre.} Cada velocidad se propaga por Monte Carlo
 ($2\times10^5$ muestras) con distribuciones uniformes comunes: masa
-\SIrange{490}{510}{g}, densidad \SIrange{1.10}{1.25}{kg/m^3} (casi todo el rango de \SIrange{0}{700}{m} y
-\SIrange{5}{30}{\celsius}, que va de \SIrange{1.07}{1.27}{kg/m^3}), $C_{D,d}$ entre $0{,}75$ y $0{,}85$, y $f$ entre 0 y 1. A eso
+\SIrange{490}{510}{g}, densidad \SIrange{1.10}{1.25}{kg/m^3} (casi todo el rango de \SIrange{0}{625}{m} y
+\SIrange{5}{30}{\celsius}, que va de \SIrange{1.08}{1.27}{kg/m^3}), $C_{D,d}$ entre $0{,}75$ y $0{,}85$, y $f$ entre 0 y 1. A eso
 se suma la incertidumbre propia de cada alternativa (tabla~\ref{tab:decision-cuant}).
 
 \begin{figure}[H]
@@ -165,7 +174,7 @@ funcional del \SI{3}{\percent} por vuelo, dominada por el enredo.
 
 \subsection{(b) Parapente pequeño}\label{sec:decision-pp}
 Un ala inflada por presión dinámica (\emph{ram-air}) baja a \SI{5}{m/s} con
-\SI{0.15}{m^2}, pero deriva unos \SI{720}{m} sin viento. En planeo estacionario la fuerza
+\SI{0.15}{m^2}, pero deriva unos \SI{640}{m} sin viento. En planeo estacionario la fuerza
 aerodinámica total equilibra el peso. Con el drogue y el cuerpo arrastrados por la misma
 línea, la resistencia es $D=\tfrac12\rho V^2(C_DS+k)$, con $k=C_{D,d}A_d+C_{D,c}A_c$, y
 \begin{equation}
@@ -177,9 +186,9 @@ línea, la resistencia es $D=\tfrac12\rho V^2(C_DS+k)$, con $k=C_{D,d}A_d+C_{D,c
 Con $C_L=0{,}65$ y $C_D=0{,}20$ (ala chica de baja relación de aspecto, con
 líneas~\cite{decision-lingard1995}), $V_z=\SI{5}{m/s}$ exige $S=\SI{0.147}{m^2}$. El
 drogue arrastrado baja la fineza efectiva de $3{,}2$ a $1{,}28$: la velocidad horizontal
-propia es \SI{6.4}{m/s}. Desde una liberación a \SI{560}{m} (80\,\% de un apogeo de
-\SI{700}{m}) eso son \SI{720}{m} de deriva, sumados a los del viento. Sin el drogue
-bastaría $S=\SI{0.071}{m^2}$, pero la deriva crece a \SI{1300}{m}.
+propia es \SI{6.4}{m/s}. Desde la liberación a \SI{500}{m} eso son \SI{640}{m} de deriva
+($V_x/V_z\,H=1{,}28\times\SI{500}{m}$), sumados a los del viento. Sin el drogue
+bastaría $S=\SI{0.071}{m^2}$, pero la deriva crece a \SI{1160}{m}.
 
 El ala tiene unos \SI{48}{g} (tela con celdas $\approx2{,}6\,S$, 16 líneas) y ocupa
 \SI{97}{cm^3} plegada. A esta escala la apertura de un ala con celdas es poco
@@ -202,7 +211,7 @@ El cuerpo no gira con el rotor, pero el par de fricción de los rodamientos lo h
 despacio en guiñada. Sin datos, se estima una velocidad angular de unos
 \SI{25}{\degree/s}, que la IMU medirá en los ensayos (\Req{SN5}). La probabilidad de falla
 funcional (no arranca, traba, palas) se toma en \SI{4}{\percent}, coherente con el
-\SI{3.3}{\percent} de no cumplir \Req{C4} del capítulo~\ref{cap:confiabilidad}.
+\SI{3.4}{\percent} de no cumplir \Req{C4} del capítulo~\ref{cap:confiabilidad}.
 
 \subsection{(d) Monocóptero tipo sámara}\label{sec:decision-mono}
 Una sola pala da \SI{7.1}{m/s} nominal, pero hace girar todo el CanSat a
@@ -879,7 +888,8 @@ riesgo bajo ($W_2\lesssim0{,}15$, $W_7\approx0{,}05$--$0{,}2$), donde gana el pa
 objetivo del equipo es solo aprobar la misión con el menor riesgo (escenario
 \emph{seguridad primero}); (2) si los ensayos muestran $P_{F,c}$ por encima de
 \SIrange{3.5}{7}{\percent}; (3) si las caídas muestran velocidades medias de la etapa~2
-por encima de unos \SI{7.5}{m/s}, que dejan sin margen a \Req{C4}; y (4) si el calendario
+por encima de unos \SI{7.5}{m/s}, que dejan sin margen a \Req{C4} leído sobre la etapa~2 sola (con el promedio
+de todo el descenso el límite baja a \SI{7.19}{m/s}, recuadro inicial); y (4) si el calendario
 no deja tiempo para la campaña de ensayos del rotor. En cualquiera de esos casos, el
 análisis respalda cambiar sin dudar.
 
@@ -898,7 +908,7 @@ costo si se mantiene el paracaídas de Ø\,\SI{0.67}{m} como \textbf{plan~B}: pe
 \SI{50}{g}, que entran en el lastre de la configuración~A (\SI{83}{g}), y usa la misma
 traba con servo. El punto de decisión es la campaña de caídas: el autogiro sigue si
 alcanza al menos 15 arranques seguidos sin falla y una velocidad media de la etapa~2 de
-\SI{7.5}{m/s} o menos. Con 15 éxitos en 15 intentos, el límite superior de
+\SI{7.5}{m/s} o menos (misma lectura). Con 15 éxitos en 15 intentos, el límite superior de
 $P_{F}$ al \SI{60}{\percent} de confianza es $1-0{,}4^{1/15}\approx\SI{6}{\percent}$, justo
 bajo el umbral de la figura~\ref{fig:decision-umbral} con los pesos de la misión técnica.
 Es una evidencia débil: al \SI{90}{\percent} de confianza el mismo resultado solo asegura

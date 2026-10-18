@@ -9,16 +9,39 @@ Cd = cd0 + k Cl^2 (ajuste a XFOIL placa 7 %).
 Uso del modelo: SOLO derivadas relativas (dOmega/ds, track, fuerza 1P). Los valores
 absolutos de Omega dependen del modelo de flujo y no reemplazan a los del cap. 5.
 
+Configuración: variable de entorno CANSAT_CFG (igual que v2_config.py).
+  v2 (por defecto): R = 0,25 m (pala de 206 mm), rotor solo; empuje T = 4,681 N del equilibrio
+     BEMT con m2 = 0,49 kg y R = 0,25 m (analysis/data/v2_resumen.json, 'mapa'); pala completa
+     de 9,5 g (cap. 5, tab. de masa: 4 palas con portapala = 38 g): portapala 2,0 g a e + 10 mm
+     y 7,5 g uniformes entre e y R (placa y pestaña 6,4 g, varilla 1,1 g del cap. 15).
+  v1: R = 0,20 m, T = 3,779 N, pala de 7,4 g (placa de 5,4 g uniforme + portapala de 2 g, sin
+     varilla). Reproduce la versión anterior y escribe en los mismos archivos.
+
 Salidas: analysis/data/fabricacion_camber.dat, fabricacion_pitch.dat,
          fabricacion_track.dat, fabricacion_trackpitch.dat, y resumen por stdout.
 """
 import os
+import json
 import numpy as np
 from scipy.optimize import fsolve
 
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-rho, B, c, R, e, r0 = 1.225, 4, 0.045, 0.200, 0.044, 0.064
-Treq = 3.779
+V1 = (os.environ.get('CANSAT_CFG', 'v2') == 'v1')
+rho, B, c, e, r0 = 1.225, 4, 0.045, 0.044, 0.064
+if V1:
+    R, Treq = 0.200, 3.779
+    V2_REF = 6.4                          # velocidad de caída de la versión 1 [m/s]
+    mp, mr = 5.4e-3, 2.0e-3               # placa uniforme (e..R) y portapala (a e + 10 mm)
+else:
+    R = 0.250
+    Treq, V2_REF = 4.681, 6.357           # respaldo si falta v2_resumen.json
+    try:
+        for x in json.load(open(os.path.join(D, 'v2_resumen.json')))['mapa']:
+            if abs(x['R'] - R) < 1e-9 and abs(x['m2'] - 0.49) < 1e-9:
+                Treq, V2_REF = x['T'], x['V2']
+    except (OSError, KeyError, ValueError):
+        pass
+    mp, mr = 7.5e-3, 2.0e-3               # pala completa de 9,5 g: 7,5 g uniformes + portapala
 fc0, th0 = 0.07, np.radians(-3.0)
 a = 2*np.pi*0.80            # pendiente de sustentación [1/rad] (baja Re, placa delgada)
 Clmax = 1.30
@@ -71,8 +94,8 @@ def solve(fc, th, eta, x0=(150., 1.0)):
         raise RuntimeError(msg)
     return sol
 
-# masa de pala: placa 5,4 g uniforme e..R + 2 g de portapala a e+10 mm
-mp, mr, rr = 5.4e-3, 2.0e-3, e + 0.010
+# masa de pala: masa uniforme e..R (mp) + portapala (mr) a e+10 mm
+rr = e + 0.010
 rb = np.linspace(e, R, 400)
 Sb = np.trapezoid(mp/(R-e)*rb*(rb-e), rb) + mr*rr*(rr-e)        # int m r (r-e)
 mb = mp + mr
@@ -151,8 +174,11 @@ np.savetxt(os.path.join(D, 'fabricacion_trackpitch.dat'), rows4, fmt='%.5f',
 # ------------------------------------------------------------- resumen
 print(f'dCl/d(f/c) XFOIL por Re 35/50/75: {[round(x,2) for x in dcl]} -> media {dcl_xf:.2f}'
       f' (TAT: {2*a:.2f}); eta_xf = {eta_xf:.3f}')
+print(f'Configuración {"v1" if V1 else "v2"}: R = {R} m, T = {Treq:.3f} N, B = {B}')
 print(f'Ajuste Cd = {cd0:.4f} + {kcd:.4f} Cl^2')
 print(f'Masa de pala {1e3*mb:.2f} g, r_g = {1e3*rg:.1f} mm, S_beta = {Sb:.3e} kg m2')
+vh = np.sqrt(Treq/(2*rho*np.pi*R**2))
+print(f'v_h = {vh:.2f} m/s; V/v_h = {V2_REF/vh:.2f} con V = {V2_REF:.2f} m/s')
 for lab in out:
     Om, u = out[lab]
     dL, dTz, dFt, phi, cl = loads(Om, u, fc0, th0, dict(CASES)[lab])
