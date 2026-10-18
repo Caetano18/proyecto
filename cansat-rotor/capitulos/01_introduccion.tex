@@ -27,8 +27,8 @@ Esta es la segunda versión del documento. La primera suponía un rotor de $R\le
 un drogue atado a lo largo del vuelo y un CanSat de Ø\,95. El anexo cambió y el equipo aclaró
 dos libertades de diseño (sección~\ref{sec:arq-cambios}), de modo que los modelos de los
 capítulos de aerodinámica, arranque, estabilidad y estructura se recalcularon con los datos
-nuevos; los planos de los capítulos~\ref{cap:planos} y~\ref{cap:planos-conjunto} conservan la
-geometría anterior y llevan un aviso.
+nuevos. Los planos 1 a 3 del capítulo~\ref{cap:planos} se redibujaron para la Arquitectura~1; los
+planos 4 a 8 y los del capítulo~\ref{cap:planos-conjunto} conservan la geometría anterior y llevan un aviso.
 
 \section{Por qué un rotor}
 Un paracaídas cumple \Req{C4} con menos riesgo, y queda como plan~B. El rotor se elige
@@ -69,7 +69,8 @@ Además del anexo, el equipo fijó (versión 2):
 Se usa el Sistema Internacional. Aire estándar al nivel del mar (referencia de diseño; el
 capítulo~\ref{cap:arq} varía la altitud del sitio y la temperatura):
 $\rho=\SI{1.225}{kg/m^3}$, $\nu=\SI{1.5e-5}{m^2/s}$, $g=\SI{9.81}{m/s^2}$. La masa de
-diseño es $m_1=\SI{0.500}{kg}$ ($W_1=\SI{4.905}{N}$) en la etapa~1 y $m_2=\SI{0.490}{kg}$ en la etapa~2 (sin el drogue soltado). Las velocidades de descenso se dan en
+diseño es $m_1=\SI{0.500}{kg}$ ($W_1=\SI{4.905}{N}$) en la etapa~1 y $m_2=\SI{0.490}{kg}$ en la etapa~2 de la Arquitectura~1 (sin el drogue soltado; en la
+Arquitectura~2, $m_2\approx\SI{0.36}{kg}$, también sin el contenedor). Las velocidades de descenso se dan en
 módulo. Los colores de los planos tienen significado fijo:
 \textcolor{cfijo}{\textbf{azul}} partes fijas al CanSat,
 \textcolor{crot}{\textbf{naranja}} partes que giran,
@@ -82,6 +83,7 @@ Altura de diseño: el equipo estima la liberación del segundo sistema a \SI{500
 alternativa (apogeo de \SI{500}{m}, liberación a \SI{400}{m}) se trata como sensibilidad
 (sección~\ref{sec:dim-tiempos}).
 
-Todos los valores numéricos salen del script \texttt{calculos.py}
+Los valores del dimensionamiento base salen del script \texttt{calculos.py}
 (apéndice~\ref{ap:script}), que acompaña a este documento y puede volver a ejecutarse si
-cambia algún dato.
+cambia algún dato; los de los estudios posteriores (BEMT, arranque, estabilidad, estructura,
+sensibilidad, sensores, confiabilidad) salen de los scripts de la carpeta \texttt{analysis/}.

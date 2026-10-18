@@ -16,7 +16,7 @@ capítulo~\ref{cap:sensores}). «Arq.~1» es el cuerpo impreso con las palas por
 \bottomrule
 \endfoot
 \Req{C1}, \Req{C2} & El drogue se abre solo con la salida del cohete, sin orden del software & Cumple (diseño)\\
-\Req{C3} & Drogue Ø\,\SI{25}{cm}: \SIrange{12.7}{13.7}{m/s} para $C_D$ entre 0,9 y 0,75 & Cumple (cálculo)\\
+\Req{C3} & Drogue Ø\,\SI{25}{cm}: \SIrange{12.7}{13.8}{m/s} para $C_D$ entre 0,9 y 0,75 & Cumple (cálculo)\\
 \Req{C4} & Rotor solo, $R=\SI{0.25}{m}$: $V_2=\SI{6.4}{m/s}$ (BEMT), promedio de todo el descenso \SI{7.1}{m/s} (Arq.~1) o \SI{6.2}{m/s} (Arq.~2); probabilidad de cumplir el promedio: \SI{86}{\percent} y \SI{99.8}{\percent} (Monte Carlo con apogeo de \SI{625}{m}, sección~\ref{sec:dim-tiempos}) & A validar (E2--E4)\\
 \Req{C5}, \Req{X4} & Telemetría binaria de unos \SI{56}{B} a \SI{1}{Hz}; el control usa 50\,Hz internamente & Cumple (radio a validar)\\
 \Req{C6}, \Req{C7}, \Req{SN6}, \Req{SN7} & Cámara cenit fuera del eje (palas y drogue), cámara nadir abajo; color, SVGA; grabación en segmentos de \SI{10}{s} & A validar (ensayo de 2\,h)\\
@@ -36,8 +36,8 @@ capítulo~\ref{cap:sensores}). «Arq.~1» es el cuerpo impreso con las palas por
 \Req{E1}, \Req{E2} & Celda 18650 Li-ion; se descartan las cámaras con batería LiPo interna & Cumple\\
 \Req{E3}, \Req{X6} & Panel de $120\times\SI{60}{mm}$ en una entrada analógica; estado de batería con INA219 & Cumple\\
 \Req{E4}--\Req{E6} & Orificios de \SI{8}{mm} en los huecos entre palas; LED de encendido & Cumple\\
-\Req{E7} & Una celda: \SI{2.3}{h} con todo encendido (\SI{53}{\percent} de probabilidad de bajar de 2\,h); \SI{8.6}{h} con las cámaras encendidas al despegar & Riesgo: medir cámaras\\
-\Req{X1}--\Req{X3} & LoRa en \SIrange{915}{928}{MHz}, paquetes con dirección; separación detectada por la luz del panel y la IMU; margen $>\SI{27}{dB}$ & A validar (banco, alcance)\\
+\Req{E7} & Una celda, en plataforma: \SI{2.3}{h} con todo encendido (\SI{53}{\percent} de probabilidad de bajar de 2\,h); \SI{8.6}{h} con las cámaras encendidas al despegar & Riesgo: medir cámaras\\
+\Req{X1}--\Req{X3} & LoRa en \SIrange{915}{928}{MHz}, paquetes con dirección; separación detectada por la luz del panel y la IMU, que envía una vez el comando automático de \Req{X3}; margen $>\SI{27}{dB}$ & A validar (banco, alcance)\\
 \Req{X5} & Telemetría completa con altitud, presión, temperatura, aceleraciones, rotaciones y GPS & Cumple\\
 \Req{SN1}--\Req{SN5}, \Req{SN8} & BMP280, AHT20, INA219 (shunt de \SI{20}{m\ohm}), NEO-7M, MPU6050 & Cumple\\
 \Req{F1}, \Req{F2}, \Req{F5} & FRAM con doble copia y CRC, RTC con pila & Cumple con la modificación\\

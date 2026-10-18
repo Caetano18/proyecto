@@ -22,8 +22,8 @@ sensores, comunicaciones y energía se tratan en el capítulo~\ref{cap:sensores}
 \Req{C5} & Telemetría a \SI{1}{Hz}. & La liberación no puede depender de la telemetría: el control lee el barómetro a 20--50\,Hz.\\
 \Req{C6}, \Req{C7} & Video de todo el descenso, hacia el cenit y hacia el nadir, que muestre la activación de los sistemas de descenso. & Cámara cenit fuera del eje, que vea palas y drogue; cámara nadir en el fondo.\\
 \Req{C8} & Baliza audible que se enciende por separado, independiente de la batería y la electrónica. & Pila propia en el fondo de la carga útil.\\
-\Req{C9} & Costo del CanSat menor a \$\,1\,000\,000. & Cumple con holgura (cap.~\ref{cap:sensores}).\\
-\Req{S1} & Masa de CanSat y contenedor: \SI{500 \pm 10}{g}. & Presupuesto de masa (\S\ref{sec:masa}); rotor completo $\le\SI{65}{g}$.\\
+\Req{C9} & Costo del CanSat menor a \$\,1\,000\,000. & Cumple en el escenario central; el total con rotor y traba depende del tipo de cambio (caps.~\ref{cap:sensores} y~\ref{cap:fabricacion}).\\
+\Req{S1} & Masa de CanSat y contenedor: \SI{500 \pm 10}{g}. & Presupuesto de masa (\S\ref{sec:masa}); rotor completo (palas y cabeza) $\approx\SI{71}{g}$.\\
 \Req{S2} & Diámetro del CanSat: \SI{90}{mm} (antes \SI{95}{mm}). & Palas plegadas dentro de Ø\,90 (\S\ref{sec:plegado}); cuerpo impreso de Ø\,81.\\
 \Req{S3} & Largo total, incluidos los sistemas de descenso: \SIrange{200}{250}{mm}. & Palas de \SI{206}{mm} plegadas a lo largo del cuerpo.\\
 \Req{S4}, \Req{S5} & Soportar vibraciones de 15\,G y un choque de 30\,G. & Traba positiva de las palas; pasadores de acero (\S\ref{sec:cargas}).\\
@@ -37,7 +37,7 @@ sensores, comunicaciones y energía se tratan en el capítulo~\ref{cap:sensores}
 \Req{E1}, \Req{E2} & Sin LiPo; litio solo en carcasa metálica (18650); se permiten pilas de botón. & Batería 18650 Li-ion; excluye cámaras con LiPo interna.\\
 \Req{E3} & Paneles solares que emiten una señal al recibir radiación. & Panel en una zona libre del cuerpo; su señal también sirve para detectar la separación.\\
 \Req{E4}--\Req{E6}, \Req{E9} & Interruptores de encendido accesibles a través del contenedor (orificios $\le\SI{10}{mm}$) e indicador de encendido. & Orificios de \SI{8}{mm} entre palas.\\
-\Req{E7} & Funcionar al menos dos horas integrado en el cohete. & Presupuesto de energía; cámaras al despegar o segunda celda (\S\ref{sec:sens-bat}).\\
+\Req{E7} & Funcionar al menos dos horas integrado en el cohete. & Presupuesto de energía; cámaras encendidas al despegar, porque una segunda celda 18650 no es viable por masa (\S\ref{sec:sens-bat}).\\
 \Req{X1}--\Req{X4} & Radios en 915--\SI{928}{MHz} o 2400--\SI{2483.5}{MHz}, sin difusión; comando automático al separarse del cohete; 1\,Hz. & LoRa a 915\,MHz; la separación se detecta con la luz del panel y la IMU (\S\ref{sec:sens-faltan}).\\
 \Req{X5}, \Req{X6} & Telemetría con altitud, presión, temperatura, aceleraciones y \emph{rotaciones} en tres ejes y GPS; estado de batería y señal del panel por telecomando. & MPU6050 aporta el giroscopio; INA219 y entrada analógica del panel.\\
 \Req{SN1}--\Req{SN8} & Altitud por presión, temperatura, tensión y corriente de batería, GPS, aceleración y rotación, video en color de al menos $640\times480$. & Selección y justificación en el capítulo~\ref{cap:sensores}.\\
@@ -64,7 +64,7 @@ se asignan al rotor, y en el capítulo~\ref{cap:arq} el estado adicional de suel
 \begin{nota}[Interpretación de C4]
 El anexo pide un \emph{promedio} de \SI{5}{m/s} durante todo el descenso, con margen de
 $\pm\SI{3}{m/s}$. Este documento adopta la lectura más exigente: el promedio se calcula
-sobre el descenso completo desde el apogeo, con el 20\,\% inicial a la velocidad del drogue
+sobre el descenso completo desde el apogeo, con el 20\,\% inicial de la altura a la velocidad del drogue
 y el 80\,\% restante con el rotor (ecuación~\ref{eq:promedio}); exige $V_2\le\SI{7.3}{m/s}$.
 Con la liberación estimada a \SI{500}{m} (apogeo de \SI{625}{m}) el promedio no cambia: solo
 cambian los tiempos (sección~\ref{sec:dim-tiempos}). Si la organización lo mide solo desde la liberación del segundo sistema, el criterio es

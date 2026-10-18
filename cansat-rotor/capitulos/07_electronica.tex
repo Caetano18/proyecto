@@ -13,7 +13,7 @@ rotor gira y los datos que lo documentan.
   \node[caja, minimum width=28mm] (baro) at (-5.2,1.7) {Barómetro \footnotesize 50\,Hz};
   \node[caja, minimum width=28mm] (imu)  at (-5.2,0)   {IMU \footnotesize acel. y giro};
   \node[caja, minimum width=28mm] (gps)  at (-5.2,-1.7) {GPS};
-  \node[caja, minimum width=28mm, draw=cfreno, fill=cfreno!8] (servo) at (5.2,1.7) {Servo de traba \footnotesize \ang{15}};
+  \node[caja, minimum width=28mm, draw=cfreno, fill=cfreno!8] (servo) at (5.2,1.7) {Servos MG90S\\ \footnotesize anillo \ang{15} y pasador};
   \node[caja, minimum width=28mm] (radio) at (5.2,0) {Radio (\Req{X1})};
   \node[caja, minimum width=28mm] (sd) at (5.2,-1.7) {SD y FRAM (\Req{F5})};
   \node[caja, minimum width=28mm] (hall) at (0,-2.6) {Sensor hall \footnotesize rpm};
@@ -39,8 +39,8 @@ alimentación con el resto (\Req{C8}).}
 \section{Máquina de estados}\label{sec:estados}
 Se usan los estados de la telemetría del anexo~\cite{anexo}. Se propone emplear
 \texttt{PROBE\_RELEASE} para la orden de liberación del rotor y \texttt{PAYLOAD\_RELEASE}
-para la confirmación de que el rotor gira; esta asignación conviene confirmarla con la
-organización.
+para la confirmación de que el rotor gira; como el anexo~A v2 deja los estados y la trama a
+criterio del equipo (tabla~\ref{tab:arq-cambios}), esta asignación es una decisión del equipo.
 
 \begin{figure}[H]
 \centering
@@ -81,7 +81,7 @@ cambian; la suelta se registra en dos campos opcionales de la trama, \texttt{LAT
 cuerda no se mide: queda la lectura del pasador y la caída libre en la IMU (aceleración
 cercana a cero durante \SIrange{0.2}{0.3}{s}).
 
-\section{Detección del 80\,\% de la altitud}
+\section{Detección del \texorpdfstring{80\,\%}{80 \%} de la altitud}
 \begin{itemize}
   \item La altitud sale del barómetro (\Req{SN1}), leído a \SI{50}{Hz} y filtrado (media
         móvil exponencial o filtro de Kalman de dos estados: altura y velocidad). La
@@ -127,6 +127,8 @@ void control_descenso(void) {
   }
 }
 \end{lstlisting}
+El pseudocódigo muestra un solo servo; en la versión~2 la orden \texttt{LIBERAR} pasa por la
+secuencia de la sección~\ref{sec:elec-suelta} (anillo, confirmación y pasador).
 Cada espera de giro gasta altura de la etapa 2. Con los \SI{5}{s} del pseudocódigo, un
 intento recorre de \SI{32}{m} (a \SI{6.4}{m/s}) a \SI{67}{m} (a \SI{13.4}{m/s}); con los dos
 reintentos (\SI{15}{s}) son \SIrange{96}{201}{m}, del 19 al 40\,\% de los \SI{500}{m} que
@@ -137,11 +139,14 @@ de \SI{51}{m} a \SI{107}{m} cada uno.
 \begin{itemize}
   \item \textbf{Campos opcionales}: después de los obligatorios y de las dos comas que
         indica el anexo, se agregan \texttt{ROTOR\_RPM} y \texttt{LATCH} (0 trabado,
-        1 liberado). Así los jueces ven en el archivo CSV el momento exacto de la
+        1 liberado) y, en la versión~2, \texttt{DROGUE} (0 atado, 1 soltado). Así los jueces ven en el archivo CSV el momento exacto de la
         liberación y el arranque del rotor.
   \item \textbf{Comando \texttt{MEC}}: \texttt{CMD,<TEAM\_ID>,MEC,LATCH,ON} libera y
         \texttt{\ldots,OFF} traba. Sirve para probar el mecanismo en tierra y para armar
         el CanSat antes de cargarlo en el cohete.
+  \item \textbf{Separación (\Req{X3})}: el comando automático al separarse del cohete lo
+        dispara la primera de dos señales, la luz que recibe el panel solar o el pulso de la
+        carga de expulsión seguido de caída libre en la IMU (sección~\ref{sec:sens-faltan}).
   \item \textbf{Giro del cuerpo}: el giróscopo (\Req{SN5}) registra cuánto gira el
         cuerpo por el rozamiento de los rodamientos; es un dato útil para la revisión
         posterior al vuelo.
@@ -151,7 +156,7 @@ de \SI{51}{m} a \SI{107}{m} cada uno.
 La cámara cenit (\Req{C6}) va fuera del eje, en un hueco entre palas, inclinada \ang{15}
 hacia afuera: ve el drogue durante la etapa 1, hasta soltarlo (unos \SI{9}{s} de los
 \SIrange{88}{101}{s} del descenso, tabla~\ref{tab:tiempos}), y las palas al abrirse y girar. A
-\SI{1150}{rpm} pasan $4\times1150/60\approx77$ palas por segundo; con una cámara de
+\SI{1230}{rpm} (régimen de la Arquitectura~1) pasan $4\times1230/60\approx82$ palas por segundo; con una cámara de
 \SI{30}{fps} el rotor se ve casi quieto o girando lento (efecto estroboscópico), lo que
 documenta bien el funcionamiento. La cámara nadir (\Req{C7}) graba el suelo desde la tapa
 inferior. Ambas en color y con al menos $640\times480$ (\Req{SN7}).

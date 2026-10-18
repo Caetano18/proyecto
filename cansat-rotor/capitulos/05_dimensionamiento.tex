@@ -150,7 +150,8 @@ Rotor muy bueno                 & 1,3 & 5,49 & 4,71 & 5,17\\
 rotor solo, $\Vr=\SI{6.4}{m/s}$ (círculo). Con $R=\SI{0.20}{m}$ (cuadrado) el rotor solo da
 \SI{7.85}{m/s}, que supera el límite de $\langle V\rangle\le\SI{8}{m/s}$ si se lee el
 promedio sobre todo el descenso (sección~\ref{sec:dim-prom}). Llegar a \SI{5}{m/s}
-exactos pediría $R\approx\SI{0.29}{m}$.}
+exactos con $m_2=\SI{0.49}{kg}$ pediría $R\approx\SI{0.32}{m}$ con $\CR=0{,}96$ (BEMT) y
+$R\approx\SI{0.29}{m}$ con $\CR=1{,}2$ (estimación simple).}
 \label{fig:VR}
 \end{figure}
 
@@ -291,7 +292,7 @@ contenedor, sin pared impresa (\Req{S6} no aplica), y pueden tener espesor de pe
 \section{Batimiento y conicidad}\label{sec:dim-batimiento}
 Con $L=T/B=\SI{1.17}{N}$ por pala aplicada a $0{,}75R$, el brazo respecto de la bisagra es
 $0{,}75R-e=\SI{0.144}{m}$ y $M_L=\SI{0.168}{N.m}$; el peso de la pala aporta
-$M_W=\SI{0.009}{N.m}$. Con $m_b=\SI{9.0}{g}$, $I_b=\SI{1.0e-4}{kg.m^2}$ y
+$M_W=\SI{0.007}{N.m}$ ($S_b g$, con $S_b=\SI{7.5e-4}{kg.m}$). Con $m_b=\SI{9.0}{g}$, $I_b=\SI{1.0e-4}{kg.m^2}$ y
 $\Omega=\SI{128.7}{rad/s}$ (cap.~\ref{cap:estructura}), la conicidad de equilibrio
 por~\eqref{eq:conicidad} es $\beta_0\approx\ang{4.2}$ (\ang{3.6} con BV). El número de
 Lock~\eqref{eq:lock} es $\gamma\approx12{,}6$ y la frecuencia de
@@ -341,7 +342,7 @@ el margen es amplio.
 \begin{tabularx}{\textwidth}{@{}lcY@{}}
 \toprule
 \textbf{Carga} & \textbf{Valor} & \textbf{Verificación}\\\midrule
-Fuerza centrífuga por pala ($m_b r_g\Omega^2$) & \SI{18.9}{N} (\SI{30.2}{N} en el sobrepaso del arranque) & Pasador de acero Ø\,2 en doble corte: $\tau=\SIrange{3.0}{4.8}{MPa}$, frente a $\approx\SI{300}{MPa}$\\
+Fuerza centrífuga por pala ($m_b r_g\Omega^2$) & \SI{18.9}{N} (\SI{30.2}{N} en el sobrepaso del arranque) & Pasador de acero Ø\,3 en doble corte: $\tau=\SIrange{1.3}{2.1}{MPa}$, frente a $\approx\SI{200}{MPa}$; el golpe contra el tope manda en flexión (cap.~\ref{cap:estructura})\\
 Sustentación total & \SI{4.68}{N} & Rodamientos 688ZZ: capacidad dinámica del orden de \SI{1}{kN}; vida ilimitada\\
 Momento en la raíz (tope en el arranque) & $\le\SI{0.17}{N.m}$ & Carbono \SI{0.5}{mm}, $45\times0{,}5^2/6=\SI{1.9}{mm^3}$: \SI{91}{MPa} frente a $\approx\SI{500}{MPa}$; reforzar raíz con portapala de \SIrange{15}{20}{mm}\\
 Desbalance \SI{0.1}{g} a \SI{0.12}{m} & \SI{0.20}{N} & Aceptable (4\,\% del peso)\\
@@ -399,7 +400,7 @@ la Arq.~1 y \SI{5.47}{m/s} en la 2; se desprecia el arranque). Las dos primeras 
 \centering\small
 \caption{Presupuesto de masa de abajo hacia arriba, con la electrónica real del equipo
 (\SI{177}{g} de la planilla, más los cambios de los capítulos de sensores y de integración). El lastre ajusta el total a \SI{500}{g}.}\label{tab:masa}
-\begin{tabular}{@{}lrr@{}}
+\begin{tabularx}{\textwidth}{@{}Yrr@{}}
 \toprule
 \textbf{Componente} & \textbf{Arq.~1} [g] & \textbf{Arq.~2} [g]\\\midrule
 Cuerpo PETG Ø\,81, pared \SI{2}{mm}, \SI{205}{mm}          & 130 & ---\\
@@ -421,7 +422,7 @@ Lastre (abajo; en la Arq.~2, dentro del contenedor)        & 3 & 45\\
 \textbf{Total frente a \SI{500 \pm 10}{g}}                 & \textbf{500} & \textbf{500}\\
 \textbf{Masa en la etapa 2, $m_2$}                         & \textbf{490} & \textbf{352}\\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 La planilla del equipo declara 177~g de electrónica como el \SI{28.4}{\percent} del peso
@@ -447,7 +448,7 @@ $m_2=\SI{0.36}{kg}$ ($\pm\SI{0.015}{kg}$) para la Arquitectura~2, que cubre este
 \caption{Distribución del largo (Arquitectura~1, medido desde el fondo). Con $R=\SI{0.25}{m}$ las
 palas (\SI{206}{mm}) cuelgan desde las bisagras a \SI{231}{mm} hasta \SI{25}{mm}, y la copa
 del drogue se aplana a Ø\,75 $\times$ \SI{10}{mm}.}\label{tab:largo}
-\begin{tabular}{@{}lcc@{}}
+\begin{tabularx}{\textwidth}{@{}Ycc@{}}
 \toprule
 \textbf{Tramo} & \textbf{Desde--hasta} [mm] & \textbf{Largo} [mm]\\\midrule
 Anillo amortiguador (espuma), cámara nadir y bolsillos de las 4 aletas & 0--25 & 25\\
@@ -459,7 +460,7 @@ Cubo del rotor (bisagras a \SI{231}{mm}) & 225--240 & 15\\
 Copa aplanada del drogue (Ø\,75) & 240--250 & 10\\\midrule
 \textbf{Total} & & \textbf{250}\\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 Con la pala de \SI{206}{mm} el largo queda en el límite de \Req{S3}: no hay reserva. La
@@ -495,7 +496,7 @@ a 3,3~V) la conversión doble tiene un rendimiento de $\approx0{,}77$. Con la ce
 \begin{itemize}
   \item con todo encendido desde la rampa, el consumo de la batería es \SI{4.8}{W} y la
         autonomía \SI{2.3}{h}: \textbf{no cumple con margen} \Req{E7} (2\,h); la simulación
-        de sensibilidad da un \SI{53}{\percent} de probabilidad de bajar de 2\,h
+        de sensibilidad da un \SI{54}{\percent} de probabilidad de bajar de 2\,h
         (capítulo~\ref{cap:sens});
   \item con las cámaras apagadas hasta detectar el lanzamiento, \SI{1.3}{W} y
         \SI{8.6}{h} en la rampa (hasta \SI{12}{h} si la radio solo transmite a \SI{1}{Hz}).

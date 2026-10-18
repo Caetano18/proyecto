@@ -202,7 +202,7 @@ aceleración frente a \Req{S5}: el choque de \SI{30}{G} y el pulso de la carga d
 superan los $\pm\SI{16}{g}$ del MPU6050. (2)~El rango del giroscopio frente al giro del cuerpo: sin
 aletas antigiro el cuerpo llegaría a \SI{770}{rpm} ($\approx\SI{4600}{\degree/s}$) al final de la
 etapa~2 (sección~\ref{sec:estabilidad-giro}), por encima de los \SI{2000}{\degree/s} del MPU6050; con las
-cuatro aletas el giro baja a \SI{2.4}{rad/s}, y el rango sobra. (3)~La IMU puede dar una
+cuatro aletas de $40\times\SI{25}{mm}$ el giro baja a \SI{2.8}{rad/s} como máximo (sin calaje), y el rango sobra. (3)~La IMU puede dar una
 \emph{segunda medida de las rpm del rotor}: la vibración a $4\times$ la frecuencia de giro
 (\SI{82}{Hz} a \SI{1229}{rpm}) se ve en el acelerómetro del cuerpo si se muestrea a \SI{1}{kHz},
 como control cruzado del sensor Hall.
@@ -272,8 +272,10 @@ campo oscila en el magnetómetro.}\label{tab:sens-iman}
 \end{table}
 
 Con un imán de Ø\,6$\times$\SI{2}{mm} los errores a 100, 150 y \SI{200}{mm} serían de 36, 10 y
-\SI{4}{\degree}. Hay que alejar el magnetómetro del cubo al menos \SI{150}{mm} (el extremo
-inferior del cuerpo, donde está la electrónica), usar el imán más chico que active al Hall y
+\SI{4}{\degree}. Hay que alejar el magnetómetro del cubo al menos \SI{150}{mm}: con los imanes frente al
+sensor Hall de la tapa ($z\approx\SI{225}{mm}$, tabla~\ref{tab:largo}), eso es por debajo de
+$z\approx\SI{75}{mm}$, en la parte baja del cuerpo y no en la pila de PCB (de \SIrange{125}{215}{mm}, a
+\SIrange{10}{100}{mm} de los imanes). Además hay que usar el imán más chico que active al Hall y
 calibrar el magnetómetro \emph{ya montado} (hierro duro y blando), porque los servos y los
 inductores de los conversores también lo perturban.
 
@@ -687,7 +689,7 @@ no grabar si falla la detección del despegue. El empate se rompe por la masa y 
   \item La segunda celda da margen de sobra pero pesa \SI{48}{g}. En la Arq.~1 el lastre era de
         \SI{33}{g}; con los cambios de este capítulo (\SI{+16}{g}), la corrección de la cabeza del rotor
         (\SI{+7}{g}) y las aletas (\SI{+7}{g}) queda en \SI{3}{g}, y con la segunda celda faltarían
-        \SI{45}{g} (\SI{98}{\percent} de probabilidad de pasarse de los \SI{510}{g} de \Req{S1}).
+        \SI{45}{g} (\SI{98}{\percent} de probabilidad de lastre negativo, o sea de no cerrar los \SI{500 \pm 10}{g} de \Req{S1} sin quitar masa).
         Aun con un panel de \SI{8}{g} el sobrepeso sigue en el \SI{85}{\percent} (sección~\ref{sec:arq-integracion}).
         Por eso la segunda celda no es viable en la Arq.~1. En la Arq.~2 el lastre extra viaja en el
         contenedor y se suelta, pero la masa que vuela aumenta.

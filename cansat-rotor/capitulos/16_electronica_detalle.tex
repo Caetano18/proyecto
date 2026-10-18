@@ -41,16 +41,24 @@ reconfiguración del capítulo~\ref{cap:arq} cambian varias conclusiones, que va
         \Req{E7}; con las cámaras encendidas al despegar, \SI{8.6}{h} (capítulos~\ref{cap:sens} y~\ref{cap:sensores}).
   \item \textbf{Radio:} el equipo usa un LR2021 (LoRa); el enlace con LoRa y su tiempo en el aire están en la
         sección~\ref{sec:sens-radio}. Con el mismo método de este capítulo, el margen a \SI{2}{km} es de
-        \SIrange{49}{63}{dB} y de \SI{27.8}{dB} en el nulo de la antena (SF7), y el alcance sobre el suelo, de
+        \SIrange{49.5}{63.5}{dB} y de \SI{27.8}{dB} en el nulo de la antena (SF7), y el alcance sobre el suelo, de
         \SIrange{1.8}{4.0}{km}.
   \item \textbf{Barómetro:} el equipo tiene un BMP280 (deriva térmica $\pm\SI{1.5}{Pa/K}$ y ruido por medir), no el
         MS5611 con que se sintonizó el filtro (\SI{0.10}{m}); hay que medir su ruido y reajustar la sintonía.
   \item \textbf{Microcontrolador:} la ESP32-C3 no tiene los 19 pines necesarios; se propone un RP2040
         (sección~\ref{sec:sens-mcu}). El mapa I$^2$C y los módulos nuevos (FRAM, RTC, Hall) están en la
         sección~\ref{sec:sens-sintesis}.
-  \item \textbf{Servo:} el MG90S de este capítulo es el propuesto también por el capítulo~\ref{cap:sensores}.
+  \item \textbf{Servos:} el MG90S de este capítulo es el propuesto también por el capítulo~\ref{cap:sensores}. La
+        versión~2 lleva dos (anillo de traba y pasador del drogue, sección~\ref{sec:elec-suelta}); el esquemático y el
+        arnés de este capítulo dibujan solo el del anillo. El del pasador, en la copa del drogue, usa otra salida PWM
+        (tabla~\ref{tab:sens-pines}) y debe llevar el mismo tratamiento: conector con traba y PWM fijado antes de
+        energizar su riel.
+  \item \textbf{Trama y estados:} el anexo~A v2 los deja a criterio del equipo (tabla~\ref{tab:arq-cambios}). Lo que
+        este capítulo dice de los campos obligatorios del anexo, de las unidades de \texttt{ACCEL} y de la longitud, y
+        de los comandos opcionales parte del formato anterior; la trama binaria propuesta para LoRa está en la
+        sección~\ref{sec:sens-radio}.
   \item \textbf{Suelta del drogue y separación (\Req{X3}):} la secuencia de la sección~\ref{sec:elec-suelta} se
-        agrega a la lógica de liberación; la separación se detecta con la luz del panel y la IMU.
+        agrega a la lógica de liberación; la separación se detecta con la luz del panel y la IMU (sección~\ref{sec:sens-faltan}).
 \end{itemize}
 \end{nota}
 
@@ -169,7 +177,7 @@ salida a colector abierto.}
 \begin{itemize}
   \item \textbf{Celda}: 18650 de envase metálico (\Req{E1}, \Req{E2}) con lengüetas
         soldadas y cuna impresa con precinto. \Req{M4} prohíbe los contactos de resorte,
-        así que el «portapila» de la tabla~\ref{tab:masa} no puede ser uno de resorte.
+        así que el portapila de la 18650 no puede ser uno de resorte (la tabla~\ref{tab:masa} ya no lo lista aparte).
   \item \textbf{Buck-boost para la lógica}: con el servo bloqueado la tensión de la celda cae
         hasta \SI{2.8}{V} (sección~\ref{sec:electronica-pot}). Un regulador lineal de
         \SI{3.3}{V}, que necesita $\gtrsim\SI{3.5}{V}$ de entrada, podría reiniciar el
@@ -181,7 +189,7 @@ salida a colector abierto.}
         lentamente.
   \item \textbf{Sensor hall}: va en la tapa superior fija, frente a dos imanes opuestos en
         el cubo (dos imanes mantienen el balance). No hace falta un anillo rozante. A
-        \SI{1150}{rpm} da \SI{38}{Hz} (período de \SI{26}{ms}). El filtro RC tiene
+        \SI{1230}{rpm} (Arquitectura~1) da \SI{41}{Hz} (período de \SI{24}{ms}). El filtro RC tiene
         \SI{10}{\micro s} en el flanco de bajada y \SI{0.11}{ms} en el de subida (a través
         del pull-up de \SI{10}{k\ohm}); ambos son despreciables frente al período.
   \item \textbf{Hora de misión}: un RTC con pila de botón (permitida por \Req{E2}) sigue
@@ -706,7 +714,7 @@ debe confirmarse.
 los menores de \SI{4}{ms} (rebotes). El lazo toma la mediana de los tres últimos períodos,
 que elimina un pulso perdido o uno espurio, y la suaviza. El rotor se declara detenido si no
 llega un pulso en $\max(\SI{0.5}{s},\,3T)$, con tope de \SI{1.5}{s}. Con
-\texttt{micros()} la resolución es de \SI{1}{\micro s} sobre \SI{26}{ms}.
+\texttt{micros()} la resolución es de \SI{1}{\micro s} sobre \SI{24}{ms}.
 
 \lstinputlisting[language=C++, firstline=133, lastline=156, firstnumber=133,
   caption={Medición de rpm (extracto de \texttt{electronica\_firmware.cpp}).},
@@ -725,8 +733,10 @@ inyecta reinicios. Los resultados:
   \item Las transiciones coinciden con el modelo en Python: \texttt{ASCENT} a
         \SI{5.08}{s}, \texttt{APOGEE} a \SI{16.70}{s} y liberación a \SI{26.34}{s}
         (\SI{26.36}{s} en Python).
-  \item \texttt{PAYLOAD\_RELEASE} llega \SI{1.92}{s} después de liberar. Como el arranque
-        real puede tardar \SIrange{3}{6}{s} (capítulo~\ref{cap:dim}), la espera antes del
+  \item \texttt{PAYLOAD\_RELEASE} llega \SI{1.92}{s} después de liberar. El arranque
+        tarda \SI{1.6}{s} hasta el \SI{90}{\percent} de las rpm en la simulación del
+        capítulo~\ref{cap:arranque}, y de 2 a \SI{4}{s} con el par medio simple del
+        capítulo~\ref{cap:dim}; como el ensayo real puede ser más lento, la espera antes del
         reintento es de \SI{8}{s}, no de \SI{5}{s}.
   \item El rotor detenido en el suelo se informa \SI{0.5}{s} después; un \texttt{CAL} en
         vuelo y un comando con otro número de equipo se rechazan.

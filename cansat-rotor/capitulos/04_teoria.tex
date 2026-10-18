@@ -21,7 +21,7 @@ problema se reduce a conocer $\CR$, lo que desarrollan las secciones siguientes.
 
 En la versión~2 el drogue se suelta antes de abrir el rotor. Hay entonces dos equilibrios. En la
 etapa~1 solo actúan el drogue y el cuerpo ($\CR A_R=0$, masa $m_1$); en la etapa~2 actúan el rotor y el cuerpo ($A_d=0$,
-masa $m_2<m_1$ por el drogue soltado):
+masa $m_2<m_1$ por el drogue soltado y, en la Arquitectura~2, por el contenedor):
 \begin{equation}
   V_1=\sqrt{\dfrac{2 m_1 g}{\rho\left(C_{D,d} A_d + C_{D,c} A_c\right)}},\qquad
   V_2=\sqrt{\dfrac{2 m_2 g}{\rho\left(\CR A_R + C_{D,c} A_c\right)}}.
@@ -98,7 +98,7 @@ modelo de elemento de pala independiente.}
   % punto de operación
   \addplot[only marks, mark=*, mark size=3pt, cfreno] coordinates {(-1.826,1.808)};
   \node[cfreno, font=\footnotesize, anchor=west, align=left, fill=white, inner sep=1pt] at (axis cs:-1.1,3.05)
-     {Punto de diseño\\ $V/\vh=1{,}83$, $\CR\approx1{,}2$};
+     {Estimación simple\\ $V/\vh=1{,}83$, $\CR\approx1{,}2$\\ (la BEMT da $2{,}04$ y $0{,}96$)};
   \draw[cfreno, -{Latex}] (axis cs:-1.1,2.95) -- (axis cs:-1.78,1.88);
   % rótulos de zonas
   \node[font=\scriptsize, align=center, cfijo] at (axis cs:-3.0,0.3) {Molino\\ frenante};
@@ -196,21 +196,21 @@ pequeño y la sección es arrastrada~\cite{leishman2006}.
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.65mm, y=1mm]
-  \fill[cfreno!25] (44,0) rectangle (75,8);
-  \fill[ccuerda!30] (75,0) rectangle (150,8);
-  \fill[cfijo!20] (150,0) rectangle (200,8);
-  \draw (0,0) rectangle (200,8);
+\begin{tikzpicture}[x=0.52mm, y=1mm]
+  \fill[cfreno!25] (44,0) rectangle (77,8);
+  \fill[ccuerda!30] (77,0) rectangle (187.5,8);
+  \fill[cfijo!20] (187.5,0) rectangle (250,8);
+  \draw (0,0) rectangle (250,8);
   \fill[ffijo] (0,0) rectangle (44,8);
   \node[font=\scriptsize] at (22,4) {cubo + bisagra};
-  \node[font=\scriptsize] at (59.5,4) {pérdida};
-  \node[font=\scriptsize] at (112.5,4) {impulsora ($dQ>0$)};
-  \node[font=\scriptsize] at (175,4) {impulsada ($dQ<0$)};
-  \foreach \r/\l in {0/0,44/e,100/0{,}5R,150/0{,}75R,200/R}{
+  \node[font=\scriptsize] at (60.5,4) {pérdida};
+  \node[font=\scriptsize] at (132.25,4) {impulsora ($dQ>0$)};
+  \node[font=\scriptsize] at (218.75,4) {impulsada ($dQ<0$)};
+  \foreach \r/\l in {0/0,44/e,125/0{,}5R,187.5/0{,}75R,250/R}{
      \draw (\r,0) -- (\r,-1.5) node[below, font=\scriptsize] {$\l$};}
 \end{tikzpicture}
-\caption{Zonas típicas de una pala en autorrotación vertical (posiciones indicativas; la
-frontera exacta depende del paso y del perfil).}
+\caption{Zonas típicas de una pala en autorrotación vertical (posiciones indicativas, dibujadas
+para $R=\SI{250}{mm}$ y $e=\SI{44}{mm}$; la frontera exacta depende del paso y del perfil).}
 \label{fig:zonas}
 \end{figure}
 

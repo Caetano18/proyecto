@@ -25,7 +25,7 @@ de su cara cóncava a un radio rho del eje, tiene el borde exterior a
     r = sqrt((rho - s + t)^2 + (c/2)^2)                       (cap. 23, ec. arq-rborde)
 con margen m = R_ENV - r. El modelo de la versión 1 (arco exacto, parametrizado con el
 radio de la cara exterior en el centro de la cuerda, rmo = rho + t) describe la misma
-geometría y da un borde 0,02 mm mayor (se imprime como verificación); para la v2 se usa la
+geometría y da un borde 0,03 mm mayor (se imprime como verificación); para la v2 se usa la
 expresión del capítulo 23 para que esta cadena y v2_tol_env.py den los mismos números
 (misma semilla y mismo orden de sorteo).
 """
@@ -277,7 +277,7 @@ else:
 
 # ---------------------------------------------------------------- C. traba
 # Radial (solo para insertar sin forzar): ojal de 1,70 con alambre Ø1,00 -> 0,35 por lado.
-# Posición radial del ojal: radio de la pala (cadena B, 0,19 RSS), plegado de la
+# Posición radial del ojal: radio de la pala (cadena B, 0,18 RSS), plegado de la
 # pestaña (0,15), ojal respecto del pliegue (0,05, punzonado con plantilla),
 # radio del alambre en el anillo (0,10), excentricidad/juego del anillo en su asiento (0,15).
 # Corrección de la revisión: el peor caso usa la suma lineal de la cadena de posición

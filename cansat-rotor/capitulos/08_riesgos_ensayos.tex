@@ -15,18 +15,18 @@ ensayos y se actualizan con cada resultado.
 \endhead
 \bottomrule
 \endfoot
-El rotor no arranca & Caída a $\approx\SI{13}{m/s}$; falla \Req{C4} & 9 & 4 & 4 & 144 & Paso $\le\ang{-2}$ (tabla~\ref{tab:arranque}); ensayo E2 de 10 arranques; reintento del servo\\
+El rotor no arranca & Rotor parado, sin drogue: caída a $\approx\SI{14}{m/s}$; falla \Req{C4} & 9 & 4 & 4 & 144 & Paso $\le\ang{-2}$ (tabla~\ref{tab:arranque}); ensayo E2 de 10 arranques; reintento del servo\\
 Archivo de video cortado por una caída de tensión & Se pierde el registro de \Req{C6}, \Req{C7} & 5 & 4 & 5 & 100 & Grabar en segmentos de \SI{10}{s}; ensayo de 2\,h con corte forzado (cap.~\ref{cap:sensores})\\
 Servo de plástico pierde dientes por el choque & La traba o el pasador se mueven (\Req{M3}) & 8 & 3 & 4 & 96 & Servo MG90S con engranajes metálicos; E5 con carga en el eje\\
 La traba no suelta & Rotor no se despliega & 9 & 3 & 3 & 81 & Servo con engranajes metálicos; 20 liberaciones en E1; reintento automático\\
-El drogue no se suelta & Con el anillo girado, caída a \SI{5.8}{m/s} (cumple); sin confirmación, a \SI{13}{m/s} & 5 & 3 & 3 & 45 & Secuencia con enclavamiento y reintentos (cap.~\ref{cap:arq}); E4 mide con y sin drogue\\
 Liberación prematura & Etapa 1 corta; \Req{C4} dudoso & 7 & 2 & 5 & 70 & Solo en \texttt{DESCENT}; $h_{\max}$ en FRAM; filtro de 50\,Hz\\
 Palas que se abren en el ascenso & Daño, despliegue fuera de tiempo & 8 & 2 & 4 & 64 & Traba positiva; espuma detrás de las palas; E5 vibración\\
-Autonomía menor a 2\,h (\Req{E7}) & Falla \Req{E7}; el CanSat se apaga en la rampa & 6 & 5 & 2 & 60 & Medir la corriente de las cámaras; cámaras al despegar o segunda celda (cap.~\ref{cap:sensores})\\
+Autonomía menor a 2\,h (\Req{E7}) & Falla \Req{E7}; el CanSat se apaga en la rampa & 6 & 5 & 2 & 60 & Medir la corriente de las cámaras; cámaras al despegar (cap.~\ref{cap:sensores}); la segunda celda no es viable por masa\\
 Lazo de la cuerda del drogue en las palas tras soltarlo & Frena o desbalancea el rotor & 7 & 2 & 4 & 56 & Cuerda corta en el drogue; pasador de suelta limpio; E4 y video\\
-Desbalance de palas & Vibración, video inutilizable & 4 & 4 & 2 & 32 & Balanceo a $\pm\SI{0.1}{g}$; palas marcadas\\
+El drogue no se suelta & Con el anillo girado, caída a \SI{5.8}{m/s} (cumple); sin confirmación, a \SI{13}{m/s} & 5 & 3 & 3 & 45 & Secuencia con enclavamiento y reintentos (cap.~\ref{cap:arq}); E4 mide con y sin drogue\\
 Conicidad excesiva o flameo & Menos área efectiva, rotura & 6 & 2 & 3 & 36 & Tope elástico a \ang{+15}; pala BV (laminado $\pm\ang{45}$ con varilla); centro de masa al 25\,\%\\
-Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto en CAD; lastre ajustable\\
+Desbalance de palas & Vibración, video inutilizable & 4 & 4 & 2 & 32 & Balanceo a $\pm\SI{0.1}{g}$; palas marcadas\\
+Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto en CAD; pesar primero el panel solar (Arq.~1: lastre de solo \SI{3}{g}; \SI{44}{\percent} de probabilidad de sobrepeso con el panel de \SI{37}{g}, cap.~\ref{cap:arq})\\
 \end{longtable}
 
 \section{Ensayos}
@@ -94,7 +94,7 @@ E8 & Electrónica & Cámaras 2\,h con corte, LR2021 en banco y alcance, ruido de
 \section{Cronograma}
 \begin{figure}[H]
 \centering
-\begin{ganttchart}[hgrid, vgrid, x unit=0.82cm, y unit chart=0.62cm,
+\begin{ganttchart}[hgrid, vgrid, x unit=0.78cm, y unit chart=0.62cm,
     title label font=\scriptsize, bar label font=\small,
     bar/.append style={fill=cfijo!35, draw=cfijo},
     milestone/.append style={fill=cfreno, draw=cfreno}]{1}{14}

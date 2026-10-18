@@ -16,18 +16,22 @@ describen.
 \begin{itemize}[leftmargin=*]
   \item \textbf{Flecha de la pala:} \SI{3.15 \pm 0.15}{mm} en valor absoluto y dispersión
         $\le\SI{0.10}{mm}$ dentro del juego de cuatro palas. Lo primero limita el cambio de
-        rpm a $\pm$0,9--1,8\,\% (la envolvente Ø\,90 ya no lo exige: admite $\pm\SI{0.30}{mm}$); lo segundo
+        rpm a $\pm$0,9--1,8\,\% (la envolvente Ø\,90 ya no lo exige: con el alabeo $\le\SI{0.15}{mm}$ admite $\pm\SI{0.37}{mm}$); lo segundo
         limita la diferencia de sustentación entre palas a $\approx3$\,\% y el desnivel de
         puntas a $\le\SI{0.67}{mm}$.
   \item \textbf{Paso:} \ang{\pm 0.5} absoluto y \ang{0.2} entre palas. Cada grado de
         paso cambia la velocidad de giro entre 48 y \SI{67}{rpm} (estimación del modelo).
   \item \textbf{Envolvente (Ø\,90):} con el cuerpo de Ø\,81, la pala plegada apoya en el cuerpo y su
         borde queda a \SI{44.03}{mm} del eje, \SI{0.97}{mm} bajo la envolvente. La cadena de
-        tolerancias da $\SI{0.967 \pm 0.142}{mm}$ (\num{6.8}\,$\sigma$) con flecha y alabeo de
-        $\pm\SI{0.30}{mm}$ y $\SI{0.967 \pm 0.095}{mm}$ (\num{10.1}\,$\sigma$) con $\pm\SI{0.15}{mm}$,
-        sin ninguna interferencia en $4\times10^5$ casos; con $\pm\SI{0.15}{mm}$ cierra también en
-        peor caso ($+\SI{0.19}{mm}$). En la versión~1 (Ø\,95, cuerpo de Ø\,88) el borde excedía la
-        envolvente en el 56\,\% de los rotores.
+        tolerancias da un margen de $\SI{0.967 \pm 0.142}{mm}$ (media $\pm$ desviación, \num{6.8}\,$\sigma$) con flecha y
+        alabeo de $\pm\SI{0.30}{mm}$ y de $\SI{0.967 \pm 0.095}{mm}$ (\num{10.1}\,$\sigma$) con
+        $\pm\SI{0.15}{mm}$, sin ninguna interferencia en $4\times10^5$ casos; con $\pm\SI{0.15}{mm}$
+        cierra también en peor caso ($+\SI{0.19}{mm}$).
+  \item \textbf{Bisagra:} pasador de acero Ø\,3 m6 (era Ø\,2) y oreja con el pasador a
+        $e_o=\SI{4.0}{mm}$ del borde ($\ge\SI{3}{mm}$ pedidos en el capítulo~\ref{cap:estructura}). Con la
+        centrífuga del sobrepaso (\SI{30.2}{N} por pala) el desgarro de la oreja da FS\,=\,9,9 (7,5 con la
+        cajera de la llave), contra 1,2 con $e_o=\SI{1.3}{mm}$. Las orejas llegan a $r=\SI{48}{mm}$: la
+        cabeza del rotor sobresale de Ø\,90 y hay que resolverlo en el CAD (sección~\ref{sec:fabricacion-llave}).
   \item \textbf{Balanceo:} el criterio de \SI{0.1}{g} a \SI{120}{mm} del capítulo~\ref{cap:dim}
         equivale a $e\,\Omega\approx\SI{29}{mm/s}$, entre los grados G\,16 y G\,40 de la
         norma ISO 21940-11. Se apunta a G\,16
@@ -59,11 +63,15 @@ la envolvente ya no fija la tolerancia de flecha; (ii) la sensibilidad de la pal
 puntas y el balanceo, recalculados con $R=\SI{0.25}{m}$, $T=\SI{4.68}{N}$ y palas de \SI{9.5}{g};
 (iii) el pasador de la bisagra, de Ø\,3 en lugar de Ø\,2, con la oreja a $e_o=\SI{4.0}{mm}$ del borde
 ($\ge\SI{3}{mm}$ pedidos en el capítulo~\ref{cap:estructura}; sección~\ref{sec:fabricacion-llave});
-(iv) los planos F1 a F6 y la vista explosionada: cuerpo y tapa de Ø\,81, pestaña con ala radial de
-\SI{7.9}{mm}, tapa y eje sin travesaño ni guía de cuerda (el drogue se toma del pasador de liberación
-de la copa aplanada, capítulo~\ref{cap:arq}); (v) el costo y la lista de materiales, con los precios
-reales de la electrónica (sección~\ref{sec:fabricacion-costos}). Las cotas que no se pueden fijar sin
-CAD llevan «a confirmar en CAD».
+(iv) los planos F1 a F6 y la vista explosionada: cubo, portapala y horquilla con el pasador de Ø\,3
+(F1 a F3); anillo de traba con el radio interior del cuerpo de \SI{38.3}{mm} y cuatro dientes de alambre
+más para las aletas antigiro (F4); pestaña con ala radial
+de \SI{7.9}{mm} y desarrollo de \SI{12.94}{mm} (F5); tapa de Ø\,81 sin travesaño ni guía de cuerda, eje de
+\SI{45}{mm} y copa aplanada de Ø\,75$\times$10 con el pasador de liberación del drogue
+(capítulo~\ref{cap:arq}; F6 y explosionada); (v) el costo y la lista de materiales, con los precios
+reales de la electrónica (sección~\ref{sec:fabricacion-costos}); (vi) las listas de control y el herramental
+(Ø\,90, palas de \SI{9.5}{g}, pasador de Ø\,3). Las cotas que no se pueden fijar sin CAD llevan «a confirmar en
+CAD». Sigue abierta la cabeza del rotor fuera de Ø\,90 (sección~\ref{sec:fabricacion-llave}).
 \end{nota}
 
 %=====================================================================
@@ -88,7 +96,7 @@ piezas de vuelo.
 \centering\small
 \caption{Características críticas de fabricación (CTF), tolerancia y verificación.}
 \label{tab:fabricacion-ctf}
-\begin{tabularx}{\textwidth}{@{}lllY@{}}
+\begin{tabularx}{\textwidth}{@{}lY>{\raggedright\arraybackslash}p{3.6cm}Y@{}}
 \toprule
 \textbf{Pieza} & \textbf{Característica} & \textbf{Tolerancia} & \textbf{Verificación y motivo}\\\midrule
 Pala & Flecha $s$ (línea media) & $3{,}15\pm0{,}15$; juego $\le0{,}10$ & Puente con comparador; rpm y desnivel (sec.~\ref{sec:fabricacion-flecha})\\
@@ -107,7 +115,7 @@ Portapala & Ojo para el pasador Ø\,3 m6 & Ø\,$3{,}10^{+0{,}02}_{\phantom{+}0}$
 Separador & Largo & $3{,}10\pm0{,}02$ & Refrentado en torno; luz del aro libre\\
 Cuerpo & Pared & $\ge2{,}0$ (nominal 2,2) & Calibre en 8 puntos (\Req{S6})\\
 Cuerpo & Diámetro exterior & $81{,}0\pm0{,}3$ & Cinta pi; envolvente Ø\,90 (sec.~\ref{sec:fabricacion-cadenaB})\\
-Portapala & Cara de apoyo de la pala & $r=41{,}00\pm0{,}10$ plegada (a confirmar en CAD) & Plantilla de plegado; envolvente\\
+Portapala & Radio de la cara exterior de la pala plegada, en el centro de la cuerda & $r=41{,}00\pm0{,}10$ (a confirmar en CAD) & Plantilla de plegado; envolvente\\
 Pestaña & Ojal respecto de la punta & $\pm0{,}05$ & Punzonado en plantilla\\
 Anillo & Posición angular del tope & $\pm\SI{0.1}{mm}$ de arco & Plantilla; enganche de la traba\\
 \bottomrule
@@ -283,7 +291,7 @@ resultados. Hay tres efectos y sus órdenes de magnitud son muy distintos:
         diferencia de corte vertical en la bisagra, $\Delta L\,e$, que para 3\,\% vale
         \SI{1.5e-3}{N.m}: despreciable.
   \item \textbf{Fuerza tangencial de 1 vez por vuelta}: \SIrange{1.5}{1.8}{mN} por
-        \SI{0.1}{mm}, entre 90 y 120 veces menor que la de \SI{0.1}{g} de desbalance de masa a
+        \SI{0.1}{mm}, entre 90 y 115 veces menor que la de \SI{0.1}{g} de desbalance de masa a
         \SI{120}{mm} (\SIrange{0.14}{0.21}{N} a las rpm del modelo). El balanceo de masa
         domina la vibración.
 \end{itemize}
@@ -344,7 +352,7 @@ Desbalance de \SI{0.1}{g} a \SI{120}{mm} (comparación) & --- & --- & 137--210\\
 
 \begin{resultado}[Tolerancias adoptadas para la pala]
 Flecha absoluta \SI{3.15 \pm 0.15}{mm} (la fijan las rpm y el desnivel; la envolvente admite
-$\pm\SI{0.30}{mm}$, sección~\ref{sec:fabricacion-cadenaB}); dispersión dentro del juego de vuelo $\le\SI{0.10}{mm}$; paso absoluto
+$\pm\SI{0.37}{mm}$ con el alabeo $\le\SI{0.15}{mm}$, sección~\ref{sec:fabricacion-cadenaB}); dispersión dentro del juego de vuelo $\le\SI{0.10}{mm}$; paso absoluto
 \ang{-3 \pm 0.5} y diferencia entre portapalas $\le\ang{0.2}$. Con ambos límites, el
 desnivel combinado esperado (suma cuadrática) es $\le\SI{0.86}{mm}$, por debajo del
 límite de \SI{1}{mm} que se verifica en el banco.
@@ -623,8 +631,8 @@ indica corte. Tres cambios respecto del anteproyecto surgen de este capítulo y 
 en los planos: tope de batimiento a \ang{+15} con almohadilla (capítulo~\ref{cap:estructura}),
 llave por collar coaxial en el portapala y dientes de alambre de acero en el anillo. En la
 versión~2 se agregan el pasador de Ø\,3 con la oreja a $e_o=\SI{4.0}{mm}$ del borde
-(capítulo~\ref{cap:estructura}), el cuerpo y la tapa de Ø\,81, la pestaña con ala radial más corta
-y la tapa sin guía de cuerda ni travesaño. Las cotas que no se pueden fijar sin CAD llevan
+(capítulo~\ref{cap:estructura}), el cuerpo y la tapa de Ø\,81, la pestaña con ala radial más corta,
+la tapa sin guía de cuerda ni travesaño y la copa aplanada con el pasador de liberación del drogue. Las cotas que no se pueden fijar sin CAD llevan
 «a confirmar en CAD».
 
 % macros propias del capítulo (nombres únicos)
@@ -685,14 +693,14 @@ y la tapa sin guía de cuerda ni travesaño. Las cotas que no se pueden fijar si
   \draw[cgris, line width=0.3pt] (-56,5.3) -- (-22,5.3) (-52,8.3) -- (-22,8.3) (-56,0) -- (-48,0);
   \draw[cgris, line width=0.3pt] (-27,0) -- (-22,0) (-27,13.6) -- (-22,13.6);
   \draw[cota] (51,1.8) -- (51,11.8); \fabtxt[rotate=90]{51,6.8}{10}
-  \draw[cota] (54,0) -- (54,6.8); \fabtxt[rotate=90]{54,3.4}{$6{,}8\pm0{,}1$}
-  \draw[cgris, line width=0.3pt] (48,1.8) -- (52,1.8) (48,11.8) -- (52,11.8) (45,6.8) -- (55,6.8) (48,0) -- (55,0);
+  \draw[cota] (56,0) -- (56,6.8); \fabtxt[rotate=90]{56,3.4}{$6{,}8\pm0{,}1$}
+  \draw[cgris, line width=0.3pt] (48,1.8) -- (52,1.8) (48,11.8) -- (52,11.8) (45,6.8) -- (57,6.8) (48,0) -- (57,0);
   % llamadas
   \draw[ref] (8,2.5) -- (14,27.5) node[above, font=\scriptsize, align=center] {fijo: Ø\,$15{,}945\pm0{,}025$\\(probeta)};
   \draw[ref] (-8,11) -- (-14,21) node[above, font=\scriptsize, align=center] {libre: Ø\,$16{,}015\pm0{,}015$\\(probeta)};
   \draw[ref] (6,6.8) -- (2,21) node[above, font=\scriptsize] {Ø\,11};
-  \draw[ref] (44,7.8) -- (44,21) node[above, font=\scriptsize, align=center] {Ø\,2,98 (presión);\\ pasador Ø\,3 m6};
-  \draw[ref] (34,12.8) -- (30,21) node[above, font=\scriptsize, align=center] {almohadilla\\ $8\times8\times6$};
+  \draw[ref] (44,7.8) -- (47,21) node[above, font=\scriptsize, align=center] {Ø\,2,98 (presión);\\ pasador Ø\,3 m6};
+  \draw[ref] (32,12.8) -- (26,21) node[above, font=\scriptsize, align=center] {almohadilla\\ $8\times8\times6$};
   \draw[ref] (15,0.8) -- (20,-9) node[below, font=\scriptsize, align=center] {imán Ø\,3$\times$1 en\\ Ø\,3,1$\times$1,3 a $r=15$};
   \draw[ref] (-15,0.8) -- (-20,-9) node[below, font=\scriptsize, align=center] {contrapeso de latón\\ de igual masa};
 \end{tikzpicture}
@@ -819,8 +827,9 @@ Altura BA--BF, $c\sin|\theta|$ [mm] & 4,70 & 3,14 & 2,36 & 1,57 & 0,00\\
 \end{tabular}
 \caption{Plano F2: portapala. (a)~Planta: ojo de bisagra con collar de llave, cuello,
 encastre de \SI{16}{mm} con la pala pegada en \SI{14}{mm} y pasador de ubicación
-Ø\,\SI{1.5}{mm} al 25\,\% de la cuerda, que fija la posición radial de la pala. Ojo para el pasador Ø\,3 (Ø\,3,10 escariado). En la versión~2 la cara de apoyo de la pala plegada queda a $r=\SI{41.0}{mm}$ (cuerpo de Ø\,81 más \SI{0.5}{mm} de espesor),
-\SI{3.0}{mm} por dentro del eje del pasador ($r=\SI{44.0}{mm}$); ese desfasaje de la ranura se confirma en CAD (sección~\ref{sec:fabricacion-cadenaB}). (b)~Corte por
+Ø\,\SI{1.5}{mm} al 25\,\% de la cuerda, que fija la posición radial de la pala. Ojo para el pasador Ø\,3 (Ø\,3,10 escariado). En la versión~2 la pala plegada apoya su cara cóncava en el cuerpo de Ø\,81 ($r=\SI{40.5}{mm}$) y su cara exterior,
+en el centro de la cuerda, queda a $r=\SI{41.0}{mm}$: \SI{3.0}{mm} por dentro del eje del pasador ($r=\SI{44.0}{mm}$); ese
+desfasaje de la ranura se confirma en CAD (sección~\ref{sec:fabricacion-cadenaB}). (b)~Corte por
 el encastre: ranura curva del radio de la pala, girada $\theta$ alrededor del eje de paso
 respecto de las caras del ojo; borde de ataque abajo para $\theta<0$. Tolerancia de
 $\theta$: \ang{\pm 0.2}; se verifica con la altura BA--BF sobre mármol.}
@@ -925,7 +934,8 @@ ligamento es $e_o-d/2$ y el corte actúa en dos planos sobre el espesor total de
 con \SI{12}{MPa} de corte admisible entre capas del PETG (capítulo~\ref{cap:estructura}). Con $d=\SI{3}{mm}$ y
 $e_o=\SI{4.0}{mm}$, $\tau=\SI{1.2}{MPa}$ y FS\,=\,9,9; si se descuenta la cajera de la llave
 (\SI{1.2}{mm} de la oreja ancha, \SI{3.8}{mm} resistentes), FS\,=\,7,5. El mínimo $e_o=\SI{3}{mm}$ daría 6,0 y
-4,5, pero la cajera de Ø\,5,7 dejaría solo \SI{0.15}{mm} de pared hacia afuera (con 4,0 quedan \SI{1.15}{mm}).
+4,5 (el capítulo~\ref{cap:estructura} da 8 para $e=\SI{3}{mm}$ porque calcula el ligamento con el pasador
+de Ø\,2: \SI{2.0}{mm}), pero la cajera de Ø\,5,7 dejaría solo \SI{0.15}{mm} de pared hacia afuera (con 4,0 quedan \SI{1.15}{mm}).
 El pasador, en doble corte, trabaja a $\tau=\SI{2.1}{MPa}$ (FS\,=\,94) y a flexión con el tope blando da
 FS\,=\,5,5 (contra 1,6 con Ø\,2; capítulo~\ref{cap:estructura}). Pesa \SI{0.61}{g}; los cuatro,
 \SI{2.44}{g}, \SI{1.4}{g} más que con Ø\,2. El collar y la cajera pasan de Ø\,4,5 y 4,7 a Ø\,5,5 y 5,7, para
@@ -933,12 +943,17 @@ conservar la pared de \SI{1.2}{mm} del collar alrededor del ojo; la pared del oj
 \SI{1.95}{mm}. El resorte de torsión de la bisagra debe tener un diámetro interior de al menos \SI{3.2}{mm}.
 
 \begin{nota}[A confirmar en CAD: la cabeza del rotor y Ø\,90]
-Según el plano F1 las orejas llegan a $r=\SI{48}{mm}$ (Ø\,96) y el pasador de Ø\,3, a $r=\SI{45.5}{mm}$:
-con la bisagra en $e=\SI{44}{mm}$, la cabeza del rotor sobresale de la envolvente de Ø\,90 en la zona del cubo
-(225 a \SI{240}{mm}). El plano del anteproyecto tenía el mismo exceso respecto de Ø\,95 (orejas de Ø\,96), y con
-el pasador de Ø\,2 el pasador llegaba justo a $r=\SI{45}{mm}$ sin material de oreja por fuera. Cerrarlo
-exige mover la bisagra hacia el eje (cambia $e$ en los capítulos de BEMT y estructura) o que el tubo del cohete
-admita la cabeza (consulta 1 del capítulo~\ref{cap:arq}); este capítulo no lo decide.
+Según el plano F1 las orejas llegan a $r=\SI{48}{mm}$ (Ø\,96) y el pasador de Ø\,3 a $r=\SI{45.5}{mm}$
+(centro en $e=\SI{44}{mm}$): en la zona del cubo (225 a \SI{240}{mm}) la cabeza del rotor sobresale de la
+envolvente de Ø\,90 ($r=\SI{45}{mm}$) en \SI{3}{mm} por las orejas y en \SI{0.5}{mm} por el pasador. Para que
+oreja y pasador queden dentro haría falta $e+e_o\le\SI{45}{mm}$, es decir $e\le\SI{42}{mm}$ con
+$e_o=\SI{3}{mm}$ ($e\le\SI{41}{mm}$ con \SI{4}{mm}). En la versión~1 el plano F1 ya dibujaba las orejas hasta
+$r=\SI{48}{mm}$ (\SI{0.5}{mm} fuera de Ø\,95) y el pasador de Ø\,2, justo a $r=\SI{45}{mm}$. Cerrarlo
+exige mover la bisagra hacia el eje o que el tubo del cohete
+admita la cabeza (consulta 1 del capítulo~\ref{cap:arq}). Mover la bisagra casi no cuesta aerodinámica: con la BEMT, $e=\SI{41}{mm}$
+y la pala de \SI{209}{mm} (mismo $R=\SI{0.25}{m}$) dan $V_2=\SI{6.355}{m/s}$ y \num{1230}~rpm, contra \SI{6.357}{m/s} y \num{1229}~rpm con
+$e=\SI{44}{mm}$ (sección~\ref{sec:arq-integracion}); lo que cuesta es mecánico: el pasador queda a \SI{41}{mm} del eje, sobre la propia
+cara de la pala plegada ($r=\SI{41.0}{mm}$), y el portapala cambia. Este capítulo no lo decide.
 \end{nota}
 
 %---------------------------------------------------------------------
@@ -955,12 +970,28 @@ o salga. Al girar \ang{15} en sentido horario, el extremo de cada diente se muev
 libre. Un tope fijo del soporte del servo define la posición trabada, y no el servo; la
 sección~\ref{sec:fabricacion-tol} muestra por qué.
 
+\paragraph{Versión 2.} El cuerpo de Ø\,81 con pared nominal de \SI{2.2}{mm} tiene el radio interior en
+\SI{38.3}{mm} (era \SI{41.4}{mm}). El anillo ($R$ 26 a 32), los dientes ($R=\SI{36.5}{mm}$) y la pestaña
+(extremo en $R=\SI{33.8}{mm}$) conservan sus cotas; el bloque portadiente, que llegaba a $R=39$, se recorta a
+$R=\SI{37.6}{mm}$ (\SI{0.7}{mm} de luz al cuerpo) y deja \SI{0.58}{mm} de PETG por fuera del agujero de Ø\,1,05
+de la pata axial: se imprime con dos perímetros y el alambre va pegado con epoxi. Si el CAD no admite esa pared,
+el alambre baja a $R=\SI{36.0}{mm}$ (pared de \SI{1.08}{mm}) y el ala radial de la pestaña pasa a
+\SI{8.4}{mm}; a confirmar en CAD.
+
+El capítulo~\ref{cap:arq} agrega cuatro dientes de alambre más para las aletas antigiro (de
+$40\times\SI{25}{mm}$, plegadas en un bolsillo de \SI{1.5}{mm} del anillo de espuma). Son del mismo alambre de
+Ø\,\SI{1.0}{mm}: bajan desde el anillo hasta la banda inferior de \SI{25}{mm} y retienen el borde libre de
+cada aleta; con el giro de \ang{15} recorren unos \SI{10}{mm} de arco, más que los \SI{3}{mm} de apoyo, y
+sueltan las aletas. El anillo lleva entonces ocho dientes. El radio de los cuatro nuevos, cómo bajan el alambre
+por fuera del bloque portadiente y el apoyo en la aleta son a confirmar en CAD: no se dibujan en el
+plano~F4 ni entran en las cadenas de tolerancias de este capítulo.
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=0.95mm, y=0.95mm]
   \node[font=\small\bfseries, anchor=west] at (-60,64) {(a) Planta, trabado (0,95:1)};
   % pared del cuerpo (fantasma)
-  \draw[cfijo, densely dashed] (0,0) circle (43.6) (0,0) circle (41.4);
+  \draw[cfijo, densely dashed] (0,0) circle (40.5) (0,0) circle (38.3);
   % anillo y rayos
   \filldraw[act, even odd rule] (0,0) circle (32) (0,0) circle (26);
   \begin{scope}[rotate=45]
@@ -971,15 +1002,15 @@ sección~\ref{sec:fabricacion-tol} muestra por qué.
   \filldraw[white, draw=cfreno] (0,0) circle (2.5);
   \foreach \a in {0,90,180,270}{
     \begin{scope}[rotate=\a]
-      % bloque portadiente (s de -6,75 a -1,75 mm en r=36,5)
-      \filldraw[act] (-10.6:32) -- (-10.6:39) arc[start angle=-10.6, end angle=-2.75, radius=39]
+      % bloque portadiente (s de -6,75 a -1,75 mm en r=36,5; hasta R 37,6: a confirmar en CAD)
+      \filldraw[act] (-10.6:32) -- (-10.6:37.6) arc[start angle=-10.6, end angle=-2.75, radius=37.6]
                      -- (-2.75:32) -- cycle;
       % diente de alambre
       \draw[black, line width=0.95pt] (-2.75:36.5) -- (4.32:36.5);
       % pestaña (fija al cuerpo, entra por la ranura)
-      \filldraw[rot] (33.8,-0.25) rectangle (45.3,0.25);
-      \fill[ffijo] (41.4,-0.85) rectangle (43.6,-0.25);
-      \fill[ffijo] (41.4,0.25) rectangle (43.6,0.85);
+      \filldraw[rot] (33.8,-0.25) rectangle (41.7,0.25);
+      \fill[ffijo] (38.3,-0.85) rectangle (40.5,-0.25);
+      \fill[ffijo] (38.3,0.25) rectangle (40.5,0.85);
     \end{scope}}
   % tope
   \filldraw[fijo] (-8:22) -- (-8:25.5) arc[start angle=-8, end angle=-2, radius=25.5] -- (-2:22) -- cycle;
@@ -990,7 +1021,7 @@ sección~\ref{sec:fabricacion-tol} muestra por qué.
   \draw[cota] (0,0) -- (205:26);  \node[font=\scriptsize, fill=white, inner sep=1pt] at (205:15) {$R\,26$};
   \draw[cota] (0,0) -- (230:32);  \node[font=\scriptsize, fill=white, inner sep=1pt] at (232:38) {$R\,32$};
   \draw[ref] (90:36.8) ++(-2,0.5) -- (-30,50) node[above, font=\scriptsize, align=center] {diente Ø\,1,0\\ (alambre de acero)};
-  \draw[ref] (90:44) -- (28,50) node[above, font=\scriptsize, align=center] {pestaña en ranura\\ $6{,}0\times1{,}2$ de la pared};
+  \draw[ref] (90:41) -- (28,50) node[above, font=\scriptsize, align=center] {pestaña en ranura\\ $6{,}0\times1{,}2$ de la pared};
   \draw[flecha, cfreno] (300:46) arc[start angle=300, end angle=285, radius=46];
   \node[font=\scriptsize, cfreno, anchor=north] at (292:48) {liberar \ang{15}};
   \draw[ref] (45:5) -- (40,30) node[right, font=\scriptsize, align=left] {cubo del anillo: 2 agujeros Ø\,1,6\\ para el brazo del servo, $r=5$};
@@ -1025,7 +1056,8 @@ $R\,26$--$32$ de \SI{4}{mm} de alto, cuatro bloques portadiente y dientes de ala
 Ø\,\SI{1.0}{mm} a $R=\SI{36.5}{mm}$ que atraviesan las pestañas. El talón del anillo apoya
 en un tope fijo en la posición trabada. (b)~Detalle desarrollado sobre $R=36{,}5$ (horizontal:
 arco; vertical: dirección del eje): enganche de \SI{2.5}{mm} más allá de la pestaña y ojal
-colisado de \SI{2.6}{mm} en la dirección del eje.}
+colisado de \SI{2.6}{mm} en la dirección del eje. Los cuatro dientes de las aletas antigiro no se dibujan
+(a confirmar en CAD).}
 \label{fig:fabricacion-anillo}
 \end{figure}
 
@@ -1033,23 +1065,26 @@ colisado de \SI{2.6}{mm} en la dirección del eje.}
 \subsection{Pestaña de acero inoxidable}\label{sec:fabricacion-pestana}
 
 La pestaña es una chapa de acero inoxidable de \SI{0.5}{mm} plegada a \ang{90}; su
-largo desarrollado es \SI{16.54}{mm}. El ala corta (\SI{6}{mm}) se pega sobre la cara
-\emph{convexa} de la punta de la pala y el ala larga (\SI{11.5}{mm}) pasa por debajo del
-extremo de la pala, entra al cuerpo por la ranura y termina en $r=\SI{33.8}{mm}$. Pegarla
+largo desarrollado es \SI{12.94}{mm}. El ala corta (\SI{6}{mm}) se pega sobre la cara
+\emph{convexa} de la punta de la pala y el ala larga (\SI{7.9}{mm}, medida desde la cara exterior del
+pliegue, que queda en $r=\SI{41.7}{mm}$) pasa por debajo del extremo de la pala, entra al cuerpo por la
+ranura y termina en $r=\SI{33.8}{mm}$ (en la versión~1 el ala medía \SI{11.5}{mm} y el desarrollo,
+\SI{16.54}{mm}: la pala plegada ya no está a $r=\SI{44.6}{mm}$ sino sobre el cuerpo de Ø\,81). Pegarla
 del lado cóncavo no sirve: quedaría entre la pala y el cuerpo, donde el huelgo nominal es de
 \SI{0.5}{mm}. Del lado convexo agrega \SI{0.7}{mm} al radio en el centro de la cuerda, que
-no es crítico (el crítico es el borde, sección~\ref{sec:fabricacion-tol}).
+no es crítico (el crítico es el borde, sección~\ref{sec:fabricacion-cadenaB}).
 
 El desarrollo plano usa el factor $K$ de la fibra neutra:
 \begin{equation}
   L_d = (L_1 - r_i - t) + (L_2 - r_i - t) + \frac{\pi}{2}\,(r_i + K\,t),
   \label{eq:fabricacion-desarrollo}
 \end{equation}
-con $L_1=6$ y $L_2=11{,}5$ medidas exteriores, $r_i=t=\SI{0.5}{mm}$ y $K=0{,}33$ (valor
+con $L_1=6$ y $L_2=7{,}9$ medidas exteriores, $r_i=t=\SI{0.5}{mm}$ y $K=0{,}33$ (valor
 usual de las tablas de plegado para $r_i/t=1$; se confirma plegando una tira de prueba): la tolerancia del pliegue,
 $\Delta K=\pm0{,}05$, cambia $L_d$ en $\pm\SI{0.04}{mm}$. El ojal se ubica en el
-\emph{desarrollo} a \SI{13.84}{mm} del extremo del ala pegada, de modo que quede a
-\SI{8.80}{mm} de la cara exterior del pliegue (en $r=\SI{36.5}{mm}$ con la pala plegada).
+\emph{desarrollo} a \SI{10.24}{mm} del extremo del ala pegada, de modo que quede a
+\SI{5.20}{mm} de la cara exterior del pliegue (en $r=\SI{36.5}{mm}$ con la pala plegada) y a \SI{2.70}{mm}
+del extremo del ala.
 El borde de \SI{1.85}{mm} entre ojal y extremo es mayor que $3t$. El pegado
 ($5\times\SI{5}{mm}$, epoxi estructural sobre carbono y acero lijados) resiste
 \SI{125}{N} con un corte admisible conservador de \SI{5}{MPa}, cientos de veces la fuerza
@@ -1059,22 +1094,22 @@ del resorte de apertura en la pestaña (\SI{0.03}{N}).
 \centering
 \begin{tikzpicture}[x=5mm, y=5mm]
   \node[font=\small\bfseries, anchor=west] at (-2,10.2) {(a) Desarrollo plano (5:1)};
-  \filldraw[fill=cgris!12, draw=black, line width=0.5pt, rounded corners=1.2pt] (0,0) rectangle (16.54,5);
+  \filldraw[fill=cgris!12, draw=black, line width=0.5pt, rounded corners=1.2pt] (0,0) rectangle (12.94,5);
   \fill[cgris!35] (5.0,0) rectangle (6.045,5);
   \draw[black, densely dash dot] (5.52,-0.6) -- (5.52,5.6);
-  \draw[black, line width=0.4pt, rounded corners=2pt] (12.99,1.2) rectangle (14.69,3.8);
-  \draw[eje] (13.84,-0.8) -- (13.84,5.8) (12.4,2.5) -- (15.3,2.5);
+  \draw[black, line width=0.4pt, rounded corners=2pt] (9.39,1.2) rectangle (11.09,3.8);
+  \draw[eje] (10.24,-0.8) -- (10.24,5.8) (8.8,2.5) -- (11.7,2.5);
   \node[font=\scriptsize, anchor=north] at (2.5,-0.2) {ala pegada};
-  \node[font=\scriptsize, anchor=north] at (9.8,-0.2) {ala radial};
+  \node[font=\scriptsize, anchor=north] at (9.5,-0.2) {ala radial};
   % cotas
-  \draw[cota] (0,-2) -- (16.54,-2); \fabtxt{8.27,-2}{$16{,}54\pm0{,}05$}
-  \draw[cota] (0,-3.4) -- (13.84,-3.4); \fabtxt{6.9,-3.4}{$13{,}84\pm0{,}05$}
-  \draw[cgris, line width=0.3pt] (0,0) -- (0,-3.9) (16.54,0) -- (16.54,-2.5) (13.84,-0.8) -- (13.84,-3.9);
+  \draw[cota] (0,-2) -- (12.94,-2); \fabtxt{6.47,-2}{$12{,}94\pm0{,}05$}
+  \draw[cota] (0,-3.4) -- (10.24,-3.4); \fabtxt{5.12,-3.4}{$10{,}24\pm0{,}05$}
+  \draw[cgris, line width=0.3pt] (0,0) -- (0,-3.9) (12.94,0) -- (12.94,-2.5) (10.24,-0.8) -- (10.24,-3.9);
   \draw[cota] (0,6.2) -- (5.52,6.2); \fabtxt{2.76,6.2}{5,52}
   \draw[cgris, line width=0.3pt] (0,5) -- (0,6.7) (5.52,5.6) -- (5.52,6.7);
-  \draw[cota] (17.4,0) -- (17.4,5); \node[font=\scriptsize, anchor=west] at (17.6,2.5) {$5{,}0\pm0{,}1$};
-  \draw[ref] (14.4,3.6) -- (15.5,7.6) node[above, font=\scriptsize, align=center] {ojal $1{,}70\times2{,}60\,^{+0{,}05}_{\phantom{+}0}$, R\,0,3};
-  \draw[ref] (5.8,4.5) -- (7.5,7.6) node[above, font=\scriptsize, align=center] {línea de pliegue\\ (centro de la zona de 1,05)};
+  \draw[cota] (13.8,0) -- (13.8,5); \node[font=\scriptsize, anchor=west] at (14.0,2.5) {$5{,}0\pm0{,}1$};
+  \draw[ref] (10.8,3.6) -- (12.6,7.6) node[above, font=\scriptsize, align=center] {ojal $1{,}70\times2{,}60\,^{+0{,}05}_{\phantom{+}0}$, R\,0,3};
+  \draw[ref] (5.8,4.5) -- (3.2,7.6) node[above, font=\scriptsize, align=center] {línea de pliegue\\ (centro de la\\ zona de 1,05)};
 \end{tikzpicture}
 
 \caption{Plano F5, hoja (a): desarrollo plano de la pestaña de acero inoxidable AISI 304 de
@@ -1092,34 +1127,36 @@ antes de plegar, con una plantilla de acero que referencia el extremo pegado.}
   \node[font=\scriptsize, crot, anchor=east] at (-0.7,5.5) {pala};
   \node[font=\scriptsize, anchor=east] at (-0.7,4.2) {(cara convexa $\rightarrow$)};
   \filldraw[fill=cgris!35, draw=black, line width=0.4pt]
-     (0.5,6) -- (0.5,1) arc[start angle=0, end angle=-90, radius=1] -- (-11,0) -- (-11,0.5)
+     (0.5,6) -- (0.5,1) arc[start angle=0, end angle=-90, radius=1] -- (-7.4,0) -- (-7.4,0.5)
      -- (-0.5,0.5) arc[start angle=-90, end angle=0, radius=0.5] -- (0,6) -- cycle;
-  \fill[white] (-9.65,-0.05) rectangle (-7.95,0.55);
-  \draw[black, line width=0.3pt] (-9.65,0) -- (-9.65,0.5) (-7.95,0) -- (-7.95,0.5);
+  \fill[white] (-5.55,-0.05) rectangle (-3.85,0.55);
+  \draw[black, line width=0.3pt] (-5.55,0) -- (-5.55,0.5) (-3.85,0) -- (-3.85,0.5);
   \fill[ccuerda!50] (-0.04,1.1) rectangle (0.0,5.9);
   % pared del cuerpo
-  \fabF{(-2.8,-1.2)}{(-0.6,-0.4)}
-  \fabF{(-2.8,0.9)}{(-0.6,2.5)}
+  \fabF{(-2.7,-1.2)}{(-0.5,-0.4)}
+  \fabF{(-2.7,0.9)}{(-0.5,2.5)}
   \node[font=\scriptsize, cfijo, anchor=north] at (-1.7,-1.3) {pared};
   % cotas
-  \draw[cota] (0.5,-2.6) -- (-11,-2.6); \fabtxt{-6.5,-2.6}{$L_2=11{,}5$}
-  \draw[cgris, line width=0.3pt] (0.5,0) -- (0.5,-4.4) (-11,0) -- (-11,-3.1);
-  \draw[cota] (0.5,-3.9) -- (-8.8,-3.9); \fabtxt{-4.15,-3.9}{8,80}
-  \draw[cgris, line width=0.3pt] (-8.8,0) -- (-8.8,-4.4);
+  \draw[cota] (0.5,-2.6) -- (-7.4,-2.6); \fabtxt{-3.45,-2.6}{$L_2=7{,}9$}
+  \draw[cgris, line width=0.3pt] (0.5,0) -- (0.5,-4.4) (-7.4,0) -- (-7.4,-3.1);
+  \draw[cota] (0.5,-3.9) -- (-4.7,-3.9); \fabtxt{-2.1,-3.9}{5,20}
+  \draw[cgris, line width=0.3pt] (-4.7,0) -- (-4.7,-4.4);
   \draw[cota] (1.6,0) -- (1.6,6); \node[font=\scriptsize, anchor=west] at (1.8,3) {$L_1=6$};
   \draw[cgris, line width=0.3pt] (0.5,6) -- (2.1,6) (0.5,0) -- (2.1,0);
   \draw[ref] (0.3,0.5) -- (3,-1.5) node[right, font=\scriptsize] {$r_i=0{,}5$, $t=0{,}5$};
-  \draw[ref] (-8.8,0.3) -- (-9.5,3) node[above, font=\scriptsize] {ojal en $r=36{,}5$};
+  \draw[ref] (-4.7,0.3) -- (-5.6,3) node[above, font=\scriptsize] {ojal en $r=36{,}5$};
   \node[font=\scriptsize, anchor=west] at (2.6,5.6) {epoxi (verde)};
-  \draw[eje] (-12.5,0.25) -- (-10.5,0.25);
-  \node[font=\scriptsize, anchor=east] at (-11.2,1.2) {$r=33{,}8$};
+  \draw[eje] (-9,0.25) -- (-7,0.25);
+  \node[font=\scriptsize, anchor=east] at (-7.7,1.2) {$r=33{,}8$};
 \end{tikzpicture}
 \caption{Plano F5, hoja (b): pestaña plegada y pegada sobre la cara convexa de la punta de la
-pala; el ala radial pasa por la ranura de la pared (huelgos exagerados).}
+pala (corte horizontal); el ala radial de \SI{7.9}{mm} pasa por la ranura de la pared y termina en
+$r=\SI{33.8}{mm}$. La pala apoya en la pared (huelgo nominal cero, cadena B); el huelgo de la
+ranura está exagerado.}
 \label{fig:fabricacion-pestana}
 \end{figure}
 
-\paragraph{Proceso.} Se cortan ocho tiras de $5\times\SI{16.54}{mm}$ con cizalla o
+\paragraph{Proceso.} Se cortan ocho tiras de $5\times\SI{12.94}{mm}$ con cizalla o
 disco, se desbarban y se apilan en una plantilla de acero con dos agujeros guía; el ojal
 se hace con dos agujeros de Ø\,\SI{1.6}{mm} y lima de aguja hasta el calibre
 $1{,}70\times\SI{2.60}{mm}$ (un alambre Ø\,1,65 debe pasar y uno de 1,75 no). El pliegue
@@ -1131,7 +1168,8 @@ sección~\ref{sec:fabricacion-tol} muestra que el pegado libre agota el juego ax
 %---------------------------------------------------------------------
 \subsection{Tapa superior con eje}\label{sec:fabricacion-tapa}
 
-La tapa superior es la referencia de todo el rotor: su cara superior, plana a
+La tapa superior, de Ø\,81 con espiga de Ø\,76,4 dentro del cuerpo y sin travesaño ni guía de cuerda,
+es la referencia de todo el rotor: su cara superior, plana a
 \SI{0.10}{mm}, fija la perpendicularidad del eje y el huelgo bajo el cubo. El eje se aprieta
 entre el collar, apoyado en esa cara, y una contratuerca bajo el buje; así el eje queda
 perpendicular a la cara aunque el agujero del buje tenga juego. La figura~\ref{fig:fabricacion-tapa}
@@ -1141,12 +1179,12 @@ muestra el conjunto con el cubo en línea de trazos.
 \centering
 \begin{tikzpicture}[x=0.95mm, y=0.95mm]
   \node[font=\small\bfseries, anchor=west] at (-70,50) {Corte por el eje (0,95:1)};
-  \draw[eje] (0,-40) -- (0,48);
-  % pared del cuerpo (fantasma)
-  \draw[cfijo, densely dashed] (41.4,-40) -- (41.4,-4) (43.6,-40) -- (43.6,0) (-41.4,-40) -- (-41.4,-4) (-43.6,-40) -- (-43.6,0);
+  \draw[eje] (0,-24) -- (0,44);
+  % pared del cuerpo (fantasma): exterior R 40,5, interior R 38,3
+  \draw[cfijo, densely dashed] (38.3,-32) -- (38.3,-4) (40.5,-32) -- (40.5,0) (-38.3,-32) -- (-38.3,-4) (-40.5,-32) -- (-40.5,0);
   % tapa: placa, espiga y buje
-  \fabF{(4.025,-4)}{(43.6,0)}  \fabF{(-43.6,-4)}{(-4.025,0)}
-  \fabF{(39.2,-10)}{(41.3,-4)} \fabF{(-41.3,-10)}{(-39.2,-4)}
+  \fabF{(4.025,-4)}{(40.5,0)}  \fabF{(-40.5,-4)}{(-4.025,0)}
+  \fabF{(36.1,-10)}{(38.2,-4)} \fabF{(-38.2,-10)}{(-36.1,-4)}
   \fabF{(4.025,-12)}{(10,-4)}  \fabF{(-10,-12)}{(-4.025,-4)}
   % ventana de la cámara cenit y alojamiento del hall
   \fill[white] (-33,-4.05) rectangle (-25,0.05);
@@ -1154,61 +1192,74 @@ muestra el conjunto con el cubo en línea de trazos.
   \fill[white] (-16.5,-4.05) rectangle (-13.5,-0.6);
   \filldraw[fill=black!70, draw=black] (-16.2,-3.6) rectangle (-13.8,-0.7);
   % inserto radial M2,5
-  \fill[yellow!50!brown] (39.2,-8) rectangle (41.3,-6);
-  % travesaño
-  \fabF{(4.025,-30)}{(41.3,-26)} \fabF{(-41.3,-30)}{(-4.025,-26)}
-  % eje
-  \filldraw[fill=cgris!30, draw=black, line width=0.4pt] (2.5,-36) rectangle (4,31);
-  \filldraw[fill=cgris!30, draw=black, line width=0.4pt] (-4,-36) rectangle (-2.5,31);
-  \foreach \y in {-36,-35,...,-27}{\draw[black, line width=0.2pt] (4,\y) -- (4.4,\y+0.5);\draw[black, line width=0.2pt] (-4,\y) -- (-4.4,\y+0.5);}
-  \foreach \y in {19,20,...,30}{\draw[black, line width=0.2pt] (4,\y) -- (4.4,\y+0.5);\draw[black, line width=0.2pt] (-4,\y) -- (-4.4,\y+0.5);}
-  \draw[cuerda] (0,46) -- (0,-38);
-  % collar, contratuerca, tuerca del travesaño
+  \fill[yellow!50!brown] (36.1,-8) rectangle (38.2,-6);
+  % eje (tubo de Al Ø8x5, 45 mm)
+  \filldraw[fill=cgris!30, draw=black, line width=0.4pt] (2.5,-20) rectangle (4,25);
+  \filldraw[fill=cgris!30, draw=black, line width=0.4pt] (-4,-20) rectangle (-2.5,25);
+  \foreach \y in {-20,-19,...,-11}{\draw[black, line width=0.2pt] (4,\y) -- (4.4,\y+0.5);\draw[black, line width=0.2pt] (-4,\y) -- (-4.4,\y+0.5);}
+  \foreach \y in {13,14,...,24}{\draw[black, line width=0.2pt] (4,\y) -- (4.4,\y+0.5);\draw[black, line width=0.2pt] (-4,\y) -- (-4.4,\y+0.5);}
+  % collar y contratuerca
   \fabF{(4,0)}{(5,1)} \fabF{(-5,0)}{(-4,1)}
   \fabF{(4,-16)}{(6.5,-12)} \fabF{(-6.5,-16)}{(-4,-12)}
-  \fabF{(4,-34)}{(6.5,-30)} \fabF{(-6.5,-34)}{(-4,-30)}
   % cubo y rodamientos (fantasma)
   \draw[crot, densely dashed] (8,0.64) rectangle (22,14.24) (-22,0.64) rectangle (-8,14.24);
   \draw[cgris, densely dashed] (4,1) rectangle (8,5.94) (4,9.04) rectangle (8,13.98) (-8,1) rectangle (-4,5.94) (-8,9.04) rectangle (-4,13.98);
   \node[font=\scriptsize, crot] at (15,10) {cubo};
-  % tuerca de retención, copa y tuerca de copa
+  % arandela y tuerca de retención
   \fabF{(4,13.98)}{(5,14.6)} \fabF{(-5,13.98)}{(-4,14.6)}
   \fabF{(4,14.6)}{(6.5,18.6)} \fabF{(-6.5,14.6)}{(-4,18.6)}
-  \fabF{(4,18.6)}{(22,21.6)} \fabF{(-22,18.6)}{(-4,21.6)}
-  \fabF{(20.5,21.6)}{(22,43.6)} \fabF{(-22,21.6)}{(-20.5,43.6)}
-  \fabF{(4,21.6)}{(6.5,25.6)} \fabF{(-6.5,21.6)}{(-4,25.6)}
-  \fill[ccuerda!15] (7.5,26) rectangle (20,40) (-20,26) rectangle (-7.5,40);
-  \node[font=\scriptsize] at (14,29) {drogue};
-  % guía de cuerda
-  \fabF{(4,25.6)}{(6.5,29)} \fabF{(-6.5,25.6)}{(-4,29)}
-  \draw[black, line width=0.6pt] (2.5,31) arc[start angle=180, end angle=110, radius=3] (-2.5,31) arc[start angle=0, end angle=70, radius=3];
+  % copa aplanada Ø75 x 10: base con cajera para la tuerca de retención, pared de 1,5
+  \fabF{(10,14.9)}{(37.5,16.9)}   \fabF{(-37.5,14.9)}{(-10,16.9)}
+  \fabF{(36,16.9)}{(37.5,24.9)}   \fabF{(-37.5,16.9)}{(-36,24.9)}
+  \fabF{(8.2,18.8)}{(10,20.6)}    \fabF{(-10,18.8)}{(-8.2,20.6)}
+  \fabF{(4,18.8)}{(8.2,20.6)}     \fabF{(-8.2,18.8)}{(-4,20.6)}
+  \fabF{(8.2,14.9)}{(10,18.8)}    \fabF{(-10,14.9)}{(-8.2,18.8)}
+  % tuerca de copa
+  \fabF{(4,20.6)}{(6.5,24.6)} \fabF{(-6.5,20.6)}{(-4,24.6)}
+  % drogue plegado y pasador de liberación en su carro
+  \fill[ccuerda!15] (10.5,16.9) rectangle (36,24.5) (-36,16.9) rectangle (-10.5,24.5);
+  \node[font=\scriptsize] at (-23,19.5) {drogue};
+  \filldraw[act] (14,16.9) rectangle (24,22.5);
+  \draw[black, line width=0.8pt] (12,19.7) -- (26,19.7);
+  \draw[cuerda] (19,19.7) -- (19,40);
   % cotas
-  \draw[cota] (-43.6,-44) -- (43.6,-44); \fabtxt{0,-44}{Ø\,$87{,}2\pm0{,}3$}
-  \draw[cgris, line width=0.3pt] (-43.6,-40) -- (-43.6,-45) (43.6,-40) -- (43.6,-45);
-  \draw[cota] (50,-36) -- (50,31); \fabtxt[rotate=90]{50,-19}{eje $67\pm0{,}2$}
-  \draw[cgris, line width=0.3pt] (4,-36) -- (51,-36) (4,31) -- (51,31);
-  \draw[cota] (46,0) -- (46,-4); \node[font=\scriptsize, anchor=west] at (46.3,-2) {};
-  \node[font=\scriptsize, anchor=west] at (51.5,-2) {$4\pm0{,}1$};
-  \draw[cgris, line width=0.3pt] (43.6,0) -- (56,0) (43.6,-4) -- (47,-4);
-  \draw[ref] (40.2,-9) -- (56,-10) node[right, font=\scriptsize, align=left] {espiga Ø\,$82{,}6\,^{\phantom{-}0}_{-0{,}1}$\\ e inserto M2,5 ($\times4$)};
-  \draw[ref] (8,-11) -- (56,-20.5) node[right, font=\scriptsize, align=left] {buje Ø\,20, agujero\\ Ø\,$8{,}05\,^{+0{,}05}_{\phantom{+}0}$};
+  \draw[cota] (-40.5,-36) -- (40.5,-36); \fabtxt{0,-36}{Ø\,$81{,}0\pm0{,}3$}
+  \draw[cgris, line width=0.3pt] (-40.5,-32) -- (-40.5,-37) (40.5,-32) -- (40.5,-37);
+  \node[font=\scriptsize, anchor=west] at (41.5,-2) {$4\pm0{,}1$};
+  \draw[cota] (-37.5,29) -- (37.5,29); \fabtxt{0,29}{Ø\,75}
+  \draw[cgris, line width=0.3pt] (-37.5,24.9) -- (-37.5,30) (37.5,24.9) -- (37.5,30);
+  \draw[cota] (-42,14.9) -- (-42,24.9); \fabtxt[rotate=90]{-42,19.9}{10}
+  \draw[cgris, line width=0.3pt] (-43,14.9) -- (-37.5,14.9) (-43,24.9) -- (-37.5,24.9);
+  % llamadas
+  \draw[ref] (37.2,-9) -- (56,-12) node[right, font=\scriptsize, align=left] {espiga Ø\,$76{,}4\,^{\phantom{-}0}_{-0{,}1}$\\ e inserto M2,5 ($\times4$)};
+  \draw[ref] (8,-11) -- (56,-21) node[right, font=\scriptsize, align=left] {buje Ø\,20, agujero\\ Ø\,$8{,}05\,^{+0{,}05}_{\phantom{+}0}$};
   \draw[ref] (6,-15) -- (56,-30) node[right, font=\scriptsize, align=left] {contratuerca M8$\times$0,75\\ (Al), 1,5\,N\,m};
-  \draw[ref] (6,0.5) -- (56,7) node[right, font=\scriptsize, align=left] {collar Ø\,10$\times$\\ $1{,}00\pm0{,}03$ (Al)};
-  \draw[ref] (6,17) -- (56,15) node[right, font=\scriptsize, align=left] {arandela Ø\,10 y tuerca\\ M8$\times$0,75 (acero), 1\,N\,m};
-  \draw[ref] (7,33) -- (56,40) node[right, font=\scriptsize, align=left] {guía de cuerda\\ $R\ge3$};
+  \draw[ref] (6,0.5) -- (56,6) node[right, font=\scriptsize, align=left] {collar Ø\,10$\times$\\ $1{,}00\pm0{,}03$ (Al)};
+  \draw[ref] (6.5,16) -- (56,15) node[right, font=\scriptsize, align=left] {arandela Ø\,10 y tuerca\\ M8$\times$0,75 (acero), 1\,N\,m};
+  \draw[ref] (6.5,22.5) -- (56,24) node[right, font=\scriptsize, align=left] {tuerca de copa\\ M8$\times$0,75 (Al)};
+  \draw[ref] (24,21.5) -- (56,35) node[right, font=\scriptsize, align=left] {carro con retén y pasador\\ de liberación (MG90S)};
+  \draw[ref] (19,38) -- (-8,44) node[left, font=\scriptsize] {cuerda al drogue};
   \draw[ref] (-15,-2) -- (-24,-14) node[below, font=\scriptsize, align=center] {sensor hall bajo\\ $0{,}6\pm0{,}1$ de PETG};
-  \draw[ref] (-29,-2) -- (-46,8) node[left, font=\scriptsize] {ventana cámara cenit};
-  \draw[ref] (-20,-28) -- (-46,-20) node[left, font=\scriptsize, align=right] {travesaño con\\ argolla};
-  \draw[ref] (-4.2,-31) -- (-46,-36) node[left, font=\scriptsize, align=right] {roscas M8$\times$0,75\\ $\times10$ y $\times12$};
-  \draw[ref] (-21,30) -- (-46,30) node[left, font=\scriptsize] {copa Ø\,44$\times$25};
+  \draw[ref] (-29,-2) -- (-46,8) node[left, font=\scriptsize, align=right] {ventana cámara cenit\\ (tapada por la copa)};
+  \draw[ref] (3.2,-19) -- (56,-40) node[right, font=\scriptsize, align=left] {eje: tubo de Al Ø\,8$\times$5,\\ largo $45\pm0{,}2$ (antes 67)};
+  \draw[ref] (-4.2,-17) -- (-46,-22) node[left, font=\scriptsize, align=right] {rosca M8$\times$0,75\\ $\times10$ abajo, $\times12$ arriba};
+  \draw[ref] (-30,22) -- (-46,30) node[left, font=\scriptsize, align=right] {copa aplanada Ø\,75$\times$10\\ (PETG)};
 \end{tikzpicture}
-\caption{Plano F6: tapa superior con eje fijo, travesaño y cabeza del rotor (cubo y
-rodamientos en trazos). La pila interior (collar, aros interiores, separador, arandela y
-tuerca de retención, todos de Ø\,\SI{10}{mm} como máximo) se aprieta contra la cara de la
-tapa: el collar es el hombro inferior que pide el capítulo~\ref{cap:planos-conjunto}. El
-rodamiento inferior es el fijo y el superior, el libre. El eje hueco lleva roscas
-M8$\times$0,75 en ambos extremos; la rosca deja \SI{1.0}{mm} de pared en el fondo del filete,
-suficiente para las cargas de aterrizaje (\SI{106}{N}) pero no para apretar de más.}
+\caption{Plano F6: tapa superior de Ø\,81 con eje fijo y cabeza del rotor (cubo y rodamientos en
+trazos). La pila interior (collar, aros interiores, separador, arandela y tuerca de retención, todos de
+Ø\,\SI{10}{mm} como máximo) se aprieta contra la cara de la tapa: el collar es el hombro inferior que pide
+el capítulo~\ref{cap:planos-conjunto}. El rodamiento inferior es el fijo y el superior, el libre. El eje, un
+tubo de aluminio Ø\,8$\times$5, lleva roscas M8$\times$0,75 en ambos extremos; la rosca deja
+\SI{1.0}{mm} de pared en el fondo del filete, suficiente para las cargas de aterrizaje (\SI{126}{N} a
+\SI{200}{g} según el capítulo~\ref{cap:estructura}; \SI{139}{N} con la cabeza de \SI{71}{g}) pero no para
+apretar de más. Sin cuerda por el eje desaparecen el travesaño, la guía de cuerda y el tramo inferior del
+eje, que pasa de \SI{67}{mm} a \SI{45}{mm} (a confirmar en CAD). La cuerda del drogue sale del pasador de
+liberación, en un carro con retén que acciona el segundo servo MG90S (capítulo~\ref{cap:arq}); la forma del
+carro y su soporte son a confirmar en CAD. La copa aplanada de Ø\,75$\times$10 tiene la base rebajada
+alrededor de la tuerca de retención, de modo que su borde queda a \SI{24.9}{mm} de la cara de la tapa
+(presupuesto del capítulo~\ref{cap:dim}: \SI{25}{mm}, a confirmar en CAD); la copa cubre la ventana de la cámara cenit
+(radios de \SIrange{25}{33}{mm}, bajo los \SI{37.5}{mm} de la copa): la ventana pasa a la copa o la cámara se
+corre, a confirmar en CAD.}
 \label{fig:fabricacion-tapa}
 \end{figure}
 
@@ -1230,10 +1281,10 @@ que se montan; los números son los pasos de la sección~\ref{sec:fabricacion-mo
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=0.62mm, y=0.62mm]
-  \draw[eje] (0,-12) -- (0,200);
-  % 1: tapa con eje, contratuerca y travesaño
+  \draw[eje] (0,-12) -- (0,210);
+  % 1: tapa con eje y contratuerca
   \fabcil{0}{-8}{10}{8}{ffijo}{cfijo}
-  \fabcil{0}{0}{43.6}{4}{ffijo}{cfijo}
+  \fabcil{0}{0}{40.5}{4}{ffijo}{cfijo}
   \fill[white] (-29,6.2) ellipse [x radius=4, y radius=1.3];
   \fill[black!70] (15,5.0) circle (1.1);
   \fabcil{0}{4}{4}{70}{cgris!40}{black}
@@ -1258,17 +1309,20 @@ que se montan; los números son los pasos de la sección~\ref{sec:fabricacion-mo
   \fabcil{0}{130}{5}{2.5}{cgris!40}{black}
   \fabcil{0}{137}{6.5}{4}{cgris!60}{black}
   \fabpaso{-14,140}{4}
-  % 5: copa y tuerca de copa
-  \fabcil{0}{150}{22}{25}{ffijo}{cfijo}
-  \fill[ccuerda!30] (0,175) ellipse [x radius=20.5, y radius=6.56];
-  \fabcil{0}{183}{6.5}{4}{cgris!60}{black}
-  \fabpaso{-32,172}{5}
+  % 5: copa aplanada, carro con pasador de liberación y tuerca de copa
+  \fabcil{0}{158}{37.5}{10}{ffijo}{cfijo}
+  \fill[ccuerda!30] (0,168) ellipse [x radius=35.5, y radius=11.4];
+  \filldraw[act, draw=black, line width=0.3pt] (12,163) rectangle (26,171);
+  \draw[black, line width=0.8pt] (10,167) -- (28,167);
+  \draw[cuerda] (19,167) -- (19,204);
+  \fabcil{0}{184}{6.5}{4}{cgris!60}{black}
+  \fabpaso{-47,168}{5}
   % 6: portapalas, pasadores y palas (dos de cuatro dibujadas)
   \foreach \s in {1,-1}{
     \filldraw[rot] ({58*\s},103) rectangle ({72*\s},111);
     \filldraw[rot] ({72*\s},104.5) -- ({102*\s},104) -- ({102*\s},111) -- ({72*\s},109.5) -- cycle;
     \draw[black, decorate, decoration={zigzag, segment length=3, amplitude=1}] ({102*\s},101) -- ({102*\s},114);
-    \fabcil{55*\s}{122}{1}{11}{cgris!50}{black}
+    \fabcil{55*\s}{122}{1.5}{11}{cgris!50}{black}
     \draw[flecha] ({55*\s},119) -- ({55*\s},112);
     \draw[flecha] ({57*\s},107) -- ({50*\s},107);}
   \fabpaso{75,124}{6}
@@ -1278,14 +1332,16 @@ que se montan; los números son los pasos de la sección~\ref{sec:fabricacion-mo
   \draw[ref] (36,2) -- (66,-8) node[right, font=\scriptsize] {tapa superior + eje + contratuerca};
   \draw[ref] (7,85) -- (30,78) node[right, font=\scriptsize] {collar};
   \draw[ref] (18,113) -- (36,126) node[right, font=\scriptsize] {cubo};
-  \draw[ref] (6.5,139) -- (30,150) node[right, font=\scriptsize] {arandela + tuerca de retención};
-  \draw[ref] (22,165) -- (40,170) node[right, font=\scriptsize] {copa del drogue};
-  \draw[ref] (6.5,185) -- (30,192) node[right, font=\scriptsize] {tuerca de copa + guía de cuerda};
+  \draw[ref] (6.5,139) -- (46,138) node[right, font=\scriptsize] {arandela + tuerca de retención};
+  \draw[ref] (37,160) -- (46,156) node[right, font=\scriptsize] {copa aplanada del drogue};
+  \draw[ref] (26,169) -- (46,176) node[right, font=\scriptsize, align=left] {carro con pasador\\ de liberación};
+  \draw[ref] (6.5,186) -- (30,189) node[right, font=\scriptsize] {tuerca de copa};
+  \draw[ref] (19,200) -- (30,204) node[right, font=\scriptsize] {cuerda al drogue};
 \end{tikzpicture}
 \caption{Vista explosionada de la cabeza del rotor (perspectiva caballera, escala
 aproximada 0,6:1; se dibujan dos de las cuatro palas, cortadas). Azul: piezas fijas;
 naranja: piezas que giran; gris: rodamientos y piezas metálicas. Los números son los pasos
-de montaje.}
+de montaje. La cuerda del drogue sale del pasador de liberación, no del eje.}
 \label{fig:fabricacion-explo}
 \end{figure}
 
@@ -1418,9 +1474,9 @@ Flecha relajada & 0,30; 0,15 & $+0{,}06$ & 0,36 & 0,61 a 1,33 & $0{,}967\pm0{,}1
 \begin{subfigure}[t]{0.49\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[width=0.97\linewidth, height=5.6cm, xlabel={Margen $m$ [mm]},
-  ylabel={Densidad [1/mm]}, xmin=-0.1, xmax=1.6, ymin=0, ymax=4.6, legend pos=north east, xtick={0,0.5,1,1.5},
-  legend style={font=\scriptsize}, xticklabel style={/pgf/number format/fixed}]
-  \fill[cfreno!10] (axis cs:-0.1,0) rectangle (axis cs:0,4.6);
+  ylabel={Densidad [1/mm]}, xmin=-0.1, xmax=1.6, ymin=0, ymax=5.2, xtick={0,0.5,1,1.5},
+  legend pos=north west, legend style={font=\scriptsize}, xticklabel style={/pgf/number format/fixed}]
+  \fill[cfreno!10] (axis cs:-0.1,0) rectangle (axis cs:0,5.2);
   \addplot[cfreno, thick, const plot mark mid] table[x=m, y=base] {analysis/data/fabricacion_hist_env.dat};
   \addplot[cfijo, thick, dashed, const plot mark mid] table[x=m, y=relajada] {analysis/data/fabricacion_hist_env.dat};
   \addplot[crot, thick, const plot mark mid] table[x=m, y=adoptada] {analysis/data/fabricacion_hist_env.dat};
@@ -1433,7 +1489,7 @@ Flecha relajada & 0,30; 0,15 & $+0{,}06$ & 0,36 & 0,61 a 1,33 & $0{,}967\pm0{,}1
 \begin{tikzpicture}
 \begin{axis}[width=0.93\linewidth, height=5.6cm, xlabel={Tolerancia de flecha $T_s$ [mm]},
   ylabel={Margen $m$ [mm]}, xmin=0.05, xmax=0.5, ymin=-0.3, ymax=0.8,
-  legend pos=south west, legend style={font=\scriptsize},
+  legend style={font=\tiny, at={(0.5,1.03)}, anchor=south, legend columns=2},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
   \fill[cfreno!10] (axis cs:0.05,-0.3) rectangle (axis cs:0.5,0);
   \fill[ccuerda!12] (axis cs:0.05,-0.3) rectangle (axis cs:0.15,0.8);
@@ -1441,7 +1497,10 @@ Flecha relajada & 0,30; 0,15 & $+0{,}06$ & 0,36 & 0,61 a 1,33 & $0{,}967\pm0{,}1
   \addplot[crot, thick, dashed] table[x=ts, y=mwc_a15] {analysis/data/fabricacion_env_ts.dat};
   \addplot[cfijo, thick] table[x=ts, y=m3_a30] {analysis/data/fabricacion_env_ts.dat};
   \addplot[cfijo, thick, dashed] table[x=ts, y=mwc_a30] {analysis/data/fabricacion_env_ts.dat};
-  \legend{3\,$\sigma$, $T_a=0{,}15$; peor caso, $T_a=0{,}15$; 3\,$\sigma$, $T_a=0{,}30$; peor caso, $T_a=0{,}30$}
+  \addlegendentry{3\,$\sigma$, $T_a=0{,}15$}
+  \addlegendentry{peor caso, $T_a=0{,}15$}
+  \addlegendentry{3\,$\sigma$, $T_a=0{,}30$}
+  \addlegendentry{peor caso, $T_a=0{,}30$}
 \end{axis}
 \end{tikzpicture}
 \caption{Margen a 3\,$\sigma$ (percentil 0,135) y de peor caso.}
@@ -1463,7 +1522,7 @@ $\le\SI{0.15}{mm}$ se conserva porque con $\pm\SI{0.30}{mm}$ el peor caso solo c
 $\pm\SI{0.22}{mm}$. En la versión~1 (Ø\,95, cuerpo de Ø\,88) la misma cadena dejaba el borde fuera de la
 envolvente en el 56\,\% de los rotores.
 
-En el modelo anterior la posición libre $h$ varía $\pm\SI{0.25}{mm}$ ($3\,\sigma$) en torno al contacto: la
+En este modelo la posición libre $h$ varía $\pm\SI{0.25}{mm}$ ($3\,\sigma$) en torno al contacto: la
 mitad de las palas quedaría separada del cuerpo y la otra mitad «dentro» de él. Como el cuerpo detiene a la
 pala, el desvío hacia adentro no existe (modelo con tope, $h\ge0$): el margen medio baja a
 \SI{0.94}{mm} y la desviación a \SI{0.077}{mm} (\num{12.2}\,$\sigma$). Se informa el modelo sin tope porque
@@ -1532,8 +1591,7 @@ orden general es el de la tabla~\ref{tab:planos-montaje}; aquí se detalla el ro
   \item \textbf{Tapa y eje.} Pasar el eje por el buje de la tapa con el collar arriba;
         contratuerca de aluminio abajo con traba de rosca de resistencia media, a
         \SI{1.5}{N.m}. Verificar con escuadra y comparador que el eje queda perpendicular a
-        la cara: desvío $\le\SI{0.10}{mm}$ a \SI{30}{mm} de altura. Fijar el travesaño y
-        pasar la cuerda por el eje.
+        la cara: desvío $\le\SI{0.10}{mm}$ a \SI{30}{mm} de altura.
   \item \textbf{Collar.} Asentar el collar sobre la cara de la tapa; verificar que no
         balancea (es el hombro inferior).
   \item \textbf{Cubo.} (3a) Prensar el rodamiento inferior (fijo) con adhesivo de
@@ -1547,9 +1605,10 @@ orden general es el de la tabla~\ref{tab:planos-montaje}; aquí se detalla el ro
         que antes de apretar la tuerca (si frena al apretar, el aro libre está trabado y hay
         precarga); juego axial con comparador $\le\SI{0.05}{mm}$; huelgo cubo--tapa con
         galga $\ge\SI{0.3}{mm}$ en cuatro puntos.
-  \item \textbf{Copa.} Copa del drogue sobre la tuerca, tuerca de copa de aluminio y guía
-        de cuerda. Verificar que la cuerda corre libre a través del eje con
-        \SI{1}{N} de tiro.
+  \item \textbf{Copa.} Copa aplanada del drogue sobre la tuerca de retención y tuerca de copa de
+        aluminio; carro con el pasador de liberación y su servo MG90S. Verificar con una pesa de
+        \SI{0.44}{kg} (\SI{4.3}{N}, la tensión de régimen del drogue, capítulo~\ref{cap:arq}) colgada del lazo:
+        el pasador la sostiene y el servo lo retira.
   \item \textbf{Palas.} Elegir el juego de cuatro palas por momento estático
         (sección~\ref{sec:fabricacion-balanceo}) y numerarlas. Insertar cada portapala con
         su collar hacia la oreja ancha (la llave impide el error), colocar el resorte y
@@ -1566,11 +1625,11 @@ orden general es el de la tabla~\ref{tab:planos-montaje}; aquí se detalla el ro
   \item \textbf{Unión.} Atornillar la tapa al cuerpo (4 tornillos M2,5 en insertos,
         \SI{0.3}{N.m}). Plegar las palas, girar el anillo a la posición trabada y
         verificar que cada diente atraviesa su ojal con un enganche visible
-        $\ge\SI{1.5}{mm}$.
+        $\ge\SI{1.5}{mm}$, y que los cuatro dientes de las aletas antigiro las retienen plegadas.
   \item \textbf{Verificación final:} masa \SI{500 \pm 10}{g} con el lastre; calibre
-        pasa/no pasa Ø\,\SI{95.0}{mm} a lo largo de todo el cuerpo con las palas
-        plegadas; largo $\le\SI{250}{mm}$; tres ciclos de liberación con el servo
-        comandado por el software (estado PROBE\_RELEASE) y recarga.
+        pasa/no pasa Ø\,\SI{90.0}{mm} a lo largo de todo el cuerpo con las palas
+        plegadas; largo $\le\SI{250}{mm}$; tres ciclos de liberación de la traba y tres del pasador del
+        drogue con el servo comandado por el software (estado PROBE\_RELEASE) y recarga.
 \end{enumerate}
 
 \begin{table}[H]
@@ -1581,16 +1640,18 @@ orden general es el de la tabla~\ref{tab:planos-montaje}; aquí se detalla el ro
 \toprule
 & \textbf{Control} & \textbf{Criterio de aceptación}\\\midrule
 $\square$ & Pared del cuerpo, 8 puntos & $\ge\SI{2.0}{mm}$ en todos (\Req{S6})\\
-$\square$ & Diámetro y largo del cuerpo & Ø\,$87{,}2\pm0{,}3$; largo total $\le250$ (\Req{S3})\\
+$\square$ & Diámetro y largo del cuerpo & Ø\,$81{,}0\pm0{,}3$; largo total $\le250$ (\Req{S3})\\
 $\square$ & Flecha de cada pala (puente) & lectura $s_b$ de 2,36 a \SI{2.60}{mm}; dispersión del juego $\le0{,}08$\\
-$\square$ & Masa y momento de cada pala & $8{,}2\pm\SI{0.3}{g}$; momento dentro de $\pm\SI{3}{g.mm}$ del promedio\\
+$\square$ & Masa y momento de cada pala & $9{,}5\pm\SI{0.3}{g}$; momento dentro de $\pm\SI{3}{g.mm}$ del promedio\\
 $\square$ & Paso de cada portapala & altura BA--BF según la tabla del plano F2, $\pm\SI{0.15}{mm}$\\
 $\square$ & Juego axial del cubo & $\le\SI{0.05}{mm}$; sin precarga (gira igual antes y después de apretar la tuerca)\\
 $\square$ & Giro libre del cubo sin palas & $\ge\SI{10}{s}$ desde un impulso a mano\\
 $\square$ & Sensor hall & un pulso por vuelta a mano; ninguno con el cubo quieto\\
 $\square$ & Balanceo dinámico & $|U|\le\SI{6}{g.mm}$; desnivel de puntas $\le\SI{1}{mm}$\\
-$\square$ & Traba & 10 ciclos sin fallo; enganche $\ge\SI{1.5}{mm}$ en las cuatro\\
-$\square$ & Envolvente & calibre pasa/no pasa Ø\,95,0 con palas plegadas, en todo el largo\\
+$\square$ & Traba y aletas antigiro & 10 ciclos sin fallo; enganche $\ge\SI{1.5}{mm}$ en las cuatro; las cuatro aletas quedan retenidas plegadas y se sueltan al girar el anillo\\
+$\square$ & Pasador de liberación del drogue & con \SI{0.44}{kg} (\SI{4.3}{N}) colgados del lazo, el servo lo retira; 10 ciclos sin fallo\\
+$\square$ & Orejas del cubo y pasador & $e_o\ge\SI{3.0}{mm}$ (plano: 4,0) en las cuatro; pasador de Ø\,3 a presión, sin juego en las orejas\\
+$\square$ & Envolvente & calibre pasa/no pasa Ø\,90,0 con palas plegadas, en todo el largo (la cabeza del rotor, aparte: sec.~\ref{sec:fabricacion-llave})\\
 $\square$ & Masa total & \SI{500 \pm 10}{g} (\Req{S1}); ajustar el lastre\\
 \bottomrule
 \end{tabularx}
@@ -1600,18 +1661,18 @@ $\square$ & Masa total & \SI{500 \pm 10}{g} (\Req{S1}); ajustar el lastre\\
 \centering\small
 \caption{Lista de control de preparación para el vuelo (en el campo, en este orden).}
 \label{tab:fabricacion-check-vuelo}
-\begin{tabularx}{\textwidth}{@{}clY@{}}
+\begin{tabularx}{\textwidth}{@{}cYY@{}}
 \toprule
 & \textbf{Acción} & \textbf{Verificación}\\\midrule
 $\square$ & Inspección visual de palas, pestañas y pasadores & sin fisuras, pestañas firmes, pasadores enrasados\\
 $\square$ & Girar el cubo a mano con las palas abiertas & libre, sin ruido; el hall cuenta\\
 $\square$ & Revisar el paso (marcas en el talón) & las cuatro iguales al valor del plan de vuelo\\
-$\square$ & Plegar el drogue en la copa; cuerda y destorcedor libres & la cuerda corre por el eje\\
+$\square$ & Plegar el drogue en la copa, con el lazo sobre el pasador de liberación; cuerda y destorcedor libres & el lazo sujeta sin apretar; la cuerda sale libre de la copa\\
 $\square$ & Batería cargada, baliza con pila nueva & tensión $\ge\SI{4.0}{V}$; baliza suena\\
 $\square$ & Encender (S1); software en LAUNCH\_PAD & telemetría recibida; LED encendido (\Req{E6})\\
-$\square$ & Plegar las palas y trabar (comando desde tierra) & cuatro enganches visibles; servo en reposo\\
-$\square$ & Prueba de liberación con la traba sujeta a mano & el servo gira y vuelve; volver a trabar\\
-$\square$ & Calibre Ø\,95 y masa final & pasa; \SI{500 \pm 10}{g}\\
+$\square$ & Plegar las palas y las aletas antigiro y trabar (comando desde tierra) & cuatro enganches visibles; aletas bajo sus dientes; servo en reposo\\
+$\square$ & Prueba de liberación con la traba sujeta a mano (y del pasador, sin drogue) & los dos servos giran y vuelven; volver a trabar\\
+$\square$ & Calibre Ø\,90 y masa final & pasa; \SI{500 \pm 10}{g}\\
 $\square$ & Cámaras grabando & ambas indican grabación\\
 $\square$ & Integración en el cohete & sin forzar; nada se engancha en la boca del tubo\\
 \bottomrule
@@ -1631,7 +1692,8 @@ convertidos con un tipo de cambio \emph{supuesto} de 1300 a 1700 pesos por dóla
 rangos deben reemplazarse por presupuestos reales antes de comprar. El cálculo está en
 \texttt{analysis/fabricacion\_costos.py}. Según \Req{C9}, las herramientas y el soporte
 en tierra no entran en el costo; los repuestos de vuelo y los consumibles de fabricación sí
-se incluyen (criterio conservador).
+se incluyen (criterio conservador). La lista no desglosa las cuatro aletas antigiro (placas de \SI{0.5}{mm} de
+carbono o FR-4, capítulo~\ref{cap:arq}): su costo no se estimó aparte.
 
 \begin{table}[H]
 \centering\footnotesize
@@ -1641,22 +1703,22 @@ masa: en vuelo, de la tabla~\ref{tab:masa} salvo indicación.}
 \begin{tabularx}{\textwidth}{@{}Yccr@{}}
 \toprule
 \textbf{Ítem} & \textbf{Cant.} & \textbf{USD} & \textbf{Miles de pesos}\\\midrule
-\multicolumn{4}{@{}l}{\textit{Rotor y traba} (masa en vuelo estimada \SI{66}{g} + traba \SI{16}{g})}\\
+\multicolumn{4}{@{}l}{\textit{Rotor y traba} (\SI{71}{g} de rotor y \SI{8}{g} de traba)}\\
 Tejido de carbono (\SI{0.25}{m^2}) y cinta unidireccional & 1+1 & 15--30 & 20--51\\
 Epoxi de laminación (\SI{250}{g}) y consumibles de vacío & 1 & 27--55 & 35--94\\
 Varilla pultruida de carbono Ø\,2 (\SI{1}{m}) & 1 & 3--6 & 4--10\\
 Rodamientos 688ZZ (2 de vuelo y 2 de repuesto) & 4 & 8--16 & 10--27\\
-Tubo de aluminio Ø\,8$\times$5, tuercas M8$\times$0,75, pasadores Ø\,2 & 1 & 7--14 & 9--24\\
+Tubo de aluminio Ø\,8$\times$5, tuercas M8$\times$0,75, pasadores Ø\,3 m6 (8: 4 de vuelo y 4 de repuesto) & 1 & 7--14 & 9--24\\
 Chapa inoxidable \SI{0.5}{mm}, alambre Ø\,1, resortes de torsión & 1 & 6--14 & 8--24\\
 Imán, sensor hall & 1 & 2--4 & 3--7\\
-Micro servo MG90S (1 de vuelo y 1 de repuesto) & 2 & 10--20 & 13--34\\
+Micro servos MG90S de engranajes metálicos (anillo de traba y pasador del drogue) & 2 & 10--20 & 13--34\\
 Adhesivos (epoxi estructural, retención, cianoacrilato) & 1 & 15--30 & 20--51\\
 \textbf{Subtotal rotor y traba} & & \textbf{93--189} & \textbf{121--321}\\\midrule
-\multicolumn{4}{@{}l}{\textit{Estructura impresa y fijaciones} (\SI{191}{g}, más \SI{83}{g} de lastre)}\\
+\multicolumn{4}{@{}l}{\textit{Estructura impresa y fijaciones} (\SI{208}{g} de la tabla de masa, más el lastre)}\\
 Filamento PETG (\SI{1}{kg}, todas las piezas), insertos, tornillos, lastre, espuma & 1 & 26--47 & 34--80\\\midrule
-\multicolumn{4}{@{}l}{\textit{Drogue y cuerda} (\SI{18}{g})}\\
+\multicolumn{4}{@{}l}{\textit{Drogue y cuerda} (\SI{10}{g}, se sueltan)}\\
 Ripstop, Dyneema Ø\,1,5, destorcedor de bolas & 1 & 11--27 & 14--46\\\midrule
-\multicolumn{4}{@{}l}{\textit{Electrónica} (\SI{177}{g} de la planilla, más los módulos nuevos del capítulo~\ref{cap:sensores})}\\
+\multicolumn{4}{@{}l}{\textit{Electrónica} (\SI{177}{g} de la planilla, más \SI{16}{g} de los módulos nuevos del capítulo~\ref{cap:sensores})}\\
 Electrónica de la planilla del equipo (precios reales del 1.º de octubre de 2026) & 1 & --- & 215--245\\
 Módulos nuevos: RP2040, FRAM, RTC, Hall con imanes, microinterruptores & 1 & 20--45 & 26--77\\
 Opcionales: BMP388 y ADXL375 & 1 & 18--35 & 23--60\\
@@ -1711,11 +1773,13 @@ presupuesto real se acerca al límite las palancas son los repuestos del rotor (
 fondos de ensayo y no de vuelo), los opcionales de la tabla y los consumibles de laminado.
 
 \paragraph{Masa del rotor.} La estimación detallada de la cabeza del rotor con palas da
-\SI{71}{g} (palas con varilla \SI{38}{g}, cubo \SI{12}{g}, rodamientos \SI{7}{g}, eje
-\SI{5.5}{g}, tuercas \SI{5.1}{g}, resto \SI{3.4}{g}), \SI{7}{g} más que los \SI{64}{g} de
-la tabla~\ref{tab:masa}. La diferencia sale del lastre (\SI{33}{g} en la Arq.~1, quedan
-\SI{26}{g}) y se suma a los \SI{16}{g} del capítulo~\ref{cap:sensores}: el lastre queda en
-\SI{10}{g}, sin margen para una segunda celda; las tuercas de aluminio en la copa y bajo la tapa ya ahorran
+\SI{70.5}{g} (palas con varilla \SI{38}{g}, cubo \SI{12}{g}, rodamientos \SI{7}{g}, eje de \SI{45}{mm}
+\SI{3.7}{g}, tuercas \SI{5.1}{g}, resto \SI{4.7}{g}: collar, separador y arandela \SI{1.5}{g}, cuatro pasadores
+de Ø\,3 \SI{2.4}{g}, resortes y sensor hall \SI{0.8}{g}), \SI{6.5}{g} más que los \SI{64}{g} con que se armó la
+primera tabla de masa (\texttt{analysis/fabricacion\_costos.py}). Con el eje de \SI{67}{mm} de la versión
+anterior serían \SI{72.4}{g}; con los pasadores de Ø\,2, \SI{69.2}{g}. El capítulo~\ref{cap:dim} ya usa esta
+corrección (\SI{71}{g}, tabla~\ref{tab:masa}) y es ella, junto con los \SI{16}{g} de electrónica y las aletas, la
+que baja el lastre de la Arquitectura~1. Las tuercas de aluminio en la copa y bajo la tapa ya ahorran
 \SI{4}{g} frente a acero. Las masas de los rodamientos (\SI{3.5}{g} c/u) son un valor
 típico de catálogo para la serie, no pesadas.
 
@@ -1731,14 +1795,14 @@ típico de catálogo para la serie, no pesadas.
 Impresora FDM con boquilla de \SI{0.4}{mm} y cama a \SI{80}{\celsius} & Todas las piezas plásticas y plantillas & Lab.\\
 Bomba de vacío o venturi ($\le\SI{-0.6}{bar}$) y vacuómetro & Laminado & Lab. o compra\\
 Caño de PVC Ø\,160 con suplemento, o molde mecanizado R\,81 & Molde de la placa & Compra\\
-Balanza de \SI{0.01}{g} y soporte de momento con pasador Ø\,2 & Masa y balanceo estático & Compra\\
+Balanza de \SI{0.01}{g} y soporte de momento con pasador Ø\,3 & Masa y balanceo estático & Compra\\
 Comparador de \SI{0.01}{mm} con base, puente de \SI{40}{mm}, mármol o vidrio & Flecha, torsión, juego axial & Lab.\\
 Torno de banco & Separador, collar, roscas del eje & Lab.\\
-Juego de machos y terraja M8$\times$0,75; escariador Ø\,2,10 & Eje y ojos & Compra\\
+Juego de machos y terraja M8$\times$0,75; escariador Ø\,3,10 & Eje y ojos de los portapalas & Compra\\
 Soldador con punta para insertos & Insertos de latón & Lab.\\
 Morsa con matriz R\,0,5, plantilla de acero para pestañas & Pestañas & Taller\\
 Banco de ventilador, cámara de \SI{240}{fps} & Balanceo dinámico y desnivel & Cap.~\ref{cap:ensayos}\\
-Calibre pasa/no pasa Ø\,95,0 & Envolvente & Impreso y verificado\\
+Calibre pasa/no pasa Ø\,90,0 & Envolvente & Impreso y verificado\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1784,11 +1848,11 @@ en compuestos; la primera placa conviene tomarla como prueba.
 
 \begin{resultado}[Qué cambia y qué hay que verificar]
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{Envolvente:} la pala plegada del anteproyecto excede Ø\,95 en la mitad de
-        los rotores. Se adopta cuerpo Ø\,\SI{87.2}{mm}, ranura del portapala
-        \SI{0.36}{mm} más adentro y alabeo $\le\SI{0.15}{mm}$ ($P=0{,}03$\,\%).
+  \item \textbf{Envolvente:} con el cuerpo de Ø\,81, la pala plegada deja \SI{0.97}{mm} de holgura
+        nominal bajo Ø\,90 ($\SI{0.967 \pm 0.095}{mm}$, \num{10.1}\,$\sigma$, y $+\SI{0.19}{mm}$ en peor caso con
+        flecha y alabeo de $\pm\SI{0.15}{mm}$). La envolvente ya no fija la tolerancia de flecha.
   \item \textbf{Pala:} flecha \SI{3.15 \pm 0.15}{mm} con dispersión $\le\SI{0.10}{mm}$ en
-        el juego, paso \ang{\pm 0.5} y \ang{0.2} entre palas, masa \SI{8.2 \pm 0.3}{g} y
+        el juego, paso \ang{\pm 0.5} y \ang{0.2} entre palas, masa \SI{9.5 \pm 0.3}{g} y
         momento $\pm\SI{3}{g.mm}$. El molde es el caño de Ø\,160 con suplemento de
         \SI{1}{mm}, medido antes de laminar.
   \item \textbf{Balanceo:} G\,16 ($\le\SI{6}{g.mm}$), estático por momento y dinámico en
@@ -1797,10 +1861,18 @@ en compuestos; la primera placa conviene tomarla como prueba.
         interferencia de \SIrange{0.03}{0.08}{mm} calibrada con probeta más adhesivo, el
         superior deslizante. Así la tuerca no precarga los rodamientos y el juego axial es
         solo el interno del fijo; collar de Ø\,\SI{10}{mm} como hombro inferior.
+  \item \textbf{Bisagra:} pasador de Ø\,3 m6 y oreja con $e_o=\SI{4.0}{mm}$ (FS\,=\,9,9 al desgarro bajo la
+        centrífuga del sobrepaso). La cabeza del rotor sobresale de Ø\,90 (orejas a $r=\SI{48}{mm}$) y no cierra sin
+        cambiar $e$ o admitirla en el tubo: se decide en el CAD.
   \item \textbf{Traba:} dientes de alambre de acero, tope fijo en la posición trabada y
         pestañas pegadas con plantilla; así la cadena cierra en peor caso en las
-        direcciones axial y tangencial; la radial se corrige en el montaje.
+        direcciones axial y tangencial; la radial se corrige en el montaje. Con el cuerpo de Ø\,81 el bloque
+        portadiente se recorta a $R=\SI{37.6}{mm}$ (a confirmar en CAD). El anillo suma cuatro dientes de alambre
+        para retener las aletas antigiro (capítulo~\ref{cap:arq}); su radio y apoyo son a confirmar en CAD.
   \item \textbf{Llave:} el collar coaxial del portapala impide el montaje invertido.
+  \item \textbf{Drogue:} sale del pasador de liberación de la copa aplanada, no del eje; se verifica en el
+        montaje con una pesa de \SI{0.44}{kg}. El eje pasa a \SI{45}{mm} y la copa cubre la ventana de la cámara
+        cenit (a confirmar en CAD).
   \item \textbf{Costo:} \num{434000} a \num{828000} pesos (orientativo, versión~2); \Req{C9} se
         cumple en el escenario central. Hay que pedir presupuestos de los módulos
         nuevos y de los consumibles antes de cerrar el diseño.
