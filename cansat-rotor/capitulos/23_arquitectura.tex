@@ -28,10 +28,10 @@ estructura) se recalcularon con estos datos.
         \SI{5}{J} de energía de aterrizaje (contra \SI{10}{J}); el perfil de la pala puede
         tener espesor ($t/c$ hasta 11\,\% con chasis Ø\,72). Requiere que la organización
         permita separar el contenedor: es una consulta, no un hecho.
-  \item \textbf{Simulación de cumplimiento} (Monte Carlo, $2\times10^5$ corridas): con la
-        Arquitectura~1 y $R=\SI{0.25}{m}$, \Req{C4} se cumple como régimen en el
-        \SI{99.7}{\percent} de los casos y como promedio global en el \SI{87}{\percent};
-        con la Arquitectura~2, en el \SI{100}{\percent} y el \SI{99.9}{\percent}.
+  \item \textbf{Simulación de cumplimiento} (Monte Carlo, $2\times10^5$ corridas, con el apogeo
+        de diseño): con la Arquitectura~1 y $R=\SI{0.25}{m}$, \Req{C4} se cumple como régimen en el
+        \SI{99.7}{\percent} de los casos y como promedio global en el \SI{86}{\percent};
+        con la Arquitectura~2, en el \SI{100}{\percent} y el \SI{99.8}{\percent}.
   \item \textbf{Recomendación.} Fijar $R=\SI{0.25}{m}$ (rotor común) y llevar adelante la
         Arquitectura~1 como base, con la Arquitectura~2 lista para activarse si la organización
         responde que sí. La matriz de decisión da ventaja a la 2 con el \SI{81}{\percent} de
@@ -79,9 +79,14 @@ el rotor se reduce.
         \Req{S1} ¿se verifica combinada solo en el pesaje?
   \item \Req{S6}: ¿la pared mínima de \SI{2}{mm} aplica solo a piezas impresas en 3D, y se
         admite un contenedor tubular no impreso (aluminio, fibra de vidrio, PVC)?
-  \item Altura sobre el mar del sitio de lanzamiento y apogeo esperado (la densidad del
-        aire es la segunda variable de $V_2$; capítulo~\ref{cap:sens}).
+  \item Altura sobre el mar del sitio de lanzamiento y apogeo esperado. El equipo estima la
+        liberación del rotor a \SI{500}{m}, un apogeo de \SI{625}{m} con el \SI{80}{\percent} de
+        \Req{C4} (sección~\ref{sec:dim-tiempos}), por confirmar. La densidad del aire es la
+        segunda variable de $V_2$ (capítulo~\ref{cap:sens}).
   \item \Req{X3}: ¿«separación» es la salida del CanSat del cohete?
+  \item \Req{C4}: ¿la liberación es el \SI{80}{\percent} del apogeo medido o una altura fija sobre
+        el suelo? Un umbral fijo reintroduce el error de escala de la atmósfera estándar
+        (capítulo~\ref{cap:sens}).
 \end{enumerate}
 
 %=====================================================================
@@ -389,6 +394,12 @@ velocidades de la etapa 1.}
 \label{fig:arq-prom}
 \end{figure}
 
+\paragraph{Tiempos de descenso.} Con el apogeo de diseño (sección~\ref{sec:dim-tiempos}), la
+etapa~1 dura \SI{9.3}{s} y la etapa~2, \SI{78.6}{s} con la Arquitectura~1
+($V_2=\SI{6.36}{m/s}$) o \SI{91.4}{s} con la 2 ($V_2=\SI{5.47}{m/s}$): \SI{87.9}{s} y
+\SI{100.7}{s} de descenso. Si el apogeo fuera de \SI{500}{m} (liberación a \SI{400}{m}),
+serían \SI{70.3}{s} y \SI{80.6}{s}.
+
 %=====================================================================
 \section{Secuencia de liberación y soltado del drogue}\label{sec:arq-secuencia}
 
@@ -494,7 +505,8 @@ carga útil de \SI{0.32}{kg} dentro del contenedor de \SI{0.18}{kg} (con drogue)
   \fill[crot!50] (0.23,-2.2) rectangle (0.41,-1.8);        \node[font=\tiny, anchor=west] at (0.41,-2.0) {palas abren};
 \end{tikzpicture}
 \caption{Cronología de la liberación, de \SI{0}{} a \SI{0.5}{s}. Desde que las palas están
-abiertas, el arranque del rotor dura \SI{1.5}{s} más (capítulo~\ref{cap:arranque}).}
+abiertas, el arranque del rotor dura \SI{1.5}{s} más y el CanSat cae \SI{21.7}{m}, el
+\SI{4.3}{\percent} de la altura de la etapa~2 (capítulo~\ref{cap:arranque}).}
 \label{fig:arq-cronologia}
 \end{figure}
 
@@ -519,9 +531,15 @@ Liberación prematura (lógica) & Mismo árbol que en v1 (cap.~\ref{cap:confiabi
 
 Se simularon $2\times10^5$ descensos por caso con variación de la masa de pesaje
 (490--510~g), la masa en la etapa 2, la densidad del aire (temperatura de 5 a 35\,°C y altura del
-sitio de 0 a \SI{800}{m}), $C_D$ del drogue (0,75--0,90), el apogeo (500 a \SI{1000}{m}), el
-tiempo de arranque (2,5 a \SI{5}{s}) y una incertidumbre relativa del \SI{12}{\percent}
-en $C_R$ (la de la BEMT).
+sitio de 0 a \SI{800}{m}), $C_D$ del drogue (0,75--0,90), el tiempo de transición de $V_1$ a
+$V_2$ (2,5 a \SI{5}{s}) y una incertidumbre relativa del \SI{12}{\percent} en $C_R$ (la de la
+BEMT). El apogeo es fijo, el de diseño (sección~\ref{sec:dim-tiempos}). La transición se modela
+como $t_s$ segundos a la velocidad media $(V_1+V_2)/2$; el rango es más ancho que los
+\SI{2.6}{s} en que la simulación del capítulo~\ref{cap:arranque} deja la velocidad a menos del
+\SI{2}{\percent} de $V_2$ (el $t_{90}=\SI{1.55}{s}$ es el giro del rotor, no la velocidad). La
+densidad se evalúa a la altitud del sitio y no a la altura de vuelo: a \SI{250}{m} sobre el
+sitio, la altura media de la etapa~2, sería un \SI{3}{\percent} menor y $V_2$ subiría
+\SI{1.5}{\percent}; ese efecto no está incluido.
 
 \begin{table}[H]
 \centering\small
@@ -529,12 +547,12 @@ en $C_R$ (la de la BEMT).
 \begin{tabular}{@{}lccccc@{}}
 \toprule
 \textbf{Caso} & $V_2$ [m/s] & $V_2$ p95 & $\langle V\rangle$ p95 & $P(\text{C4, régimen})$ & $P(\text{C4, global})$\\\midrule
-Arq.~1, $R=\SI{0.25}{m}$ & $6{,}60\pm0{,}42$ & 7,35 & 8,27 & 99,7\,\% & 87\,\%\\
-Arq.~1, $R=\SI{0.23}{m}$ & $7{,}15\pm0{,}45$ & 7,94 & 8,84 & 95,9\,\% & 48\,\%\\
-Arq.~1, $R=\SI{0.20}{m}$ & $8{,}15\pm0{,}51$ & 9,05 & 9,86 & 41,1\,\% & 1\,\%\\
-Arq.~2, $R=\SI{0.25}{m}$ & $5{,}66\pm0{,}38$ & 6,32 & 7,26 & 100\,\% & 99,9\,\%\\
-Arq.~2, $R=\SI{0.23}{m}$ & $6{,}13\pm0{,}41$ & 6,84 & 7,77 & 99,96\,\% & 98\,\%\\
-Arq.~2, $R=\SI{0.20}{m}$ & $6{,}99\pm0{,}46$ & 7,79 & 8,69 & 97,6\,\% & 61\,\%\\
+Arq.~1, $R=\SI{0.25}{m}$ & $6{,}60\pm0{,}42$ & 7,35 & 8,29 & 99,7\,\% & 86,0\,\%\\
+Arq.~1, $R=\SI{0.23}{m}$ & $7{,}15\pm0{,}45$ & 7,94 & 8,86 & 95,9\,\% & 45,9\,\%\\
+Arq.~1, $R=\SI{0.20}{m}$ & $8{,}15\pm0{,}51$ & 9,05 & 9,88 & 41,1\,\% & 0,9\,\%\\
+Arq.~2, $R=\SI{0.25}{m}$ & $5{,}66\pm0{,}38$ & 6,32 & 7,28 & 100\,\% & 99,8\,\%\\
+Arq.~2, $R=\SI{0.23}{m}$ & $6{,}13\pm0{,}41$ & 6,84 & 7,80 & 99,96\,\% & 97,8\,\%\\
+Arq.~2, $R=\SI{0.20}{m}$ & $6{,}99\pm0{,}46$ & 7,79 & 8,72 & 97,6\,\% & 59,5\,\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -561,9 +579,9 @@ punteada vertical es el límite de \SI{8}{m/s}.}
 \label{fig:arq-hist}
 \end{figure}
 
-La cola superior de la Arquitectura~1 en la lectura global (13\,\% de casos sobre 8~m/s) la
-produce casi toda la densidad del aire: en un sitio a \SI{800}{m} la densidad es un
-\SI{7}{\percent} menor que al nivel del mar y $V_2$ sube \SI{4}{\percent}. Por eso conviene
+La cola superior de la Arquitectura~1 en la lectura global (14\,\% de casos sobre 8~m/s) la
+produce en gran parte la densidad del aire: en un sitio a \SI{800}{m} la densidad es un
+\SI{9}{\percent} menor que al nivel del mar y $V_2$ sube \SI{5}{\percent}. Por eso conviene
 conocer la altura del sitio (consulta~6).
 
 %=====================================================================

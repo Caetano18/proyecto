@@ -28,7 +28,9 @@ pala depende de dónde queda el centro de masa. Los cálculos están en
         el \SI{56}{\percent} de la varianza.
   \item Altura de liberación: el retardo del filtro y el error del puerto de presión
         (\SI{2.3}{m} cada uno); el error de escala de la atmósfera estándar se cancela al usar
-        el \SI{80}{\percent} del apogeo medido con el mismo sensor.
+        el \SI{80}{\percent} del apogeo medido con el mismo sensor. La altura misma (liberación
+        de 400 a \SI{800}{m}) cambia la duración y el peso del arranque, no el promedio de régimen
+        (sección~\ref{sec:sens-altura}).
   \item Flameo: la posición del centro de masa de la pala ($\ge0{,}45c$ lo acerca a
         $2{,}5\Omega$); fuerza centrífuga: la velocidad de giro al cuadrado, y el sobrepaso
         del arranque la sube un \SI{60}{\percent}.
@@ -123,14 +125,15 @@ aporta.
 %=====================================================================
 \section{Promedio de \texorpdfstring{\Req{C4}}{C4} sobre todo el descenso}\label{sec:sens-Vg}
 
-El promedio global~\eqref{eq:promedio} suma a lo anterior las entradas de la etapa 1
-(masa de pesaje, $C_D$ y diámetro del drogue), la fracción de altura recorrida a $V_1$ (el
-error del disparo del 80\,\%, de 17 a 23\,\%) y el tiempo de arranque (2,5 a \SI{5}{s}).
+El promedio global~\eqref{eq:promedio}, con el apogeo de diseño (sección~\ref{sec:dim-tiempos}),
+suma a lo anterior las entradas de la etapa 1 (masa de pesaje, $C_D$ y diámetro del drogue), la
+fracción de altura recorrida a $V_1$ (el error del disparo del 80\,\%, de 17 a 23\,\%) y el
+tiempo de transición de $V_1$ a $V_2$ (2,5 a \SI{5}{s}; sección~\ref{sec:arq-mc}).
 
 \begin{figure}[H]
 \centering
 \input{figuras/tornado_Vg_A1}
-\caption{Tornado del promedio global, Arquitectura~1 (nominal \SI{7.38}{m/s}; el límite de
+\caption{Tornado del promedio global, Arquitectura~1 (nominal \SI{7.42}{m/s}; el límite de
 \SI{8}{m/s} se indica con puntos).}
 \label{fig:sens-tornado-Vg}
 \end{figure}
@@ -141,20 +144,21 @@ error del disparo del 80\,\%, de 17 a 23\,\%) y el tiempo de arranque (2,5 a \SI
 \begin{tabular}{@{}lcc@{}}
 \toprule
 \textbf{Entrada} & \textbf{Arq.~1} $S_i$ & \textbf{Arq.~2} $S_i$\\\midrule
-$C_R$ del modelo & 0,71 & 0,60\\
+$C_R$ del modelo & 0,70 & 0,59\\
 Densidad del aire & 0,18 & 0,15\\
 Masa $m_2$ & 0,01 & 0,16\\
 Fracción de altura a $V_1$ (disparo del 80\,\%) & 0,05 & 0,06\\
-Etapa 1 ($m_1$, $C_{D,d}$, $D_d$, $C_{D,c}$) y arranque & 0,03 & 0,03\\
+Etapa 1 ($m_1$, $C_{D,d}$, $D_d$, $C_{D,c}$) y transición & 0,03 & 0,02\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 La etapa 1 casi no importa para el promedio: $m_1$, $C_D$ y el diámetro del drogue suman menos
-del \SI{3}{\percent} de la varianza. La probabilidad de superar \SI{8}{m/s} con estas entradas
-es del \SI{3.5}{\percent} para la Arquitectura~1 y nula para la 2, menor que el
-\SI{13}{\percent} del Monte Carlo de la sección~\ref{sec:arq-mc} porque allí la densidad se
-muestrea con la altura del sitio y la temperatura (más cola superior).
+del \SI{2}{\percent} de la varianza. La probabilidad de superar \SI{8}{m/s} con estas entradas
+es del \SI{4.8}{\percent} para la Arquitectura~1 y nula para la 2, menor que el
+\SI{14}{\percent} del Monte Carlo de la sección~\ref{sec:arq-mc} porque allí la densidad se
+muestrea con la altura del sitio y la temperatura (más cola superior); ambos usan el mismo
+apogeo.
 
 %=====================================================================
 \section{Arranque del rotor}\label{sec:sens-arranque}
@@ -168,7 +172,8 @@ muestrea con la altura del sitio y la temperatura (más cola superior).
 \end{figure}
 
 La inercia del rotor es la entrada más sensible: un \SI{30}{\percent} más de inercia
-alarga el arranque de 1,55 a \SI{2.0}{s} y la caída de 22 a \SI{28}{m}. Como la inercia
+alarga el arranque de 1,55 a \SI{2.0}{s} y la caída de 22 a \SI{28}{m} (del \SI{4.3}{\percent} al
+\SI{5.6}{\percent} de la altura de la etapa~2). Como la inercia
 depende de la masa de las palas (portapala y varilla de BV incluidos) y de su centro de masa,
 \textbf{pesar y balancear las palas} es la medida más barata. Le sigue el paso: de \ang{-2} a
 \ang{-4} el arranque va de 2,0 a \SI{1.3}{s}. La polar en pérdida (XFOIL contra 2D) cambia
@@ -212,7 +217,8 @@ Cámaras apagadas en la rampa, radio a 1\,Hz (20\,mA) & 0,91 & 12,1 & Cumple\\
 
 La conclusión de diseño es encender las cámaras al detectar el despegue (por aceleración o por
 presión) y mantener la rampa a $\approx\SI{1}{W}$. Con esa política las 2 horas de \Req{E7} se cubren con un factor
-4 (rampa) más los 3 a 10 minutos de vuelo con las cámaras encendidas.
+4 (rampa) más el vuelo con las cámaras encendidas: unos \SIrange{88}{101}{s} de descenso
+(sección~\ref{sec:dim-tiempos}) y la subida, de decenas de segundos.
 
 %=====================================================================
 \section{Masa, altura de liberación y fuerza centrífuga}\label{sec:sens-masa}
@@ -229,11 +235,11 @@ resulta de: retardo del filtro $\times$ $V_1$ (\SI{2.3}{m}), error del puerto es
 la presión dinámica del aire a \SI{13}{m/s} (\SI{2.4}{m}), deriva térmica del offset del
 BMP280 (\SI{0.7}{m}), deriva meteorológica en la rampa (\SI{0.4}{m}), ruido (\SI{0.15}{m}) y
 pico de ruido al buscar el máximo (\SI{0.18}{m}). Suman un error medio de $+\SI{7.2}{m}$
-(se libera más abajo) con \SI{3.4}{m} de desviación y \SI{12.9}{m} en el percentil 95:
-\SI{1.9}{\percent} de la altura. Eso mueve el promedio global menos de \SI{0.12}{m/s}.
-Si el umbral fuera absoluto, el error de escala de la atmósfera estándar ($\pm4$\,\%) daría
-\SI{31}{m}; al usar el \SI{80}{\percent} del apogeo medido con el mismo sensor, ese error se
-cancela. El diseño del puerto de presión (venteado, lejos de la corriente) y la
+(se libera más abajo) con \SI{3.4}{m} de desviación y \SI{12.9}{m} en el percentil 95: el
+\SI{2.6}{\percent} de la altura de liberación y el \SI{2.1}{\percent} del apogeo. Eso mueve el
+promedio global menos de \SI{0.09}{m/s}. Si el umbral fuera absoluto, el error de escala de la
+atmósfera estándar ($\pm4$\,\%) daría \SI{20}{m} a la altura de liberación; al usar el
+\SI{80}{\percent} del apogeo medido con el mismo sensor, ese error se cancela. El diseño del puerto de presión (venteado, lejos de la corriente) y la
 frecuencia de muestreo importan más que la calidad del sensor.
 
 \paragraph{Fuerza centrífuga y flameo.} La fuerza centrífuga por pala vale
@@ -258,6 +264,44 @@ Pala BV & 3,34 & 2,75 & 2,47 & 2,20 & 2,12\\
 Con BV, un centro de masa corrido de $0{,}44c$ a $0{,}55c$ baja el margen de 2,6 a 2,1; con A,
 cualquier posición por detrás de $0{,}41c$ da flameo en régimen o muy cerca. El centro de masa
 se mide con el ensayo de balanceo sobre filo (capítulo~\ref{cap:estructura}).
+
+%=====================================================================
+\section{Altura de liberación y apogeo}\label{sec:sens-altura}
+
+El equipo estima la liberación del rotor a \SI{500}{m}; con el \SI{80}{\percent} de \Req{C4}, el
+apogeo de diseño es de \SI{625}{m} (caso base, sección~\ref{sec:dim-tiempos}). Si lo estimado
+fuera el apogeo, la liberación sería a \SI{400}{m} (lectura alternativa); \SI{800}{m} (apogeo de
+\SI{1000}{m}) es una cota superior. El promedio de régimen no cambia (\SI{7.11}{m/s} con la
+Arq.~1 y \SI{6.21}{m/s} con la 2). Cambian la duración, el peso del arranque y el error relativo
+de la liberación.
+
+\begin{table}[H]
+\centering\small
+\caption{Sensibilidad a la altura de liberación (caso base en la columna central). El promedio con
+transición supone $t_s=\SI{3.75}{s}$; las probabilidades salen del Monte Carlo de la
+sección~\ref{sec:arq-mc} con el apogeo fijo y los mismos sorteos en las tres alturas.}\label{tab:sens-altura}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Altura de liberación [m] & 400 & \textbf{500} & 800\\
+Apogeo [m] & 500 & \textbf{625} & 1000\\\midrule
+Etapa 1 [s] & 7,4 & \textbf{9,3} & 14,9\\
+Etapa 2, Arq.~1 [s] & 62,9 & \textbf{78,6} & 125,8\\
+Etapa 2, Arq.~2 [s] & 73,1 & \textbf{91,4} & 146,3\\
+$\langle V\rangle$ con transición, Arq.~1 [m/s] & 7,33 & \textbf{7,28} & 7,22\\
+$\langle V\rangle$ con transición, Arq.~2 [m/s] & 6,42 & \textbf{6,38} & 6,31\\
+$P(\text{C4, global})$, Arq.~1 [\%] & 83,8 & \textbf{86,0} & 88,9\\
+$P(\text{C4, global})$, Arq.~2 [\%] & 99,8 & \textbf{99,8} & 99,9\\
+Error de liberación p95 (\SI{12.9}{m}) [\% de la altura de liberación] & 3,2 & \textbf{2,6} & 1,6\\
+Caída del arranque (\SI{21.7}{m}) [\% de la altura de liberación] & 5,4 & \textbf{4,3} & 2,7\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Una liberación más baja alarga proporcionalmente el arranque y el error de la liberación, y
+sube el promedio con transición (la transición se recorre más rápido que $V_2$ y pesa más): la
+probabilidad de cumplir baja de \SI{88.9}{\percent} a \SI{83.8}{\percent} en la Arq.~1 entre
+\SI{800}{m} y \SI{400}{m}, y casi no cambia en la 2. La tabla no incluye la menor densidad a la
+altura de vuelo (sección~\ref{sec:arq-mc}), que baja esas probabilidades y crece con la altura.
 
 %=====================================================================
 \section{Anillo de vórtices y ráfagas}\label{sec:sens-vrs}

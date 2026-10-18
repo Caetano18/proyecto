@@ -5,6 +5,7 @@
 //  rotor (pulsos del sensor hall) y, opcionalmente, un reinicio del procesador.
 //  Compilar:  g++ -std=gnu++17 -O2 -o /tmp/sil analysis/electronica_sil.cpp
 //  Usar:      /tmp/sil analysis/data/electronica_kalman_sensores.dat [t_reinicio_s]
+//             (caso alternativo CANSAT_HLIB=400: electronica_kalman_sensores_H400.dat)
 // =====================================================================================
 #include <cmath>
 #include <cstdint>

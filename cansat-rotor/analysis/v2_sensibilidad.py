@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 """Estudios de sensibilidad de la configuración v2.
 A. V2 de régimen (rotor solo): elasticidades, tornado, Sobol (S1, ST) y PRCC.
-B. Promedio global de C4 (incluye la etapa 1 y el transitorio).
+B. Promedio global de C4 (incluye la etapa 1 y el transitorio), con el apogeo de diseño.
 D. Autonomía (E7) frente a los consumos y rendimientos.
 E. Error de la altura de liberación (80 % del apogeo).
 F. Masa de la etapa 2 (S1) y su efecto en V2, por arquitectura.
 G. Margen de anillo de vórtices frente a ráfagas verticales.
+H. Sensibilidad a la altura de liberación: H_lib = 400, 500 y 800 m (sens_altura.dat).
+Altura: CANSAT_HLIB = altura de liberación del rotor [m] (por defecto 500); el apogeo de diseño es
+H_lib/0,8 (625 m). Con otro valor (p. ej. 400, lectura alternativa de apogeo 500 m) las salidas
+llevan el sufijo _H<H_lib> y no pisan las del caso base.
 Salida: analysis/data/sens_*.dat y sens_resumen.json.   Uso: python3 analysis/v2_sensibilidad.py
 """
 import os, sys, json
@@ -19,9 +23,14 @@ G = 9.81
 res = {}
 rng = np.random.default_rng(20261016)
 
+HLIB = float(os.environ.get('CANSAT_HLIB', '500'))      # altura de liberación del rotor [m]
+F_LIB = 0.8                                             # C4: se libera al 80 % de la altitud máxima
+H_APO = HLIB / F_LIB                                    # apogeo de diseño [m]
+SUF = '' if HLIB == 500.0 else '_H%g' % HLIB            # sufijo de las salidas del caso alternativo
+
 
 def guardar(nombre, cab, filas, fmt='%.6g'):
-    with open(os.path.join(DATA, 'sens_' + nombre + '.dat'), 'w') as f:
+    with open(os.path.join(DATA, 'sens_' + nombre + SUF + '.dat'), 'w') as f:
         f.write(' '.join(cab) + '\n')
         for fila in filas:
             f.write(' '.join(fmt % x if not isinstance(x, str) else x for x in fila) + '\n')
@@ -127,7 +136,7 @@ def parteB(arq='A1'):
         V1 = V1f(m1, rho, Cdd, Dd, Cdc)
         V2 = V2f(m2, 0.25, rho, dCR, th, 45.0, 4.0, Cdc)
         # transitorio: ts s de arranque a velocidad media (V1+V2)/2 dentro de la altura de la etapa 2
-        H = 800.0
+        H = H_APO                                   # apogeo de diseño (625 m con la liberación a 500 m)
         t1 = fr * H / V1
         hr = (1 - fr) * H
         Vs = 0.5 * (V1 + V2)
@@ -195,7 +204,8 @@ def parteD():
 # ---------------------------------------------------------------- E. error de la altura de liberación
 def parteE(N=200000):
     rho = 1.225
-    H = rng.uniform(500, 1000, N)
+    _ = rng.uniform(500, 1000, N)               # sorteo original del apogeo: se descarta, pero se hace la llamada
+    H = np.full(N, H_APO)                       # para no desplazar la secuencia de F y G; el apogeo es fijo (625 m)
     # fuentes (m): ruido del barómetro filtrado, retardo del filtro x V1, puerto estático (Cp q), deriva térmica del
     # offset, deriva meteorológica en la rampa, pico de ruido al buscar el máximo
     ruido = rng.normal(0, 0.15, N)
@@ -209,11 +219,13 @@ def parteE(N=200000):
     dh = ruido + retardo + puerto + deriva_T + meteo - pico
     df = dh / H
     res['E'] = dict(dh_media=float(dh.mean()), dh_sd=float(dh.std()), dh_p95=float(np.percentile(np.abs(dh), 95)),
-                    df_p95=float(np.percentile(np.abs(df), 95)),
+                    df_p95=float(np.percentile(np.abs(df), 95)),            # |dh|/apogeo (fracción del apogeo)
+                    dh_p95_pct_Hlib=float(100 * np.percentile(np.abs(dh), 95) / HLIB),   # % de la altura de liberación
                     contrib={n: float(np.std(v)) for n, v in dict(ruido=ruido, retardo=retardo, puerto=puerto,
                                                                   deriva_T=deriva_T, meteo=meteo, pico=pico).items()})
-    # efecto de la escala ISA si el umbral fuera ABSOLUTO (comparación): error de +-4 % en h
-    err_abs = rng.normal(0, 0.04, N) * H
+    # efecto de la escala ISA si el umbral fuera ABSOLUTO (comparación): error de +-4 % en la altura a la que se
+    # aplica el umbral, que es la de liberación (0,8 del apogeo, 500 m), no la del apogeo
+    err_abs = rng.normal(0, 0.04, N) * (F_LIB * H)
     res['E']['escala_absoluta_sd'] = float(err_abs.std())
     # sensibilidad de V_global a la fracción de liberación
     for fr in (0.17, 0.20, 0.23):
@@ -269,7 +281,7 @@ def parteF(N=200000):
                            m2_mu=float(m2.mean()), m2_sd=float(m2.std()), V2_mu=float(V2.mean()), V2_sd=float(V2.std()),
                            V2_p95=float(np.percentile(V2, 95)),
                            items=[dict(n=i[0], mu=i[1], sd=i[2], grupo=i[3], share=float(sh)) for i, sh in zip(items, share)])
-        with open(os.path.join(DATA, 'sens_masa_%s.dat' % nombre), 'w') as f:
+        with open(os.path.join(DATA, 'sens_masa_%s%s.dat' % (nombre, SUF)), 'w') as f:
             f.write('item mu sd share\n')
             for k in range(len(items)):
                 f.write('%d %.2f %.2f %.4f\n' % (k + 1, mu[k], sd[k], share[k]))
@@ -287,16 +299,52 @@ def parteG():
             out.append((arq, w, (V2 - w) / vh))
         res['G_' + arq] = dict(V2=float(V2), vh=float(vh), V_vh=float(V2 / vh),
                                w_hasta_1p7=float((V2 / vh - 1.7) * vh), w_hasta_1p5=float((V2 / vh - 1.5) * vh))
-    with open(os.path.join(DATA, 'sens_gust.dat'), 'w') as f:
+    with open(os.path.join(DATA, 'sens_gust%s.dat' % SUF), 'w') as f:
         f.write('arq w Vvh\n')
         for a, w, r in out:
             f.write('%s %.2f %.4f\n' % (a, w, r))
 
 
+# ---------------------------------------------------------------- H. sensibilidad a la altura de liberación
+def parteH(n=200_000):
+    """Efecto de la altura de liberación H_lib (apogeo H_lib/0,8) en los tiempos de etapa, el promedio con el
+    transitorio de arranque, la probabilidad de cumplir C4 como promedio global (Monte Carlo de v2_descenso con el
+    apogeo fijo), el error de liberación relativo y la fracción de altura que usa el arranque del rotor.
+    Filas: H_lib = 400 (lectura alternativa: apogeo de 500 m), 500 (adoptada) y 800 m. Va después de parteE."""
+    import v2_descenso as vd
+    V1n = vd.V1
+    V2n = {'A1': 6.36, 'A2': 5.47}                               # BEMT, rotor solo (m2 = 0,49 y 0,36 kg)
+    ts_nom = 0.5 * (2.5 + 5.0)                                   # tiempo de transición nominal [s]
+    try:
+        z90 = json.load(open(os.path.join(DATA, 'sens_arranque.json')))['base'][1]   # caída hasta t90 [m]
+    except (OSError, KeyError, ValueError):
+        z90 = 21.66
+    dh95 = res['E']['dh_p95']                                    # error de liberación, percentil 95 [m]
+    filas = []
+    for hl in (400.0, 500.0, 800.0):
+        H = hl / F_LIB
+        t1 = (1 - F_LIB) * H / V1n
+        pm, _ = vd.mc_calc(H, n)
+        fila = [hl, H, t1]
+        for a in ('A1', 'A2'):
+            V2 = V2n[a]
+            t2 = F_LIB * H / V2
+            Vs = 0.5 * (V1n + V2)
+            t2tr = ts_nom + (F_LIB * H - Vs * ts_nom) / V2       # etapa 2 con el transitorio (como en parteB)
+            fila += [t2, t1 + t2, H / (t1 + t2), H / (t1 + t2tr), 100 * pm[a + '_R25']['P_C4_global']]
+        fila += [dh95, 100 * dh95 / hl, 100 * z90 / hl]
+        filas.append(fila)
+    guardar('altura', ['H_lib', 'H_apo', 't1', 't2_A1', 'ttot_A1', 'V_A1', 'Vtr_A1', 'P_A1',
+                       't2_A2', 'ttot_A2', 'V_A2', 'Vtr_A2', 'P_A2', 'dh_p95', 'dh_pct_Hlib', 'z90_pct_Hlib'], filas)
+    res['H'] = [dict(H_lib=f[0], H_apo=f[1], t1=f[2], A1=dict(t2=f[3], ttot=f[4], V=f[5], V_trans=f[6], P_global=f[7]),
+                     A2=dict(t2=f[8], ttot=f[9], V=f[10], V_trans=f[11], P_global=f[12]),
+                     dh_p95=f[13], dh_pct_Hlib=f[14], z90_pct_Hlib=f[15]) for f in filas]
+
+
 if __name__ == '__main__':
     for arq in ('A1', 'A2'):
         parteA(arq); parteB(arq)
-    parteD(); parteE(); parteF(); parteG()
-    json.dump(res, open(os.path.join(DATA, 'sens_resumen.json'), 'w'), indent=1)
+    parteD(); parteE(); parteF(); parteG(); parteH()
+    json.dump(res, open(os.path.join(DATA, 'sens_resumen%s.json' % SUF), 'w'), indent=1)
     for k, v in res.items():
         print(k, json.dumps(v)[:900])

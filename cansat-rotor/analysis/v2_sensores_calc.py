@@ -2,12 +2,19 @@
 # -*- coding: utf-8 -*-
 """Cálculos de apoyo del capítulo de sensores: (A) tiempo en el aire y margen del enlace LoRa, (B) autonomía con una o
 dos celdas, (C) campo del imán del sensor de rpm sobre el magnetómetro, (D) presupuesto de pines.
+Altura del enlace: CANSAT_HLIB = altura de liberación del rotor [m] (por defecto 500; apogeo de diseño H_lib/0,8 = 625 m).
+El CanSat se evalúa a la altura de liberación, como analysis/electronica_enlace.py; con otro valor las salidas
+llevan el sufijo _H<H_lib>.
 Salida: analysis/data/sensores_calc.json y sensores_lora.dat. Uso: python3 analysis/v2_sensores_calc.py"""
 import os, json, math
 import numpy as np
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 rng = np.random.default_rng(20261017)
 res = {}
+HLIB = float(os.environ.get('CANSAT_HLIB', '500'))      # altura de liberación del rotor [m]
+SUF = '' if HLIB == 500.0 else '_H%g' % HLIB            # sufijo de las salidas del caso alternativo
+H_APO = HLIB / 0.8                                      # apogeo de diseño [m]
+H_GS = 1.5                                              # altura de la antena de tierra [m] (electronica_enlace.py)
 
 # ------------------------------------------------------------------ A. LoRa
 def airtime(PL, SF, BW, CR=1, npre=8, crc=1, ih=0):
@@ -22,7 +29,7 @@ for SF in range(7, 13):
     for BW in (125e3, 250e3, 500e3):
         S = SENS125[SF] + 10*math.log10(BW/125e3)
         filas.append((SF, BW/1e3, airtime(56, SF, BW), airtime(140, SF, BW), S))
-with open(os.path.join(D, 'sensores_lora.dat'), 'w') as f:
+with open(os.path.join(D, 'sensores_lora%s.dat' % SUF), 'w') as f:
     f.write('SF BW_kHz t56_s t140_s S_dBm\n')
     for r in filas:
         f.write('%d %g %.4f %.4f %.1f\n' % r)
@@ -31,21 +38,32 @@ res['lora_airtime'] = {'SF%d_BW%g' % (r[0], r[1]): dict(t56=r[2], t140=r[3], S=r
 lam = 299792458.0 / 915e6
 def fspl(d):
     return 20*math.log10(4*math.pi*d/lam)
-Pt, Gc, Gt, cab, pol, cuerpo = 20.0, 1.6, 8.0, -1.5, -1.0, -3.0
+def g_cansat(h, d=2000.0):
+    """Ganancia [dBi] del dipolo de media onda vertical del CanSat a la altura h, con la estación a d de distancia oblicua."""
+    th = math.atan2(math.sqrt(d**2 - (h - H_GS)**2), h - H_GS)       # ángulo desde el eje del dipolo
+    return max(10*math.log10(1.64*(math.cos(math.pi/2*math.cos(th))/math.sin(th))**2), -20.0), math.degrees(th)
+Gc, theta_deg = g_cansat(HLIB)
+Gc_apogeo, theta_apogeo = g_cansat(H_APO)       # peor caso: más alto, más cerca del nulo del dipolo
+Pt, Gt, cab, pol, cuerpo = 20.0, 8.0, -1.5, -1.0, -3.0
 G = Gc + Gt + cab + pol + cuerpo
 Pr2k = Pt + G - fspl(2000.0)
 Pr_nulo = Pt + (-20.0) + Gt + cab + pol + cuerpo - fspl(2000.0)
-res['enlace'] = dict(fspl_2km=fspl(2000.0), Pr_2km=Pr2k, Pr_nulo=Pr_nulo, G_total=G,
+res['enlace'] = dict(h_cansat=HLIB, theta_deg=theta_deg, Gc_dBi=Gc, h_apogeo=H_APO, theta_apogeo_deg=theta_apogeo, Gc_apogeo_dBi=Gc_apogeo,
+                     fspl_2km=fspl(2000.0), Pr_2km=Pr2k, Pr_nulo=Pr_nulo, G_total=G,
                      margen_SF7=Pr2k - SENS125[7], margen_SF9=Pr2k - SENS125[9], margen_SF12=Pr2k - SENS125[12],
                      margen_nulo_SF7=Pr_nulo - SENS125[7], margen_nulo_SF9=Pr_nulo - SENS125[9])
-# alcance sobre el suelo (dos rayos, h_c = 0,3 m; h_t = 1,5 m) con 10 dB de reserva
+# alcance sobre el suelo (dos rayos, h_c = 0,3 m; h_t = 1,5 m) con 10 dB de reserva. No depende de la altura de
+# vuelo: se mantiene la ganancia de diseño anterior (1,6 dBi); en tierra el dipolo da unos 2,15 dBi (pendiente de
+# unificar con el cap. de electrónica).
+GC_SUELO = 1.6
+G_SUELO = GC_SUELO + Gt + cab + pol + cuerpo
 def alcance_suelo(S, reserva=10.0, hc=0.3, ht=1.5):
-    perd = Pt + G - S - reserva
+    perd = Pt + G_SUELO - S - reserva
     return 10**((perd + 20*math.log10(hc*ht)) / 40.0)
 res['alcance_suelo_m'] = {('SF%d' % sf): alcance_suelo(SENS125[sf]) for sf in (7, 9, 10, 12)}
-res['alcance_libre_km'] = {('SF%d' % sf): 10**((Pt + G - SENS125[sf] - 10 + 20*math.log10(lam/(4*math.pi)))/(-20.0))/1000 * 1.0 for sf in (7, 9, 12)}
+res['alcance_libre_km'] = {('SF%d' % sf): 10**((Pt + G_SUELO - SENS125[sf] - 10 + 20*math.log10(lam/(4*math.pi)))/(-20.0))/1000 * 1.0 for sf in (7, 9, 12)}
 # (la última línea se invierte: d = lam/(4 pi) 10^((Pt+G-S-reserva)/20))
-res['alcance_libre_km'] = {('SF%d' % sf): lam/(4*math.pi) * 10**((Pt + G - SENS125[sf] - 10)/20.0)/1000 for sf in (7, 9, 12)}
+res['alcance_libre_km'] = {('SF%d' % sf): lam/(4*math.pi) * 10**((Pt + G_SUELO - SENS125[sf] - 10)/20.0)/1000 for sf in (7, 9, 12)}
 
 # ------------------------------------------------------------------ B. Autonomía con 1 o 2 celdas
 nom = dict(i_c3=85.0, i_sens=8.8, i_gps=35.0, i_lora=105.0, i_sd=30.0, i_led=5.0, i_cam=300.0, i_servo=20.0,
@@ -94,7 +112,7 @@ pines = [('I2C (SDA, SCL): BMP280, AHT20, MPU6050, QMC5883L, INA219, FRAM, RTC',
          ('Servos (2 PWM)', 2), ('Habilitación de las cámaras (MOSFET)', 1), ('Sensor Hall de rpm', 1),
          ('Estado de las trabas (2 microinterruptores)', 2), ('Panel solar (ADC)', 1)]
 res['pines'] = dict(lista=pines, total=sum(p[1] for p in pines))
-json.dump(res, open(os.path.join(D, 'sensores_calc.json'), 'w'), indent=1, ensure_ascii=False)
+json.dump(res, open(os.path.join(D, 'sensores_calc%s.json' % SUF), 'w'), indent=1, ensure_ascii=False)
 print(json.dumps({k: res[k] for k in ('enlace', 'alcance_suelo_m', 'alcance_libre_km', 'energia')}, indent=1))
 for r in filas:
     if r[1] == 125: print('SF%d BW%g  t56=%.3f s  t140=%.3f s  S=%.1f' % r)

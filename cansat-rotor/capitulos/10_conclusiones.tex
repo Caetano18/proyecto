@@ -15,7 +15,8 @@
         pala en régimen y de \SI{30}{N} en el pico.
   \item \textbf{El paso debe ser negativo} (recomendado \ang{-3}): con paso $\ge\ang{0}$ el rotor
         no arranca solo. Con paso negativo llega al 90\,\% de su giro en \SI{1.6}{s}, tras
-        \SI{22}{m} de caída (cap.~\ref{cap:arranque}).
+        \SI{22}{m} de caída, el \SI{4.3}{\percent} de la altura de liberación
+        (cap.~\ref{cap:arranque}).
   \item \textbf{La estructura necesita cuatro cambios} (cap.~\ref{cap:estructura}): la pala de
         laminado simple es inestable al flameo a $0{,}96\,\Omega$, y hace falta laminado a
         $\pm\ang{45}$ con varilla de carbono en el borde de ataque (flameo a $2{,}55\,\Omega$);
@@ -33,8 +34,8 @@
         si se encienden al despegar); faltan la detección de separación (\Req{X3}), la memoria con
         reloj (\Req{F1}, \Req{F2}, \Req{F5}) y el sensor de rpm; y el servo de plástico es débil
         frente a \Req{M3}.
-  \item \textbf{La probabilidad de cumplir \Req{C4} es del \SI{87}{\percent} como promedio de
-        todo el descenso con la Arquitectura~1, y del \SI{99.9}{\percent} con la Arquitectura~2}
+  \item \textbf{La probabilidad de cumplir \Req{C4} es del \SI{86}{\percent} como promedio de
+        todo el descenso con la Arquitectura~1, y del \SI{99.8}{\percent} con la Arquitectura~2}
         (Monte Carlo, cap.~\ref{cap:arq}); como velocidad de régimen de la etapa~2 es del
         \SI{99.7}{\percent} y \SI{100}{\percent}. Son estimaciones de ingeniería que hay que
         actualizar con los ensayos.
@@ -76,6 +77,10 @@ paracaídas de Ø\,\SI{70}{cm} como plan~B hasta que los ensayos confirmen $V_2$
 
 \section*{Decisiones abiertas}
 \begin{itemize}
+  \item Altura de diseño: el equipo estima la liberación a \SI{500}{m}, o sea un apogeo de
+        \SI{625}{m} con la liberación al \SI{80}{\percent}; confirmarlo con el apogeo del cohete. La
+        lectura alternativa (apogeo de \SI{500}{m}, liberación a \SI{400}{m}) está en la
+        sección~\ref{sec:dim-tiempos}.
   \item Consultas a la organización (lista completa en el capítulo~\ref{cap:arq}):
         diámetro (\SI{90}{mm} o $95\times200$), lectura del promedio de \Req{C4}, suelta del
         drogue antes del rotor, separación del contenedor, pared de \Req{S6} en piezas no

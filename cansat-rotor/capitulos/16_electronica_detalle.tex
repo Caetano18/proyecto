@@ -4,24 +4,29 @@ Este capítulo baja a nivel de circuito y de código lo que el capítulo~\ref{ca
 en bloques. Según el análisis y la simulación, la electrónica propuesta cumple el
 anexo~\cite{anexo} con margen, y la decisión crítica, liberar el rotor al 80\,\% de la
 altitud máxima, resulta robusta frente al ruido, a los valores atípicos y al pico de presión
-de la expulsión.
+de la expulsión. Los cálculos parten de la liberación del rotor a \SI{500}{m}, la altura que
+estimó el equipo; como \Req{C4} libera al 80\,\% de la altitud máxima, el apogeo de diseño es
+de \SI{625}{m} (tiempos de descenso en la tabla~\ref{tab:tiempos}, capítulo~\ref{cap:dim}).
 
 \begin{resultado}[Resultados principales]
 \begin{itemize}[leftmargin=*]
   \item \textbf{Energía}: una 18650 de \SI{3000}{mAh} cubre \SI{2}{h} en la plataforma,
         el vuelo y \SI{1}{h} de recuperación con un factor de margen de 3,9.
   \item \textbf{Liberación}: con el filtro de Kalman y la lógica de votación, la liberación
-        ocurre a \SI{-0.3}{m} (mediana) del 80\,\% real, sin disparos prematuros en
-        \num{4000} vuelos simulados. Las lógicas ingenuas liberan antes de tiempo en el
-        29--60\,\% de los vuelos si la expulsión produce un pico de presión.
+        ocurre a \SI{-0.3}{m} (mediana; \SI{-0.4}{m} con el pico de presión) del 80\,\% real,
+        sin disparos prematuros en \num{4000} vuelos simulados. Las lógicas ingenuas liberan
+        antes de tiempo en el 38--67\,\% de los vuelos si la expulsión produce un pico de
+        presión.
   \item \textbf{Firmware}: se probó en la PC con los mismos datos de sensores (software en el
         lazo) y se recupera de un reinicio en cualquier estado. Un corte de \SI{0.3}{s}
-        retrasa la liberación \SI{0.16}{s} como máximo, salvo que empiece en los
-        \SI{0.4}{s} previos a la liberación: entonces el retraso llega a \SI{0.56}{s}
-        ($\approx\SI{7.5}{m}$, 79\,\% de $h_{\max}$).
-  \item \textbf{Radio}: a \SI{915}{MHz} el enlace cierra a \SI{2}{km} con unos
-        \SI{31}{dB} de margen (\SI{21}{dB} a \SI{2.4}{GHz}); tras el aterrizaje el enlace
-        se pierde más allá de \SIrange{0.6}{1.1}{km}.
+        retrasa la liberación \SI{0.06}{s} como máximo, salvo que empiece en los
+        \SI{0.5}{s} previos a la liberación: entonces el retraso llega a \SI{0.54}{s}
+        ($\approx\SI{7.2}{m}$, 79\,\% de $h_{\max}$). Excepción: 4 de 581 cortes probados
+        durante el ascenso (0,7\,\%) dejan al filtro divergido y la liberación sale entre
+        \SI{42}{s} y \SI{60}{s}, muy por debajo del 80\,\%.
+  \item \textbf{Radio}: a \SI{915}{MHz} el enlace cierra a \SI{2}{km} con
+        \SI{31.5}{dB} de margen (\SI{21.5}{dB} a \SI{2.4}{GHz}); tras el aterrizaje el
+        enlace se pierde más allá de \SIrange{0.6}{1.1}{km}.
 \end{itemize}
 \end{resultado}
 
@@ -268,7 +273,8 @@ los convertidores (rendimientos supuestos de 0,90 y 0,88).
 
 \begin{table}[H]
 \centering\small
-\caption{Potencia y energía por estado (\texttt{analysis/electronica\_potencia.py}). Riel de
+\caption{Potencia y energía por estado (\texttt{analysis/electronica\_potencia.py}); las
+duraciones de las fases salen de la prueba en la PC (sección~\ref{sec:electronica-fw}). Riel de
 \SI{3.3}{V}: \SI{173}{mA}, de los cuales la radio aporta \SI{32.7}{mA} en promedio (RX
 continuo y \SI{20}{ms} de TX por paquete).}\label{tab:electronica-pot}
 \begin{tabular}{@{}lcccr@{}}
@@ -276,11 +282,11 @@ continuo y \SI{20}{ms} de TX por paquete).}\label{tab:electronica-pot}
 \textbf{Estado} & \textbf{Cámaras} & \textbf{Duración} & \textbf{Potencia} [W] & \textbf{Energía} [mWh]\\\midrule
 \texttt{LAUNCH\_PAD} (\Req{E7}) & no & \SI{2}{h} & 0,69 & \num{1385}\\
 \texttt{ASCENT} y \texttt{APOGEE} & sí & \SI{13}{s} & 2,74 & 10\\
-\texttt{DESCENT} & sí & \SI{11}{s} & 2,74 & 8\\
+\texttt{DESCENT} & sí & \SI{9}{s} & 2,74 & 7\\
 \texttt{PROBE\_RELEASE} (servo \SI{0.3}{s}) & sí & \SI{3}{s} & 2,85 & 2\\
-\texttt{PAYLOAD\_RELEASE} & sí & \SI{90}{s} & 2,74 & 68\\
+\texttt{PAYLOAD\_RELEASE} & sí & \SI{87}{s} & 2,74 & 66\\
 \texttt{LANDED} (recuperación) & \SI{60}{s} & \SI{1}{h} & 0,73 & 726\\\midrule
-\textbf{Total} & & & & \textbf{\num{2200}}\\
+\textbf{Total} & & & & \textbf{\num{2196}}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -412,12 +418,13 @@ de \SI{0.5}{hPa} en \SI{2}{h} de espera ($\approx\SI{4}{m}$) la corre menos de \
 
 El script \texttt{analysis/electronica\_kalman.py} simula el vuelo, los sensores y tres
 lógicas de decisión. La lógica propuesta (C) libera al 80\,\% con un error mediano de
-\SI{-0.3}{m}; las lógicas ingenuas fallan por los valores atípicos o por el pico de la
-expulsión.
+\SI{-0.3}{m} (\SI{-0.4}{m} con el pico de presión); las lógicas ingenuas fallan por los
+valores atípicos o por el pico de la expulsión.
 
 \paragraph{Perfil sintético.} Plataforma \SI{5}{s}; motor de \SI{1.6}{s} a
-\SI{80}{m/s^2} netos; planeo balístico con arrastre $k=\SI{5.26e-4}{m^{-1}}$, que lleva al
-apogeo nominal de \SI{700}{m} a los \SI{12.1}{s}; expulsión cerca del apogeo; \SI{0.5}{s}
+\SI{80}{m/s^2} netos; planeo balístico con arrastre $k=\SI{8.34e-4}{m^{-1}}$, calibrado
+para que el vuelo nominal llegue al apogeo de diseño de \SI{625}{m} a los \SI{11.2}{s};
+expulsión cerca del apogeo; \SI{0.5}{s}
 de caída del cuerpo solo; drogue con $\Vd=\SI{13.4}{m/s}$; tras la liberación, transición a
 $\Vr=\SI{6.4}{m/s}$ con constante de tiempo de \SI{1.5}{s}. Sensores: barómetro con ruido
 blanco $\sigma_b$ y valores atípicos de \SIrange{5}{30}{m} en el 0,2\,\% de las muestras;
@@ -429,27 +436,27 @@ escenario~2 agrega dos efectos supuestos (no medidos): un pulso de sobrepresión
 de expulsión de \SIrange{1}{4}{kPa} durante \SIrange{0.05}{0.3}{s} (lectura \SIrange{83}{333}{m}
 más baja) y un error de presión dinámica $k_q v^2/2g$ con $k_q\le0{,}02$ durante el ascenso.
 En el Monte Carlo (\num{2000} vuelos por escenario) varían el empuje, el arrastre (apogeos de
-\SIrange{520}{900}{m} entre los percentiles 5 y 95), $\Vd\sim\mathcal N(13{,}4;\,0{,}7)$,
-$\sigma_b\in[0{,}1;\,0{,}5]$\,m, el sesgo, el momento de la expulsión ($-1$ a $+2$\,s respecto
+\SIrange{465}{797}{m} entre los percentiles 5 y 95 de los dos escenarios),
+$\Vd\sim\mathcal N(13{,}4;\,0{,}7)$, $\sigma_b\in[0{,}1;\,0{,}5]$\,m, el sesgo, el momento de la expulsión ($-1$ a $+2$\,s respecto
 del apogeo) y el choque (3 a $30\,g$).
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[name=ah, width=0.98\textwidth, height=5.0cm, xmin=0, xmax=125, ymin=-20, ymax=760,
+\begin{axis}[name=ah, width=0.98\textwidth, height=5.0cm, xmin=0, xmax=112, ymin=-20, ymax=680,
     ylabel={Altura [m]}, xticklabels={}, legend style={font=\scriptsize, at={(0.99,0.97)}, anchor=north east},
     legend cell align=left]
   \addplot[cgris!60, line width=0.4pt] table[x=t, y=zb] {analysis/data/electronica_kalman_vuelo.dat};
   \addplot[black, line width=1.2pt] table[x=t, y=h] {analysis/data/electronica_kalman_vuelo.dat};
   \addplot[cfijo, line width=0.7pt, dashed] table[x=t, y=hk] {analysis/data/electronica_kalman_vuelo.dat};
   \legend{barómetro, real, Kalman}
-  \draw[cfreno, dashed] (17.58,-20) -- (17.58,760) node[pos=0.06, right, font=\scriptsize] {apogeo det.};
-  \draw[cfreno, dashed] (28.40,-20) -- (28.40,760) node[pos=0.17, right, font=\scriptsize] {liberación};
-  \draw[ccuerda, dashed] (113.7,-20) -- (113.7,760) node[pos=0.45, left, font=\scriptsize] {suelo};
-  \draw[cgris, densely dotted] (0,561) -- (125,561) node[pos=0.55, above, font=\scriptsize] {$0{,}8\,h_{\max}=\SI{561}{m}$};
+  \draw[cfreno, dashed] (16.70,-20) -- (16.70,680) node[pos=0.06, right, font=\scriptsize] {apogeo det.};
+  \draw[cfreno, dashed] (26.36,-20) -- (26.36,680) node[pos=0.17, right, font=\scriptsize] {liberación};
+  \draw[ccuerda, dashed] (102.2,-20) -- (102.2,680) node[pos=0.45, left, font=\scriptsize] {suelo};
+  \draw[cgris, densely dotted] (0,500) -- (112,500) node[pos=0.55, above, font=\scriptsize] {$0{,}8\,h_{\max}=\SI{500}{m}$};
 \end{axis}
 \begin{axis}[at={(ah.south west)}, anchor=north west, yshift=-2mm, width=0.98\textwidth, height=3.6cm,
-    xmin=0, xmax=125, ymin=-0.6, ymax=0.6, xlabel={Tiempo [s]}, ylabel={Error [m] o [m/s]},
+    xmin=0, xmax=112, ymin=-0.6, ymax=0.6, xlabel={Tiempo [s]}, ylabel={Error [m] o [m/s]},
     legend style={font=\scriptsize, at={(0.55,0.97)}, anchor=north}, legend columns=2]
   \addplot[cfijo, line width=0.5pt] table[x=t, y=eh] {analysis/data/electronica_kalman_vuelo.dat};
   \addplot[crot, line width=0.5pt] table[x=t, y=ev] {analysis/data/electronica_kalman_vuelo.dat};
@@ -457,13 +464,13 @@ del apogeo) y el choque (3 a $30\,g$).
 \end{axis}
 \end{tikzpicture}
 \caption{Vuelo nominal en lazo cerrado (escenario 2). La lógica C detecta el apogeo
-\SI{0.52}{s} después del real y libera a \SI{560.5}{m} (79,9\,\% de \SI{701.4}{m}), a
-\SI{0.04}{s} del cruce real del 80\,\%. En el ascenso rápido el error llega a \SI{15}{m} y
+\SI{0.52}{s} después del real y libera a \SI{499.6}{m} (79,9\,\% de \SI{625.0}{m}), a
+\SI{0.02}{s} del cruce real del 80\,\%. En el ascenso rápido el error llega a \SI{16}{m} y
 \SI{9}{m/s} (fuera de escala) por el error de presión dinámica supuesto (hasta
 \SI{8}{m}): la compuerta rechaza esas lecturas hasta el re-anclaje (sin compuerta el error
 de altura sería de \SI{9}{m}). El error desaparece antes del apogeo: cerca de él es de
-\SI{0.11}{m} y \SI{0.29}{m/s}, y en todo el descenso queda por debajo de \SI{0.15}{m} y
-\SI{0.14}{m/s}. El pico final (\SI{7}{m}, \SI{6.5}{m/s}) aparece al tocar el suelo: el
+\SI{0.14}{m} y \SI{0.31}{m/s}, y en todo el descenso queda por debajo de \SI{0.16}{m} y
+\SI{0.15}{m/s}. El pico final (\SI{7.7}{m}, \SI{6.4}{m/s}) aparece al tocar el suelo: el
 choque del impacto se descarta como el de la expulsión, el filtro sigue «bajando» y la
 compuerta rechaza el barómetro hasta re-anclar.}
 \label{fig:electronica-vuelo}
@@ -472,7 +479,7 @@ compuerta rechaza el barómetro hasta re-anclar.}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-\begin{axis}[width=0.5\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=560, ymax=712,
+\begin{axis}[width=0.5\textwidth, height=5.4cm, xmin=-2.5, xmax=4.5, ymin=510, ymax=640,
     xlabel={$t-t_{\mathrm{apogeo}}$ [s]}, ylabel={Altura [m]},
     legend style={font=\scriptsize, at={(0.02,0.03)}, anchor=south west}, legend cell align=left,
     legend columns=1]
@@ -481,8 +488,8 @@ compuerta rechaza el barómetro hasta re-anclar.}
   \addplot[ccuerda, line width=0.8pt] table[x=tr, y=he] {analysis/data/electronica_kalman_apogeo.dat};
   \addplot[cfijo, line width=0.8pt, dashed] table[x=tr, y=hk] {analysis/data/electronica_kalman_apogeo.dat};
   \legend{barómetro, real, EMA (B), Kalman (C)}
-  \node[font=\scriptsize, align=center, cfreno] at (axis cs:2.9,620) {pico de expulsión:\\lectura en \SI{491}{m}};
-  \draw[cfreno, -{Latex[length=1.6mm]}] (axis cs:1.9,612) -- (axis cs:0.75,575);
+  \node[font=\scriptsize, align=center, cfreno] at (axis cs:2.9,545) {pico de expulsión:\\lectura en \SI{414}{m}};
+  \draw[cfreno, -{Latex[length=1.6mm]}] (axis cs:1.9,538) -- (axis cs:0.7,517);
 \end{axis}
 \end{tikzpicture}\hfill
 \begin{tikzpicture}
@@ -496,9 +503,9 @@ compuerta rechaza el barómetro hasta re-anclar.}
 \end{axis}
 \end{tikzpicture}
 \caption{Detalle del apogeo y de la expulsión (a $+\SI{0.52}{s}$) del vuelo nominal. El pico
-de \SI{2.5}{kPa} lleva la lectura cruda a \SI{491}{m}, por debajo del umbral de
-\SI{561}{m}: la lógica A libera en ese instante a \SI{700}{m}. La EMA baja hasta
-\SI{599}{m} y su velocidad hasta \SI{-299}{m/s} (fuera de escala). El filtro C rechaza las muestras del pico
+de \SI{2.5}{kPa} lleva la lectura cruda a \SI{414}{m}, por debajo del umbral de
+\SI{500}{m}: la lógica A libera en ese instante a \SI{624}{m}. La EMA baja hasta
+\SI{522}{m} y su velocidad hasta \SI{-299}{m/s} (fuera de escala). El filtro C rechaza las muestras del pico
 y no se aparta de la altura real.}
 \label{fig:electronica-apogeo}
 \end{figure}
@@ -515,12 +522,12 @@ liberar.}\label{tab:electronica-mc}
 & & \multicolumn{2}{c}{\textbf{Retardo apogeo} [s]} & \textbf{Apogeo} & \multicolumn{4}{c}{\textbf{Liberación}}\\
 \cmidrule(lr){3-4}\cmidrule(lr){6-9}
 \textbf{Esc.} & \textbf{Lógica} & med. & p95 & falso [\%] & err. med. [m] & p95 $|$err.$|$ [m] & prem. [\%] & tardía [\%]\\\midrule
-1 & A: crudo     & 0,34 & 0,52 & 37,5 & $+0{,}2$ & 393 & 0,2 & 28,4\\
+1 & A: crudo     & 0,36 & 0,52 & 35,1 & $+0{,}2$ & 366 & 0,1 & 26,8\\
 1 & B: EMA       & 0,54 & 0,58 & 0,8  & $-3{,}4$ & 3,8 & 0,0 & 0,8\\
-1 & C: Kalman    & 0,70 & 0,78 & 0,0  & $-0{,}3$ & 0,5 & 0,0 & 0,0\\\midrule
-2 & A: crudo     & $-0{,}30$ & 0,50 & 45,6 & $+107$ & 389 & 60,3 & 24,1\\
-2 & B: EMA       & 0,50 & 0,56 & 13,4 & $-3{,}4$ & 146 & 28,8 & 0,9\\
-2 & C: Kalman    & 0,70 & 0,80 & 0,1  & $-0{,}3$ & 0,6 & 0,0 & 0,0\\
+1 & C: Kalman    & 0,70 & 0,80 & 0,0  & $-0{,}3$ & 0,5 & 0,0 & 0,0\\\midrule
+2 & A: crudo     & $-0{,}26$ & 0,50 & 43,5 & $+99{,}8$ & 348 & 66,5 & 21,0\\
+2 & B: EMA       & 0,50 & 0,56 & 13,5 & $-3{,}3$ & 135 & 38,4 & 0,9\\
+2 & C: Kalman    & 0,69 & 0,80 & 0,0  & $-0{,}4$ & 0,6 & 0,0 & 0,0\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -529,15 +536,17 @@ liberar.}\label{tab:electronica-mc}
 \begin{itemize}
   \item \textbf{A} toma el máximo de las lecturas crudas: un valor atípico positivo en el
         ascenso infla $h_{\max}$, las muestras siguientes quedan por debajo y declara un
-        apogeo falso (37,5\,\%). Con $h_{\max}$ congelado bajo, libera tarde (28,4\,\%).
+        apogeo falso (35,1\,\%). Con $h_{\max}$ congelado bajo, libera tarde (26,8\,\%).
   \item \textbf{B} filtra los atípicos, pero su retardo de $\approx\SI{0.24}{s}$ hace que
         libere \SI{3.4}{m} tarde, y el pulso de expulsión la hace liberar casi en el apogeo
-        en el 28,8\,\% de los vuelos.
+        en el 38,4\,\% de los vuelos.
   \item \textbf{C} detecta el apogeo algo más tarde (exige dos votos), pero estima
-        $h_{\max}$ con \SI{0.05}{m} de error mediano. Su error de liberación tiene un p95 de
-        \SI{0.5}{m} (escenario 1) y \SI{0.6}{m} (escenario 2). Los 2 apogeos «falsos» del
-        escenario 2 se adelantan \SI{0.5}{s} con el CanSat expulsado aún subiendo a
-        \SI{5}{m/s}; liberan igual al 80,3 y al 80,7\,\%.
+        $h_{\max}$ con \SI{0.05}{m} de error mediano (\SI{0.07}{m} en el escenario 2). Su
+        error de liberación tiene un p95 de \SI{0.5}{m} (escenario 1) y \SI{0.6}{m}
+        (escenario 2). No declara ningún apogeo «falso» en los \num{4000} vuelos. Con un
+        apogeo de \SI{500}{m} (caso alternativo) el escenario 2 da 3 de \num{2000}: se
+        adelantan \SIrange{0.6}{0.8}{s} con el CanSat expulsado aún subiendo a
+        \SIrange{5.4}{7.7}{m/s}, y liberan igual al 80,7, 81,0 y 82,0\,\%.
   \item En la etapa 1 los errores RMS de C son \SI{0.09}{m} y \SI{0.14}{m/s}, mayores que
         los teóricos (\SI{0.06}{m}, \SI{0.07}{m/s}) porque el sesgo y la oscilación no son
         ruido blanco.
@@ -579,12 +588,12 @@ el reposo con arrastre cuadrático, $\Delta h=(V^2/g)\ln\cosh(gt/V)\approx Vt-(V
   \qquad V_{\min}=\SI{10}{m/s}.
   \label{eq:electronica-timer}
 \end{equation}
-Para \SI{700}{m} da \SI{14.7}{s}, más tarde que la liberación barométrica nominal
-(\SI{10.8}{s} después de detectar el apogeo); en el Monte Carlo nunca actuó. Si el
+Para \SI{625}{m} da \SI{13.2}{s}, más tarde que la liberación barométrica nominal
+(\SI{9.7}{s} después de detectar el apogeo); en el Monte Carlo nunca actuó. Si el
 barómetro falla, el temporizador libera a $\approx$76, 74 o 71\,\% de $h_{\max}$ para
 $\Vd=12$, 13,4 o \SI{15}{m/s}, contando desde el apogeo real; el retardo de detección
-($\approx\SI{0.7}{s}$) resta otro punto. Es un modo degradado: no cumple el 80\,\% de \Req{C4} al
-pie de la letra (para \SI{700}{m} libera entre 27 y \SI{64}{m} más abajo), pero garantiza
+($\approx\SI{0.7}{s}$) resta otro punto y medio. Es un modo degradado: no cumple el 80\,\% de \Req{C4} al
+pie de la letra (para \SI{625}{m} libera entre 23 y \SI{57}{m} más abajo), pero garantiza
 que la segunda etapa se abra.
 
 \paragraph{Salud del barómetro y GPS.} El barómetro se declara en falla tras \SI{0.5}{s} sin
@@ -604,30 +613,49 @@ un reinicio limpio, y la tabla~\ref{tab:electronica-recup} define qué pasa desp
 arrancar, el PWM del servo se fija según la traba guardada \emph{antes} de encender su riel:
 un reinicio en vuelo no vuelve a trabar ni mueve el anillo.
 
-\paragraph{Peor momento para un reinicio.} Si el corte empieza en los \SI{0.4}{s} previos a
+\paragraph{Peor momento para un reinicio.} Si el corte empieza en los \SI{0.5}{s} previos a
 la liberación, el firmware pierde los \SI{0.3}{s} sin energía y vuelve a exigir los
-\SI{0.2}{s} de persistencia: la liberación se atrasa hasta \SI{0.56}{s} (corte justo en el
-instante de liberar), unos \SI{7.5}{m} a \SI{13.4}{m/s} (79\,\% de $h_{\max}$ en lugar de
-80\,\%). Si el corte empieza antes, el atraso es de \SI{0.16}{s} como máximo.
+\SI{0.2}{s} de persistencia: la liberación se atrasa hasta \SI{0.54}{s} (corte justo en el
+instante de liberar), unos \SI{7.2}{m} a \SI{13.4}{m/s} (79\,\% de $h_{\max}$ en lugar de
+80\,\%). Si el corte empieza antes, el atraso es de \SI{0.06}{s} como máximo.
+
+\paragraph{Reinicio durante el ascenso.} Tras el reinicio el filtro arranca con
+$\sigma_v=\SI{100}{m/s}$ y la primera lectura mala lo desvía. Con cortes cada \SI{0.1}{s}
+la recuperación es la de la tabla~\ref{tab:electronica-recup}, pero con un paso de
+\SI{0.02}{s} fallan 4 de los 581 instantes del ascenso (0,7\,\%): un valor atípico del
+barómetro, o el pico de la expulsión si el corte termina mientras este dura, le da al filtro
+una velocidad de cientos de \si{m/s} que no se corrige. El apogeo no se confirma por votos,
+se declara por el límite de \SI{40}{s} y la liberación sale entre \SI{41.9}{s} y
+\SI{60.3}{s}. Con el drogue a \SI{13.4}{m/s} el CanSat estaría entonces a
+\SIrange{45}{290}{m} (7--47\,\% de $h_{\max}$) y no se cumple \Req{C4}. El firmware actual no
+lo cubre.
 
 \begin{table}[H]
 \centering\small
 \caption{Recuperación tras un reinicio, según el estado guardado. Última columna: prueba del
-firmware en la PC con un corte de \SI{0.3}{s} (sin reinicio: liberación a \SI{28.38}{s}, giro
-confirmado a \SI{30.30}{s} y \texttt{LANDED} a \SI{124.8}{s}).}
+firmware en la PC con un corte de \SI{0.3}{s} que empieza cada \SI{0.1}{s} (sin reinicio:
+liberación a \SI{26.34}{s}, giro confirmado a \SI{28.26}{s} y \texttt{LANDED} a
+\SI{114.8}{s}).}
 \label{tab:electronica-recup}
 \begin{tabularx}{\textwidth}{@{}l>{\hsize=1.1\hsize}Y>{\hsize=0.9\hsize}Y@{}}
 \toprule
 \textbf{Estado guardado} & \textbf{Acción al arrancar} & \textbf{Prueba (corte en $t$)}\\\midrule
 \texttt{LAUNCH\_PAD} & Conserva $p_0$, contador y traba; espera el despegue & ---\\
-\texttt{ASCENT} & Filtro con $h$ del barómetro y $v$ libre ($\sigma_v=\SI{100}{m/s}$); bloqueo de \SI{2}{s}; $h_{\max}$ guardado & 5,5 a \SI{17.3}{s}: libera a 28,36--\SI{28.38}{s}\\
-\texttt{APOGEE}, \texttt{DESCENT} & Pasa a \texttt{DESCENT}; recupera $h_{\max}$ y la hora del apogeo (RTC) para el temporizador & 17,7 a \SI{28.0}{s}: libera a 28,38--\SI{28.54}{s}; 28,0 a \SI{28.38}{s}: libera a 28,54--\SI{28.94}{s}\\
-\texttt{PROBE\_RELEASE} & Reafirma «liberado» y vuelve a esperar el giro & 29 y \SI{30}{s}: giro confirmado a 30,30 y \SI{30.86}{s}\\
-\texttt{PAYLOAD\_RELEASE} & Mantiene; solo espera el aterrizaje & 60 y \SI{120}{s}: \texttt{LANDED} \SI{1.5}{s} más tarde\\
+\texttt{ASCENT} & Filtro con $h$ del barómetro y $v$ libre ($\sigma_v=\SI{100}{m/s}$); bloqueo de \SI{2}{s}; $h_{\max}$ guardado & 5,5 a \SI{16.7}{s}: libera a 26,30--\SI{26.36}{s}\\
+\texttt{APOGEE}, \texttt{DESCENT} & Pasa a \texttt{DESCENT}; recupera $h_{\max}$ y la hora del apogeo (RTC) para el temporizador & 16,8 a \SI{25.8}{s}: libera a 26,26--\SI{26.38}{s}; 25,9 a \SI{26.3}{s}: libera a 26,46--\SI{26.84}{s}\\
+\texttt{PROBE\_RELEASE} & Reafirma «liberado» y vuelve a esperar el giro & 27 y \SI{28}{s}: giro confirmado a 28,28 y \SI{28.86}{s}\\
+\texttt{PAYLOAD\_RELEASE} & Mantiene; solo espera el aterrizaje & 60 y \SI{100}{s}: \texttt{LANDED} a 126,3 y \SI{126.4}{s}, \SI{11.5}{s} más tarde\\
 \texttt{LANDED} & Mantiene; apaga cámaras a los \SI{60}{s} & ---\\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+Un reinicio en \texttt{PROBE\_RELEASE} o \texttt{PAYLOAD\_RELEASE} atrasa \texttt{LANDED}
+\SI{11.5}{s}, porque el arranque no restaura en esos estados el instante del despegue: el
+filtro sigue con la sintonía del motor ($\sigma_a=\SI{5}{m/s^2}$), su velocidad es más ruidosa y
+tarda en quedar \SI{5}{s} seguidos bajo \SI{0.5}{m/s}. En una copia de prueba con ese
+instante restaurado, \texttt{LANDED} vuelve a salir a \SI{114.8}{s}. No afecta a ningún
+requisito.
 
 %=====================================================================
 \section{Software de vuelo}\label{sec:electronica-fw}
@@ -660,10 +688,10 @@ anexo; \texttt{SIM} y \texttt{SIMP} siguen la guía de la competencia~\cite{cans
 Un comando con otro número de equipo o con argumentos inválidos se descarta sin eco. El
 paquete agrega, después de las dos comas del anexo, \texttt{ROTOR\_RPM}, \texttt{LATCH} y la
 tensión del panel. Este paquete lo generó el firmware en la prueba en la PC
-(sección~\ref{sec:electronica-fw}), \SI{0.6}{s} después de liberar; los sensores son
+(sección~\ref{sec:electronica-fw}), \SI{0.7}{s} después de liberar; los sensores son
 simulados y la tensión, la corriente y el panel son valores fijos del banco:
 \begin{lstlisting}[numbers=none, basicstyle=\ttfamily\scriptsize, breaklines=true]
-1000,13:36:26,26,F,PROBE_RELEASE,552.6,21.5,94.9,3.9,0.74,0.0,0.0,4.0,0.12,-0.05,-12.07,13:36:27,672.6,-31.4201,-64.1888,9,PWRON,,158,1,2.35
+1000,13:36:24,24,F,PROBE_RELEASE,491.2,21.5,95.6,3.9,0.74,0.0,0.0,4.0,0.12,-0.05,-12.27,13:36:25,611.1,-31.4201,-64.1888,9,PWRON,,200,1,2.35
 \end{lstlisting}
 El anexo pide \texttt{ACCEL} en «grados por segundo al cuadrado»; se transmite en
 \si{m/s^2} y conviene confirmar la unidad con la organización. También pide la longitud en
@@ -691,8 +719,8 @@ comandos, genera los pulsos del hall con un rotor que arranca con $\tau=\SI{1.5}
 inyecta reinicios. Los resultados:
 \begin{itemize}
   \item Las transiciones coinciden con el modelo en Python: \texttt{ASCENT} a
-        \SI{5.08}{s}, \texttt{APOGEE} a \SI{17.58}{s} y liberación a \SI{28.38}{s}
-        (\SI{28.40}{s} en Python).
+        \SI{5.08}{s}, \texttt{APOGEE} a \SI{16.70}{s} y liberación a \SI{26.34}{s}
+        (\SI{26.36}{s} en Python).
   \item \texttt{PAYLOAD\_RELEASE} llega \SI{1.92}{s} después de liberar. Como el arranque
         real puede tardar \SIrange{3}{6}{s} (capítulo~\ref{cap:dim}), la espera antes del
         reintento es de \SI{8}{s}, no de \SI{5}{s}.
@@ -702,8 +730,8 @@ inyecta reinicios. Los resultados:
         se atendió en cada vuelta del lazo (cada \SI{1}{ms} del banco); esto solo prueba que
         la lógica no se bloquea, porque el banco no modela la demora real de la SD, del
         I$^2$C ni de la radio.
-  \item \texttt{LANDED} se declara a \SI{124.8}{s}, \SI{11}{s} después del contacto: $\hat v$
-        tarda unos \SI{6}{s} en volver a cero (figura~\ref{fig:electronica-vuelo}) y luego
+  \item \texttt{LANDED} se declara a \SI{114.8}{s}, \SI{13}{s} después del contacto: $\hat v$
+        tarda unos \SI{8}{s} en volver a cero (figura~\ref{fig:electronica-vuelo}) y luego
         se exigen \SI{5}{s} de quietud. No es solo un efecto del banco: con una IMU real el
         impacto supera las $6\,g$ y se descarta igual que el choque de la expulsión. El
         retraso no afecta a ningún requisito (la baliza es independiente). Puede acortarse
@@ -731,20 +759,21 @@ $G(\theta)=1{,}64\,[\cos(\tfrac\pi2\cos\theta)/\sin\theta]^2$, con un piso de
 \begin{table}[H]
 \centering\small
 \caption{Presupuesto de enlace a \SI{2}{km} de distancia oblicua, con el CanSat a
-\SI{560}{m} ($\theta=\ang{74}$). La antena del CanSat se modela como un dipolo ideal; antenas
-de tierra y pérdidas: valores representativos.}\label{tab:electronica-enlace}
+\SI{500}{m} ($\theta=\ang{76}$), la altura de liberación. La antena del CanSat se modela
+como un dipolo ideal; antenas de tierra y pérdidas: valores
+representativos.}\label{tab:electronica-enlace}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 \textbf{Término} & \textbf{\SI{915}{MHz}} (900HP) & \textbf{\SI{2.44}{GHz}} (XBee 3 PRO)\\\midrule
 Potencia transmitida $P_t$ & \SI{24.0}{dBm} & \SI{19.0}{dBm}\\
-Antena del CanSat a $\theta=\ang{74}$ & \SI{1.6}{dBi} & \SI{1.6}{dBi}\\
+Antena del CanSat a $\theta=\ang{76}$ & \SI{1.7}{dBi} & \SI{1.7}{dBi}\\
 Antena directiva de tierra, apuntada & \SI{8.0}{dBi} & \SI{10.0}{dBi}\\
 Cables (a bordo y en tierra) & \SI{-1.5}{dB} & \SI{-2.0}{dB}\\
 Polarización (oscilación de $\pm\ang{20}$) & \SI{-1.0}{dB} & \SI{-1.0}{dB}\\
 Cuerpo, cables y palas (supuesto) & \SI{-3.0}{dB} & \SI{-3.0}{dB}\\
 Pérdida en espacio libre & \SI{-97.7}{dB} & \SI{-106.2}{dB}\\
 Sensibilidad $S$ & \SI{-101}{dBm} (\SI{200}{kbit/s}) & \SI{-103}{dBm}\\\midrule
-\textbf{Margen} & \textbf{\SI{31.4}{dB}} & \textbf{\SI{21.4}{dB}}\\
+\textbf{Margen} & \textbf{\SI{31.5}{dB}} & \textbf{\SI{21.5}{dB}}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -764,7 +793,7 @@ Sensibilidad $S$ & \SI{-101}{dBm} (\SI{200}{kbit/s}) & \SI{-103}{dBm}\\\midrule
   \legend{\SI{915}{MHz}, \SI{2.4}{GHz}, \SI{915}{MHz} en el suelo, \SI{2.4}{GHz} en el suelo, margen de desvanecimiento}
 \end{axis}
 \end{tikzpicture}
-\caption{Margen del enlace con el CanSat a \SI{560}{m} (Friis y diagrama del dipolo) y ya
+\caption{Margen del enlace con el CanSat a \SI{500}{m} (Friis y diagrama del dipolo) y ya
 aterrizado, con la antena a \SI{0.3}{m} del suelo (dos rayos con reflexión $-1$,
 antena de tierra a \SI{1.5}{m}). La caída cerca de 0 es el nulo del dipolo sobre la
 estación.}
@@ -773,12 +802,14 @@ estación.}
 
 \paragraph{Conclusiones del enlace.}
 \begin{itemize}
-  \item \textbf{En vuelo} el margen mínimo es de \SI{20.8}{dB} (\SI{915}{MHz}) y
-        \SI{10.8}{dB} (\SI{2.4}{GHz}), cuando el CanSat pasa sobre la estación y esta queda en
-        el nulo del dipolo. Ese mínimo lo fija el piso supuesto de \SI{-20}{dBi}: el nulo
-        ideal es más profundo, y lo que lo rellena en la práctica (la oscilación de
-        \ang{15}, el cuerpo y la cuerda) no está modelado. El alcance en espacio libre con \SI{10}{dB} de reserva es de
-        \SI{25}{km} y \SI{7.9}{km}.
+  \item \textbf{En vuelo} el margen mínimo es de \SI{21.8}{dB} (\SI{915}{MHz}) y
+        \SI{11.8}{dB} (\SI{2.4}{GHz}) a \SI{500}{m}, cuando el CanSat pasa sobre la estación y
+        esta queda en el nulo del dipolo. En el apogeo (\SI{625}{m}), el peor caso, baja a
+        \SI{19.9}{dB} y \SI{9.9}{dB}: a \SI{2.4}{GHz} queda \SI{0.1}{dB} bajo la reserva de
+        \SI{10}{dB}, hasta unos \SI{60}{m} de la vertical de la estación. Ese mínimo lo fija
+        el piso supuesto de \SI{-20}{dBi}: el nulo ideal es más profundo, y lo que lo rellena
+        en la práctica (la oscilación de \ang{15}, el cuerpo y la cuerda) no está modelado. El
+        alcance en espacio libre con \SI{10}{dB} de reserva es de \SI{25}{km} y \SI{7.9}{km}.
   \item \textbf{En el suelo}, la reflexión hace que la pérdida crezca con $d^4$ a partir del
         punto de quiebre~\cite{electronica-rappaport2002}. El margen de \SI{10}{dB} se pierde a
         \SIrange{0.60}{0.66}{km} y el enlace se corta a \SIrange{1.07}{1.17}{km}, casi igual

@@ -1,7 +1,8 @@
 """Cálculos del sistema de descenso de dos etapas (drogue + rotor libre), versión 2:
 CanSat de Ø90, rotor de R = 0,25 m y drogue soltado antes de abrir el rotor (etapa 2 = rotor solo).
-Uso: python3 calculos.py  -> imprime todos los valores usados en el informe."""
-import math as m
+Uso: python3 calculos.py  -> imprime todos los valores usados en el informe.
+Altura: CANSAT_HLIB = altura de liberación del rotor en m (por defecto 500); el apogeo de diseño es H_lib/0,8."""
+import math as m, os
 
 rho, g = 1.225, 9.81            # aire ISA nivel del mar, gravedad
 M = 0.500                        # masa total CanSat + contenedor, etapa 1 [kg]
@@ -117,13 +118,23 @@ P("carga por pala en choque 30 G", mb*30*g, "N")
 P("choque en cuerda del drogue 30 G sobre 0.5 kg", M*30*g, "N")
 
 print("\n== Transición y tiempos ==")
-h0 = 700.0
-for hmax in (500, 700, 1000):
+H_LIB = float(os.environ.get("CANSAT_HLIB", "500"))   # altura de liberación del rotor [m] (dato del equipo)
+H_APO = H_LIB/0.8                                     # apogeo de diseño: C4 libera al 80 % de la altitud máxima
+V2b = 6.36   # rotor solo con el C_R de la BEMT (cap. 12)
+P("altura de liberación del rotor (dato del equipo)", H_LIB, "m")
+P("apogeo de diseño = altura de liberación / 0,8", H_APO, "m")
+print(f"  Con la estimación simple de este script (C_R = 1,2; V2 = {V2:.2f} m/s). El apogeo alternativo es la")
+print(f"  lectura en que {H_LIB:.0f} m fuera el apogeo (liberación a {0.8*H_LIB:.0f} m).")
+for hmax in (H_APO, H_LIB):
     h80 = 0.8*hmax
     t1 = (hmax - h80)/V1; t2 = h80/V2
     Vavg = hmax/(t1+t2)
-    print(f"  apogeo {hmax} m: etapa1 {t1:5.1f} s, etapa2 {t2:5.1f} s, total {t1+t2:5.1f} s, V media total {Vavg:4.2f} m/s, V media etapa2 {V2:.2f}")
-V2b = 6.36   # rotor solo con el C_R de la BEMT (cap. 12)
+    print(f"  apogeo {hmax:.0f} m: etapa1 {t1:5.1f} s, etapa2 {t2:5.1f} s, total {t1+t2:5.1f} s, V media total {Vavg:4.2f} m/s")
+print(f"  Con la V2 de la BEMT ({V2b} m/s), que es la de la tabla de tiempos del capítulo de dimensionamiento:")
+for hmax in (H_APO, H_LIB):
+    h80 = 0.8*hmax
+    t1 = (hmax - h80)/V1; t2 = h80/V2b
+    print(f"  apogeo {hmax:.0f} m: etapa1 {t1:5.1f} s, etapa2 {t2:5.1f} s, total {t1+t2:5.1f} s, V media total {hmax/(t1+t2):4.2f} m/s")
 P("promedio de todo el descenso con V2 de la BEMT", 1/(0.2/V1 + 0.8/V2b), "m/s")
 P("V etapa 1 (drogue 25 cm + cuerpo)", V1, "m/s")
 for Cd in (0.75, 0.9):

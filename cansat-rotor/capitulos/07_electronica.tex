@@ -90,9 +90,14 @@ cercana a cero durante \SIrange{0.2}{0.3}{s}).
         muestras seguidas; $h_{\max}$ se guarda en memoria no volátil (\Req{F5}), así un
         reinicio no la pierde.
   \item La liberación se ordena cuando $h\le0{,}8\,h_{\max}$ y el estado es
-        \texttt{DESCENT}. Nunca antes del apogeo.
+        \texttt{DESCENT}. Nunca antes del apogeo. Con la liberación estimada por el equipo a
+        \SI{500}{m}, el apogeo de diseño es de \SI{625}{m} (tabla~\ref{tab:tiempos},
+        capítulo~\ref{cap:dim}) y la orden sale a \SI{500}{m} sobre el suelo.
   \item \textbf{Respaldo por tiempo}: si el barómetro falla, se libera a
-        $t_{\text{apogeo}}+0{,}2\,h_{\max}/\Vd+\SI{2}{s}$, estimando $h_{\max}$ con el GPS.
+        $t_{\text{apogeo}}+0{,}2\,h_{\max}/\Vd+\SI{2}{s}$, estimando $h_{\max}$ con el GPS: con
+        $h_{\max}=\SI{625}{m}$ y $\Vd=\SI{13.44}{m/s}$, unos \SI{11.3}{s} después del apogeo
+        (el firmware usa la forma de la ecuación~\ref{eq:electronica-timer}, que da
+        \SI{13.2}{s}).
 \end{itemize}
 
 \section{Pseudocódigo de liberación}
@@ -122,6 +127,11 @@ void control_descenso(void) {
   }
 }
 \end{lstlisting}
+Cada espera de giro gasta altura de la etapa 2. Con los \SI{5}{s} del pseudocódigo, un
+intento recorre de \SI{32}{m} (a \SI{6.4}{m/s}) a \SI{67}{m} (a \SI{13.4}{m/s}); con los dos
+reintentos (\SI{15}{s}) son \SIrange{96}{201}{m}, del 19 al 40\,\% de los \SI{500}{m} que
+tiene la etapa. El firmware espera \SI{8}{s} por intento (sección~\ref{sec:electronica-fw}):
+de \SI{51}{m} a \SI{107}{m} cada uno.
 
 \section{Telemetría y comandos}
 \begin{itemize}
@@ -139,7 +149,8 @@ void control_descenso(void) {
 
 \section{Video}
 La cámara cenit (\Req{C6}) va fuera del eje, en un hueco entre palas, inclinada \ang{15}
-hacia afuera: ve el drogue durante todo el vuelo y las palas al abrirse y girar. A
+hacia afuera: ve el drogue durante la etapa 1, hasta soltarlo (unos \SI{9}{s} de los
+\SIrange{88}{101}{s} del descenso, tabla~\ref{tab:tiempos}), y las palas al abrirse y girar. A
 \SI{1150}{rpm} pasan $4\times1150/60\approx77$ palas por segundo; con una cámara de
 \SI{30}{fps} el rotor se ve casi quieto o girando lento (efecto estroboscópico), lo que
 documenta bien el funcionamiento. La cámara nadir (\Req{C7}) graba el suelo desde la tapa

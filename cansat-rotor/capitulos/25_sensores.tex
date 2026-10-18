@@ -200,8 +200,8 @@ regulador), y dejar el BMP280 como segunda lectura para detectar un fallo del pr
 \paragraph{Qué importa.} Tres cosas distinguen una IMU para este vuelo. (1)~El rango de
 aceleración frente a \Req{S5}: el choque de \SI{30}{G} y el pulso de la carga de expulsión
 superan los $\pm\SI{16}{g}$ del MPU6050. (2)~El rango del giroscopio frente al giro del cuerpo: sin
-aletas antigiro el cuerpo llegaría a \SI{490}{rpm} ($\approx\SI{2940}{\degree/s}$) a los \SI{40}{s}
-(capítulo~\ref{cap:estabilidad}), por encima de los \SI{2000}{\degree/s} del MPU6050; con las
+aletas antigiro el cuerpo llegaría a \SI{770}{rpm} ($\approx\SI{4600}{\degree/s}$) al final de la
+etapa~2 (sección~\ref{sec:estabilidad-giro}), por encima de los \SI{2000}{\degree/s} del MPU6050; con las
 cuatro aletas el giro baja a \SI{2.4}{rad/s}, y el rango sobra. (3)~La IMU puede dar una
 \emph{segunda medida de las rpm del rotor}: la vibración a $4\times$ la frecuencia de giro
 (\SI{82}{Hz} a \SI{1229}{rpm}) se ve en el acelerómetro del cuerpo si se muestrea a \SI{1}{kHz},
@@ -381,17 +381,17 @@ ESP-NOW (2,4\,GHz) & hasta unos \SI{20}{dBm}\nv; sensibilidad de WiFi, decenas d
 \end{table}
 
 \paragraph{Enlace con LoRa.} Con las mismas hipótesis del capítulo~\ref{cap:electronica}
-(distancia oblicua de \SI{2}{km}, antena del CanSat de \SI{1.6}{dBi}, Yagi de \SI{8}{dBi} en
-tierra, \SI{-5.5}{dB} de cables, polarización y cuerpo, \SI{-97.7}{dB} de espacio libre a
-\SI{915}{MHz}) y \SI{20}{dBm} de potencia (\SI{100}{mW}; el límite de ENACOM debe
-verificarse), la potencia recibida es de \SI{-73.6}{dBm}. Con las sensibilidades típicas del
-SX1276\nv{} a \SI{125}{kHz}~\cite{sensores-an1200} el margen es de \SI{49.4}{dB} con SF7,
-\SI{55.4}{dB} con SF9 y \SI{63.4}{dB} con SF12; en el nulo de la antena de dipolo
-(\SI{-20}{dBi}, el peor caso del capítulo~\ref{cap:electronica}) es de \SI{27.8}{dB} con SF7 y
-\SI{33.8}{dB} con SF9, contra \SI{20.8}{dB} del XBee. Sobre el suelo, con el modelo de dos rayos
-del capítulo~\ref{cap:electronica} (CanSat a \SI{0.3}{m}) y \SI{10}{dB} de reserva, el alcance es de
-\SI{1.8}{km} con SF7, \SI{2.5}{km} con SF9, \SI{3.0}{km} con SF10 y \SI{4.0}{km} con SF12
-(contra \SIrange{0.60}{0.66}{km} del XBee a \SI{10}{dB}).
+(distancia oblicua de \SI{2}{km} con el CanSat a la altura de liberación, antena del CanSat de
+\SI{1.7}{dBi}, Yagi de \SI{8}{dBi} en tierra, \SI{-5.5}{dB} de cables, polarización y cuerpo,
+\SI{-97.7}{dB} de espacio libre a \SI{915}{MHz}) y \SI{20}{dBm} de potencia (\SI{100}{mW}; el
+límite de ENACOM debe verificarse), la potencia recibida es de \SI{-73.5}{dBm}. Con las
+sensibilidades típicas del SX1276\nv{} a \SI{125}{kHz}~\cite{sensores-an1200} el margen es de
+\SI{49.5}{dB} con SF7, \SI{55.5}{dB} con SF9 y \SI{63.5}{dB} con SF12; en el nulo de la antena de
+dipolo (\SI{-20}{dBi}, el peor caso del capítulo~\ref{cap:electronica}) es de \SI{27.8}{dB} con
+SF7 y \SI{33.8}{dB} con SF9, contra \SI{21.8}{dB} del XBee. Sobre el suelo, con el modelo de dos
+rayos del capítulo~\ref{cap:electronica} (CanSat a \SI{0.3}{m}) y \SI{10}{dB} de reserva, el
+alcance es de \SI{1.8}{km} con SF7, \SI{2.5}{km} con SF9, \SI{3.0}{km} con SF10 y \SI{4.0}{km} con
+SF12 (contra \SIrange{0.60}{0.66}{km} del XBee a \SI{10}{dB}).
 
 \begin{table}[H]
 \centering\small
@@ -466,8 +466,10 @@ puntos que importan para las ESP32-CAM son otros:
   \item \textbf{Cumple \Req{SN7}:} color, SVGA ($800\times600$) o VGA ($640\times480$).
   \item \textbf{Capacidad.} A SVGA con JPEG de \SIrange{30}{60}{kB} por cuadro y \SI{20}{fps}
         (estimación), la grabación consume \SIrange{0.6}{1.2}{MB/s} (\SIrange{36}{72}{MB} por
-        minuto): el descenso de pocos minutos cabe en cualquier tarjeta, pero \emph{no} dos
-        horas. Por eso las cámaras no deben grabar desde la rampa, además de por la energía.
+        minuto): el descenso, de \SIrange{88}{101}{s} desde el apogeo de diseño
+        (sección~\ref{sec:dim-tiempos}), ocupa \SIrange{53}{121}{MB} por cámara, del orden de
+        \SI{100}{MB} con la subida. Cabe en cualquier tarjeta, pero \emph{no} dos horas. Por eso
+        las cámaras no deben grabar desde la rampa, además de por la energía.
   \item \textbf{Plan B:} la placa ESP32-S3 con cámara que la planilla nombra («XIAO»), de
         otra familia pero con el mismo ecosistema, si el ensayo de 2\,h con corte de energía
         falla.

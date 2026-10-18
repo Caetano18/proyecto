@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 """Configuración v2: mapa V2(R, m2), promedio global de C4, caída libre al soltar el drogue,
 presupuesto de tiempo y Monte Carlo de cumplimiento de C3/C4.
+Altura: CANSAT_HLIB = altura de liberación del rotor [m] (por defecto 500); el apogeo de diseño es
+H_lib/0,8 (625 m), porque C4 libera al 80 % de la altitud máxima. Con el valor por defecto se
+regeneran los archivos que lee el documento. Con otro valor (p. ej. CANSAT_HLIB=400, lectura
+alternativa de apogeo 500 m) solo se rehace lo que depende de la altura (tiempos y Monte Carlo) y las
+salidas llevan el sufijo _H<H_lib>: no pisan las del caso base.
 Salida: analysis/data/v2_*.dat y v2_resumen.json.   Uso: python3 analysis/v2_descenso.py
 """
 import os, sys, json
@@ -16,9 +21,14 @@ G, RHO = b.G, b.RHO
 V1 = b.V_ETAPA1
 res = {}
 
+HLIB = float(os.environ.get('CANSAT_HLIB', '500'))      # altura de liberación del rotor [m]
+F_LIB = 0.8                                             # C4: se libera al 80 % de la altitud máxima
+H_APO = HLIB / F_LIB                                    # apogeo de diseño [m]
+SUF = '' if HLIB == 500.0 else '_H%g' % HLIB            # sufijo de las salidas del caso alternativo
+
 
 def guardar(nombre, cab, filas, fmt='%.6g'):
-    with open(os.path.join(DATA, 'v2_' + nombre + '.dat'), 'w') as f:
+    with open(os.path.join(DATA, 'v2_' + nombre + SUF + '.dat'), 'w') as f:
         f.write(' '.join(cab) + '\n')
         for fila in filas:
             f.write(' '.join('nan' if (isinstance(x, float) and np.isnan(x)) else fmt % x for x in fila) + '\n')
@@ -72,9 +82,15 @@ def promedio():
     # V2 máxima admisible para que el promedio global sea <= 8 m/s
     for V1_ in (12.0, 13.44, 15.0, 18.0):
         res['V2max_global_V1_%g' % V1_] = 0.8 / (1 / 8.0 - 0.2 / V1_)
-    # tiempos de descenso para varios apogeos (régimen, sin transitorios)
+
+
+def tiempos():
+    """Tiempos de descenso en régimen (sin transitorios) según la altura de liberación H_lib: la adoptada
+    (CANSAT_HLIB), 400 m (lectura alternativa: apogeo de 500 m) y 800 m (apogeo de 1000 m)."""
+    res['altura'] = dict(H_lib=HLIB, H_apo=H_APO)
     filas = []
-    for H in (300, 500, 700, 1000):
+    for hl in sorted({400.0, 500.0, 800.0, HLIB}):
+        H = hl / F_LIB                                   # apogeo
         for V2_ in (5.47, 6.36):
             t1 = 0.2 * H / V1; t2 = 0.8 * H / V2_
             filas.append((H, V2_, 0.8 * H, t1, t2, t1 + t2, H / (t1 + t2)))
@@ -108,7 +124,9 @@ def libre():
 
 
 # ---------------------------------------------------------------- 4. Monte Carlo
-def mc(n=200_000, seed=20261016):
+def mc_calc(H_apo, n=200_000, seed=20261016, hist=None):
+    """Monte Carlo de C3/C4 con el apogeo fijo en H_apo [m]. Devuelve (resultados por caso, filas de v2_mc).
+    Si hist es un dict, guarda en él los histogramas de V2 y <V> de los casos que se grafican."""
     rng = np.random.default_rng(seed)
     filas = []
     resmc = {}
@@ -127,9 +145,11 @@ def mc(n=200_000, seed=20261016):
         Ad = np.pi * 0.125**2; Ac = np.pi * 0.045**2; AR = np.pi * R**2
         V1_ = np.sqrt(m1 * G / (0.5 * rho * (cdd * Ad + 0.8 * Ac)))
         V2_ = np.sqrt(m2 * G / (0.5 * rho * (CR * AR + 0.8 * Ac)))
-        # tiempo de arranque y transición (cap. de arranque): 3 a 6 s a velocidad media (V1+V2)/2 ya contada en la media
+        # tiempo de transición de V1 a V2 tras la liberación: 2,5 a 5 s a la velocidad media (V1+V2)/2 (la simulación
+        # del cap. de arranque deja V a menos del 2 % de V2 en 2,6 s; el t90 = 1,55 s de ese capítulo es el giro del rotor)
         ts = rng.uniform(2.5, 5.0, n)
-        H = rng.uniform(500.0, 1000.0, n)
+        _ = rng.uniform(500.0, 1000.0, n)                    # sorteo original del apogeo: se descarta, pero se hace la
+        H = np.full(n, float(H_apo))                         # llamada para no desplazar la secuencia de los casos siguientes
         hr = 0.8 * H
         Vs = 0.5 * (V1_ + V2_)
         t1 = 0.2 * H / V1_
@@ -146,17 +166,28 @@ def mc(n=200_000, seed=20261016):
                              Eimp_mu=float((0.5 * m2 * V2_**2).mean()), Eimp_p95=float(np.percentile(0.5 * m2 * V2_**2, 95)))
         filas.append((R, mu_m, resmc[nombre]['V2_mu'], resmc[nombre]['V2_p95'], resmc[nombre]['Vg_mu'], resmc[nombre]['Vg_p95'],
                       1 - p_i, 1 - p_ii))
-        if nombre in ('A1_R25', 'A2_R25', 'A2_R20'):
+        if hist is not None and nombre in ('A1_R25', 'A2_R25', 'A2_R20'):
             h, ed = np.histogram(V2_, bins=np.arange(3.0, 10.01, 0.1), density=True)
             hg, _ = np.histogram(Vg, bins=np.arange(3.0, 10.01, 0.1), density=True)
-            guardar('hist_' + nombre, ['V', 'pdf_V2', 'pdf_Vg'], [(0.5 * (ed[i] + ed[i + 1]), h[i], hg[i]) for i in range(len(h))])
+            hist[nombre] = [(0.5 * (ed[i] + ed[i + 1]), h[i], hg[i]) for i in range(len(h))]
+    return resmc, filas
+
+
+def mc(n=200_000, seed=20261016):
+    """Monte Carlo con el apogeo de diseño H_APO = H_lib/0,8 (625 m por defecto)."""
+    hist = {}
+    resmc, filas = mc_calc(H_APO, n, seed, hist)
+    for nombre, f in hist.items():
+        guardar('hist_' + nombre, ['V', 'pdf_V2', 'pdf_Vg'], f)
     guardar('mc', ['R', 'm2', 'V2mu', 'V2p95', 'Vgmu', 'Vgp95', 'Pfalla_regimen', 'Pfalla_global'], filas)
     res['mc'] = resmc
 
 
 if __name__ == '__main__':
-    mapa(); promedio(); libre(); mc()
-    json.dump(res, open(os.path.join(DATA, 'v2_resumen.json'), 'w'), indent=1)
+    if not SUF:                       # lo que no depende de la altura se rehace solo en el caso base
+        mapa(); promedio(); libre()
+    tiempos(); mc()
+    json.dump(res, open(os.path.join(DATA, 'v2_resumen' + SUF + '.json'), 'w'), indent=1)
     for k, v in res.items():
         if k != 'mapa':
             print(k, json.dumps(v)[:600])

@@ -1,0 +1,102 @@
+{
+ "aletas": {
+  "40x40": {
+   "s_mm": 40.0,
+   "l_mm": 40.0,
+   "AR": 2.0,
+   "af": 2.602580569137146,
+   "S_mm2": 1600.0,
+   "c": 0.00027414105449527433,
+   "w_sin_calaje": 2.371042167313195,
+   "calaje_deg": 1.3884113365171145
+  },
+  "40x25": {
+   "s_mm": 40.0,
+   "l_mm": 25.0,
+   "AR": 3.1999999999999997,
+   "af": 3.4824406376561954,
+   "S_mm2": 1000.0,
+   "c": 0.00022926282281742616,
+   "w_sin_calaje": 2.835174024345101,
+   "calaje_deg": 1.6601930622179544
+  },
+  "50x25": {
+   "s_mm": 50.0,
+   "l_mm": 25.0,
+   "AR": 4.0,
+   "af": 3.8832220774509327,
+   "S_mm2": 1250.0000000000002,
+   "c": 0.0003706137442663978,
+   "w_sin_calaje": 1.7538475300926208,
+   "calaje_deg": 1.1060006756073202
+  }
+ },
+ "aletas_masa_g": {
+  "placa": 0.775,
+  "por_aleta": 1.6,
+  "total": 6.800000000000001
+ },
+ "copa": {
+  "vol_total_cm3": 44.178646691106465,
+  "vol_util_cm3": 36.64353671147135,
+  "tela_g": 2.552544031041707,
+  "vol_tela_cm3": 10.721554374404878,
+  "vol_destorcedor_cm3": 3.0,
+  "vol_carro_cm3": 8.0,
+  "llenado": 0.5927799640476541
+ },
+ "masa_A1": {
+  "tabla_actual (sin cambios)": {
+   "sin_lastre_mu": 466.9577446922417,
+   "sin_lastre_sd": 20.169984550895222,
+   "lastre_mu": 33.057241780670694,
+   "lastre_p5": -1.4612472209304397,
+   "lastre_p95": 67.55131180403463,
+   "P_sobrepeso": 0.057655,
+   "P_lastre_menor_10": 0.134815
+  },
+  "con cambios, panel de la planilla (37 g)": {
+   "sin_lastre_mu": 496.99108285618314,
+   "sin_lastre_sd": 20.73873060889817,
+   "lastre_mu": 3.0073858748557902,
+   "lastre_p5": -32.351553524300606,
+   "lastre_p95": 38.42869134214304,
+   "P_sobrepeso": 0.44353,
+   "P_lastre_menor_10": 0.62776
+  },
+  "con cambios, panel de 8 g (a pesar)": {
+   "sin_lastre_mu": 467.97763025045487,
+   "sin_lastre_sd": 14.320417704189806,
+   "lastre_mu": 32.02046476733551,
+   "lastre_p5": 6.6857697128440075,
+   "lastre_p95": 57.4099299624221,
+   "P_sobrepeso": 0.018965,
+   "P_lastre_menor_10": 0.077205
+  },
+  "con cambios y 2.a celda, panel de la planilla": {
+   "sin_lastre_mu": 545.0392813061367,
+   "sin_lastre_sd": 20.693552462556728,
+   "lastre_mu": -45.00794975357521,
+   "lastre_p5": -80.43699733801436,
+   "lastre_p95": -9.687428500359763,
+   "P_sobrepeso": 0.98195,
+   "P_lastre_menor_10": 0.99498
+  },
+  "con cambios y 2.a celda, panel de 8 g": {
+   "sin_lastre_mu": 516.1086561099708,
+   "sin_lastre_sd": 14.373356815639278,
+   "lastre_mu": -16.09644901319845,
+   "lastre_p5": -41.58967476057073,
+   "lastre_p95": 9.39121874048172,
+   "P_sobrepeso": 0.849485,
+   "P_lastre_menor_10": 0.95388
+  }
+ },
+ "masa_A1_tabla": {
+  "subtotal_tabla": 467.0,
+  "cambios_electronica": 16.0,
+  "cabeza_rotor": 7.0,
+  "aletas": 7.0,
+  "subtotal_nuevo": 497.0
+ }
+}

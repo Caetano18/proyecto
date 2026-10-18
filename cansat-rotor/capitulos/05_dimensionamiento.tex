@@ -20,7 +20,7 @@ Cuando haya diferencia, valen los valores refinados.
 Masa total en la etapa 1 (CanSat + contenedor) & $m_1$ & \SI{0.500}{kg}\\
 Masa en la etapa 2 (sin el drogue soltado)  & $m_2$      & \SI{0.490}{kg}\\
 Peso en las etapas 1 y 2               & $W_1$, $W_2$ & \SI{4.905}{N}, \SI{4.807}{N}\\
-Densidad del aire                      & $\rho$     & \SI{1.225}{kg/m^3}\\
+Densidad del aire (nivel del mar)      & $\rho$     & \SI{1.225}{kg/m^3}\\
 Viscosidad cinemática                  & $\nu$      & \SI{1.5e-5}{m^2/s}\\
 Radio del rotor                        & $R$        & \SI{0.250}{m}\\
 Radio de la bisagra                    & $e$        & \SI{0.044}{m}\\
@@ -162,7 +162,8 @@ incluye el \SI{20}{\percent} inicial a $\Vd$:
   \langle V\rangle=\frac{1}{0{,}2/\Vd+0{,}8/\Vr}.
   \label{eq:promedio}
 \end{equation}
-No depende de la altura del apogeo. Con $\Vd=\SI{13.44}{m/s}$, $\langle V\rangle\le\SI{8}{m/s}$
+En régimen no depende de la altura del apogeo (el arranque, de unos \SI{22}{m} de caída, pesa
+según la altura disponible: sección~\ref{sec:dim-tiempos}). Con $\Vd=\SI{13.44}{m/s}$, $\langle V\rangle\le\SI{8}{m/s}$
 exige $\Vr\le\SI{7.26}{m/s}$. Con $\Vr=\SI{6.36}{m/s}$, $\langle V\rangle=\SI{7.11}{m/s}$; con
 la Arquitectura~2, $\Vr=\SI{5.47}{m/s}$ y $\langle V\rangle=\SI{6.2}{m/s}$. El rotor solo de
 $R=\SI{0.20}{m}$ ($\Vr=\SI{7.85}{m/s}$) daría $\SI{8.56}{m/s}$ y no cumpliría esa lectura:
@@ -328,8 +329,8 @@ $\tfrac12 I\Omega^2=\SI{7.1}{J}$. El par disminuye a medida que el rotor acelera
 en el equilibrio); con un par medio de \SIrange{0.03}{0.06}{N.m}, el tiempo de arranque es
 $t=I\Omega/\bar Q\approx\SIrange{2}{4}{s}$. La simulación con la apertura de las palas
 (capítulo~\ref{cap:arranque}) da \SI{1.6}{s} hasta el \SI{90}{\percent} de las rpm y
-\SI{22}{m} de caída. Con apogeo de \SI{700}{m}, la liberación ocurre a \SI{560}{m}: el
-margen es amplio.
+\SI{22}{m} de caída, el \SI{4.3}{\percent} de la altura de la etapa~2 (sección~\ref{sec:dim-tiempos}):
+el margen es amplio.
 
 %=====================================================================
 \section{Cargas y resistencia de los componentes}\label{sec:cargas}
@@ -365,17 +366,27 @@ da un margen de 65 veces. La pared no flexiona ni se deforma bajo las cargas del
 punto débil son las uniones (tapas y anillos), que se atornillan con insertos roscados.
 
 %=====================================================================
-\section{Tiempos de descenso}
+\section{Tiempos de descenso}\label{sec:dim-tiempos}
+El equipo estima en \SI{500}{m} la altura a la que se libera el segundo sistema. Como \Req{C4}
+libera al \SI{80}{\percent} de la altitud máxima, el apogeo de diseño es
+$h_{\max}=500/0{,}8=\SI{625}{m}$: la etapa~1 recorre \SI{125}{m} ($0{,}2\,h_{\max}$) y la
+etapa~2, \SI{500}{m} ($0{,}8\,h_{\max}$). Es el caso base de todo el documento, a confirmar con el
+apogeo del cohete. La lectura alternativa, que \SI{500}{m} sea el apogeo (liberación a
+\SI{400}{m}), se trata como sensibilidad (sección~\ref{sec:sens-altura}).
+
 \begin{table}[H]
 \centering\small
-\caption{Tiempos con liberación al 80\,\% del apogeo ($\Vd=\SI{13.44}{m/s}$,
-$\Vr=\SI{6.36}{m/s}$; se desprecia el arranque).}\label{tab:tiempos}
-\begin{tabular}{@{}ccccccc@{}}
+\caption{Tiempos con liberación al 80\,\% del apogeo ($\Vd=\SI{13.44}{m/s}$; $\Vr=\SI{6.36}{m/s}$ en
+la Arq.~1 y \SI{5.47}{m/s} en la 2; se desprecia el arranque). Las dos primeras filas son el caso base
+(apogeo de \SI{625}{m}); las otras dos, la lectura alternativa.}\label{tab:tiempos}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}cccccccc@{}}
 \toprule
-\textbf{Apogeo} [m] & \textbf{Liberación} [m] & \textbf{Etapa 1} [s] & \textbf{Etapa 2} [s] & \textbf{Total} [s] & $\langle V\rangle$ [m/s] & \textbf{Video necesario}\\\midrule
-500  & 400 & 7,4  & 62,9  & 70  & 7,11 & $\approx$\,2 min\\
-700  & 560 & 10,4 & 88,1  & 99  & 7,11 & $\approx$\,2 min\\
-1000 & 800 & 14,9 & 125,8 & 141 & 7,11 & $\approx$\,3 min\\
+\textbf{Apogeo} [m] & \textbf{Liberación} [m] & \textbf{Arq.} & \textbf{Etapa 1} [s] & \textbf{Etapa 2} [s] & \textbf{Total} [s] & $\langle V\rangle$ [m/s] & \textbf{Video necesario}\\\midrule
+625 & 500 & 1 & 9,3 & 78,6 & 87,9  & 7,11 & $\approx$\,2 min\\
+625 & 500 & 2 & 9,3 & 91,4 & 100,7 & 6,21 & $\approx$\,2 min\\\midrule
+500 & 400 & 1 & 7,4 & 62,9 & 70,3  & 7,11 & $\approx$\,2 min\\
+500 & 400 & 2 & 7,4 & 73,1 & 80,6  & 6,21 & $\approx$\,2 min\\
 \bottomrule
 \end{tabular}
 \end{table}

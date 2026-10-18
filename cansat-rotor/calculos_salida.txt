@@ -73,9 +73,15 @@ carga por pala en choque 30 G                           = 2.703 N
 choque en cuerda del drogue 30 G sobre 0.5 kg           = 147.2 N
 
 == Transición y tiempos ==
-  apogeo 500 m: etapa1   7.4 s, etapa2  70.1 s, total  77.5 s, V media total 6.45 m/s, V media etapa2 5.71
-  apogeo 700 m: etapa1  10.4 s, etapa2  98.1 s, total 108.5 s, V media total 6.45 m/s, V media etapa2 5.71
-  apogeo 1000 m: etapa1  14.9 s, etapa2 140.1 s, total 155.0 s, V media total 6.45 m/s, V media etapa2 5.71
+altura de liberación del rotor (dato del equipo)        = 500 m
+apogeo de diseño = altura de liberación / 0,8           = 625 m
+  Con la estimación simple de este script (C_R = 1,2; V2 = 5.71 m/s). El apogeo alternativo es la
+  lectura en que 500 m fuera el apogeo (liberación a 400 m).
+  apogeo 625 m: etapa1   9.3 s, etapa2  87.6 s, total  96.9 s, V media total 6.45 m/s
+  apogeo 500 m: etapa1   7.4 s, etapa2  70.1 s, total  77.5 s, V media total 6.45 m/s
+  Con la V2 de la BEMT (6.36 m/s), que es la de la tabla de tiempos del capítulo de dimensionamiento:
+  apogeo 625 m: etapa1   9.3 s, etapa2  78.6 s, total  87.9 s, V media total 7.11 m/s
+  apogeo 500 m: etapa1   7.4 s, etapa2  62.9 s, total  70.3 s, V media total 7.11 m/s
 promedio de todo el descenso con V2 de la BEMT          = 7.109 m/s
 V etapa 1 (drogue 25 cm + cuerpo)                       = 13.44 m/s
 V etapa 1 con Cd=0.75                                   = 13.82 m/s
