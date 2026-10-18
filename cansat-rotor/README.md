@@ -14,6 +14,10 @@ selección de sensores (25).
 - `analysis/`: modelos y estudios (BEMT, arranque, estabilidad, estructura, sensibilidad,
   sensores, confiabilidad). La configuración se elige con `CANSAT_CFG` (`v2` por defecto en
   la BEMT y el arranque; `v1` reproduce la versión anterior). Los datos van a `analysis/data/`.
+  La altura de liberación del rotor se fija con `CANSAT_HLIB` (500 m por defecto, apogeo de
+  625 m; `CANSAT_HLIB=400` calcula el caso alternativo de apogeo 500 m y escribe archivos con el
+  sufijo `_H400`). Los estudios de integración de la Arquitectura 1 (aletas, copa del drogue, masa)
+  están en `analysis/v2_integracion.py`.
 
 Compilar: `latexmk -pdf main.tex` (o `pdflatex main.tex` dos veces). Requiere
 TeX Live con `pgfplots`, `pgfgantt`, `siunitx`, `tcolorbox` y `babel-spanish`.

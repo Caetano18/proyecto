@@ -1293,11 +1293,10 @@ de montaje.}
 \section{Cadenas de tolerancias}\label{sec:fabricacion-tol}
 
 Tres cadenas deciden si el rotor se puede montar y si cabe en el cohete: el juego axial
-del cubo, la pala plegada dentro de Ø\,\SI{95}{mm} y la alineación de las pestañas con
+del cubo, la pala plegada dentro de Ø\,\SI{90}{mm} y la alineación de las pestañas con
 los dientes del anillo. La primera cierra con margen una vez adoptada la disposición
-fijo--libre de los rodamientos; la tercera cierra en peor caso en las direcciones axial y
-tangencial, y la radial se corrige en el montaje; la segunda \textbf{no cierra con la
-geometría del anteproyecto} y obliga a un cambio pequeño.
+fijo--libre de los rodamientos; la segunda cierra en peor caso, con \SI{0.97}{mm} de holgura nominal; la
+tercera cierra en peor caso en las direcciones axial y tangencial, y la radial se corrige en el montaje.
 
 \paragraph{Método.} Para una medida resultante $f(x_1,\dots,x_n)$ con tolerancias
 simétricas $\pm T_i$ se calculan el peor caso, la suma cuadrática (RSS) y una simulación de
@@ -1371,60 +1370,45 @@ radial de pocas micras, lo que da del orden de \ang{0.1}. El límite del sensor 
 una suposición para un imán de Ø\,\SI{3}{mm} y un hall de tipo conmutador; se verifica en
 el banco antes de cerrar la tapa.
 
-\subsection{Pala plegada dentro de Ø\,95}\label{sec:fabricacion-cadenaB}
+\subsection{Pala plegada dentro de Ø\,90}\label{sec:fabricacion-cadenaB}
 
-\paragraph{Versión 2 (Ø\,90).} Con el cuerpo impreso de Ø\,81 ($R_b=\SI{40.5}{mm}$) y la misma pala
-(\SI{45}{mm} de cuerda, \SI{3.15}{mm} de flecha, \SI{0.5}{mm} de espesor), el borde de la pala plegada queda a
-\SI{44.03}{mm} del eje: \SI{0.97}{mm} de holgura a la envolvente de \SI{45}{mm}
-(\texttt{analysis/v2\_geometria.py}). La cadena de tolerancias de este apartado (mismas
-tolerancias de posición, flecha, cuerda y espesor) da, con $4\times10^5$ casos, una holgura de
-\SI{0.967}{mm} con \SI{0.142}{mm} de desviación para la asignación base (flecha $\pm0{,}30$) y de
-\SI{0.095}{mm} con la propuesta (flecha $\pm0{,}15$): \num{6.8}\,$\sigma$ y \num{10}\,$\sigma$ respectivamente, sin ninguna interferencia
-(\texttt{analysis/v2\_tol\_env.py}). La envolvente ya no es la cadena crítica: el cuerpo más chico
-(Ø\,81 en lugar de Ø\,88) devolvió el margen que en la versión~1 había que ganar acercando la pala al eje
-y apretando la flecha. La cadena crítica pasa a ser el largo de \SI{250}{mm} (\Req{S3}). El resto del
-apartado corresponde a la versión~1 y se conserva como método.
-
-
-Con la geometría del anteproyecto, la mitad de los rotores fabricados tendrían el borde de
-alguna pala fuera de Ø\,\SI{95}{mm}. La causa es geométrica: la pala tiene radio de
-curvatura de \SI{82}{mm} y el cuerpo, de \SI{44}{mm}; apoyada en el centro de la cuerda,
-sus bordes se separan del cuerpo y quedan más afuera que el centro. Con el centro del arco
-exterior de la pala sobre la línea radial, el radio del borde es
+\paragraph{Geometría.} Con el cuerpo impreso de Ø\,81 ($R_b=\SI{40.5}{mm}$) la pala plegada apoya su cara
+cóncava en el cuerpo (huelgo nominal cero) y su borde exterior queda a (capítulo~\ref{cap:arq},
+ecuación~\eqref{eq:arq-rborde})
 \begin{equation}
-  r_b=\sqrt{\big[r_{mo}-\rho_o\,(1-\cos\alpha)\big]^2+\rho_o^2\sin^2\alpha},\qquad
-  \rho_o=\rho+\frac t2,\quad \rho=\frac{c^2/4+s^2}{2s},\quad \sin\alpha=\frac{c}{2\rho},
+  r_b=\sqrt{(\rho-s+t)^2+(c/2)^2},\qquad m=R_{\text{env}}-r_b ,\qquad \rho=R_b+h ,
   \label{eq:fabricacion-borde}
 \end{equation}
-con $r_{mo}$ el radio de la cara exterior en el centro de la cuerda. Las dos condiciones
-son el margen de envolvente $m=47{,}5-r_b\ge0$ y el huelgo entre la cara cóncava y el
-cuerpo $h=r_{mo}-t-R_b\ge0$. Con $r_{mo}=\SI{44.98}{mm}$, $s=\SI{3.15}{mm}$ y $c=\SI{45}{mm}$
-resulta $r_b=\SI{47.52}{mm}$: el borde ya está \SI{0.02}{mm} afuera en el valor nominal. Las
-derivadas son
-\begin{equation*}
-  \frac{\partial m}{\partial r_{mo}}=-0{,}88,\quad
-  \frac{\partial m}{\partial s}=+0{,}875,\quad
-  \frac{\partial m}{\partial c}=-0{,}24,\quad
-  \frac{\partial m}{\partial t}=-0{,}05 ;
-\end{equation*}
-más flecha \emph{mejora} el margen porque los bordes se cierran hacia el cuerpo. La posición
-radial $r_{mo}$ suma cinco tolerancias: radio de bisagra ($\pm0{,}10$), juego del pasador
-($\pm0{,}05$, U), asiento de la pala en el portapala ($\pm0{,}10$), alabeo longitudinal y
-posición de la ranura ($\pm0{,}10$). Se estudiaron cuatro configuraciones
-(tabla~\ref{tab:fabricacion-cadenaB} y figura~\ref{fig:fabricacion-env}).
+con $\rho$ el radio de la cara cóncava en el centro de la cuerda, $h$ la posición libre de la pala
+respecto del cuerpo (nominal $0$), $s$ la flecha, $t$ el espesor, $c$ la cuerda y
+$R_{\text{env}}=\SI{45}{mm}$ (\Req{S2}). Con $s=\SI{3.15}{mm}$, $t=\SI{0.5}{mm}$ y $c=\SI{45}{mm}$, el borde
+queda a $r_b=\SI{44.03}{mm}$ del eje y el margen nominal es $m=\SI{0.97}{mm}$. El modelo de la
+versión~1 (arco exacto, parametrizado con el radio de la cara exterior en el centro de la cuerda)
+describe la misma geometría y da un borde \SI{0.03}{mm} mayor (\SI{44.06}{mm}), porque incluye la
+inclinación del espesor en el borde. Se usa la ecuación del capítulo~\ref{cap:arq} para que esta cadena y
+\texttt{analysis/v2\_tol\_env.py} den los mismos números (misma semilla y mismo orden de sorteo).
+
+Las derivadas del margen son $\partial m/\partial\rho=-0{,}86$, $\partial m/\partial s=+0{,}86$,
+$\partial m/\partial c=-0{,}26$ y $\partial m/\partial t=-0{,}86$: más flecha \emph{mejora} el margen
+porque los bordes se cierran hacia el cuerpo. El radio $\rho$ suma seis tolerancias (3\,$\sigma$): radio
+del cuerpo ($\pm0{,}15$, de Ø\,$81\pm0{,}3$), bisagra ($\pm0{,}10$), juego del pasador ($\pm0{,}05$, U),
+asiento de la pala en el portapala ($\pm0{,}10$), alabeo longitudinal ($\pm T_a$) y posición de la ranura
+($\pm0{,}10$). A ellas se suman la flecha ($\pm T_s$), la cuerda ($\pm0{,}20$) y el espesor ($\pm0{,}05$).
+Se comparan tres asignaciones de $T_s$ y $T_a$ (tabla~\ref{tab:fabricacion-cadenaB} y
+figura~\ref{fig:fabricacion-env}): la base de la versión~1 ($\pm0{,}30$ ambas), la flecha relajada y la
+adoptada, que es la que piden las rpm y el desnivel de puntas.
 
 \begin{table}[H]
 \centering\small
-\caption{Cadena B: margen de envolvente $m$ y huelgo $h$ (mm) para cuatro configuraciones.
-$T_s$: tolerancia de flecha; $T_a$: alabeo.}
+\caption{Cadena B: margen de envolvente $m=R_{\text{env}}-r_b$ (mm). $T_s$: tolerancia de flecha;
+$T_a$: de alabeo. MC: Monte Carlo, $4\times10^5$ casos; en ninguna asignación hubo un caso con $m<0$.}
 \label{tab:fabricacion-cadenaB}
-\begin{tabularx}{\textwidth}{@{}Ycccccccc@{}}
+\begin{tabularx}{\textwidth}{@{}Yccccc@{}}
 \toprule
-\textbf{Configuración} & $r_{mo}$ & $R_b$ & $T_s$, $T_a$ & $c$ & $m$ nom. & $P(m<0)$ & $h$ nom. & $P(h<0)$\\\midrule
-Base (anteproyecto) & 44,98 & 44,0 & 0,30 & 45 & $-0{,}02$ & 56\,\% & 0,48 & 0,007\,\%\\
-Repartir el huelgo & 44,74 & 44,0 & 0,30 & 45 & 0,19 & 8,4\,\% & 0,24 & 3,2\,\%\\
-Cuerda 44 & 44,80 & 44,0 & 0,15 & 44 & 0,37 & $<0{,}001$\,\% & 0,30 & 0,09\,\%\\
-\textbf{Adoptada}: cuerpo Ø\,87,2 & 44,62 & 43,6 & 0,15 & 45 & 0,30 & 0,03\,\% & 0,52 & $<10^{-4}$\\
+\textbf{Asignación} & $T_s$, $T_a$ & \textbf{Peor caso} & \textbf{RSS} $\pm$ & \textbf{MC 99,73\,\%} & \textbf{Media $\pm$ desv. ($k\,\sigma$)}\\\midrule
+Base (versión~1) & 0,30; 0,30 & $-0{,}07$ & 0,42 & 0,54 a 1,39 & $0{,}967\pm0{,}142$ (6,8)\\
+Flecha relajada & 0,30; 0,15 & $+0{,}06$ & 0,36 & 0,61 a 1,33 & $0{,}967\pm0{,}121$ (8,0)\\
+\textbf{Adoptada} & 0,15; 0,15 & $+0{,}19$ & 0,28 & 0,68 a 1,25 & $0{,}967\pm0{,}095$ (10,1)\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1434,13 +1418,13 @@ Cuerda 44 & 44,80 & 44,0 & 0,15 & 44 & 0,37 & $<0{,}001$\,\% & 0,30 & 0,09\,\%\\
 \begin{subfigure}[t]{0.49\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[width=0.97\linewidth, height=5.6cm, xlabel={Margen $m$ [mm]},
-  ylabel={Densidad [1/mm]}, xmin=-0.6, xmax=1.0, ymin=0, ymax=5, legend pos=north west, xtick={-0.5,0,0.5,1},
+  ylabel={Densidad [1/mm]}, xmin=-0.1, xmax=1.6, ymin=0, ymax=4.6, legend pos=north east, xtick={0,0.5,1,1.5},
   legend style={font=\scriptsize}, xticklabel style={/pgf/number format/fixed}]
-  \fill[cfreno!10] (axis cs:-0.6,0) rectangle (axis cs:0,5);
-  \addplot[cfreno, thick, const plot mark mid] table[x=m, y=reparto] {analysis/data/fabricacion_hist_env.dat};
-  \addplot[cfijo, thick, dashed, const plot mark mid] table[x=m, y=cuerda44] {analysis/data/fabricacion_hist_env.dat};
-  \addplot[crot, thick, const plot mark mid] table[x=m, y=propuesta] {analysis/data/fabricacion_hist_env.dat};
-  \legend{Repartir, Cuerda 44, Adoptada}
+  \fill[cfreno!10] (axis cs:-0.1,0) rectangle (axis cs:0,4.6);
+  \addplot[cfreno, thick, const plot mark mid] table[x=m, y=base] {analysis/data/fabricacion_hist_env.dat};
+  \addplot[cfijo, thick, dashed, const plot mark mid] table[x=m, y=relajada] {analysis/data/fabricacion_hist_env.dat};
+  \addplot[crot, thick, const plot mark mid] table[x=m, y=adoptada] {analysis/data/fabricacion_hist_env.dat};
+  \legend{Base, Flecha relajada, Adoptada}
 \end{axis}
 \end{tikzpicture}
 \caption{Distribución del margen de envolvente.}
@@ -1448,40 +1432,49 @@ Cuerda 44 & 44,80 & 44,0 & 0,15 & 44 & 0,37 & $<0{,}001$\,\% & 0,30 & 0,09\,\%\\
 \begin{subfigure}[t]{0.49\textwidth}\centering
 \begin{tikzpicture}
 \begin{axis}[width=0.93\linewidth, height=5.6cm, xlabel={Tolerancia de flecha $T_s$ [mm]},
-  ylabel={$P$(interferencia) [\%]}, ymode=log, xmin=0.05, xmax=0.5, ymin=1e-3, ymax=30,
-  legend pos=south east, legend style={font=\scriptsize},
+  ylabel={Margen $m$ [mm]}, xmin=0.05, xmax=0.5, ymin=-0.3, ymax=0.8,
+  legend pos=south west, legend style={font=\scriptsize},
   xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2}]
-  \fill[ccuerda!12] (axis cs:0.05,1e-3) rectangle (axis cs:0.15,30);
-  \addplot[cfreno, thick] table[x=ts, y=Penv_rep] {analysis/data/fabricacion_env_ts.dat};
-  \addplot[cfijo, thick, dashed] table[x=ts, y=Pany_c44] {analysis/data/fabricacion_env_ts.dat};
-  \addplot[crot, thick] table[x=ts, y=Pany_prop] {analysis/data/fabricacion_env_ts.dat};
-  \legend{Repartir ($m<0$), Cuerda 44, Adoptada}
+  \fill[cfreno!10] (axis cs:0.05,-0.3) rectangle (axis cs:0.5,0);
+  \fill[ccuerda!12] (axis cs:0.05,-0.3) rectangle (axis cs:0.15,0.8);
+  \addplot[crot, thick] table[x=ts, y=m3_a15] {analysis/data/fabricacion_env_ts.dat};
+  \addplot[crot, thick, dashed] table[x=ts, y=mwc_a15] {analysis/data/fabricacion_env_ts.dat};
+  \addplot[cfijo, thick] table[x=ts, y=m3_a30] {analysis/data/fabricacion_env_ts.dat};
+  \addplot[cfijo, thick, dashed] table[x=ts, y=mwc_a30] {analysis/data/fabricacion_env_ts.dat};
+  \legend{3\,$\sigma$, $T_a=0{,}15$; peor caso, $T_a=0{,}15$; 3\,$\sigma$, $T_a=0{,}30$; peor caso, $T_a=0{,}30$}
 \end{axis}
 \end{tikzpicture}
-\caption{Probabilidad de que una pala salga de Ø\,95 o toque el cuerpo.}
+\caption{Margen a 3\,$\sigma$ (percentil 0,135) y de peor caso.}
 \end{subfigure}
-\caption{Cadena B por Monte Carlo (\texttt{fabricacion\_tol.py}). Zona roja: borde fuera de
-Ø\,95. Banda verde: tolerancia de flecha adoptada. En la configuración adoptada la flecha
-puede relajarse hasta $\pm\SI{0.25}{mm}$ con $P\approx0{,}2$\,\%; el alabeo ($T_a$) pesa tanto
-como la flecha.}
+\caption{Cadena B por Monte Carlo (\texttt{fabricacion\_tol.py}). Zona roja: borde fuera de Ø\,90.
+Banda verde: tolerancia de flecha adoptada. Ninguna asignación llega a la zona roja en el Monte Carlo;
+el peor caso (suma lineal) cruza el cero en $T_s=\pm\SI{0.37}{mm}$ con $T_a=\pm\SI{0.15}{mm}$ y en
+$\pm\SI{0.22}{mm}$ con $T_a=\pm\SI{0.30}{mm}$.}
 \label{fig:fabricacion-env}
 \end{figure}
 
-Repartir el huelgo (acercar la pala sin cambiar nada más) no alcanza: el margen sobre la
-envolvente se gana a costa del huelgo con el cuerpo y quedan 8 y 3\,\% de rotores con
-problemas. Hay que ganar espacio real. Se \textbf{adopta reducir el cuerpo a
-Ø\,\SI{87.2}{mm}} y acercar la pala \SI{0.36}{mm} (ranura del portapala): mantiene la
-cuerda, la curvatura y todos los cálculos aerodinámicos, y cuesta \SI{0.8}{mm} de diámetro
-interior, que nadie usa en la zona de las palas. La alternativa de cuerda de \SI{44}{mm}
-funciona igual de bien pero baja 2\,\% el área de pala y cambia la flecha que da el molde.
-En ambos casos la tolerancia de alabeo debe bajar de 0,30 a \SI{0.15}{mm}.
+\paragraph{Resultado.} Con la asignación adoptada (flecha $\pm\SI{0.15}{mm}$, alabeo
+$\le\SI{0.15}{mm}$) el margen es de \SI{0.967}{mm} con \SI{0.095}{mm} de desviación (\num{10.1}\,$\sigma$);
+el valor a 3\,$\sigma$ es \SI{0.68}{mm} y el peor caso, que suma linealmente todas las tolerancias, deja
+$+\SI{0.19}{mm}$: la cadena cierra también en peor caso. Con la asignación base (\num{6.8}\,$\sigma$)
+tampoco hay interferencias en el Monte Carlo, pero el peor caso da $-\SI{0.07}{mm}$. La envolvente ya no
+fija la tolerancia de flecha, que pasa a depender de las rpm y del desnivel de puntas; el alabeo
+$\le\SI{0.15}{mm}$ se conserva porque con $\pm\SI{0.30}{mm}$ el peor caso solo cierra hasta una flecha de
+$\pm\SI{0.22}{mm}$. En la versión~1 (Ø\,95, cuerpo de Ø\,88) la misma cadena dejaba el borde fuera de la
+envolvente en el 56\,\% de los rotores.
+
+En el modelo anterior la posición libre $h$ varía $\pm\SI{0.25}{mm}$ ($3\,\sigma$) en torno al contacto: la
+mitad de las palas quedaría separada del cuerpo y la otra mitad «dentro» de él. Como el cuerpo detiene a la
+pala, el desvío hacia adentro no existe (modelo con tope, $h\ge0$): el margen medio baja a
+\SI{0.94}{mm} y la desviación a \SI{0.077}{mm} (\num{12.2}\,$\sigma$). Se informa el modelo sin tope porque
+es el de \texttt{v2\_tol\_env.py}; el cierre no cambia.
 
 \begin{nota}[Interfaz con el tubo del cohete]
-El margen nominal de \SI{0.30}{mm} sobre Ø\,95 deja el borde de la pala en Ø\,\SI{94.4}{mm}.
-Si se adoptan los patines guía del capítulo~\ref{cap:planos-conjunto}, que piden las palas
-dentro de Ø\,\SI{94}{mm}, hace falta además la cuerda de \SI{44}{mm} o un cuerpo de
-Ø\,\SI{86.6}{mm}. La decisión depende del diámetro interior real del tubo, que el anexo
-no da.
+El borde de la pala plegada queda en Ø\,\SI{88.1}{mm}: \SI{0.97}{mm} por lado de holgura nominal y
+\SI{0.68}{mm} a $3\,\sigma$ hasta la envolvente de Ø\,90. Los patines guía que propone el
+capítulo~\ref{cap:planos-conjunto} se definieron para la envolvente de Ø\,95; si se adoptan en la
+versión~2 tienen que definir el Ø\,90 y dejar a las palas esa holgura, no quitarla. La decisión depende
+del diámetro interior real del tubo, que el anexo no da.
 \end{nota}
 
 \subsection{Alineación de pestañas y anillo}
@@ -1491,20 +1484,23 @@ tiene tope mecánico; sin esas dos condiciones no cierra. Hay tres direcciones
 (tabla~\ref{tab:fabricacion-cadenaC}):
 \begin{itemize}
   \item \textbf{Radial}: el diente Ø\,1,0 debe pasar por el ojal de \SI{1.70}{mm} (juego
-        $\pm0{,}35$). Contribuyen la posición radial de la pala (cadena B, $\pm0{,}19$
-        RSS, $\pm0{,}35$ en peor caso), el plegado ($\pm0{,}15$), el ojal respecto del pliegue ($\pm0{,}05$), el
+        $\pm0{,}35$). Contribuyen la posición radial de la pala (cadena B: bisagra, asiento y ranura de
+        $\pm0{,}10$ y pasador de $\pm0{,}05$; $\pm0{,}18$ RSS, $\pm0{,}35$ en peor caso), el plegado ($\pm0{,}15$), el ojal respecto del pliegue ($\pm0{,}05$), el
         radio del diente ($\pm0{,}10$) y el juego del anillo en su guía ($\pm0{,}15$). El
         peor caso ($\pm0{,}80$, con la suma lineal de la cadena B) excede el juego; por Monte Carlo una pestaña queda fuera en
         el 0,06\,\% de los casos, 0,25\,\% para el juego de cuatro. Se detecta en el
         montaje (el servo no traba) y se corrige repasando el ojal: no es un modo de falla
         en vuelo.
-  \item \textbf{Axial}: el ojal colisado de \SI{2.6}{mm} da $\pm0{,}80$ de juego. Con la
+  \item \textbf{Axial}: el ojal colisado de \SI{2.6}{mm} da $\pm0{,}80$ de juego. Contribuyen el largo de
+        la pala (\SI{206}{mm}, recorte con plantilla de $\pm0{,}20$; la tolerancia de recorte no crece con el
+        largo), el pegado de la pestaña ($\pm0{,}15$ con plantilla), la bisagra en el cubo ($\pm0{,}10$), el
+        anillo en el cuerpo ($\pm0{,}15$) y el alambre en el anillo ($\pm0{,}10$). Con la
         pestaña pegada a ojo ($\pm0{,}30$ adicional) el peor caso llega a $\pm1{,}0$;
         con plantilla referida al pasador queda en $\pm0{,}70$: cierra en peor caso.
   \item \textbf{Tangencial}: el diente atraviesa la pestaña y sobresale \SI{2.5}{mm}. Si la
         posición trabada la fija un tope fijo, el enganche mínimo es \SI{1.85}{mm}. Si la
         fija el servo (resolución $\approx\ang{\pm1}$, $\pm\SI{0.64}{mm}$ de arco), baja
-        a \SI{1.21}{mm} y el 0,13\,\% de las pestañas queda con menos de \SI{1.5}{mm}.
+        a \SI{1.21}{mm} y el 0,14\,\% de las pestañas queda con menos de \SI{1.5}{mm}.
         Por eso el anillo lleva tope fijo.
 \end{itemize}
 
@@ -1519,7 +1515,7 @@ Radial & $\pm0{,}35$ & $\pm0{,}80$ & $\pm0{,}30$ & 0,06\,\% por pestaña\\
 Axial, pegado a ojo & $\pm0{,}80$ & $\pm1{,}00$ & $\pm0{,}44$ & $<10^{-4}$\\
 Axial, con plantilla & $\pm0{,}80$ & $\pm0{,}70$ & $\pm0{,}32$ & 0\\
 Tangencial, tope fijo & enganche $\ge1{,}5$ & 1,85 & --- & 0\\
-Tangencial, solo servo & enganche $\ge1{,}5$ & 1,21 & --- & 0,13\,\%\\
+Tangencial, solo servo & enganche $\ge1{,}5$ & 1,21 & --- & 0,14\,\%\\
 \bottomrule
 \end{tabular}
 \end{table}
