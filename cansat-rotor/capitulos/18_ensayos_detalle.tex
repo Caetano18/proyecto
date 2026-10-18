@@ -14,7 +14,7 @@ ensayo se ha hecho todavía.
   \item \textbf{Auto} (E2b): cubre lo que el ventilador no alcanza, el arranque a
         \SIrange{10}{14}{m/s}, con tramos cortos para no pasar de las rpm de diseño.
   \item \textbf{Caídas desde drone} (E4): de 80 a \SI{100}{m} de caída por ensayo según el
-        modelo nominal (los \SIrange{30}{60}{m} del capítulo~\ref{cap:riesgos} no alcanzan);
+        modelo nominal (el capítulo~\ref{cap:riesgos} usa de 80 a \SI{120}{m});
         10 caídas dan $\Vr$ con $U\approx\pm\SI{0.33}{m/s}$. Si la dispersión entre caídas
         es de \SI{0.4}{m/s} o menos, 3 caídas alcanzan para demostrar $\Vr\le\SI{7.5}{m/s}$.
   \item \textbf{Ambientales} (E5, E7--E9) con recursos de universidad, y una matriz que
@@ -50,7 +50,7 @@ $\Vr$ con el rotor solo & \SI{6.4}{m/s} (\SI{5.8}{m/s} con el drogue atado) & \S
 rpm de equilibrio & \num{1230} & $\pm2$\,\% & Validar la ecuación~\eqref{eq:omega} y el $C_l$ de la placa & E2\\
 Conicidad $\beta_0$ & \ang{4.2} & $\pm\ang{0.3}$ & Validar la ecuación~\eqref{eq:conicidad}; margen al tope de \ang{15} & E2\\
 Par de arranque $Q_0$ & \SI{0.030}{N.m} & $\pm20$\,\% & Elegir el paso; riesgo n.º~1 del AMFE & E2, E2b\\
-Tiempo de arranque ($t_{90}$) & \SI{1.55}{s} (\SIrange{1.1}{2.0}{s}) & \SI{\pm0.3}{s} & Altura perdida antes de frenar (\SI{22}{m}) & E2b, E4\\
+Tiempo de arranque ($t_{90}$) & \SI{1.55}{s} (\SIrange{1.1}{2.0}{s}) & \SI{\pm0.3}{s} & Altura perdida antes de frenar (\SI{22}{m}; 4,3\,\% de la etapa 2) & E2b, E4\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -409,8 +409,8 @@ portapalas.
 \subsection{Altura necesaria}
 Hacen falta de 80 a \SI{100}{m} de caída por ensayo si la pendiente del par en el
 equilibrio es la estimada con la teoría de elemento de pala (caso nominal), y más de
-\SI{120}{m} si es mucho menor (caso conservador). Los \SIrange{30}{60}{m} previstos en
-el capítulo~\ref{cap:riesgos} no alcanzan para llegar a régimen. Para estimarlo se
+\SI{120}{m} si es mucho menor (caso conservador). Con menos de unos \SI{80}{m} no se llega
+a régimen; el capítulo~\ref{cap:riesgos} usa de 80 a \SI{120}{m}. Para estimarlo se
 integra un modelo de orden reducido con tres estados (altura, velocidad y rpm):
 \begin{align}
   m\,\dot V &= W - (k_d+k_c)V^2 - T, &
@@ -493,23 +493,23 @@ Consecuencias:
 \begin{itemize}
   \item Las caídas de caracterización (repeticiones para $\Vr$ y $\CR$) se hacen en la
         configuración B, la más corta, soltando desde \SIrange{110}{120}{m}.
-  \item La secuencia real A (drogue, liberación, arranque) se hace 3 veces desde la
-        altura máxima. Además de $\Vr$, verifica la lógica de liberación. No sirve para
-        \Req{C3}: a los \SI{2.5}{s} (\SI{21}{m}) la etapa 1 va a \SI{12.7}{m/s}, el 95\,\%
-        de $V_1$, todavía acelerando. $V_1$ se mide en caídas aparte con el rotor trabado,
-        que llegan al 98\,\% de $V_1$ tras unos \SI{29}{m}.
+  \item La secuencia A (drogue, liberación a los \SI{2.5}{s}, arranque; en vuelo la etapa 1
+        recorre \SI{125}{m}) se hace 3 veces desde la altura máxima. Además de $\Vr$, verifica
+        la lógica de liberación. No sirve para \Req{C3}: a los \SI{2.5}{s} (\SI{21}{m}) la
+        etapa 1 va a \SI{12.7}{m/s}, el 95\,\% de $V_1$, todavía acelerando. $V_1$ se mide en
+        caídas aparte con el rotor trabado, que llegan al 98\,\% de $V_1$ tras unos \SI{29}{m}.
   \item Si el rotor real se parece al caso conservador, a \SI{120}{m} no llega a
         régimen. Esto se detecta a bordo: la ventana de análisis solo es válida si el
         sensor hall muestra $|\dot\Omega|<\SI{2}{rad/s^2}$. Un arranque tan lento sería
         además un hallazgo de diseño, porque también alarga la caída real, y llevaría a un
         paso más negativo.
   \item \Req{C4} pide un \emph{promedio} en todo el descenso, no la velocidad
-        estabilizada. Con liberación a $V_1$ estable, el modelo da una media de la etapa 2
-        de \SI{6.51}{m/s} en \SI{560}{m} (apogeo de \SI{700}{m}) en el caso nominal, y de
-        \SI{6.86}{m/s} en el conservador; en \SI{100}{m}, de \SI{6.98}{m/s} y
-        \SI{8.41}{m/s}. El transitorio pesa poco en vuelo, pero domina en una caída corta,
-        por eso en E4 se mide $\Vr$ en la ventana estable y la media de vuelo se obtiene
-        por análisis.
+        estabilizada. Con liberación a $V_1$ estable, el modelo da una media de
+        \SI{6.52}{m/s} en los \SI{500}{m} de la etapa 2 (apogeo de \SI{625}{m};
+        tabla~\ref{tab:tiempos}) en el caso nominal, y de \SI{6.90}{m/s} en el conservador;
+        en \SI{100}{m}, de \SI{6.98}{m/s} y \SI{8.41}{m/s}. El transitorio pesa poco en vuelo,
+        pero domina en una caída corta, por eso en E4 se mide $\Vr$ en la ventana estable y
+        la media de vuelo se obtiene por análisis.
 \end{itemize}
 
 \subsection{Suspensión y secuencia}

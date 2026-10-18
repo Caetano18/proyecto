@@ -5,6 +5,8 @@ Genera los datos de los gráficos en analysis/data/ensayos_*.dat e imprime los
 números que usan las tablas del capítulo. Solo numpy y scipy.
 
 Uso:  python3 analysis/ensayos_calculos.py
+Altura de liberación del rotor: variable de entorno CANSAT_HLIB [m] (500 por defecto; h_max = CANSAT_HLIB/0,8 = 625 m).
+Solo fija la media de la etapa 2 (stdout); con CANSAT_HLIB distinto de 500 no se reescribe ningún .dat.
 """
 import os
 import numpy as np
@@ -14,6 +16,9 @@ from scipy import stats
 AQUI = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(AQUI, "data")
 os.makedirs(DATA, exist_ok=True)
+
+H_LIB = float(os.environ.get("CANSAT_HLIB", 500.0))   # altura de liberación del rotor [m] = 0,8 h_max
+H_MAX = H_LIB / 0.8                                    # apogeo de diseño [m] (625 m)
 
 # ---------------------------------------------------------------- datos base
 rho, g = 1.225, 9.80665
@@ -39,6 +44,8 @@ def linea(nombre, valor, unidad=""):
 
 
 def guardar(nombre, cab, cols):
+    if H_LIB != 500.0:        # los datos de este script no dependen de H_LIB: el caso alternativo no pisa los del base
+        return
     ruta = os.path.join(DATA, nombre)
     arr = np.column_stack(cols)
     np.savetxt(ruta, arr, fmt="%.5g", header=" ".join(cab), comments="")
@@ -129,7 +136,8 @@ linea("C_s (palas quietas, ref. A_R)", C_s)
 
 
 def simular(a, con_drogue=True, t_lib=None, h_max=400.0):
-    """t_lib: tiempo de liberación del rotor (None = libre desde el inicio)."""
+    """t_lib: tiempo de liberación del rotor (None = libre desde el inicio).
+    h_max: altura de caída del drone en que se corta la simulación (NO es el apogeo de vuelo)."""
     kd = k_d if con_drogue else 0.0
 
     def rhs(t, y):
@@ -214,7 +222,7 @@ for a, etiq in ((a_nom, "nominal"), (0.0, "conservador")):
         Q = Q0_ref*(Vp/13.4)**2*(1 - x)*(1 + a*x) - Q_f*np.tanh(Om/2)
         dOm = Q / I_p if (Om > 0 or Q > 0) else 0.0
         return [Vv, (W - (k_d + k_c)*Vv*abs(Vv) - T)/m, dOm]
-    for H in (100.0, 300.0, 560.0):
+    for H in (100.0, 300.0, H_LIB):
         ev = lambda t, y, H=H: y[0] - H
         ev.terminal = True
         s2 = solve_ivp(rhs2, (0, 300), [0, V1, 0], max_step=0.01, events=ev,

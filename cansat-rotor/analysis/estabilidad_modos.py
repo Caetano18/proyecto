@@ -1,6 +1,8 @@
 """Estabilidad del conjunto rotor-cuerpo (cap. 14), configuración v2: rotor solo (drogue soltado).
 Modelos linealizados; todas las entradas marcadas 'est.' son estimaciones.
-Uso (desde cansat-rotor/): python3 analysis/estabilidad_modos.py"""
+Uso (desde cansat-rotor/): python3 analysis/estabilidad_modos.py
+Altura de liberación del rotor: variable de entorno CANSAT_HLIB [m] (500 por defecto; h_max = CANSAT_HLIB/0,8 = 625 m).
+Con CANSAT_HLIB=400 (apogeo de 500 m) solo se escribe estabilidad_giro_H400.dat; lo demás no depende de la altura."""
 import sys, os
 import numpy as np
 from scipy.linalg import eig
@@ -12,6 +14,9 @@ m, W = cfg.M2, cfg.M2*9.81
 R, e, B, c = cfg.R, cfg.E, 4, 0.045
 A = np.pi*R**2
 Om0, V0, T0 = 128.7, 6.357, 4.681        # BEMT, rotor solo (cap. BEMT)
+H_LIB = float(os.environ.get('CANSAT_HLIB', 500.0))   # altura de liberación del rotor [m] = 0,8 h_max
+SUF = '' if H_LIB == 500.0 else f'_H{H_LIB:.0f}'      # sufijo de los archivos del caso alternativo
+T2 = H_LIB/round(V0, 2)                  # duración de la etapa 2 [s] = 0,8 h_max/V2 (78,6 s con 500 m)
 Omd, Vd, Td = 117.98, 5.808, 3.890       # BEMT con el drogue todavía atado (falla de la liberación)
 gam, Ib, mb = 12.6, cfg.IB, cfg.MB       # Lock: rho a c R^4/Ib con a = 5,7
 xg = 0.059*cfg.LB/0.156                  # est.: centro de masa de la pala desde la bisagra (escala de v1)
@@ -19,11 +24,15 @@ Sb = mb*xg
 Db = 0.5*rho*0.8*np.pi*cfg.D_ENV**2/4    # cuerpo, coef. de V^2
 BETA0 = 4.2                              # conicidad de equilibrio [grados], pala A, n = 1 (estructura_cargas.py)
 out = {}
+def abrir(nombre, dep_h=False):
+    """Abre un archivo de datos. En el caso alternativo solo se escribe lo que depende de H (con sufijo)."""
+    if SUF and not dep_h: return open(os.devnull, 'w')
+    return open(D + (nombre[:-4] + SUF + nombre[-4:] if dep_h else nombre), 'w')
 # ---------------- 1. anillo de vortices ----------------
 vh = np.sqrt(T0/(2*rho*A)); out['vh'] = vh; out['V/vh'] = V0/vh
 vhn = np.sqrt(Td/(2*rho*A)); out['V/vh con drogue atado'] = Vd/vhn
 tr = np.loadtxt(D+'bemt_transitorio.dat', skiprows=1)
-with open(D+'estabilidad_vrs.dat', 'w') as f:
+with abrir('estabilidad_vrs.dat') as f:
     f.write('t V vh r\n')
     for t, Om, V, rpm, T in tr[::4]:
         if T > 0.05:
@@ -69,7 +78,7 @@ out['modos con drogue atado (falla de liberacion)'] = [l for l in modos(atado=Tr
 out['modos h=0.05'] = modos(h=0.05)[1:]
 out['modos con aletas'] = modos(fin=0.5*rho*V0*2.6*0.0016*4/2)[1:]
 def barrido(name, par, vals, **kw):
-    with open(D+f'estabilidad_rl_{name}.dat', 'w') as f:
+    with abrir(f'estabilidad_rl_{name}.dat') as f:
         f.write('p re im\n')
         for v in vals:
             for l in modos(**{par: v}, **kw):
@@ -98,7 +107,7 @@ def cfin(n, s, l, rf0=0.044):
     a = 2*np.pi*AR/(2 + np.sqrt(AR**2 + 4))
     rf = rf0 + s/2
     return n*0.5*rho*V0*a*S*rf**2, n*0.5*rho*V0**2*a*S*rf, a
-def simula(cdamp, Mcant=0.0, tend=40.0, dt=0.01):
+def simula(cdamp, Mcant=0.0, tend=T2, dt=0.01):
     w = 0.0; res = []
     for k in range(int(tend/dt)+1):
         t = k*dt
@@ -110,15 +119,16 @@ s0 = simula(cb); cf44, tq44, a44 = cfin(4, 0.040, 0.040)
 s1 = simula(cb + cf44)
 cf46, tq46, _ = cfin(4, 0.060, 0.050)
 s2 = simula(cb + cf46)
-with open(D+'estabilidad_giro.dat', 'w') as f:
+with abrir('estabilidad_giro.dat', dep_h=True) as f:
     f.write('t w0 w1 w2\n')
-    for i in range(0, len(s0), 50):
+    for i in sorted(set(range(0, len(s0), 50)) | {len(s0)-1}):      # cada 0,5 s y el instante final (T2)
         f.write(f'{s0[i,0]:.2f} {s0[i,1]*30/np.pi:.2f} {s1[i,1]*30/np.pi:.2f} {s2[i,1]*30/np.pi:.2f}\n')
-out['giro sin aletas a 10,20,40 s [rpm]'] = [s0[int(t/0.01), 1]*30/np.pi for t in (10, 20, 40)]
+out['giro sin aletas a 10,20,40 s y fin de etapa 2 [rpm]'] = [s0[min(int(round(t/0.01)), len(s0)-1), 1]*30/np.pi for t in (10, 20, 40, T2)]
+out['duración de la etapa 2 T2 [s]'] = T2
 out['aletas 4x40x40: c, torque/rad, w_eq [rad/s]'] = (cf44, tq44, Mf/(cb+cf44))
 out['aletas 4x60x50: c, torque/rad, w_eq'] = (cf46, tq46, Mf/(cb+cf46))
 out['cant para anular Mf 40x40 [deg]'] = np.degrees(Mf/tq44)
-with open(D+'estabilidad_aletas.dat', 'w') as f:
+with abrir('estabilidad_aletas.dat') as f:
     f.write('s w1 w2 cant\n')
     for s in np.linspace(0.01, 0.08, 15):
         cfx, tqx, _ = cfin(4, s, 0.040)
@@ -128,7 +138,7 @@ with open(D+'estabilidad_aletas.dat', 'w') as f:
 nu2 = 1 + e*Sb/Ib + 0.005/(Ib*Om0**2); out['nu_beta'] = np.sqrt(nu2)
 z = gam/(16*np.sqrt(nu2)); out['zeta_beta'] = z
 out['s/Om batimiento'] = -z*np.sqrt(nu2) + 1j*np.sqrt(nu2)*np.sqrt(1-z**2)
-with open(D+'estabilidad_d3.dat', 'w') as f:
+with abrir('estabilidad_d3.dat') as f:
     f.write('d3 nu zeta beta0 dth\n')
     for d3 in np.linspace(-30, 45, 16):
         Kp = np.tan(np.radians(d3))
@@ -146,7 +156,7 @@ def omega_div(Ith, ycc, GJ, a=5.7, r=0.75*R):
 for nm, p in {'A': (5.96e-6, 0.500, 7.6e-3), 'BV': (8.21e-6, 0.428, 51.7e-3)}.items():
     od, wt = omega_div(*p)
     out[f'divergencia {nm}: OmD, OmD/Om0, wth0/Om0'] = (od, od/Om0, wt/Om0)
-with open(D+'estabilidad_div.dat', 'w') as f:
+with abrir('estabilidad_div.dat') as f:
     f.write('GJ rA rBV\n')
     for GJ in np.geomspace(3e-3, 1e-1, 30):
         f.write(f'{GJ*1e3:.3f} {omega_div(5.96e-6, 0.500, GJ)[0]/Om0:.3f} {omega_div(8.21e-6, 0.428, GJ)[0]/Om0:.3f}\n')

@@ -5,6 +5,10 @@ Modelo de Friis en espacio libre con el diagrama de un dipolo de media onda vert
 el CanSat y una antena directiva apuntada en tierra; cerca del suelo, modelo de dos rayos
 con coeficiente de reflexión -1 (incidencia rasante). Datos de radio de las hojas de
 datos (XBee-PRO 900HP y XBee 3 PRO); antenas y pérdidas son valores representativos.
+Altura del CanSat: la de liberación H_lib (variable de entorno CANSAT_HLIB, por defecto
+500 m, que es el 80 % del apogeo de diseño de 625 m) para la tabla y la curva en vuelo; el
+apogeo H_lib/0,8 se evalúa aparte como peor caso (el CanSat más alto y más lejos de la
+estación). Con otro valor, la salida lleva el sufijo _H<H_lib>.
 Uso: python3 analysis/electronica_enlace.py
 """
 import os
@@ -13,6 +17,10 @@ import numpy as np
 C0 = 299_792_458.0
 AQUI = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(AQUI, "data")
+HLIB = float(os.environ.get("CANSAT_HLIB", "500"))   # m: altura de liberación del rotor
+H_VUELO = HLIB                                       # m: CanSat en la liberación (80 % del apogeo)
+H_APO = HLIB / 0.8                                   # m: apogeo de diseño
+SUF = "" if HLIB == 500.0 else f"_H{HLIB:.0f}"
 
 BANDAS = {
     #        f [Hz],  Pt [dBm], S [dBm], G tierra [dBi], L cable tierra [dB]
@@ -54,10 +62,10 @@ def margen(x, h, b, dos_rayos=False):
 
 def main():
     x = np.arange(10.0, 2505.0, 5.0)
-    with open(os.path.join(DATA, "electronica_enlace.dat"), "w") as fo:
+    with open(os.path.join(DATA, f"electronica_enlace{SUF}.dat"), "w") as fo:
         fo.write("x m915a m2400a m915b m2400b\n")
         for xi in x:
-            fo.write(f"{xi/1000:.3f} {margen(xi,560,'915'):.2f} {margen(xi,560,'2400'):.2f} "
+            fo.write(f"{xi/1000:.3f} {margen(xi,H_VUELO,'915'):.2f} {margen(xi,H_VUELO,'2400'):.2f} "
                      f"{margen(xi,H_SUELO,'915',True):.2f} {margen(xi,H_SUELO,'2400',True):.2f}\n")
     for b, p in BANDAS.items():
         lam = C0 / p["f"]
@@ -66,7 +74,7 @@ def main():
         for d in (1000.0, 2000.0):
             print(f"  FSPL {d/1000:.0f} km = {fspl(d, p['f']):.1f} dB; "
                   f"Fresnel r1 (punto medio) = {0.5*np.sqrt(lam*d):.1f} m")
-            for h in (560.0,):
+            for h in (H_VUELO, H_APO):
                 xh = np.sqrt(max(d**2 - (h - H_GS)**2, 0))
                 th = np.degrees(np.arctan2(xh, h - H_GS))
                 print(f"  oblicua {d:.0f} m, h={h:.0f}: x={xh:.0f} m, theta={th:.0f} grados, "
@@ -78,9 +86,10 @@ def main():
             print(f"  h={hh} m: margen>=10 dB hasta {ok10.max() if ok10.size else 0:.0f} m, "
                   f">=0 dB hasta {ok0.max() if ok0.size else 0:.0f} m; a 1 km "
                   f"{margen(1000.,hh,b,True):.1f} dB, 2 km {margen(2000.,hh,b,True):.1f} dB")
-        ma = margen(x, 560, b)
-        print(f"  h=560 m: margen mínimo {ma.min():.1f} dB en x={x[ma.argmin()]:.0f} m; "
-              f"a 2,5 km {ma[-1]:.1f} dB")
+        for h in (H_VUELO, H_APO):
+            ma = margen(x, h, b)
+            print(f"  h={h:.0f} m: margen mínimo {ma.min():.1f} dB en x={x[ma.argmin()]:.0f} m; "
+                  f"a 2,5 km {ma[-1]:.1f} dB")
         # alcance en espacio libre con margen de 10 dB, antena en el máximo
         eirp = p["Pt"] + 2.15 + p["Gg"] - L_CANSAT - p["Lg"] - L_POL - L_CUERPO
         Lmax = eirp - p["S"] - M_FADING

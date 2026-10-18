@@ -3,8 +3,29 @@
 
 Corrientes típicas: las del XBee-PRO 900HP son de su hoja de datos; el resto son valores
 representativos de componentes de la clase indicada (a medir con el prototipo).
+Las duraciones de las fases de vuelo salen del vuelo nominal simulado (altura de liberación
+CANSAT_HLIB, por defecto 500 m, apogeo 625 m): electronica_kalman.py (eventos) y
+electronica_sil.cpp (instantes de los estados). Correr antes esos dos.
 Uso: python3 analysis/electronica_potencia.py
 """
+import os
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+HLIB = float(os.environ.get("CANSAT_HLIB", "500"))   # m: altura de liberación del rotor
+SUF = "" if HLIB == 500.0 else f"_H{HLIB:.0f}"
+EV = {}                              # instantes del vuelo nominal simulado [s]
+with open(os.path.join(AQUI, "data", f"electronica_kalman_eventos{SUF}.dat")) as f:
+    next(f)
+    for linea in f:
+        k, v = linea.split()
+        EV[k] = float(v)
+# prueba del firmware en la PC (electronica_sil.cpp): ASCENT a 5,08 s; APOGEE dura 1,0 s
+# hasta DESCENT; PAYLOAD_RELEASE llega 1,92 s después de la orden de liberación
+T_ASCENT, T_APOGEE, T_GIRO = 5.08, 1.0, 1.92
+D_ASCENT = round(EV["apogeo_C"] + T_APOGEE - T_ASCENT)               # ASCENT + APOGEE
+D_DESCENT = round(EV["liberacion_C"] - (EV["apogeo_C"] + T_APOGEE))  # etapa 1 (drogue)
+D_PAYLOAD = round(EV["aterrizaje_C"] - (EV["liberacion_C"] + T_GIRO))  # hasta LANDED
+
 ETA_33, ETA_5 = 0.90, 0.88          # rendimiento del buck-boost 3,3 V y del boost 5 V
 
 # consumo en el riel de 3,3 V [mA]
@@ -31,11 +52,11 @@ base33 = sum(R33.values()) + RADIO
 estados = [
     # nombre, duración [s], i33 [mA], i5 [mA]
     ("LAUNCH_PAD (2 h, cámaras apagadas)", 7200, base33, SERVO_REPOSO),
-    ("ASCENT + APOGEE", 13, base33, SERVO_REPOSO + CAMARAS),
-    ("DESCENT", 11, base33, SERVO_REPOSO + CAMARAS),
+    ("ASCENT + APOGEE", D_ASCENT, base33, SERVO_REPOSO + CAMARAS),
+    ("DESCENT", D_DESCENT, base33, SERVO_REPOSO + CAMARAS),
     ("PROBE_RELEASE (servo en movimiento 0,3 s)", 3, base33, SERVO_REPOSO + CAMARAS
      + (SERVO_MOV - SERVO_REPOSO) * 0.3 / 3),
-    ("PAYLOAD_RELEASE", 90, base33, SERVO_REPOSO + CAMARAS),
+    ("PAYLOAD_RELEASE", D_PAYLOAD, base33, SERVO_REPOSO + CAMARAS),
     ("LANDED (1 h, cámaras 60 s)", 3600, base33, SERVO_REPOSO + CAMARAS * 60 / 3600),
 ]
 
@@ -50,6 +71,8 @@ print(f"energía total {E:.2f} Wh; disponible (3000 mAh, 3,6 V, 80 %) {E_disp:.2
       f"factor {E_disp/E:.1f}")
 P_pad = p_entrada(base33, SERVO_REPOSO); P_all = p_entrada(base33, SERVO_REPOSO + CAMARAS)
 print(f"autonomía modo plataforma {E_disp/P_pad:.1f} h; todo encendido {E_disp/P_all:.1f} h")
+E_cam = E - P_pad * 7200 / 3600 + P_all * 7200 / 3600   # cámaras encendidas desde la plataforma
+print(f"con las cámaras encendidas desde la plataforma: {E_cam:.2f} Wh, factor {E_disp/E_cam:.1f}")
 
 print("\n== Caída de tensión con el servo bloqueado ==")
 for nombre, Rtot in (("celda nueva, 25 °C", 0.17), ("celda envejecida o fría", 0.25)):

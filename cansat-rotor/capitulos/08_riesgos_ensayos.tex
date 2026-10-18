@@ -40,7 +40,7 @@ Masa fuera de \SI{500 \pm 10}{g} & Falla \Req{S1} & 6 & 3 & 1 & 18 & Presupuesto
 E1 & Banco: mecanismo & Giro libre a mano, balanceo, 20 liberaciones de la traba & Gira libre $>\SI{5}{s}$; 20 de 20 liberaciones\\
 E2 & Ventilador vertical (o auto a \SI{20}{km/h}) & Arranque desde cero, rpm, conicidad (video), paso óptimo & 10 de 10 arranques en $<\SI{3}{s}$; rpm medidas $\pm$20\,\% de 1230\\
 E3 & Balanza de empuje en túnel o ventilador & Empuje frente a velocidad del aire: obtiene $\CR$ real & $\CR\ge0{,}80$ (límite inferior al 95\,\%; nominal 0,96)\\
-E4 & Caída desde drone (\SIrange{30}{60}{m}) & Velocidad con barómetro, con el rotor solo y con el drogue atado & $\Vr\le\SI{7.3}{m/s}$ con el rotor solo (promedio global $\le\SI{8}{m/s}$); $\le\SI{6.3}{m/s}$ con el drogue atado\\
+E4 & Caída desde drone (\SIrange{80}{120}{m}) & Velocidad con barómetro, con el rotor solo y con el drogue atado & $\Vr\le\SI{7.3}{m/s}$ con el rotor solo (promedio global $\le\SI{8}{m/s}$); $\le\SI{6.3}{m/s}$ con el drogue atado\\
 E5 & Vibración y choque & 15\,G y 30\,G (\Req{S4}, \Req{S5}) & Nada se suelta; traba sigue cerrada\\
 E6 & Integración completa & Secuencia de estados, video, telemetría & Todos los estados en el CSV; video de las dos etapas\\
 E7 & Secuencia de suelta del drogue (y del contenedor en la Arq.~2) & Enclavamiento, tiempos del anillo y del pasador, caída libre, nueva apertura del rotor & 20 de 20 sueltas; $<\SI{0.5}{s}$ hasta las palas abiertas; sin lazo de cuerda en las palas\\
@@ -82,7 +82,7 @@ E8 & Electrónica & Cámaras 2\,h con corte, LR2021 en banco y alcance, ruido de
   \filldraw[fijo] (32,45) rectangle (38,60);
   \filldraw[rot] (20,60) rectangle (50,61.2);
   \draw[cuerda] (35,61) -- (35,70);
-  \draw[flecha, cgris] (60,60) -- (60,10) node[midway, right, font=\scriptsize, align=left] {30--60 m\\ barómetro\\ a 50\,Hz};
+  \draw[flecha, cgris] (60,60) -- (60,10) node[midway, right, font=\scriptsize, align=left] {80--120 m\\ barómetro\\ a 50\,Hz};
   \draw[black] (0,5) -- (70,5);
   \node[font=\scriptsize] at (35,2) {suelo};
   \end{scope}

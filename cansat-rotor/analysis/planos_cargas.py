@@ -4,6 +4,8 @@
 Capítulo "Planos de conjunto avanzados" (prefijo planos).
 Modelo cuasiestático de barra 1D a lo largo del eje z (0 = fondo, 250 = tope de la copa).
 Salida: tablas en pantalla y archivos analysis/data/planos_*.dat
+Altura de liberación del rotor: variable de entorno CANSAT_HLIB [m] (500 por defecto; h_max = CANSAT_HLIB/0,8 = 625 m);
+solo fija las duraciones de etapa que se imprimen (los .dat no dependen de la altura).
 """
 import os
 import numpy as np
@@ -157,9 +159,18 @@ print(f"par de fricción 688ZZ (mu=0,0015, d=8 mm): {Mfr:.2e} N m (por par)")
 Ip = 5.133e-4
 Q0 = 0.026
 tau = Ip * Om / Q0
-print(f"\n== Arranque: tau = I*Omega/Q0 = {tau:.2f} s ; t(90%) = {tau*np.log(10):.2f} s")
+print(f"\n== Arranque, modelo lineal de la versión 1: tau = I*Omega/Q0 = {tau:.2f} s ; t(90%) = {tau*np.log(10):.2f} s")
 E_rot = 0.5 * Ip * Om**2
 print(f"energía de giro final = {E_rot:.2f} J")
+# arranque vigente (BEMT con apertura de palas, cap. arranque): fila 1 de arranque_casos.dat
+H_LIB = float(os.environ.get("CANSAT_HLIB", 500.0))      # altura de liberación del rotor [m] = 0,8 h_max
+H_MAX = H_LIB / 0.8                                       # apogeo de diseño [m] (625 m)
+t90, z90 = np.loadtxt(os.path.join(DATA, "arranque_casos.dat"), skiprows=1)[0, 1:3]
+print(f"arranque vigente (BEMT): t90 = {t90:.2f} s ; z90 = {z90:.1f} m = {z90/H_LIB*100:.1f} % de la etapa 2 ({H_LIB:.0f} m)")
+# duración de las etapas con las velocidades vigentes del cap. de dimensionamiento (V1 = 13,44 ; V2 = 6,36 m/s)
+V1_DOC, V2_DOC = 13.44, 6.36
+t_et1, t_et2 = 0.2 * H_MAX / V1_DOC, H_LIB / V2_DOC
+print(f"apogeo {H_MAX:.0f} m, liberación {H_LIB:.0f} m: etapa 1 = {t_et1:.1f} s ; etapa 2 = {t_et2:.1f} s ; total = {t_et1 + t_et2:.1f} s")
 
 # ---------------------------------------------------------------- holguras en el tubo
 alpha = {"PETG": 6.8e-5, "fibra de vidrio": 1.5e-5, "cartón fenólico": 2.5e-5, "aluminio": 2.3e-5}

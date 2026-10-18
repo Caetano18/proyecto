@@ -28,8 +28,8 @@ siguen la numeración del capítulo~\ref{cap:planos}. Las cotas están en milím
 referencias numeradas coinciden con las de la tabla~\ref{tab:ref-p1} (1 a 19); las nuevas
 van de 20 en adelante.
 
-Los cálculos de este capítulo (recorrido de cargas, tiempos de arranque y holguras) están en
-\texttt{analysis/planos\_cargas.py}; sus salidas, en \texttt{analysis/data/planos\_*.dat}.
+Los cálculos de este capítulo (recorrido de cargas, tiempos de arranque, duración de las
+etapas y holguras) están en \texttt{analysis/planos\_cargas.py}; sus salidas, en \texttt{analysis/data/planos\_*.dat}.
 Todos los números de vuelo son \textbf{estimaciones} con el modelo de cantidad de
 movimiento del capítulo~\ref{cap:teoria}; ninguno es una medición.
 
@@ -690,10 +690,12 @@ hasta cero en $\Omega_f=\SI{120}{rad/s}$:
   \tau=\frac{I_p\,\Omega_f}{Q_0}=\frac{\num{5.13e-4}\times120}{0{,}026}=\SI{2.4}{s}.
   \label{eq:planos-arranque}
 \end{equation}
-El rotor llega al 90\,\% de su velocidad en $t_{90}=\tau\ln10\approx\SI{5.5}{s}$. Es una
-estimación de orden de magnitud: el par real depende de la velocidad de descenso, que cae
-mientras el rotor acelera, y del paso; el capítulo~\ref{cap:teoria} da la base del par de
-arranque.
+Con este modelo lineal el rotor llegaría al 90\,\% de su velocidad en
+$t_{90}=\tau\ln10\approx\SI{5.5}{s}$. Es una estimación de orden de magnitud que
+sobreestima el tiempo: el par real depende de la velocidad de descenso, que cae mientras el
+rotor acelera, y del paso (el capítulo~\ref{cap:teoria} da la base del par de arranque). La
+simulación con BEMT y apertura de palas del capítulo~\ref{cap:arranque} da
+$t_{90}=\SI{1.55}{s}$ y $z_{90}=\SI{21.7}{m}$ de caída; esos son los valores vigentes.
 
 \newcommand{\plSqCuerpo}{%
   \filldraw[fijo] (-44,0) rectangle (44,205);
@@ -761,7 +763,7 @@ arranque.
 % ---------------------------------------------------------------- (c)
 \begin{scope}[shift={(890,0)}]
   \plMarco{(c) Etapa 1: drogue}{DESCENT}{$V_1\approx\SI{13.4}{m/s}$ $\downarrow$}
-    {Equilibrio \eqref{eq:planos-eq1}: $T_c=D_\text{d}-m_\text{d}g$.\\ Duración $\approx\SI{10.5}{s}$ (apogeo \SI{700}{m}).}
+    {Equilibrio \eqref{eq:planos-eq1}: $T_c=D_\text{d}-m_\text{d}g$.\\ Duración $\approx\SI{9.3}{s}$.}
   \plSqCuerpo\plSqPlegadas
   \plSqCuerda\plSqDrogue
   \plF{0,250}{4.17}{ccuerda!70!black}{$T_c=\SI{4.17}{N}$}
@@ -772,7 +774,7 @@ arranque.
 % ---------------------------------------------------------------- (d)
 \begin{scope}[shift={(0,-760)}]
   \plMarco{(d) Liberación}{PROBE\_RELEASE}{$V\approx\SI{13.4}{m/s}$ $\downarrow$}
-    {El servo gira el anillo \ang{15}; aire y resorte abren las palas en 130--\SI{150}{ms};
+    {El servo gira el anillo \ang{15}; aire y resorte abren las palas en $\approx\SI{180}{ms}$;
      golpe en el tope a 41--\SI{52}{rad/s} (cap.~\ref{cap:estructura}).}
   \plSqCuerpo
   \draw[crot, densely dashed] (-46.5,57) rectangle (-44.5,211) (44.5,57) rectangle (46.5,211);
@@ -785,8 +787,8 @@ arranque.
 % ---------------------------------------------------------------- (e)
 \begin{scope}[shift={(445,-760)}]
   \plMarco{(e) Arranque del rotor}{PROBE\_RELEASE $\rightarrow$ PAYLOAD\_RELEASE}{$V$: 13,4 $\to$ \SI{6.4}{m/s} $\downarrow$}
-    {$Q_0=\SI{0.026}{N.m}$, $\tau\approx\SI{2.4}{s}$ \eqref{eq:planos-arranque}.\\
-     $\Omega$: 0 $\to$ \SI{120}{rad/s} en $\approx\SI{5.5}{s}$.\\ El sensor hall confirma el giro.}
+    {BEMT (cap.~\ref{cap:arranque}): $t_{90}\approx\SI{1.55}{s}$,\\
+     $z_{90}=\SI{21.7}{m}$ de caída.\\ El sensor hall confirma el giro.}
   \plSqCuerpo
   \plSqPala{1}{8}\plSqPala{-1}{8}
   \plSqCuerda\plSqDrogue
@@ -797,7 +799,7 @@ arranque.
 \begin{scope}[shift={(890,-760)}]
   \plMarco{(f) Etapa 2: autorrotación}{PAYLOAD\_RELEASE $\rightarrow$ LANDED}{$V_2\approx\SI{6.4}{m/s}$ $\downarrow$}
     {Equilibrio \eqref{eq:planos-eq2}; $\Omega\approx\SI{120}{rad/s}$, $\beta_0\approx\ang{4.4}$.\\
-     Duración $\approx\SI{87}{s}$ (apogeo \SI{700}{m}).}
+     Duración $\approx\SI{79}{s}$.}
   \plSqCuerpo
   \plSqPala{1}{4.4}\plSqPala{-1}{4.4}
   \plSqCuerda\plSqDrogue
@@ -817,33 +819,34 @@ real \SI{1.5}{m}). Fuerzas a escala \SI{1}{N}\,$\widehat{=}$\,\SI{2.5}{mm}, salv
 de (b) y $F_c$ de (f), que están fuera de escala, y $D_\text{c}$ de (f), agrandada para que
 se vea. Verde: tensión de la cuerda; naranja: rotor; azul: arrastre del cuerpo; negro: peso
 sin el drogue en el centro de masa ($z\approx\SI{107}{mm}$). Debajo de cada cuadro, el estado del software de vuelo
-(anexo). Valores estimados, no medidos.}
+(anexo); duraciones y disparadores en la tabla~\ref{tab:planos-secuencia}. Valores estimados, no medidos.}
 \label{fig:planos-secuencia}
 \end{figure}
 
 \begin{table}[H]
 \centering\small
 \caption{Secuencia de despliegue: estado del software durante cada cuadro, disparador, duración y carga dominante. Duraciones para un
-apogeo de \SI{700}{m} (tabla de tiempos del capítulo~\ref{cap:dim}).}
+apogeo de \SI{625}{m}, con liberación a \SI{500}{m} (tabla~\ref{tab:tiempos} del capítulo~\ref{cap:dim}).}
 \label{tab:planos-secuencia}
 \begin{tabularx}{\textwidth}{@{}clYYc@{}}
 \toprule
 \textbf{Cuadro} & \textbf{Estado} & \textbf{Disparador} & \textbf{Carga dominante} & \textbf{Duración}\\\midrule
 a & \texttt{ASCENT} & Despegue (aceleración) & Inercia sobre la tapa inferior: \SI{74}{N} a 15\,G & $\approx$\,10--\SI{15}{s}\\
 b & \texttt{APOGEE} & Carga de expulsión del cohete & Tirón del drogue en la argolla: 8--\SI{44}{N} & $<\SI{1}{s}$\\
-c & \texttt{DESCENT} & Drogue abierto & Tensión de cuerda \SI{4.2}{N} & $\approx\SI{10.5}{s}$\\
-d & \texttt{PROBE\_RELEASE} & Altura $\le80$\,\% del apogeo & Golpe de las palas en el tope (cap.~\ref{cap:estructura}) & 0,13--\SI{0.15}{s}\\
-e & \texttt{PROBE\_RELEASE} & Palas abiertas; pasa a \texttt{PAYLOAD\_RELEASE} cuando el hall ve $\Omega$ sobre un umbral & Par aerodinámico $Q_0=\SI{0.026}{N.m}$ & $\approx\SI{5.5}{s}$\\
-f & \texttt{PAYLOAD\_RELEASE} & Rotor en régimen; pasa a \texttt{LANDED} al tocar el suelo & Empuje \SI{3.78}{N}; centrífuga \SI{13}{N} por pala & $\approx\SI{87}{s}$\\
+c & \texttt{DESCENT} & Drogue abierto & Tensión de cuerda \SI{4.2}{N} & $\approx\SI{9.3}{s}$\\
+d & \texttt{PROBE\_RELEASE} & Altura $\le80$\,\% del apogeo (\SI{500}{m}) & Golpe de las palas en el tope (cap.~\ref{cap:estructura}) & $\approx\SI{0.18}{s}$\\
+e & \texttt{PROBE\_RELEASE} & Palas abiertas; pasa a \texttt{PAYLOAD\_RELEASE} cuando el hall ve $\Omega$ sobre un umbral & Par aerodinámico $Q_0=\SI{0.026}{N.m}$ & $\approx\SI{1.6}{s}$\\
+f & \texttt{PAYLOAD\_RELEASE} & Rotor en régimen; pasa a \texttt{LANDED} al tocar el suelo & Empuje \SI{3.78}{N}; centrífuga \SI{13}{N} por pala & $\approx\SI{79}{s}$\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{nota}[Transición: qué falta saber]
 El cuadro (e) es el menos conocido. Mientras el rotor acelera, el CanSat sigue bajando a
-casi \SI{13}{m/s} y recorre del orden de 40 a \SI{60}{m} hasta que $V$ se acerca a
-\SI{6.4}{m/s}. Ese tramo cuenta en el promedio de \Req{C4}; el modelo lineal
-\eqref{eq:planos-arranque} no lo resuelve con precisión. El ensayo de caída con el rotor
+más de \SI{12}{m/s}: llega al 90\,\% de las rpm tras caer $z_{90}=\SI{21.7}{m}$, el
+4,3\,\% de los \SI{500}{m} de la etapa 2, y $V$ se acerca a \SI{6.4}{m/s} hacia los
+\SI{30}{m} (capítulo~\ref{cap:arranque}). Ese tramo cuenta en el promedio de \Req{C4}; el
+modelo lineal \eqref{eq:planos-arranque} no lo resuelve con precisión. El ensayo de caída con el rotor
 debe medir $\Omega(t)$ con el sensor hall desde la liberación.
 \end{nota}
 

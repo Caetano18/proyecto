@@ -10,6 +10,11 @@ rotor), los sensores (barómetro e IMU con sus errores) y tres algoritmos de dec
 Salidas en analysis/data/electronica_kalman_*.dat y un resumen por consola.
 
 Uso: python3 analysis/electronica_kalman.py   (≈ 10 s)
+     CANSAT_HLIB=400 python3 analysis/electronica_kalman.py   (caso alternativo)
+Altura de liberación H_lib (variable de entorno CANSAT_HLIB, por defecto 500 m): como el
+requisito C4 libera al 80 % de la altitud máxima, el apogeo de diseño es h_max = H_lib/0,8
+(625 m). Con otro valor, K_R0 se recalibra para ese apogeo y los archivos de salida llevan
+el sufijo _H<H_lib> (no pisan los del caso base).
 Todas las cantidades en SI. Altura positiva hacia arriba, relativa al suelo.
 """
 import os
@@ -22,16 +27,56 @@ DT = 0.02                     # 50 Hz: barómetro e IMU
 AQUI = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(AQUI, "data")
 
+# ---------------------------------------------------------------- altura de liberación
+HLIB = float(os.environ.get("CANSAT_HLIB", "500"))   # m: el rotor se libera a esta altura
+HMAX_NOM = HLIB / 0.8                                # m: apogeo nominal de diseño (C4)
+SUF = "" if HLIB == 500.0 else f"_H{HLIB:.0f}"       # sufijo de los archivos de salida
+
+
+def salida(nombre):
+    return os.path.join(DATA, f"electronica_kalman_{nombre}{SUF}.dat")
+
+
 # ---------------------------------------------------------------- perfil base
 T_PAD = 5.0                   # s en la plataforma antes del encendido
 T_BURN = 1.6                  # s de motor
 A_BOOST = 80.0                # m/s2 de aceleración neta nominal
-K_R0 = 5.26e-4                # 1/m: arrastre del cohete (apogeo nominal 700 m)
 V_BODY = 37.6                 # m/s: velocidad límite del cuerpo solo (Ø95, Cd 0,8)
 T_DROGUE = 0.5                # s de apertura del drogue después de la expulsión
 V1_NOM, V2_NOM = 13.4, 6.4    # m/s: etapa 1 (drogue) y etapa 2 (rotor + drogue)
 TAU_ROTOR = 1.5               # s: constante de tiempo del arranque del rotor
 T_SERVO = 0.15                # s: giro del anillo de traba
+
+
+def hmax_discreto(a_b, k_r):
+    """Apogeo del cohete con la misma integración (paso DT) que usa simular()."""
+    v = h = hm = 0.0
+    for i in range(int(60 / DT)):
+        t = i * DT
+        if t < T_PAD:
+            continue
+        a = a_b if t < T_PAD + T_BURN else -G - k_r * v * abs(v)
+        v += a * DT
+        h += v * DT
+        hm = max(hm, h)
+        if t > T_PAD + T_BURN and v <= 0:
+            break
+    return hm
+
+
+def calibrar_k_r0(hmax):
+    """Arrastre k [1/m] con que el vuelo nominal (A_BOOST) llega a hmax (bisección)."""
+    lo, hi = 1e-4, 5e-3
+    for _ in range(80):
+        mid = 0.5 * (lo + hi)
+        lo, hi = (mid, hi) if hmax_discreto(A_BOOST, mid) > hmax else (lo, mid)
+    return 0.5 * (lo + hi)
+
+
+# 1/m: arrastre del cohete, calibrado contra la simulación discreta del vuelo nominal
+# (simular(1, 7, 2, nominal=True)['hmax_v'] = 625,0 m, o sea H_lib/0,8 con H_lib = 500 m).
+K_R0_625 = 8.3364e-4
+K_R0 = K_R0_625 if HLIB == 500.0 else calibrar_k_r0(HMAX_NOM)
 
 # ---------------------------------------------------------------- filtro (sintonía)
 SIG_A = 0.5                   # m/s2: ruido de proceso efectivo (planeo y descenso)
@@ -96,7 +141,8 @@ def parametros(N, rng, escenario, nominal):
     return p
 
 
-def simular(N, seed, escenario, nominal=False, lazo_cerrado=False, guardar=False):
+def simular(N, seed, escenario, nominal=False, lazo_cerrado=False, guardar=False, gate=None):
+    gate = GATE if gate is None else gate
     rng = np.random.default_rng(seed)
     p = parametros(N, rng, escenario, nominal)
     t_fin = p["t_ej"].max() + (40.0 if not lazo_cerrado else 160.0)
@@ -225,7 +271,7 @@ def simular(N, seed, escenario, nominal=False, lazo_cerrado=False, guardar=False
         # actualización con compuerta de innovación
         nu = z - xh
         S = P00 + SIG_B**2
-        ok = nu**2 <= GATE * S
+        ok = nu**2 <= gate * S
         nrech = np.where(ok, 0, nrech + 1)
         rean = nrech >= N_REANCLA
         P00 = np.where(rean, P00 + nu**2, P00)
@@ -321,11 +367,15 @@ def main():
     sv_c = np.sqrt(np.sqrt(2) * SIG_A**1.5 * np.sqrt(SIG_B) * DT)
     print(f"Kalman-Bucy: sigma_h = {sh_c:.3f} m, sigma_v = {sv_c:.3f} m/s")
 
-    print("\n== Vuelo nominal en lazo cerrado (escenario 2) ==")
+    print(f"\n== Vuelo nominal en lazo cerrado (escenario 2), H_lib = {HLIB:.0f} m ==")
+    print(f"K_R0 = {K_R0:.5g} 1/m; apogeo de diseño H_lib/0,8 = {HMAX_NOM:.1f} m; "
+          f"apogeo_cohete() = {apogeo_cohete(np.array([A_BOOST]), np.array([K_R0]))[1][0]:.1f} m; "
+          f"V1 = {V1_NOM} m/s, V2 = {V2_NOM} m/s")
     r = simular(1, 7, escenario=2, nominal=True, lazo_cerrado=True, guardar=True)
     H = r["hist"]
     ta, hm = r["t_apo_v"][0], r["hmax_v"][0]
-    print(f"apogeo real {hm:.1f} m a t = {ta:.2f} s; expulsión a {r['p']['t_ej'][0]:.2f} s")
+    print(f"apogeo real {hm:.1f} m a t = {ta:.2f} s ({ta - T_PAD:.2f} s desde el encendido); "
+          f"expulsión a {r['p']['t_ej'][0]:.2f} s")
     for alg in "ABC":
         d = r[alg]
         print(f"{alg}: apogeo det {d['apo'][0]-ta:+.2f} s, hmax est {d['hmax'][0]:.1f} m, "
@@ -336,32 +386,57 @@ def main():
     t_suelo = H[np.argmax((H[:, 8] == 6)), 0]
     print(f"llegada al suelo t = {t_suelo:.1f} s")
     # serie completa a 10 Hz
-    with open(os.path.join(DATA, "electronica_kalman_vuelo.dat"), "w") as fo:
+    with open(salida("vuelo"), "w") as fo:
         fo.write("t h zb hk v vk eh ev\n")
         for row in H[::5]:
             if row[0] > t_suelo + 8: break
             fo.write(f"{row[0]:.2f} {row[1]:.2f} {row[2]:.2f} {row[4]:.2f} {row[5]:.3f} "
                      f"{row[7]:.3f} {row[4]-row[1]:.3f} {row[7]-row[5]:.3f}\n")
     # ventana del apogeo a 50 Hz
-    with open(os.path.join(DATA, "electronica_kalman_apogeo.dat"), "w") as fo:
+    with open(salida("apogeo"), "w") as fo:
         fo.write("tr h zb he hk v ve vk\n")
         for row in H:
             if ta - 2.5 <= row[0] <= ta + 4.5:
                 fo.write(f"{row[0]-ta:.2f} {row[1]:.2f} {row[2]:.2f} {row[3]:.2f} "
                          f"{row[4]:.2f} {row[5]:.3f} {row[6]:.3f} {row[7]:.3f}\n")
     # sensores a 50 Hz para la prueba del firmware en PC (software en el lazo)
-    with open(os.path.join(DATA, "electronica_kalman_sensores.dat"), "w") as fo:
+    with open(salida("sensores"), "w") as fo:
         fo.write("t p_Pa acc_z\n")       # acc_z en ejes del anexo (+Z hacia el nadir)
         for row in H:
-            if row[0] > t_suelo + 20: break
+            if row[0] > t_suelo + 40: break   # cubre LANDED tras un reinicio en pleno descenso
             p_pa = 101325.0 * (1 - 2.25577e-5 * row[2])**5.25588
             fo.write(f"{row[0]:.2f} {p_pa:.2f} {-row[9]:.3f}\n")
-    with open(os.path.join(DATA, "electronica_kalman_eventos.dat"), "w") as fo:
+    with open(salida("eventos"), "w") as fo:
         fo.write("evento t\n")
         fo.write(f"apogeo_real {ta:.2f}\nexpulsion {r['p']['t_ej'][0]:.2f}\n")
         fo.write(f"apogeo_C {r['C']['apo'][0]:.2f}\nliberacion_C {r['C']['rel'][0]:.2f}\n")
         fo.write(f"ochenta_real {r['t80_v'][0]:.2f}\nsuelo {t_suelo:.2f}\n")
         fo.write(f"aterrizaje_C {r['t_land_det'][0]:.2f}\n")
+
+    # cifras que citan los pies de las figuras del vuelo nominal
+    tt = H[:, 0]
+    eh = H[:, 4] - H[:, 1]; ev = H[:, 7] - H[:, 5]
+    asc = tt < ta
+    rs = simular(1, 7, escenario=2, nominal=True, lazo_cerrado=True, guardar=True, gate=1e12)
+    eh_sg = rs["hist"][:, 4] - rs["hist"][:, 1]
+    kq = r["p"]["kq"][0]
+    print("\n-- cifras de las figuras del vuelo nominal --")
+    print(f"ascenso (t < apogeo): error máx. de altura {np.abs(eh[asc]).max():.1f} m y de "
+          f"velocidad {np.abs(ev[asc]).max():.1f} m/s; error de presión dinámica máx. "
+          f"{(kq * H[:, 5]**2 / (2 * G))[asc].max():.1f} m; sin compuerta, error de altura "
+          f"{np.abs(eh_sg[asc]).max():.1f} m")
+    cerca = np.abs(tt - ta) <= 1.0
+    print(f"cerca del apogeo (±1 s): error máx. {np.abs(eh[cerca]).max():.2f} m y "
+          f"{np.abs(ev[cerca]).max():.2f} m/s")
+    desc = (tt > r["p"]["t_ej"][0] + 3.0) & (tt < t_suelo)
+    print(f"descenso (de la expulsión + 3 s al suelo): error máx. {np.abs(eh[desc]).max():.2f} m "
+          f"y {np.abs(ev[desc]).max():.2f} m/s")
+    fin = tt >= t_suelo
+    print(f"al tocar el suelo: pico {eh[fin][np.argmax(np.abs(eh[fin]))]:+.1f} m y "
+          f"{np.abs(ev[fin]).max():.1f} m/s")
+    ven = (tt >= ta - 2.5) & (tt <= ta + 4.5)
+    print(f"pico de expulsión: lectura mínima del barómetro {H[ven, 2].min():.1f} m, EMA mínima "
+          f"{H[ven, 3].min():.1f} m y {H[ven, 6].min():.1f} m/s (velocidad de la EMA)")
 
     print("\n== Monte Carlo (lazo abierto, etapa 1 hasta el suelo) ==")
     N = 2000
@@ -378,11 +453,17 @@ def main():
                   f"e liberación med {m['err_med']:+.1f} m p95|e| {m['err_p95']:.1f} m | "
                   f"prematura {m['prem']:.1f} % tardía/sin {m['tard']:.1f} %")
         print(f"C liberadas por temporizador: {100*r['C']['timer'].mean():.1f} %")
+        dC = r["C"]
+        fa = ~np.isnan(dC["apo"]) & (dC["vapo"] > 5.0)
+        print(f"C: {fa.sum()} apogeos falsos de {N}"
+              + (f"; adelanto {np.round((r['t_apo_v'] - dC['apo'])[fa], 2)} s, velocidad "
+                 f"{np.round(dC['vapo'][fa], 1)} m/s, liberan al "
+                 f"{np.round(100 * dC['hrel'][fa] / r['hmax_v'][fa], 1)} % de h_max" if fa.any() else ""))
         if esc == 1:
             eh, ev = r["err_h"], r["err_v"]
             print(f"errores C en etapa 1: rms h {np.sqrt(np.mean(eh**2)):.3f} m, "
                   f"rms v {np.sqrt(np.mean(ev**2)):.3f} m/s, media v {ev.mean():+.3f} m/s")
-    with open(os.path.join(DATA, "electronica_kalman_mc.dat"), "w") as fo:
+    with open(salida("mc"), "w") as fo:
         fo.write("esc alg ret_med ret_p95 ehmax falso_apo err_med err_p95 prem tard\n")
         for esc, alg, m in tabla:
             fo.write(f"{esc} {alg} {m['ret_med']:.2f} {m['ret_p95']:.2f} {m['ehmax']:.2f} "
@@ -390,12 +471,13 @@ def main():
                      f"{m['prem']:.1f} {m['tard']:.1f}\n")
 
     print("\n== Fallo de barómetro tras el apogeo: liberación por temporizador ==")
-    for hmx in (500, 700, 1000):
+    for hmx in sorted({500.0, HMAX_NOM, 1000.0}):
         for V1 in (12.0, 13.4, 15.0):
             tt = 0.2 * hmx / V_TIMER + V_TIMER / G * np.log(2)
             caida = V1**2 / G * np.log(np.cosh(G * tt / V1))   # caída desde el reposo
-            print(f"hmax {hmx} V1 {V1}: t_tim {tt:.1f} s, liberación a "
-                  f"{100*(hmx-caida)/hmx:.1f} % de hmax")
+            print(f"hmax {hmx:.0f} V1 {V1}: t_tim {tt:.1f} s, liberación a "
+                  f"{100*(hmx-caida)/hmx:.1f} % de hmax ({0.8*hmx-(hmx-caida):.0f} m por "
+                  f"debajo del 80 %)")
 
 
 if __name__ == "__main__":

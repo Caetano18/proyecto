@@ -4,8 +4,9 @@
 El conjunto es estable en todos los modos linealizados que se estudian. Hay tres puntos
 débiles. Primero, el punto de diseño queda en el borde superior de la región de anillo de
 vórtices. Segundo, el cuerpo gira por el rozamiento de los rodamientos: sin aletas llega
-a cientos de rpm en medio minuto. Tercero, la pala de la configuración A es inestable
-(flameo por debajo de la velocidad de régimen) con el rotor de $R=\SI{0.25}{m}$. Con el
+a $\approx\num{770}$~rpm al final de la etapa 2 (\SI{78.6}{s}, con liberación a \SI{500}{m} y
+apogeo de \SI{625}{m}; tabla~\ref{tab:tiempos}, capítulo~\ref{cap:dim}). Tercero, la pala
+de la configuración A es inestable (flameo por debajo de la velocidad de régimen) con el rotor de $R=\SI{0.25}{m}$. Con el
 drogue soltado antes de abrir el rotor (capítulo~\ref{cap:arq}) desaparecen el péndulo
 drogue--cuerpo, la cuerda por el eje y la estela sobre el drogue: el modelo del rotor solo
 es el nominal y el drogue atado queda como modo de falla de la liberación. Este capítulo
@@ -30,9 +31,9 @@ y rodamientos 628/8-2Z (688ZZ). Los cálculos están en
         de centro de masa, rpm, largo de cuerda y fuerza H.
   \item \textbf{Giro del cuerpo.} El par de los rodamientos es de
         $\approx\SI{0.65}{mN.m}$ (rango \numrange{0.31}{1.5}). Sin aletas el cuerpo llega a
-        $\approx\num{150}$~rpm a los \SI{10}{s} y a $\approx\num{490}$~rpm a los
-        \SI{40}{s}. Cuatro aletas desplegables de $40\times\SI{40}{mm}$ lo dejan en
-        $\approx\SI{2.4}{rad/s}$. Para cumplir el criterio de video
+        $\approx\num{150}$~rpm a los \SI{10}{s}, a $\approx\num{490}$~rpm a los
+        \SI{40}{s} y a $\approx\num{770}$~rpm al final de la etapa 2. Cuatro aletas
+        desplegables de $40\times\SI{40}{mm}$ lo dejan en $\approx\SI{2.4}{rad/s}$. Para cumplir el criterio de video
         ($\le\SI{0.5}{rad/s}$) hay que darles un calaje de $\approx\ang{1.4}$ contra el
         par y ajustarlo en ensayo.
   \item \textbf{Batimiento.} $\nu_\beta=1{,}16$ y $\zeta_\beta=0{,}68$: el modo está
@@ -248,8 +249,8 @@ dominado por la grasa. Depende de la velocidad relativa $\Omega-\omega_b$.
 \paragraph{Amortiguamiento del cuerpo.} El roce de la piel del cilindro (capa laminar,
 $C_f=1{,}33/\sqrt{Re_L}$) da $c_b=\SI{2.3e-6}{N.m.s}$, casi nada. Con
 $I_z=\SI{4e-4}{kg.m^2}$ (est.), la aceleración inicial es $M_f/I_z\approx\SI{1.6}{rad/s^2}$.
-El cuerpo llega a \num{150}~rpm a los \SI{10}{s} y a \num{490}~rpm a los \SI{40}{s}
-(figura~\ref{fig:estabilidad-giro}).
+El cuerpo llega a \num{150}~rpm a los \SI{10}{s}, a \num{490}~rpm a los \SI{40}{s} y a
+\num{770}~rpm al final de la etapa 2, a los \SI{78.6}{s} (figura~\ref{fig:estabilidad-giro}).
 
 \paragraph{Criterio para el video.} Se pide $|\omega_b|\le\SI{0.5}{rad/s}$
 ($\approx\SI{29}{\degree/s}$). Así la imagen gira menos de \ang{1} por cuadro a
@@ -270,7 +271,8 @@ cuerpo se estabiliza en $M_f/c\approx\SI{2.4}{rad/s}$ (23~rpm). Solo con amortig
 haría falta $s\approx\SI{80}{mm}$. Es más eficaz un \textbf{calaje} $\delta$ que anule el
 par: $\delta=M_f/M_\delta\approx\ang{1.4}$. El resto se debe a la incertidumbre de $M_f$:
 con un error de $\pm\SI{50}{\percent}$ quedan $\approx\SI{1.2}{rad/s}$. Por eso el calaje
-se ajusta midiendo el giro en un ensayo de túnel o de caída.
+se ajusta midiendo el giro en un ensayo de túnel o de caída, que debe durar varias veces
+$I_z/c\approx\SI{1.5}{s}$ (capítulo~\ref{cap:ensayos}).
 
 \begin{figure}[H]
 \centering
@@ -294,8 +296,8 @@ se ajusta midiendo el giro en un ensayo de túnel o de caída.
   \addplot[cgris, thick, densely dotted] coordinates {(10,0.5) (80,0.5)};
 \end{groupplot}
 \end{tikzpicture}
-\caption{(a) Giro del cuerpo durante la etapa 2 con $M_f$ nominal. (b) Cuatro aletas de
-cuerda \SI{40}{mm}: giro de equilibrio sin calaje y calaje que anula el par. La línea de
+\caption{(a) Giro del cuerpo durante toda la etapa 2 (\SI{78.6}{s}) con $M_f$ nominal.
+(b) Cuatro aletas de cuerda \SI{40}{mm}: giro de equilibrio sin calaje y calaje que anula el par. La línea de
 puntos es el criterio de \SI{0.5}{rad/s}.}
 \label{fig:estabilidad-giro}
 \end{figure}
@@ -455,7 +457,7 @@ Inclinación (péndulo) & $\zeta=0{,}30$, \SI{2.1}{}--\SI{2.5}{Hz} & $\zeta\ge0{
 Péndulo drogue (si no se suelta) & $\zeta=0{,}46$ & $\zeta\ge0{,}1$ & cumple\\
 Batimiento & $\zeta_\beta=0{,}68$, $\nu_\beta=1{,}16$ & amortiguado & cumple\\
 Conicidad + ráfaga & \ang{6.4} & $<$ tope \ang{15} & cumple\\
-Giro del cuerpo, sin aletas & 150--490 rpm & $\le\SI{0.5}{rad/s}$ & no cumple\\
+Giro del cuerpo, sin aletas & 150--770 rpm & $\le\SI{0.5}{rad/s}$ & no cumple\\
 Giro, 4 aletas 40×40 + calaje & $\approx0$--\SI{1.2}{rad/s} & $\le\SI{0.5}{rad/s}$ & con ajuste\\
 Divergencia, pala A / B / BV & 0,79--0,98 / 1,9--2,1 / $\ge2{,}8$ & $\ge1{,}3$ & A no\\
 Flameo, pala A / B / BV & 0,96 / 1,96 / 2,55 & $\ge1{,}3$ & B y BV\\
@@ -484,6 +486,7 @@ Drogue contra palas (si no se suelta) & \ang{19} frente a \ang{87} & con tensió
   \item $\delta_3=\ang{15}$--\ang{20} en las bisagras solo si los ensayos muestran
         conicidades mayores que \ang{7} (ahora son de \ang{4.2}). Si se usa, corregir el paso para mantener las
         rpm.
-  \item Verificar en ensayo de caída: rpm, $V_2$, balanceo (IMU) y giro del cuerpo. Ningún
-        valor de este capítulo está medido.
+  \item Verificar en ensayo de caída: rpm, $V_2$, balanceo (IMU) y giro del cuerpo
+        (comparado con el modelo al mismo tiempo de caída). Ningún valor de este capítulo
+        está medido.
 \end{enumerate}

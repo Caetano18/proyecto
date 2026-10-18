@@ -9,6 +9,8 @@
 4. Rodamientos 688ZZ (SKF 628/8-2Z): carga equivalente, L10, carga estática.
 5. Fatiga 1P y 4P; 6. Impacto de aterrizaje.
 Uso: python3 analysis/estructura_cargas.py
+Altura de liberación del rotor: variable de entorno CANSAT_HLIB [m] (500 por defecto; h_max = CANSAT_HLIB/0,8 = 625 m).
+Solo fija las revoluciones por vuelo (stdout); con CANSAT_HLIB distinto de 500 no se reescribe ningún .dat.
 """
 import os
 import numpy as np
@@ -22,6 +24,15 @@ DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 rho, g = 1.225, 9.81
 R, e, Lb, XP, C = MOD.R, MOD.e, MOD.Lb, MOD.XP, SEC.C
 V1 = 13.4            # velocidad de la etapa 1 al liberar
+H_LIB = float(os.environ.get("CANSAT_HLIB", 500.0))   # altura de liberación del rotor [m] = 0,8 h_max (h_max = 625 m)
+V2_REG = 6.36        # V2 de régimen, rotor solo (Arq. 1); Arq. 2: 5.47
+T2 = H_LIB / V2_REG  # duración de la etapa 2 = tiempo con el rotor girando [s] = 0,8 h_max / V2 (78,6 s)
+T1 = 0.2 * (H_LIB / 0.8) / 13.44   # duración de la etapa 1 (rotor plegado) [s] = 0,2 h_max / V1 (9,3 s)
+
+
+def salida(nombre):
+    """Archivo de datos; con una altura distinta de la base no se escribe (los datos no dependen de H_LIB)."""
+    return open(os.path.join(DATA, nombre) if H_LIB == 500.0 else os.devnull, "w")
 OM = MOD.OM_D
 T_ROTOR = 4.68       # empuje del rotor (BEMT v2, rotor solo)
 B = 4
@@ -119,7 +130,7 @@ def strain(s, M, N=0.0):
 if __name__ == "__main__":
     out = {}
     print("== 1. Apertura y golpe contra el tope ==")
-    with open(os.path.join(DATA, "estructura_apertura.dat"), "w") as f:
+    with salida("estructura_apertura.dat") as f:
         sol, Ib, Sb, s = opening("A", 1.2)
         sol2, *_ = opening("A", 2.0)
         n = 200
@@ -141,7 +152,7 @@ if __name__ == "__main__":
             out[(cfg, Cdc)] = wi
         pr("I_b (bisagra)", Ib, "kg m2"); pr("S_b", Sb, "kg m")
     # barrido de rigidez del tope
-    with open(os.path.join(DATA, "estructura_tope.dat"), "w") as f:
+    with salida("estructura_tope.dat") as f:
         f.write("ks MhA MrA MhBV MrBV\n")
         for ks in np.logspace(-0.5, 3, 36):
             row = [ks]
@@ -282,7 +293,8 @@ if __name__ == "__main__":
     Mcyc = Fc * np.radians(5.0) * 22e-3
     pr("brazo PETG: sigma alternante 1P (inclinación 5 grados)", Mcyc / Zarm / 1e6, "MPa")
     pr("eje: sigma alternante 1P con desbalance 1 g", 1e-3 * 0.12 * OM**2 * 8.5e-3 / Z8 / 1e6, "MPa")
-    print("  revoluciones por vuelo (110 s):", OM * 30 / np.pi * 110 / 60, " campaña de ensayos estimada:", OM * 30 / np.pi * 60 * 1.0)
+    print(f"  revoluciones por vuelo (etapa 2, {T2:.1f} s):", OM * 30 / np.pi * T2 / 60, " campaña de ensayos estimada:", OM * 30 / np.pi * 60 * 1.0)
+    print(f"  cota con el descenso completo ({T1 + T2:.1f} s, rotor plegado en la etapa 1):", OM * 30 / np.pi * (T1 + T2) / 60)
 
     print("\n== 6. Impacto ==")
     for V, mm in ((6.4, 0.49), (7.4, 0.49), (5.5, 0.33)):

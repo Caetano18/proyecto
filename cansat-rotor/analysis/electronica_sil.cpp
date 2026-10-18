@@ -126,7 +126,11 @@ int main(int argc, char** argv) {
   const double t_fin = D.back().t;
   while (T() < t_fin) {
     g_us += 1000;
-    imprimir = n_tlm < 4 || (T() > 16 && T() < 31 && n_tlm % 3 == 0) || T() > t_fin - 2;
+    // paquetes iniciales y finales, y los del apogeo a la confirmación de giro (ligados al
+    // estado, no al reloj: valen para cualquier altura de vuelo); en DESCENT, uno de cada tres
+    bool ventana = P.estado == APOGEE || P.estado == PROBE_RELEASE ||
+                   (P.estado == DESCENT && n_tlm % 3 == 0);
+    imprimir = n_tlm < 4 || ventana || T() > t_fin - 2;
     double h_baro = 44330.77 * (1 - std::pow(fila().p / 101325.0, 0.190263));
     if (t_libera > 0 && !parado && T() > t_libera + 10 && h_baro < 0.5) {
       parado = true;                                       // contacto con el suelo
