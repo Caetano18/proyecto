@@ -311,8 +311,8 @@ cuerpo y ocupan la franja de \SIrange{57}{211}{mm}; ninguna pieza interna las cr
 %=====================================================================
 \section{Plano 10: vista isométrica del CanSat desplegado}\label{sec:planos-iso-desp}
 
-Desplegado, el rotor ocupa un disco de Ø\,\SI{400}{mm}, 4,2 veces el diámetro de la
-envolvente; el drogue (Ø\,\SI{250}{mm}) queda \SI{1.5}{m} más arriba ($7{,}5R$). En el
+Desplegado, el rotor ocupa un disco de Ø\,\SI{400}{mm} (versión~1; en la versión~2 es de
+Ø\,\SI{500}{mm}, 5,6 veces el diámetro de la envolvente de Ø\,90); el drogue (Ø\,\SI{250}{mm}) queda \SI{1.5}{m} más arriba ($7{,}5R$ en la versión~1). En el
 descenso el aire atraviesa el rotor de abajo hacia arriba, de modo que el drogue vuela
 \textbf{dentro de la estela} del rotor, en aire ya frenado; por eso el caso pesimista
 del capítulo~\ref{cap:dim} no le asigna aporte ($V_2=\SI{7.8}{m/s}$). La
@@ -391,7 +391,7 @@ figura~\ref{fig:planos-iso-desp} lo dibuja a escala 1:3,5, con la cuerda cortada
        {cuerda Dyneema, \SI{1.5}{m}\\ (cortada en el dibujo)};
   % cotas
   \draw[cota] ($(d0 |- h0)+(0,-40)$) -- ($(d1 |- h0)+(0,-40)$)
-     node[pos=0.22, fill=white, font=\scriptsize] {Ø\,400 ($R=200$)};
+     node[pos=0.22, fill=white, font=\scriptsize] {Ø\,400 ($R=200$, v1; en v2 Ø\,500)};
   \draw[cgris, line width=0.3pt] (d0) -- ($(d0 |- h0)+(0,-46)$) (d1) -- ($(d1 |- h0)+(0,-46)$);
   % notas
   \node[font=\small, crot!80!black, anchor=south west] at ($(giro)+(8,8)$) {$\Omega$};
@@ -1688,7 +1688,7 @@ cada uno fija para la fabricación y los ensayos.
 \toprule
 \textbf{Plano} & \textbf{Contenido} & \textbf{Escala} & \textbf{Qué fija}\\\midrule
 9  & Isométricas del plegado (fig.~\ref{fig:planos-iso-plegado}) & 1:2 & Orden de apilado y acceso a interruptores\\
-10 & Isométrica desplegada (fig.~\ref{fig:planos-iso-desp}) & 1:3,5 & Disco de Ø\,400 y posición del drogue\\
+10 & Isométrica desplegada (fig.~\ref{fig:planos-iso-desp}) & 1:3,5 & Disco de Ø\,400 (v2: Ø\,500) y posición del drogue\\
 11 & Vista explosionada (fig.~\ref{fig:planos-explo}) & 1:3 & 30 piezas en 3 grupos; orden de montaje\\
 12 & Secuencia de despliegue (fig.~\ref{fig:planos-secuencia}) & 1:8 & Fuerzas y estados de software en cada fase\\
 13 & Recorrido de cargas (fig.~\ref{fig:planos-cargas}) & 1:4 & Hombro inferior del eje; uniones atornilladas\\

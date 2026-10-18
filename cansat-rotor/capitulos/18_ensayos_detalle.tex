@@ -8,8 +8,8 @@ ensayo se ha hecho todavía.
 
 \begin{resultado}[Resumen del plan]
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Banco vertical} (E2, E3): chorro abierto de Ø\,\SI{0.8}{m} o más
-        ($D_j\ge2D$), \SIrange{6}{8}{m/s}. Mide $\CR$ con
+  \item \textbf{Banco vertical} (E2, E3): chorro abierto de Ø\,\SI{1.0}{m} o más
+        ($D_j\ge2D$, con $D=\SI{0.5}{m}$), \SIrange{6}{8}{m/s}. Mide $\CR$ con
         $U\approx\pm\num{0.055}$ (95\,\%), rpm, conicidad y par.
   \item \textbf{Auto} (E2b): cubre lo que el ventilador no alcanza, el arranque a
         \SIrange{10}{14}{m/s}, con tramos cortos para no pasar de las rpm de diseño.
@@ -76,7 +76,7 @@ dinámica corregida~\cite{ensayos-maskell1963}
 con $C$ el área de la sección de ensayo. La teoría se dedujo para placas macizas; aplicada
 a un rotor es una aproximación. Con secciones habituales la corrección es grande
 (tabla~\ref{tab:ensayos-opciones}): en un túnel de \qtyproduct{1 x 1}{m} la presión
-dinámica efectiva sería un 38\,\% mayor que la leída, y una incertidumbre del 20\,\% sobre esa
+dinámica efectiva sería un 59\,\% mayor que la leída, y una incertidumbre del 20\,\% sobre esa
 corrección ya invalida el $\pm5$\,\% buscado.
 
 \paragraph{Chorro abierto.} La frontera libre permite que el chorro se ensanche; la
@@ -84,34 +84,36 @@ corrección es menor y de signo opuesto a la de cámara cerrada, pero mezcla exp
 desvío del chorro, bloqueo de la boquilla y gradiente de presión
 estática~\cite{ensayos-mercker1996}. Como ningún modelo cubre bien un rotor en estela
 turbulenta, \textbf{la corrección se mide}: antes del rotor se ensaya un disco macizo
-delgado de Ø\,\SI{400}{m m} en la misma posición. Su coeficiente en aire libre es
+delgado de Ø\,\SI{500}{mm} en la misma posición. Su coeficiente en aire libre es
 $C_D\approx1{,}17$~\cite{hoerner1965}, con una dispersión de algunos por ciento entre
 fuentes; el factor $F_b=1{,}17/C_{D,\text{medido}}$ se aplica
 luego al rotor, que tiene casi el mismo coeficiente y por lo tanto casi el mismo bloqueo.
 
 \begin{table}[H]
 \centering\small
-\caption{Opciones de banco para el rotor de Ø\,\SI{400}{mm}. Potencia eléctrica con
+\caption{Opciones de banco para el rotor de Ø\,\SI{500}{mm} ($R=\SI{0.25}{m}$; $C_R=1{,}2$ para el bloqueo). Potencia eléctrica con
 rendimiento global de 0,35 (estimación).}
 \label{tab:ensayos-opciones}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Instalación} & $\boldsymbol{A_R/A_j}$ \textbf{o} $\boldsymbol{A_R/C}$ & \textbf{Corrección} & \textbf{$P$ a \SI{7.8}{m/s}} & \textbf{$P$ a \SI{13.4}{m/s}}\\\midrule
-Chorro abierto Ø\,\SI{0.6}{m}   & 0,44 & no admisible  & \SI{0.23}{kW} & \SI{1.2}{kW}\\
-\textbf{Chorro abierto Ø\,\SI{0.8}{m}} & \textbf{0,25} & \textbf{medida con disco} & \textbf{\SI{0.42}{kW}} & \textbf{\SI{2.1}{kW}}\\
-Chorro abierto Ø\,\SI{1.0}{m}   & 0,16 & medida con disco & \SI{0.65}{kW} & \SI{3.3}{kW}\\
-Túnel cerrado \qtyproduct{1.0 x 1.0}{m} & 0,126 & $q_c/q=1{,}38$ & --- & ---\\
-Túnel cerrado \qtyproduct{1.5 x 1.5}{m} & 0,056 & $q_c/q=1{,}17$ & --- & ---\\
-Túnel cerrado \qtyproduct{2.0 x 2.0}{m} & 0,031 & $q_c/q=1{,}09$ & --- & ---\\
+\textbf{Instalación} & $\boldsymbol{A_R/A_j}$ \textbf{o} $\boldsymbol{A_R/C}$ & \textbf{Corrección} & \textbf{$P$ a \SI{6.4}{m/s}} & \textbf{$P$ a \SI{13.4}{m/s}}\\\midrule
+Chorro abierto Ø\,\SI{0.8}{m}   & 0,39 & no admisible  & \SI{0.23}{kW} & \SI{2.1}{kW}\\
+\textbf{Chorro abierto Ø\,\SI{1.0}{m}} & \textbf{0,25} & \textbf{medida con disco} & \textbf{\SI{0.36}{kW}} & \textbf{\SI{3.3}{kW}}\\
+Chorro abierto Ø\,\SI{1.2}{m}   & 0,17 & medida con disco & \SI{0.52}{kW} & \SI{4.8}{kW}\\
+Túnel cerrado \qtyproduct{1.0 x 1.0}{m} & 0,196 & $q_c/q=1{,}59$ & --- & ---\\
+Túnel cerrado \qtyproduct{1.5 x 1.5}{m} & 0,087 & $q_c/q=1{,}26$ & --- & ---\\
+Túnel cerrado \qtyproduct{2.0 x 2.0}{m} & 0,049 & $q_c/q=1{,}15$ & --- & ---\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{resultado}[Banco elegido]
-Chorro abierto vertical de Ø\,\SIrange{0.8}{1.0}{m} hecho con un ventilador industrial de
-tambor (\SIrange{0.5}{0.7}{kW}) y un variador. Cubre el punto de operación
+Chorro abierto vertical de Ø\,\SIrange{1.0}{1.2}{m} hecho con un ventilador industrial de
+tambor (\SIrange{0.7}{1.0}{kW}) y un variador. Cubre el punto de operación
 (\SIrange{6}{8}{m/s}). La velocidad de arranque (\SI{13.4}{m/s}) pediría más de
-\SI{2}{kW}: ese caso pasa al ensayo en auto (sección~\ref{sec:ensayos-auto}).
+\SI{3}{kW}: ese caso pasa al ensayo en auto (sección~\ref{sec:ensayos-auto}). Con el rotor de
+Ø\,\SI{0.5}{m} el chorro de \SI{1.0}{m} es el mínimo admisible: el de \SI{0.8}{m} del plan
+anterior ya no sirve.
 \end{resultado}
 
 \subsection{Calidad del flujo}
@@ -222,7 +224,7 @@ $p$, $T$ ambiente & Barómetro y termómetro de referencia para $\rho$ & --- & 0
   \draw[ld] (14,31.5) -- (35,31.5);
   \node[labr, anchor=east] at (14,47) {contracción};
   \draw[ld] (14,47) -- (39,47);
-  \node[labr, anchor=east] at (14,72) {maqueta del\\ cuerpo Ø\,95,\\ no métrica};
+  \node[labr, anchor=east] at (14,72) {maqueta del\\ cuerpo Ø\,81 o 90,\\ no métrica};
   \draw[ld] (14,72) -- (71.5,72);
   \node[labr, anchor=east] at (14,98) {chorro abierto\\ $D_j\ge2D$};
   \draw[ld] (14,98) -- (40,98);
@@ -233,7 +235,7 @@ $p$, $T$ ambiente & Barómetro y termómetro de referencia para $\rho$ & --- & 0
   \draw[ld] (136,103) -- (75,103);
   \node[lab, anchor=west] at (108,93.5) {tacómetro\\ óptico};
   \node[lab, anchor=west] at (136,74) {cámara lateral\\ \SI{240}{fps}};
-  \node[lab, anchor=north west] at (90,81.5) {rotor Ø\,400};
+  \node[lab, anchor=north west] at (90,81.5) {rotor Ø\,500};
   \node[lab, anchor=south] at (116.5,64.2) {Pitot};
   \node[lab, anchor=west] at (79,79) {hall};
 \end{tikzpicture}
@@ -782,13 +784,15 @@ $\rightarrow$ criterio.}\label{tab:ensayos-matriz}\\
 \Req{C8}, \Req{E8}, \Req{E9} & I, D & E10 & Baliza suena con la batería principal desconectada; interruptor propio accesible; audible a \SI{30}{m} (criterio del equipo)\\
 \Req{C9} & I & --- & Lista de costos con comprobantes $<\$1.000.000$\\
 \Req{S1} & I & E10 & Balanza de \SI{0.1}{g}: \SI{500 \pm 10}{g} (objetivo del equipo $\pm\SI{5}{g}$)\\
-\Req{S2} & I & E10 & Diámetro de \SI{95}{mm} medido en 3 secciones y 2 orientaciones; las palas plegadas no sobresalen\\
+\Req{S2} & I & E10 & Diámetro medido en 3 secciones y 2 orientaciones: el conjunto cuerpo, palas plegadas y aletas plegadas pasa por un anillo calibre de Ø\,\SI{90}{mm} (Arq.~1: cuerpo de Ø\,81 con el borde de la pala a \SI{44.0}{mm} del eje)\\
 \Req{S3} & I & E10 & Largo total entre \SIlist{200;250}{mm} con drogue y rotor plegados\\
 \Req{S4} & E & E5a & 15\,G de pico, barrido \SIrange{50}{500}{Hz}: sin daños; resonancias corridas menos de 5\,\%\\
 \Req{S5} & E & E5b & Pico medido de 30\,G o más (3 veces): sin daños, traba cerrada, sin reinicio\\
 \Req{S6} & I, A, E & E10, E5 & Pared de \SI{2}{mm} o más medida en 6 puntos; sin deformación tras E5 y E7\\
 \Req{S7} & D & E10 & Sale por su propio peso de un tubo vertical de referencia, 10 de 10 veces\\
 \Req{S8} & I, E & E10, E5 & Todo fijado con tornillos, separadores o adhesivo; nada se mueve tras E5\\
+Equipo (copa) & I & E10 & El drogue real, el destorcedor y el carro del pasador entran en la copa de Ø\,75 $\times$ \SI{10}{mm} con un llenado de \SI{80}{\percent} o menos (estimado \SI{59}{\percent}; si no, copa de \SI{25}{mm} y pila interna comprimida, capítulo~\ref{cap:arq})\\
+Equipo (aletas) & D & E10, E4 & Las cuatro aletas abren en 10 de 10 liberaciones antes de \SI{0.3}{s}; el calaje queda en \ang{1.7}\,$\pm$\,\ang{0.3} y el giro del cuerpo se mide en la caída\\
 \Req{S9} & I & --- & Lista de materiales sin contaminantes\\
 \Req{M1}, \Req{M2} & I & --- & Liberación con servo; sin pirotecnia ni elementos calientes\\
 \Req{M3} & E & E1, E5 & 20 de 20 liberaciones; la traba no se abre con vibración ni choque\\
