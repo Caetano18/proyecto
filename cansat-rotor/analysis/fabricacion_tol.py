@@ -243,7 +243,7 @@ else:
         print(f'   si el cuerpo detiene a la pala (h >= 0): media {st["mean_ap"]:.4f}  '
               f'sd {st["sd_ap"]:.4f}  k = {st["k_ap"]:.1f} sigma; posición libre h: +-{st["h3"]:.3f} (3 sigma), '
               f'P(h<0) = {100*st["pneg"]:.1f} %')
-    edges = np.linspace(0.30, 1.60, 66)
+    edges = np.linspace(-0.10, 1.60, 86)       # incluye m = 0 para ver que ningún caso llega
     cent = 0.5*(edges[1:]+edges[:-1])
     H = [cent]
     for k in ('base', 'relajada', 'adoptada'):
