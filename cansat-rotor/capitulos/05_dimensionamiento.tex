@@ -398,26 +398,28 @@ la Arq.~1 y \SI{5.47}{m/s} en la 2; se desprecia el arranque). Las dos primeras 
 \begin{table}[H]
 \centering\small
 \caption{Presupuesto de masa de abajo hacia arriba, con la electrónica real del equipo
-(\SI{177}{g} de la planilla). El lastre ajusta el total a \SI{500}{g}.}\label{tab:masa}
+(\SI{177}{g} de la planilla, más los cambios de los capítulos de sensores y de integración). El lastre ajusta el total a \SI{500}{g}.}\label{tab:masa}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 \textbf{Componente} & \textbf{Arq.~1} [g] & \textbf{Arq.~2} [g]\\\midrule
 Cuerpo PETG Ø\,81, pared \SI{2}{mm}, \SI{205}{mm}          & 130 & ---\\
 Chasis (esqueleto) de la carga útil                        & --- & 30\\
-Contenedor: tubo de aluminio \SI{0.8}{mm} Ø\,90 y tapa (se suelta) & --- & 157\\
+Contenedor: tubo de fibra de vidrio \SI{0.6}{mm} Ø\,90 y tapa (se suelta) & --- & 93\\
 Tapas y anillos internos                                   & 25 & ---\\
 Rotor: 4 palas con portapala ($L_b=\SI{206}{mm}$)          & 38 & 38\\
-Rotor: cubo, eje, rodamientos, tope, resortes              & 26 & 26\\
+Rotor: cubo, eje, rodamientos, tope, resortes (corregido) & 33 & 33\\
 Drogue, cuerda y destorcedor (se suelta)                   & 10 & 10\\
 Copa del drogue y pasador de liberación                    & 8 & ---\\
 Traba (anillo y pestañas) o pestillo y guías               & 8 & 6\\
 Electrónica real (planilla): MCU, sensores, GPS, radio, 2 cámaras, 2 servos, panel, baliza, 18650 & 177 & 177\\
 Cableado, tornillos, insertos y placas                     & 37 & 37\\
-Anillo amortiguador de aterrizaje                          & 8 & 8\\\midrule
-\textbf{Subtotal}                                          & \textbf{467} & \textbf{489}\\
-Lastre (abajo; en la Arq.~2, dentro del contenedor)        & 33 & 11\\
+Anillo amortiguador de aterrizaje                          & 8 & 8\\
+Cambios de electrónica del capítulo~\ref{cap:sensores} (RP2040, FRAM, reloj, Hall, luz, MG90S) & 16 & 16\\
+Cuatro aletas antigiro con resortes y dientes de la traba  & 7 & 7\\\midrule
+\textbf{Subtotal}                                          & \textbf{497} & \textbf{455}\\
+Lastre (abajo; en la Arq.~2, dentro del contenedor)        & 3 & 45\\
 \textbf{Total frente a \SI{500 \pm 10}{g}}                 & \textbf{500} & \textbf{500}\\
-\textbf{Masa en la etapa 2, $m_2$}                         & \textbf{490} & \textbf{322}\\
+\textbf{Masa en la etapa 2, $m_2$}                         & \textbf{490} & \textbf{352}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -426,10 +428,18 @@ La planilla del equipo declara 177~g de electrónica como el \SI{28.4}{\percent}
 permitido; es el \SI{35.4}{\percent} de \SI{500}{g}, y su «margen de 358~g» tampoco cierra
 (500$-$177 = 323~g). El panel solar figura con \SI{37}{g}; es el dato más dudoso (un panel
 flexible de $120\times60$~mm suele pesar \SIrange{5}{10}{g}) y aporta más de la mitad de la
-varianza del presupuesto (capítulo~\ref{cap:sens}). Pesarlo es lo primero. Con la
-electrónica real el lastre baja de \SI{83}{g} (configuración anterior) a \SI{33}{g}. En la
-Arquitectura~2 la masa que se va con el contenedor y el drogue no vuela con el rotor:
-$m_2=\SI{322}{g}$ (capítulo~\ref{cap:arq}).
+varianza del presupuesto (capítulo~\ref{cap:sens}). \textbf{Pesarlo es lo primero}: con los
+tres cambios que se sumaron a la tabla (\SI{+16}{g} de electrónica según el capítulo~\ref{cap:sensores},
+\SI{+7}{g} por corregir la masa de la cabeza del rotor, que es de \SI{71}{g} y no de \SI{64}{g}, y
+\SI{+7}{g} de las aletas) el subtotal de la Arquitectura~1 sube de \SI{467}{g} a \SI{497}{g} y el lastre baja de
+\SI{33}{g} a \SI{3}{g}. Un Monte Carlo del presupuesto (\texttt{analysis/v2\_integracion.py};
+capítulo~\ref{cap:arq}, sección~\ref{sec:arq-integracion}) da, con el panel de la planilla (\SI{37}{g}), un
+\SI{44}{\percent} de probabilidad de que haya que sacar masa (lastre negativo), y \SI{1.9}{\percent} si
+el panel pesa \SI{8}{g}. Una segunda celda 18650 (\SI{48}{g}) no cabe en ningún caso. En la
+Arquitectura~2 la masa que se va con el contenedor y el drogue no vuela con el rotor: con los mismos
+cambios la carga útil pesa $m_2=\SI{352}{g}$, y el contenedor tiene que ser de fibra de vidrio
+(\SI{93}{g}) en lugar de aluminio (\SI{157}{g}), que dejaría el total en \SI{519}{g}. El modelo aerodinámico usa
+$m_2=\SI{0.36}{kg}$ ($\pm\SI{0.015}{kg}$) para la Arquitectura~2, que cubre este valor (capítulo~\ref{cap:arq}).
 
 \subsection{Largo}
 \begin{table}[H]
@@ -440,8 +450,8 @@ del drogue se aplana a Ø\,75 $\times$ \SI{10}{mm}.}\label{tab:largo}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 \textbf{Tramo} & \textbf{Desde--hasta} [mm] & \textbf{Largo} [mm]\\\midrule
-Anillo amortiguador (espuma) y cámara nadir & 0--25 & 25\\
-Anillo de traba y servo (pestañas a \SI{25}{mm}) & 25--55 & 30\\
+Anillo amortiguador (espuma), cámara nadir y bolsillos de las 4 aletas & 0--25 & 25\\
+Anillo de traba (con 4 dientes más hacia las aletas) y servo; pestañas a \SI{25}{mm} & 25--55 & 30\\
 Baliza, lastre y batería 18650 vertical & 55--125 & 70\\
 Electrónica (pila de PCB y cámaras) & 125--215 & 90\\
 Tapa superior y cámara cenit & 215--225 & 10\\
@@ -454,7 +464,11 @@ Copa aplanada del drogue (Ø\,75) & 240--250 & 10\\\midrule
 
 Con la pala de \SI{206}{mm} el largo queda en el límite de \Req{S3}: no hay reserva. La
 copa del drogue de Ø\,44$\times$\SI{25}{mm} de la configuración anterior no cabe, por eso se
-aplana. En la Arquitectura~2 el contenedor mide \SIrange{235}{245}{mm} y no tiene copa.
+aplana a Ø\,75$\times$\SI{10}{mm}; su volumen útil de \SI{36.6}{cm^3} se llena al
+\SI{59}{\percent} con el drogue, el destorcedor y el carro del pasador (estimación;
+sección~\ref{sec:arq-integracion}). Las cuatro aletas antigiro no suman largo: van en la banda
+inferior de \SI{25}{mm}, dentro del anillo de espuma, y por eso su cuerda no puede pasar de
+\SI{25}{mm}. En la Arquitectura~2 el contenedor mide \SIrange{235}{245}{mm} y no tiene copa.
 
 \subsection{Energía}
 \begin{table}[H]

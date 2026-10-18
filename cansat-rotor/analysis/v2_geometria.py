@@ -55,7 +55,7 @@ res['tmax_rho38_c45_w08'] = float(np.sqrt(44.2 ** 2 - 22.5 ** 2) - (38 - 3.15))
 res['tmax_rho34_c45_w08'] = float(np.sqrt(44.2 ** 2 - 22.5 ** 2) - (34 - 3.15))
 
 # 3. separación del contenedor (sabot) tras soltar el pestillo
-def sabot(mc=0.178, mp=0.322, Lc=0.23, V0=13.44, Cdc=0.8, Dcont=0.090, Cdd=0.8, Dd=0.25, dt=1e-4, rail_mu=0.1):
+def sabot(mc=0.148, mp=0.352, Lc=0.23, V0=13.44, Cdc=0.8, Dcont=0.090, Cdd=0.8, Dd=0.25, dt=1e-4, rail_mu=0.1):
     kd = 0.5 * RHO * Cdd * np.pi * Dd ** 2 / 4
     kb = 0.5 * RHO * 0.8 * np.pi * Dcont ** 2 / 4
     vc = vp = V0
@@ -75,7 +75,7 @@ H = sabot()
 guardar('v2_sabot.dat', ['t', 'vc', 'vp', 'z'], H[::20])
 res['sabot'] = dict(t_salida=float(H[-1, 0]), vc=float(H[-1, 1]), vp=float(H[-1, 2]), z=float(H[-1, 3]))
 # sensibilidad al masa del contenedor
-res['sabot_mc'] = {str(mc): float(sabot(mc=mc, mp=0.5 - mc)[-1, 0]) for mc in (0.10, 0.15, 0.178, 0.25)}
+res['sabot_mc'] = {str(mc): float(sabot(mc=mc, mp=0.5 - mc)[-1, 0]) for mc in (0.10, 0.148, 0.178, 0.25)}
 res['sabot_Lc'] = {str(L): float(sabot(Lc=L)[-1, 0]) for L in (0.21, 0.23, 0.25)}
 # 4. dispositivo de liberación del drogue (Arq. 1): pasador Ø3, brazo, par
 Td = 0.5 * RHO * 0.8 * np.pi * 0.25 ** 2 / 4 * 13.44 ** 2   # tensión del drogue a V1 (N)

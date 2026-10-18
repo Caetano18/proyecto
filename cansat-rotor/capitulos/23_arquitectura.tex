@@ -9,7 +9,7 @@ soltado, la etapa 2 es el rotor solo, y el radio y la masa que vuela con el roto
 ser las dos palancas de diseño: $V_2\propto\sqrt{m_2}/R$. Con $R=\SI{0.25}{m}$ el rotor
 solo da $V_2=\SI{6.4}{m/s}$ ($\langle V\rangle=\SI{7.1}{m/s}$ sobre todo el descenso). Si la
 organización permite separar el contenedor con el drogue, la masa que vuela baja a unos
-\SI{0.32}{kg} y $V_2$ a \SI{5.2}{m/s}. Los demás capítulos (BEMT, arranque, estabilidad,
+\SI{0.36}{kg} y $V_2$ a \SI{5.5}{m/s}. Los demás capítulos (BEMT, arranque, estabilidad,
 estructura) se recalcularon con estos datos.
 
 \begin{resultado}[Resumen del capítulo]
@@ -22,8 +22,8 @@ estructura) se recalcularon con estos datos.
         impreso (Ø\,81) con las palas exteriores y suelta el drogue con un pasador, después de
         confirmar que el anillo de traba giró. La Arquitectura~2 usa un contenedor tubular no
         impreso que se separa con el drogue: la carga útil cae por el extremo abierto en
-        \SI{0.15}{s}, las palas quedan libres y la masa del contenedor no vuela con el
-        rotor ($m_2\approx\SI{0.32}{kg}$).
+        \SI{0.13}{s}, las palas quedan libres y la masa del contenedor no vuela con el
+        rotor ($m_2\approx\SI{0.36}{kg}$).
   \item \textbf{Con la Arquitectura~2:} $V_2=\SI{5.5}{m/s}$, $\langle V\rangle=\SI{6.2}{m/s}$ y
         \SI{5}{J} de energía de aterrizaje (contra \SI{10}{J}); el perfil de la pala puede
         tener espesor ($t/c$ hasta 11\,\% con chasis Ø\,72). Requiere que la organización
@@ -177,7 +177,7 @@ Cuerpo & PETG Ø\,81, pared \SI{2}{mm} (\Req{S6}) & Chasis esqueleto + tubo no i
 Palas & Placa de \SI{0.5}{mm} arrollada por fuera & Perfil con espesor, en el espacio anular\\
 Traba de las palas & Anillo interno con servo + pasador del drogue (2 servos) & El propio contenedor; un pestillo (el segundo servo es redundante)\\
 Drogue & Se suelta con un pasador tras confirmar el anillo & Atado al contenedor, que se separa\\
-Masa en la etapa 2 & \SI{0.49}{kg} & $\approx\SI{0.32}{kg}$\\
+Masa en la etapa 2 & \SI{0.49}{kg} & $\approx\SI{0.36}{kg}$\\
 $V_2$, $\langle V\rangle$ ($R=\SI{0.25}{m}$) & \SI{6.4}{m/s}, \SI{7.1}{m/s} & \SI{5.5}{m/s}, \SI{6.2}{m/s}\\
 Energía de aterrizaje & \SI{10}{J} & \SI{5}{J}\\
 Dependencia normativa & Ninguna adicional & Separar el contenedor en vuelo\\
@@ -287,10 +287,12 @@ tapa: la telemetría debe funcionar durante la etapa 1, con el contenedor cerrad
 (\Req{X3}). Un tubo metálico o de carbono exigiría una ventana o una antena exterior.
 
 La tabla~\ref{tab:masa} del capítulo~\ref{cap:dim} da los presupuestos de ambas
-arquitecturas con la electrónica real del equipo (\SI{177}{g}): la carga útil de la
-Arquitectura~2 pesa \SI{322}{g} y el resto, hasta \SI{500}{g}, lo pone el contenedor, el
-drogue y el lastre que se van. Con $m_2=\SI{0.32}{kg}$ y $R=\SI{0.25}{m}$ resulta
-$V_2=\SI{5.2}{m/s}$ y una energía de aterrizaje de \SI{4.4}{J}.
+arquitecturas con la electrónica real del equipo (\SI{177}{g}) y los cambios de la
+sección~\ref{sec:arq-integracion}: la carga útil de la Arquitectura~2 pesa \SI{352}{g} y el
+resto, hasta \SI{500}{g}, lo pone el contenedor (de fibra de vidrio, \SI{93}{g}), el
+drogue y el lastre que se van. Con $m_2=\SI{0.36}{kg}$ (el valor del modelo, que cubre los
+\SI{352}{g} con su desviación) y $R=\SI{0.25}{m}$ resulta
+$V_2=\SI{5.5}{m/s}$ y una energía de aterrizaje de \SI{5.4}{J}.
 
 \paragraph{Sensibilidad de la masa.} El panel solar (\SI{37}{g} en la planilla, dato dudoso)
 aporta el \SI{65}{\percent} de la varianza de la masa de la carga útil en la
@@ -301,6 +303,111 @@ Arquitectura~2 depende de la suma de los componentes de la carga útil, con una 
 \SI{15}{g} que cambia $V_2$ en solo \SI{0.12}{m/s} (capítulo~\ref{cap:sens}).
 
 %=====================================================================
+%=====================================================================
+\section{Integración de la Arquitectura 1: aletas, copa y masa}\label{sec:arq-integracion}
+
+Tres cosas que los capítulos anteriores trataron por separado tienen que caber a la vez en el
+mismo cuerpo de Ø\,81 $\times$ \SI{250}{mm}: las cuatro aletas antigiro (capítulo~\ref{cap:estabilidad}),
+la copa del drogue (sección~\ref{sec:arq-secuencia}) y los cambios de electrónica del
+capítulo~\ref{cap:sensores}. Los cálculos están en \texttt{analysis/v2\_integracion.py}
+(salida \texttt{analysis/data/v2\_integracion.json}). Lo que depende de la geometría exacta
+se marca «a confirmar en CAD»: no hay un modelo CAD todavía.
+
+\subsection{Aletas en la banda inferior}
+Las palas plegadas cuelgan por fuera del cuerpo desde las bisagras (\SI{231}{mm}) hasta las
+pestañas (\SI{25}{mm}); entre $z=0$ y \SI{25}{mm} el cuerpo no tiene palas. Esa banda ya está
+ocupada por el anillo de espuma de aterrizaje (Ø\,81/58 $\times$ \SI{25}{mm}, capítulo~\ref{cap:estructura}),
+y es el único lugar para las aletas. Cada una es una placa de \SI{0.5}{mm} (carbono o FR-4, \SI{0.78}{g})
+con una bisagra de eje vertical en la raíz y un resorte de torsión; plegada, se enrolla tangente al cuerpo en un
+bolsillo de \SI{1.5}{mm} de profundidad del anillo, dentro de Ø\,90 (radio $40{,}5+0{,}5+1{,}5<\SI{45}{mm}$), y su arco
+ocupa \SI{40}{mm} de los \SI{254}{mm} de perímetro (cuatro aletas: \SI{160}{mm}). El anillo de traba
+suma cuatro dientes de alambre más, que bajan hasta la banda y retienen el borde libre de cada
+aleta; cuando el anillo gira \ang{15} para liberar las palas, los dientes recorren \SI{10}{mm}
+de arco, más que los \SI{3}{mm} de apoyo, y las aletas se abren por resorte hasta un tope
+regulable, que fija el calaje de \ang{1.7}. Sin sensor propio: la confirmación del anillo (fin de carrera o Hall) sirve
+a las cuatro. La carga sobre la bisagra al abrirse es mínima (presión dinámica de \SI{110}{Pa} a
+\SI{13.4}{m/s} sobre \SI{1000}{mm^2}: \SI{0.1}{N}).
+
+\begin{table}[H]
+\centering\small
+\caption{Aletas antigiro de la Arquitectura~1: cuatro unidades, centro a $r_f=45+s/2$ (mm).
+$c$ es el amortiguamiento; $\omega_\text{eq}$, el giro de equilibrio sin calaje; $\delta$, el
+calaje que anula el par de los rodamientos ($M_f=\SI{0.65}{mN.m}$).}\label{tab:arq-aletas}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Envergadura $\times$ cuerda} [mm] & $\mathcal A$ & $a_f$ & $S$ [mm$^2$] & $c$ [N.m.s] & $\omega_\text{eq}$ [rad/s] & $\delta$ [\si{\degree}]\\\midrule
+$40\times40$ (no cabe en la banda)  & 2,0 & 2,60 & 1600 & $2{,}74\times10^{-4}$ & 2,4 & 1,4\\
+\textbf{$40\times25$ (adoptada)}    & 3,2 & 3,48 & 1000 & $2{,}29\times10^{-4}$ & 2,8 & 1,7\\
+$50\times25$ (sobresale de Ø\,90 al plegarla) & 4,0 & 3,88 & 1250 & $3{,}71\times10^{-4}$ & 1,8 & 1,1\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con la cuerda limitada a \SI{25}{mm}, la aleta pierde el \SI{16}{\percent} del amortiguamiento
+respecto de la de $40\times40$ y el calaje sube de \ang{1.4} a \ang{1.7}; el efecto sobre el
+criterio de video ($\le\SI{0.5}{rad/s}$) es el mismo que ya tenía el diseño: depende de ajustar el calaje
+en un ensayo de caída. Las cuatro aletas con resortes y los dientes pesan \SI{7}{g}
+(\SI{1.6}{g} por aleta y \SI{0.4}{g} los dientes).
+
+\subsection{Copa del drogue}
+La copa de Ø\,75 $\times$ \SI{10}{mm} sobre el cubo tiene \SI{44.2}{cm^3} y, con paredes de \SI{1.5}{mm} y
+fondo de \SI{1}{mm}, \SI{36.6}{cm^3} útiles. Dentro van el drogue de ripstop de \SI{40}{g/m^2}
+(Ø\,\SI{250}{mm}, \SI{2.6}{g} con costuras), ocho cordones de \SI{0.25}{m} y el destorcedor, y el carro con el
+pasador de liberación. Empaquetando la tela a \SI{0.35}{g/cm^3} (valor típico de un pliegue
+manual, a medir) el volumen ocupado es
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Tela y cordones empaquetados & \SI{10.7}{cm^3}\\
+Destorcedor & \SI{3.0}{cm^3}\\
+Carro y pasador & \SI{8.0}{cm^3}\\\midrule
+\textbf{Total} y llenado de los \SI{36.6}{cm^3} & \textbf{\SI{21.7}{cm^3}, 59\,\%}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El llenado de $59$\,\% es viable pero justo: son estimaciones sin maqueta. La prueba es empaquetar el
+drogue real en una copa impresa antes de congelar el CAD (lista de ensayos del
+capítulo~\ref{cap:ensayos}); si el llenado pasa del \SI{80}{\percent}, la salida es comprimir
+\SI{15}{mm} la pila interna (de \SI{90}{mm} a \SI{75}{mm} de PCB y cámaras, a confirmar en CAD) y alargar la copa a
+\SI{25}{mm}, con lo que el llenado baja a \SI{22}{\percent}. Bajar las bisagras 15 mm (a \SI{216}{mm}) para ganar
+altura no sirve: las puntas de las palas bajarían a $z=\SI{10}{mm}$, dentro de la banda de las aletas.
+
+\subsection{Presupuesto de masa}
+Los tres cambios que se suman a la tabla~\ref{tab:masa} son: \SI{+16}{g} de electrónica
+(capítulo~\ref{cap:sensores}), \SI{+7}{g} por corregir la masa de la cabeza del rotor
+(\SI{71}{g} contra \SI{64}{g}) y \SI{+7}{g} de las aletas. El subtotal de la Arquitectura~1 sube de \SI{467}{g} a
+\SI{497}{g} y el lastre baja de \SI{33}{g} a \SI{3}{g}. Con las desviaciones de la tabla y un
+pesaje final uniforme entre \SI{490}{g} y \SI{510}{g}, un Monte Carlo (\num{200000} casos)
+da lo siguiente.
+
+\begin{table}[H]
+\centering\small
+\caption{Presupuesto de masa de la Arquitectura~1 (Monte Carlo): subtotal sin lastre,
+lastre necesario y probabilidades.}\label{tab:arq-masa-mc}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Caso} & \textbf{Subtotal} [g] & \textbf{Lastre} [g] & $P(\text{lastre}<0)$ & $P(\text{lastre}<\SI{10}{g})$\\\midrule
+Tabla anterior (sin cambios)                     & $467\pm20$ & 33  & 6\,\%  & 13\,\%\\
+Con cambios, panel de la planilla (\SI{37}{g})   & $497\pm21$ & 3   & \textbf{44}\,\% & 63\,\%\\
+Con cambios, panel de \SI{8}{g} (a pesar)        & $468\pm14$ & 32  & 1,9\,\% & 7,7\,\%\\
+Con cambios y segunda celda, panel de \SI{37}{g} & $545\pm21$ & $-45$ & 98\,\% & 99,5\,\%\\
+Con cambios y segunda celda, panel de \SI{8}{g}  & $516\pm14$ & $-16$ & 85\,\% & 95\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La conclusión es doble. Primero, \textbf{pesar el panel solar decide el presupuesto}: con los
+\SI{37}{g} de la planilla la Arquitectura~1 queda sin lastre y hay que sacar masa en casi la mitad de los casos; con un panel de \SI{8}{g}
+vuelve a tener el margen de antes. Segundo, \textbf{la segunda celda 18650 (\SI{48}{g}) no es viable} en la
+Arquitectura~1 aunque el panel sea liviano: con el panel de \SI{8}{g} sigue con un \SI{85}{\percent} de
+sobrepeso. Si el panel pesa mucho, las palancas son el cuerpo impreso (\SI{130}{g}, el
+\SI{26}{\percent} del total) y el cableado; no se tocó la pared mínima de \SI{2}{mm} de \Req{S6}. En la
+Arquitectura~2 la masa de la carga útil con los mismos cambios es de \SI{352}{g}; el contenedor
+tiene que ser de fibra de vidrio (\SI{93}{g} con su tapa) y no de aluminio (\SI{157}{g}), y el lastre de
+\SI{45}{g} viaja dentro y se suelta con él.
+
 \section{Mapa aerodinámico: radio, masa y promedio de \texorpdfstring{\Req{C4}}{C4}}\label{sec:arq-mapa}
 
 Con la BEMT en equilibrio de fuerzas ($T+D_\text{cuerpo}=W_2$) y par nulo, para
@@ -329,9 +436,9 @@ $B=4$, $c=\SI{45}{mm}$, $\theta=\ang{-3}$:
 \addplot[cfreno, dotted, thick, domain=0.30:0.51] {8};
 \node[font=\scriptsize, cfreno, anchor=south west] at (axis cs:0.31,8.05) {límite 8};
 \draw[cgris, dashed] (axis cs:0.49,5.4) -- (axis cs:0.49,9.2);
-\draw[cgris, dashed] (axis cs:0.322,5.4) -- (axis cs:0.322,9.2);
+\draw[cgris, dashed] (axis cs:0.36,5.4) -- (axis cs:0.36,9.2);
 \node[font=\scriptsize, cgris, rotate=90, anchor=south] at (axis cs:0.49,5.6) {Arq.~1};
-\node[font=\scriptsize, cgris, rotate=90, anchor=south] at (axis cs:0.322,5.6) {Arq.~2};
+\node[font=\scriptsize, cgris, rotate=90, anchor=south] at (axis cs:0.36,5.6) {Arq.~2};
 \end{groupplot}
 \end{tikzpicture}
 \caption{Velocidad de régimen y promedio global de \Req{C4} frente a la masa que vuela en la
@@ -453,16 +560,16 @@ engranaje de plástico del SG90 es el eslabón débil frente al choque (\Req{M3}
 
 \subsection{Arquitectura 2: separación del contenedor}
 Un pestillo (hoz o bola retenida) sujeta la carga útil al contenedor. Al soltarlo, el drogue
-frena el contenedor ($D_d=\SI{4.3}{N}$ contra su peso de $\SI{1.75}{N}$) y la carga útil, más
+frena el contenedor ($D_d=\SI{4.3}{N}$ contra su peso de $\SI{1.45}{N}$) y la carga útil, más
 pesada, cae por el extremo abierto. La integración de las dos aceleraciones da
 (figura~\ref{fig:arq-sabot}):
 \begin{itemize}
-  \item la carga útil sale del tubo ($\SI{230}{mm}$ de recorrido relativo) en \SI{0.15}{s}, con el
-        contenedor a \SI{11.6}{m/s} y la carga útil a \SI{14.6}{m/s};
+  \item la carga útil sale del tubo ($\SI{230}{mm}$ de recorrido relativo) en \SI{0.13}{s}, con el
+        contenedor a \SI{11.3}{m/s} y la carga útil a \SI{14.5}{m/s};
   \item un contenedor más liviano sale antes (\SI{0.11}{s} con \SI{0.10}{kg}) y uno más
         pesado después (\SI{0.18}{s} con \SI{0.25}{kg});
   \item las palas empiezan a abrirse cuando salen del tubo; con \SI{0.18}{s} de apertura el
-        rotor está abierto a los $\approx\SI{0.35}{s}$ del pestillo, a \SIrange{14}{15}{m/s}.
+        rotor está abierto a los $\approx\SI{0.31}{s}$ del pestillo, a \SIrange{14}{15}{m/s}.
 \end{itemize}
 
 \begin{figure}[H]
@@ -482,7 +589,7 @@ pesada, cae por el extremo abierto. La integración de las dos aceleraciones da
 \end{groupplot}
 \end{tikzpicture}
 \caption{Separación del contenedor (Arquitectura~2): velocidades y recorrido relativo de la
-carga útil de \SI{0.32}{kg} dentro del contenedor de \SI{0.18}{kg} (con drogue).}
+carga útil de \SI{0.35}{kg} dentro del contenedor de \SI{0.15}{kg} (con drogue y lastre).}
 \label{fig:arq-sabot}
 \end{figure}
 
@@ -501,7 +608,7 @@ carga útil de \SI{0.32}{kg} dentro del contenedor de \SI{0.18}{kg} (con drogue)
   % arquitectura 2
   \node[font=\scriptsize\bfseries, anchor=east] at (-0.01,-1.0) {Arq. 2};
   \fill[cfreno!50] (0,-1.2) rectangle (0.08,-0.8);         \node[font=\tiny, anchor=west] at (0.08,-1.0) {pestillo};
-  \fill[ccont!40] (0.08,-1.7) rectangle (0.23,-1.3);       \node[font=\tiny, anchor=west] at (0.23,-1.5) {sale del tubo (0,15 s)};
+  \fill[ccont!40] (0.08,-1.7) rectangle (0.23,-1.3);       \node[font=\tiny, anchor=west] at (0.23,-1.5) {sale del tubo (0,13 s)};
   \fill[crot!50] (0.23,-2.2) rectangle (0.41,-1.8);        \node[font=\tiny, anchor=west] at (0.41,-2.0) {palas abren};
 \end{tikzpicture}
 \caption{Cronología de la liberación, de \SI{0}{} a \SI{0.5}{s}. Desde que las palas están

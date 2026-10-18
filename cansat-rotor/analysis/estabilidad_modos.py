@@ -102,7 +102,7 @@ Iz = 4.0e-4                                    # est.
 Rb, Lb = cfg.D_ENV/2, 0.25
 cb = (1.33/np.sqrt(V0*Lb/1.5e-5))*0.5*rho*V0*Rb**2*2*np.pi*Rb*Lb
 out['c cuerpo'] = cb
-def cfin(n, s, l, rf0=0.044):
+def cfin(n, s, l, rf0=0.045):   # rf0: radio del borde de ataque de la aleta (cuerpo Ø81 más 4,5 mm hasta Ø90)
     S = s*l; AR = 2*s/l
     a = 2*np.pi*AR/(2 + np.sqrt(AR**2 + 4))
     rf = rf0 + s/2
@@ -117,7 +117,7 @@ def simula(cdamp, Mcant=0.0, tend=T2, dt=0.01):
     return np.array(res)
 s0 = simula(cb); cf44, tq44, a44 = cfin(4, 0.040, 0.040)
 s1 = simula(cb + cf44)
-cf46, tq46, _ = cfin(4, 0.060, 0.050)
+cf46, tq46, _ = cfin(4, 0.040, 0.025)      # aleta adoptada: 40 de envergadura x 25 de cuerda (banda inferior de 25 mm)
 s2 = simula(cb + cf46)
 with abrir('estabilidad_giro.dat', dep_h=True) as f:
     f.write('t w0 w1 w2\n')
@@ -126,13 +126,14 @@ with abrir('estabilidad_giro.dat', dep_h=True) as f:
 out['giro sin aletas a 10,20,40 s y fin de etapa 2 [rpm]'] = [s0[min(int(round(t/0.01)), len(s0)-1), 1]*30/np.pi for t in (10, 20, 40, T2)]
 out['duración de la etapa 2 T2 [s]'] = T2
 out['aletas 4x40x40: c, torque/rad, w_eq [rad/s]'] = (cf44, tq44, Mf/(cb+cf44))
-out['aletas 4x60x50: c, torque/rad, w_eq'] = (cf46, tq46, Mf/(cb+cf46))
+out['aletas 4x40x25: c, torque/rad, w_eq'] = (cf46, tq46, Mf/(cb+cf46))
+out['cant para anular Mf 40x25 [deg]'] = np.degrees(Mf/tq46)
 out['cant para anular Mf 40x40 [deg]'] = np.degrees(Mf/tq44)
 with abrir('estabilidad_aletas.dat') as f:
     f.write('s w1 w2 cant\n')
     for s in np.linspace(0.01, 0.08, 15):
         cfx, tqx, _ = cfin(4, s, 0.040)
-        cfy, _, _ = cfin(4, s, 0.060)
+        cfy, _, _ = cfin(4, s, 0.025)
         f.write(f'{s*1000:.1f} {Mf/(cb+cfx):.3f} {Mf/(cb+cfy):.3f} {np.degrees(Mf/tqx):.3f}\n')
 # ---------------- 4. batimiento y delta-3 ----------------
 nu2 = 1 + e*Sb/Ib + 0.005/(Ib*Om0**2); out['nu_beta'] = np.sqrt(nu2)

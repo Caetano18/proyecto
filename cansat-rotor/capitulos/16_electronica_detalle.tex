@@ -212,37 +212,40 @@ Traba & Servo MG90S & reposo \SI{10}{mA}, movimiento \SI{200}{mA}, bloqueo $\app
 \centering
 \begin{tikzpicture}[x=1mm, y=0.34mm, font=\scriptsize]
   % cuerpo (escala vertical 0,34 mm/mm)
-  \fill[ffijo] (0,0) rectangle (30,205);
-  \draw[cfijo, line width=0.7pt] (0,0) rectangle (30,205);
-  \foreach \ya/\yb/\yc/\txt in {0/40/20/{Baliza, lastre, cámara nadir},
-      40/70/55/{Anillo de traba y servo}, 70/140/105/{Batería 18650},
-      140/195/164/{Pila de PCB (MCU, sensores, radio)}, 195/205/204/{Tapa sup.: cámara cenit, hall}}{
+  \fill[ffijo] (0,0) rectangle (30,225);
+  \draw[cfijo, line width=0.7pt] (0,0) rectangle (30,225);
+  \foreach \ya/\yb/\yc/\txt in {0/25/12/{Anillo de espuma, cámara nadir, antena},
+      25/55/40/{Anillo de traba y servo}, 55/125/90/{Baliza, lastre y batería 18650},
+      125/215/170/{Pila de PCB (MCU, sensores, radio) y cámaras}, 215/225/224/{Tapa sup.: cámara cenit, hall}}{
     \draw[cfijo!60] (0,\ya) -- (30,\ya);
     \node[anchor=east, align=right, text width=40mm] at (-2,\yc) {\txt\\[-1pt]\textcolor{cgris}{\ya--\yb\,mm}};
   }
-  \draw[rot] (8,205) rectangle (22,222);
-  \node[anchor=west] at (34,213.5) {Cubo del rotor};
-  \draw[cont] (8,222) rectangle (22,250);
-  \node[anchor=west] at (34,236) {Copa del drogue};
+  \draw[rot] (8,225) rectangle (22,240);
+  \node[anchor=west] at (34,232) {Cubo del rotor};
+  \draw[cont] (8,240) rectangle (22,250);
+  \node[anchor=west] at (34,245) {Copa del drogue};
   % palas plegadas (etapa 1)
-  \fill[crot, opacity=0.35] (30,57) rectangle (32.5,213);
-  \node[anchor=west, crot, font=\tiny, align=left] at (33,130) {palas\\[-1pt]plegadas\\[-1pt]57--213\,mm\\[-1pt](etapa 1)};
+  \fill[crot, opacity=0.35] (30,25) rectangle (32.5,231);
+  \node[anchor=west, crot, font=\tiny, align=left] at (33,130) {palas\\[-1pt]plegadas\\[-1pt]25--231\,mm\\[-1pt](etapa 1)};
+  % aletas plegadas en la banda inferior
+  \fill[cfijo, opacity=0.5] (30,0) rectangle (32.5,25);
+  \node[anchor=west, cfijo, font=\tiny] at (33,5) {aletas plegadas (0--25\,mm)};
   % batería y PCB
-  \draw[draw=cgris, fill=cgris!25] (11,72) rectangle (19,138);
-  \foreach \y in {145,160,175,190} \draw[cfijo, line width=1pt] (2,\y) -- (28,\y);
+  \draw[draw=cgris, fill=cgris!25] (11,58) rectangle (19,123);
+  \foreach \y in {135,150,165,180,195,210} \draw[cfijo, line width=1pt] (2,\y) -- (28,\y);
   % antena en la zona libre inferior
-  \draw[ccont, line width=1.2pt, decorate, decoration={coil, aspect=0.5, segment length=1.6mm, amplitude=1.2mm}] (25,8) -- (25,38);
-  \node[ccont, anchor=west, font=\tiny] at (33,22) {antena (zona libre $<\SI{57}{mm}$)};
-  \draw[ccont] (32.5,22) -- (26.5,22);
+  \draw[ccont, line width=1.2pt, decorate, decoration={coil, aspect=0.5, segment length=1.6mm, amplitude=1.2mm}] (25,3) -- (25,23);
+  \node[ccont, anchor=west, font=\tiny] at (33,18) {antena (zona libre $<\SI{25}{mm}$)};
+  \draw[ccont] (32.5,18) -- (26.5,18);
   % arnés
-  \draw[ccuerda, line width=0.9pt] (25,40) -- (25,145);
-  \draw[cfreno, line width=0.9pt] (5,55) -- (5,145);
-  \draw[cgris, line width=0.9pt] (15,140) -- (15,145);
-  \draw[crot, line width=0.9pt] (20,190) -- (20,203);
+  \draw[ccuerda, line width=0.9pt] (25,23) -- (25,135);
+  \draw[cfreno, line width=0.9pt] (5,40) -- (5,135);
+  \draw[cgris, line width=0.9pt] (15,123) -- (15,135);
+  \draw[crot, line width=0.9pt] (20,195) -- (20,222);
   % conectores
-  \foreach \x/\y/\n in {25/145/J6, 5/145/J2, 15/141/J1, 20/195/J3, 10/198/J4, 9/30/J5}
+  \foreach \x/\y/\n in {25/135/J6, 5/135/J2, 15/128/J1, 20/200/J3, 10/205/J4, 9/10/J5}
     \node[marca, minimum size=3.6mm] at (\x,\y) {};
-  \foreach \x/\y/\n in {25/145/6, 5/145/2, 15/141/1, 20/195/3, 10/198/4, 9/30/5}
+  \foreach \x/\y/\n in {25/135/6, 5/135/2, 15/128/1, 20/200/3, 10/205/4, 9/10/5}
     \node[font=\tiny\bfseries, text=white] at (\x,\y) {\n};
   % leyenda
   \node[anchor=north west, align=left, font=\scriptsize, text width=55mm] at (60,250) {%
@@ -258,7 +261,8 @@ Traba & Servo MG90S & reposo \SI{10}{mA}, movimiento \SI{200}{mA}, bloqueo $\app
 \end{tikzpicture}
 \caption{Arnés y conectores sobre la distribución de alturas de la
 tabla~\ref{tab:largo} (escala vertical comprimida). En la etapa~1 las palas de carbono,
-conductoras, cubren el cuerpo entre 57 y \SI{213}{mm}; la antena debe quedar debajo.}
+conductoras, cubren el cuerpo entre 25 y \SI{231}{mm}; la antena debe quedar debajo, en la banda de
+\SI{25}{mm} que comparte con las aletas plegadas.}
 \label{fig:electronica-arnes}
 \end{figure}
 
@@ -819,12 +823,17 @@ estación.}
   \item \textbf{Zona de Fresnel}: su radio en el punto medio de \SI{2}{km} es de \SI{12.8}{m}
         (\SI{915}{MHz}) y \SI{7.8}{m} (\SI{2.4}{GHz}). Con el CanSat bajo, la estación debe
         estar en un lugar alto o sobre un mástil.
-  \item \textbf{Antena del CanSat}: debe ir en la zona inferior libre ($<\SI{57}{mm}$,
+  \item \textbf{Antena del CanSat}: debe ir en la zona inferior libre ($<\SI{25}{mm}$,
         figura~\ref{fig:electronica-arnes}). En la etapa 1 las palas de carbono plegadas
-        rodean el cuerpo entre 57 y \SI{213}{mm} y la sombrearían. A \SI{2.4}{GHz} un
-        monopolo de $\lambda/4$ (\SI{3.1}{cm}) entra en esa zona. A \SI{915}{MHz} no entra
-        (\SI{8.2}{cm}): hace falta una hélice compacta, con algunos dB menos de eficiencia,
-        que el margen de \SI{10}{dB} extra absorbe. No puede sobresalir, porque \Req{S3}
+        rodean el cuerpo entre 25 y \SI{231}{mm} y la sombrearían. Con la pala de \SI{206}{mm} la
+        zona libre quedó en \SI{25}{mm} (antes, \SI{57}{mm}) y la comparte con el anillo de
+        espuma, la cámara nadir y las aletas plegadas. Ni siquiera a \SI{2.4}{GHz} entra un
+        monopolo de $\lambda/4$ (\SI{3.1}{cm}) derecho: hay que arrollarlo o usar una antena de chip
+        cerámica. A \SI{915}{MHz} (\SI{8.2}{cm}) hace falta una hélice compacta de unos
+        \SI{20}{mm}, con \SIrange{5}{10}{dB} menos de eficiencia (estimación sin medir),
+        que el margen del enlace (\SI{27.8}{dB} en el nulo con SF7) absorbe. Las aletas son de
+        carbono o de FR-4: si son de carbono, su bisagra y el resorte quedan a más de
+        \SI{10}{mm} de la hélice, o se usa FR-4 y no hay problema. No puede sobresalir, porque \Req{S3}
         limita el largo total. Comparte la zona con la baliza, la cámara y el lastre: el
         lastre metálico debe quedar lejos de la hélice (o ser no conductor), porque la
         desintoniza.

@@ -33,8 +33,9 @@ y rodamientos 628/8-2Z (688ZZ). Los cálculos están en
         $\approx\SI{0.65}{mN.m}$ (rango \numrange{0.31}{1.5}). Sin aletas el cuerpo llega a
         $\approx\num{150}$~rpm a los \SI{10}{s}, a $\approx\num{490}$~rpm a los
         \SI{40}{s} y a $\approx\num{770}$~rpm al final de la etapa 2. Cuatro aletas
-        desplegables de $40\times\SI{40}{mm}$ lo dejan en $\approx\SI{2.4}{rad/s}$. Para cumplir el criterio de video
-        ($\le\SI{0.5}{rad/s}$) hay que darles un calaje de $\approx\ang{1.4}$ contra el
+        desplegables de $40\times\SI{25}{mm}$ (la cuerda que admite la banda inferior del cuerpo) lo dejan en
+        $\approx\SI{2.8}{rad/s}$. Para cumplir el criterio de video
+        ($\le\SI{0.5}{rad/s}$) hay que darles un calaje de $\approx\ang{1.7}$ contra el
         par y ajustarlo en ensayo.
   \item \textbf{Batimiento.} $\nu_\beta=1{,}16$ y $\zeta_\beta=0{,}68$: el modo está
         muy amortiguado. Un $\delta_3$ de \ang{15} a \ang{20} baja la conicidad a
@@ -274,6 +275,20 @@ con un error de $\pm\SI{50}{\percent}$ quedan $\approx\SI{1.2}{rad/s}$. Por eso 
 se ajusta midiendo el giro en un ensayo de túnel o de caída, que debe durar varias veces
 $I_z/c\approx\SI{1.5}{s}$ (capítulo~\ref{cap:ensayos}).
 
+\paragraph{Aleta adoptada: \SI{40}{mm} de envergadura por \SI{25}{mm} de cuerda.} En la
+Arquitectura~1 la única banda libre del cuerpo es la de abajo, de $z=0$ a \SI{25}{mm}: más
+arriba cuelgan las palas plegadas (capítulo~\ref{cap:dim}, tabla~\ref{tab:largo}). Allí la
+cuerda no puede pasar de \SI{25}{mm} (sección~\ref{sec:arq-integracion}). Con $40\times\SI{25}{mm}$
+($\mathcal A=3{,}2$, $a_f=3{,}5$, $S=\SI{1000}{mm^2}$) cuatro aletas dan
+$c=\SI{2.3e-4}{N.m.s}$, el \SI{84}{\percent} de las de $40\times40$; el giro de equilibrio
+sin calaje sube a $\SI{2.8}{rad/s}$ (27~rpm), el calaje que anula el par a \ang{1.7} y,
+con $\pm\SI{50}{\percent}$ de error en $M_f$, quedan $\approx\SI{1.4}{rad/s}$ en lugar de
+\SI{1.2}{rad/s}. Alargar la envergadura a \SI{50}{mm} la devuelve a $c=\SI{3.7e-4}{N.m.s}$
+(calaje \ang{1.1}), pero el borde exterior de la aleta ya no cabe dentro de Ø\,90 al plegarla
+tangente al cuerpo. Se adopta $40\times25$ y el calaje inicial de \ang{1.7}, ajustable entre
+\ang{0} y \ang{3}; el criterio de \SI{0.5}{rad/s} se cumple solo si un ensayo de caída o de túnel
+permite fijar el calaje, como con las de $40\times40$. Cálculo: \texttt{analysis/v2\_integracion.py}.
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
@@ -286,7 +301,7 @@ $I_z/c\approx\SI{1.5}{s}$ (capítulo~\ref{cap:ensayos}).
   \addplot[cfijo, very thick] table[x=t, y=w1] {analysis/data/estabilidad_giro.dat};
   \addlegendentry{4 aletas 40×40}
   \addplot[ccuerda, very thick, dashed] table[x=t, y=w2] {analysis/data/estabilidad_giro.dat};
-  \addlegendentry{4 aletas 60×50}
+  \addlegendentry{4 aletas 40×25 (adoptada)}
 \nextgroupplot[xlabel={Envergadura de aleta $s$ [mm]}, ylabel={$\omega_b$ [rad/s] / calaje [\si{\degree}]},
   ymode=log, ymin=0.3, ymax=60, legend style={font=\scriptsize}, legend pos=north east]
   \addplot[cfijo, very thick] table[x=s, y=w1] {analysis/data/estabilidad_aletas.dat};
@@ -297,7 +312,7 @@ $I_z/c\approx\SI{1.5}{s}$ (capítulo~\ref{cap:ensayos}).
 \end{groupplot}
 \end{tikzpicture}
 \caption{(a) Giro del cuerpo durante toda la etapa 2 (\SI{78.6}{s}) con $M_f$ nominal.
-(b) Cuatro aletas de cuerda \SI{40}{mm}: giro de equilibrio sin calaje y calaje que anula el par. La línea de
+(b) Cuatro aletas de cuerda \SI{40}{mm}: giro de equilibrio sin calaje y calaje que anula el par; las curvas de (a) son 40×40 y la adoptada 40×25. La línea de
 puntos es el criterio de \SI{0.5}{rad/s}.}
 \label{fig:estabilidad-giro}
 \end{figure}
@@ -458,7 +473,7 @@ Péndulo drogue (si no se suelta) & $\zeta=0{,}46$ & $\zeta\ge0{,}1$ & cumple\\
 Batimiento & $\zeta_\beta=0{,}68$, $\nu_\beta=1{,}16$ & amortiguado & cumple\\
 Conicidad + ráfaga & \ang{6.4} & $<$ tope \ang{15} & cumple\\
 Giro del cuerpo, sin aletas & 150--770 rpm & $\le\SI{0.5}{rad/s}$ & no cumple\\
-Giro, 4 aletas 40×40 + calaje & $\approx0$--\SI{1.2}{rad/s} & $\le\SI{0.5}{rad/s}$ & con ajuste\\
+Giro, 4 aletas 40×25 + calaje & $\approx0$--\SI{1.4}{rad/s} & $\le\SI{0.5}{rad/s}$ & con ajuste\\
 Divergencia, pala A / B / BV & 0,79--0,98 / 1,9--2,1 / $\ge2{,}8$ & $\ge1{,}3$ & A no\\
 Flameo, pala A / B / BV & 0,96 / 1,96 / 2,55 & $\ge1{,}3$ & B y BV\\
 Drogue contra palas (si no se suelta) & \ang{19} frente a \ang{87} & con tensión & cualitativo\\
@@ -469,9 +484,10 @@ Drogue contra palas (si no se suelta) & \ang{19} frente a \ang{87} & con tensió
 \begin{enumerate}
   \item \textbf{Pala BV}, con el centro de masa en $\le0{,}41c$ y verificado con el
         ensayo de balanceo sobre filo.
-  \item \textbf{Cuatro aletas desplegables} de $\approx40\times\SI{40}{mm}$ en el fondo
-        del cuerpo, abiertas por resorte al liberar el rotor, con calaje inicial de
-        \ang{1.4} contra el par del rotor y ajustable entre \ang{0} y \ang{3}. Medir el
+  \item \textbf{Cuatro aletas desplegables} de $40\times\SI{25}{mm}$ en la banda inferior
+        del cuerpo (alojadas en el anillo de espuma y retenidas por la traba; sección~\ref{sec:arq-integracion}),
+        abiertas por resorte al liberar el rotor, con calaje inicial de
+        \ang{1.7} contra el par del rotor y ajustable entre \ang{0} y \ang{3}. Medir el
         par de los rodamientos en banco (caída libre de un volante) antes de fijar el
         calaje. Reengrasar con aceite ligero o desengrasar los 688ZZ reduce $M_f$ a
         menos de la mitad. En la Arquitectura~2 las aletas se pliegan dentro del

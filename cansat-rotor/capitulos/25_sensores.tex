@@ -684,11 +684,12 @@ no grabar si falla la detección del despegue. El empate se rompe por la masa y 
   \item Una celda con todo encendido y los consumos de la planilla \textbf{no cumple}
         \Req{E7} en la mitad de los casos. Solo se justifica si la medición de las cámaras
         confirma unos \SI{180}{mA} o menos (autonomía de \SI{3.5}{h}).
-  \item La segunda celda da margen de sobra pero pesa \SI{48}{g}. En la Arq.~1 el lastre es de
-        \SI{33}{g}; con los cambios de este capítulo (\SI{+16}{g}) quedan \SI{17}{g}; con la segunda
-        celda faltarían \SI{31}{g} y se pasaría de los \SI{510}{g} de \Req{S1}. Se compensaría
-        si el panel solar pesara de verdad unos \SI{6}{g} y no los \SI{37}{g} de la planilla
-        (a pesar primero) o con otro ahorro estructural. En la Arq.~2 el lastre extra viaja en el
+  \item La segunda celda da margen de sobra pero pesa \SI{48}{g}. En la Arq.~1 el lastre era de
+        \SI{33}{g}; con los cambios de este capítulo (\SI{+16}{g}), la corrección de la cabeza del rotor
+        (\SI{+7}{g}) y las aletas (\SI{+7}{g}) queda en \SI{3}{g}, y con la segunda celda faltarían
+        \SI{45}{g} (\SI{98}{\percent} de probabilidad de pasarse de los \SI{510}{g} de \Req{S1}).
+        Aun con un panel de \SI{8}{g} el sobrepeso sigue en el \SI{85}{\percent} (sección~\ref{sec:arq-integracion}).
+        Por eso la segunda celda no es viable en la Arq.~1. En la Arq.~2 el lastre extra viaja en el
         contenedor y se suelta, pero la masa que vuela aumenta.
   \item \textbf{La política con las cámaras encendidas al despegar} usa la
         misma celda y consume \SI{1.28}{W} en la rampa (\SI{8.6}{h}). Su riesgo se acota con
@@ -735,8 +736,10 @@ Baliza y panel & buzzer, panel & Pila con lengüetas (\Req{M4}); pesar el panel 
 \end{tabularx}
 \end{table}
 
-Los cambios \textbf{N} y \textbf{R} suman \SI{+16}{g} (sin la segunda celda), que caben en los
-\SI{33}{g} de lastre de la Arq.~1 (tabla~\ref{tab:masa}); cada módulo nuevo es de bajo costo
+Los cambios \textbf{N} y \textbf{R} suman \SI{+16}{g} (sin la segunda celda). Con los otros dos
+aumentos de la tabla~\ref{tab:masa} (cabeza del rotor y aletas) consumen casi todos los \SI{33}{g} de
+lastre de la Arq.~1: quedan \SI{3}{g} y el resultado depende de pesar el panel solar
+(sección~\ref{sec:arq-integracion}). Cada módulo nuevo es de bajo costo
 (órdenes de pocos miles de pesos, estimados). La ESP32-C3 reemplazada no se pierde: sirve de
 banco de pruebas o de relé de datos.
 
