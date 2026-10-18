@@ -1,22 +1,20 @@
 \chapter{Planos de anteproyecto}\label{cap:planos}
 
-\begin{nota}[Vigencia de los planos: geometría de la versión 1]
-Los planos de este capítulo \textbf{no se redibujaron} para la configuración v2 (capítulo~\ref{cap:arq}). Siguen
-siendo válidos como disposición general (orden de los bloques, interfaces, secuencia de
-despliegue), pero las medidas principales cambiaron:
+\begin{nota}[Vigencia de los planos]
+Los planos 1 a 3 (conjunto plegado, desplegado y corte transversal) se redibujaron para la
+configuración v2 de la Arquitectura~1 (capítulo~\ref{cap:arq}): envolvente de Ø\,90, cuerpo de Ø\,81,
+palas de \SI{206}{mm} con las bisagras a \SI{231}{mm} y las pestañas a \SI{25}{mm}, banda inferior con las
+aletas, copa aplanada de Ø\,75 $\times$ \SI{10}{mm}, sin cuerda por el eje y con dos servos. Los planos 4 a 8
+(detalles del cubo, pala, bisagra, anillo de traba y configuración B) \textbf{conservan las cotas de la versión~1}
+y valen como disposición: las medidas vigentes de cubo, portapala, oreja con pasador de Ø\,3 y anillo de traba
+están en los planos de fabricación F1 a F6 (capítulo~\ref{cap:fabricacion}), y la disposición de la configuración B
+corresponde a la Arquitectura~2 del capítulo~\ref{cap:arq}. Las dimensiones vigentes están en los
+capítulos~\ref{cap:dim}, \ref{cap:arq} y~\ref{cap:estructura}. Los planos 4 a 8 de versión~1 son:
 \begin{itemize}[leftmargin=*,nosep]
-  \item envolvente de Ø\,95 $\to$ Ø\,90 (\Req{S2}); cuerpo impreso de Ø\,81 y bordes de pala a \SI{44.0}{mm} del eje;
-  \item rotor de $R=\SI{0.20}{m}$ y pala de \SI{156}{mm} $\to$ $R=\SI{0.25}{m}$ y pala de \SI{206}{mm}, con las
-        bisagras a \SI{231}{mm} del extremo (antes \SI{213}{mm});
-  \item tope rígido y pasador de Ø\,2 $\to$ tope elástico a \ang{+15} y pasador de Ø\,3
-        (capítulo~\ref{cap:estructura});
-  \item cuerda del drogue por el eje hueco $\to$ drogue soltado antes de abrir el rotor: no hay cuerda
-        dentro del eje, y la copa del drogue se aplana a Ø\,75$\times$\SI{10}{mm};
-  \item un solo servo (SG90) $\to$ dos servos MG90S (anillo de traba y pasador de suelta);
-  \item la lista de electrónica y su disposición cambian según el capítulo~\ref{cap:sensores}.
+  \item rotor de $R=\SI{0.20}{m}$ y pala de \SI{156}{mm} (ahora $R=\SI{0.25}{m}$ y \SI{206}{mm});
+  \item tope rígido y pasador de Ø\,2 (ahora tope elástico a \ang{+15} y pasador de Ø\,3);
+  \item cuerda del drogue por el eje hueco (ahora el drogue se suelta antes de abrir el rotor).
 \end{itemize}
-Las dimensiones vigentes están en los capítulos~\ref{cap:dim}, \ref{cap:arq} y~\ref{cap:estructura}. El
-rediseño de los planos es el primer paso pendiente (capítulo~\ref{cap:concl}).
 \end{nota}
 
 Los planos de este capítulo fijan la disposición, las medidas principales y las
@@ -40,160 +38,180 @@ del plano de corte.
 \begin{figure}[p]
 \centering
 \begin{tikzpicture}[x=0.74mm, y=0.74mm]
-  % ---------------- envolvente Ø95
-  \draw[cgris, densely dashed, line width=0.3pt] (-47.5,-3) -- (-47.5,253);
-  \draw[cgris, densely dashed, line width=0.3pt] ( 47.5,-3) -- ( 47.5,253);
+  % ---------------- envolvente Ø90 (S2) y eje
+  \draw[cgris, densely dashed, line width=0.3pt] (-45,-3) -- (-45,253);
+  \draw[cgris, densely dashed, line width=0.3pt] ( 45,-3) -- ( 45,253);
   \draw[eje] (0,-8) -- (0,262);
 
-  % ---------------- cuerpo Ø88, pared 2
-  \secF{(-44,0)}{(-42,205)}
-  \secF{( 42,0)}{( 44,205)}
-  \secF{(-42,0)}{( 42,3)}            % tapa inferior
-  \secF{(-42,199)}{(-4,205)}         % tapa superior (izq)
-  \secF{(4,199)}{(42,205)}           % tapa superior (der)
-  % travesaño de anclaje
-  \secF{(-20,176)}{(20,180)}
+  % ---------------- anillo de espuma de aterrizaje Ø81/58 x 25 (z = 0 a 25)
+  \filldraw[cgris!35] (-40.5,0) rectangle (-29,25);
+  \filldraw[cgris!35] ( 29,0) rectangle ( 40.5,25);
+  \fill[pattern=dots, pattern color=cgris!80] (-40.5,0) rectangle (-29,25);
+  \fill[pattern=dots, pattern color=cgris!80] ( 29,0) rectangle ( 40.5,25);
+  % aletas plegadas en bolsillos del anillo
+  \filldraw[cfijo!60] (40.5,1) rectangle (41.7,24);
+  \filldraw[cfijo!60] (-41.7,1) rectangle (-40.5,24);
+  % dientes de alambre del anillo de traba que retienen las aletas
+  \draw[cfreno, line width=0.9pt] (38.3,28) -- (38.3,12) -- (40.3,12);
+  \draw[cfreno, line width=0.9pt] (-38.3,28) -- (-38.3,12) -- (-40.3,12);
 
-  % ---------------- eje fijo hueco Ø8x5
-  \secF{(-4,182)}{(-2.5,249)}
-  \secF{( 2.5,182)}{( 4,249)}
+  % ---------------- cuerpo Ø81, pared 2 (z = 22 a 225)
+  \secF{(-40.5,22)}{(-38.5,225)}
+  \secF{( 38.5,22)}{( 40.5,225)}
+  \secF{(-38.5,22)}{( 38.5,25)}      % tapa inferior
+  \secF{(-38.5,222)}{(-4,225)}       % tapa superior (izq)
+  \secF{(4,222)}{(38.5,225)}         % tapa superior (der)
 
-  % ---------------- copa del drogue (contenedor mínimo)
-  \secF{(-22,225)}{(-20.5,250)}
-  \secF{( 20.5,225)}{( 22,250)}
-  \secF{(-20.5,225)}{(-4,227)}
-  \secF{(4,225)}{(20.5,227)}
-  \fill[ccuerda!20] (-20.5,227) rectangle (-4,248);
-  \fill[ccuerda!20] (4,227) rectangle (20.5,248);
-  \draw[ccuerda, line width=0.3pt] (-19,229) .. controls (-12,236) and (-8,231) .. (-5,240)
-        (19,231) .. controls (12,238) and (9,232) .. (5,244)
-        (-18,244) .. controls (-10,240) and (-9,246) .. (-5,247);
-  % tuerca de retención
-  \secF{(-7,222)}{(-4,225)}
-  \secF{(4,222)}{(7,225)}
+  % ---------------- eje fijo macizo Ø8 (sin cuerda)
+  \secF{(-4,222)}{(4,243)}
 
-  % ---------------- cubo giratorio Ø44 con brazos
-  \secR{(-22,205.5)}{(-8,222)}
-  \secR{(8,205.5)}{(22,222)}
-  % rodamientos 688ZZ
-  \foreach \yb in {207,215}{
+  % ---------------- copa aplanada del drogue Ø75 x 10 (z = 240 a 250)
+  \secF{(-37.5,240)}{(-36,250)}
+  \secF{( 36,240)}{( 37.5,250)}
+  \secF{(-36,240)}{(36,241)}
+  \fill[ccuerda!20] (-36,241) rectangle (-12,249);
+  \fill[ccuerda!20] (12,241) rectangle (36,249);
+  \draw[ccuerda, line width=0.3pt] (-34,243) .. controls (-26,248) and (-20,244) .. (-14,247)
+        (34,244) .. controls (26,248) and (20,243) .. (14,247);
+  \filldraw[act] (-11,241) rectangle (11,248);      % carro del pasador
+  \node[font=\tiny, cfreno] at (0,244.5) {carro};
+
+  % ---------------- cubo giratorio Ø44 (z = 225 a 240) con bisagras a z = 231
+  \secR{(-22,225.5)}{(-8,240)}
+  \secR{(8,225.5)}{(22,240)}
+  \foreach \yb in {226.5,234}{
     \draw[black, fill=white, line width=0.4pt] (-8,\yb) rectangle (-4,\yb+5);
-    \draw[black, fill=white, line width=0.4pt] (4,\yb) rectangle (8,\yb+5);
-    \fill[cgris] (-6,\yb+2.5) circle (1.3); \fill[cgris] (6,\yb+2.5) circle (1.3);}
-  % brazos a las bisagras
-  \secR{(-46.5,209)}{(-22,217)}
-  \secR{(22,209)}{(46.5,217)}
-  \fill[black] (-45.2,213) circle (1.1);
-  \fill[black] ( 45.2,213) circle (1.1);
+    \draw[black, fill=white, line width=0.4pt] (4,\yb) rectangle (8,\yb+5);}
+  % brazos a las bisagras (e = 44)
+  \secR{(-46.5,227)}{(-22,235)}
+  \secR{(22,227)}{(46.5,235)}
+  \fill[black] (-44,231) circle (1.5);
+  \fill[black] ( 44,231) circle (1.5);
   % imán y sensor hall
-  \fill[black] (14,205.5) rectangle (17,207);
-  \filldraw[fijo] (13.5,197) rectangle (17.5,199);
+  \fill[black] (14,225.5) rectangle (17,227);
+  \filldraw[fijo] (13.5,218) rectangle (17.5,222);
 
-  % ---------------- palas plegadas
-  \filldraw[rot] (-45.6,57) rectangle (-44.6,211);
-  \filldraw[rot] ( 44.6,57) rectangle ( 45.6,211);
+  % ---------------- palas plegadas (cuelgan de z = 231 a 25)
+  \filldraw[rot] (-41.9,25) rectangle (-40.9,231);
+  \filldraw[rot] ( 40.9,25) rectangle ( 41.9,231);
   % portapalas
-  \filldraw[rot] (-46.8,192) rectangle (-44.3,211);
-  \filldraw[rot] ( 44.3,192) rectangle ( 46.8,211);
+  \filldraw[rot] (-46.0,206) rectangle (-41.2,233);
+  \filldraw[rot] ( 41.2,206) rectangle ( 46.0,233);
 
-  % ---------------- traba: pernos de punta y anillo interno
-  \filldraw[black] (-45.4,59.2) rectangle (-39,60.8);
-  \filldraw[black] (39,59.2) rectangle (45.4,60.8);
-  \filldraw[act] (-42,52) rectangle (-37,68);
-  \filldraw[act] (37,52) rectangle (42,68);
-  \filldraw[act] (-13,44) rectangle (13,66);
-  \node[font=\tiny, cfreno] at (0,55) {SERVO};
-  \draw[cfreno, line width=0.8pt] (0,66) -- (0,69) -- (-37,69);
+  % ---------------- traba: pestañas de punta y anillo interno
+  \filldraw[black] (-41.9,25) rectangle (-36,26.6);
+  \filldraw[black] (36,25) rectangle (41.9,26.6);
+  \filldraw[act] (-37.6,26.6) rectangle (-33,42);
+  \filldraw[act] (33,26.6) rectangle (37.6,42);
+  \filldraw[act] (-12,28) rectangle (12,52);
+  \node[font=\tiny, cfreno] at (0,40) {SERVO 1};
+  \draw[cfreno, line width=0.8pt] (0,52) -- (0,55) -- (-33,55) -- (-33,42);
 
-  % ---------------- batería, electrónica
-  \draw[fijo] (-9,72) rectangle (9,137);
-  \node[font=\tiny, cfijo, rotate=90] at (0,104.5) {18650 Li-ion};
-  \foreach \yp in {146,158,170}{ \draw[ccuerda!60!black, line width=1.2pt] (-38,\yp) -- (38,\yp);}
-  \foreach \xs in {-34,34}{ \draw[cgris, line width=0.6pt] (\xs,140) -- (\xs,172);}
-  \node[font=\tiny, fill=white, inner sep=0.5pt] at (-17,152) {MCU · radio · GPS};
-  \node[font=\tiny, fill=white, inner sep=0.5pt] at (-17,164) {IMU · barómetro · SD};
-  \node[font=\tiny, fill=white, inner sep=0.5pt] at (-20,141.5) {potencia · corriente};
-  % cámara cenit (fuera del plano, a 45°)
-  \draw[cfijo, densely dashed] (24,188) rectangle (34,199);
-  \draw[cfijo, densely dashed] (26,199) rectangle (32,201);
-  % baliza, lastre, cámara nadir
-  \filldraw[fijo] (-30,3) rectangle (-18,16);
-  \node[font=\tiny, cfijo] at (-24,9.5) {cám.};
-  \filldraw[fijo] (12,3) rectangle (30,14);
-  \node[font=\tiny, cfijo] at (21,8.5) {baliza};
-  \fill[cgris!50] (-36,20) rectangle (36,30);
-  \node[font=\tiny] at (0,25) {lastre};
-  % interruptor (oculto, en hueco)
-  \draw[cfijo, densely dashed] (-44,116) rectangle (-42,124);
+  % ---------------- batería, lastre, baliza
+  \draw[fijo] (-9,58) rectangle (9,123);
+  \node[font=\tiny, cfijo, rotate=90] at (0,90.5) {18650 Li-ion};
+  \fill[cgris!50] (-20,55.5) rectangle (20,57.5);
+  \draw[fijo] (14,60) rectangle (30,72);
+  \node[font=\tiny] at (22,66) {baliza};
+  % ---------------- pila de electrónica
+  \foreach \yp in {135,150,165,180,195,210}{ \draw[ccuerda!60!black, line width=1.2pt] (-36,\yp) -- (36,\yp);}
+  \foreach \xs in {-33,33}{ \draw[cgris, line width=0.6pt] (\xs,132) -- (\xs,212);}
+  \node[font=\tiny, fill=white, inner sep=0.5pt, anchor=west] at (-32,141) {potencia · INA219 · reloj};
+  \node[font=\tiny, fill=white, inner sep=0.5pt, anchor=west] at (-32,156) {MCU · radio · FRAM};
+  \node[font=\tiny, fill=white, inner sep=0.5pt, anchor=west] at (-32,171) {IMU · baró. · magnet.};
+  \node[font=\tiny, fill=white, inner sep=0.5pt, anchor=west] at (-32,186) {GPS · SD};
+  % servo 2 del pasador y varilla por el eje
+  \filldraw[act] (-34,196) rectangle (-12,208);
+  \node[font=\tiny, cfreno] at (-23,202) {SERVO 2};
+  \draw[cfreno, densely dashed, line width=0.6pt] (-12,202) -- (-2,202) -- (-2,241);
+  % cámara cenit (fuera del plano)
+  \draw[cfijo, densely dashed] (22,196) rectangle (34,207);
+  % cámara nadir, antena y baliza en la banda inferior
+  \filldraw[fijo] (-9,3) rectangle (9,15);
+  \node[font=\tiny, cfijo] at (0,9) {cám.};
+  \draw[ccont, line width=1pt, decorate, decoration={coil, aspect=0.5, segment length=1.4mm, amplitude=1.1mm}] (-22,3) -- (-22,23);
+  % interruptor (oculto, en el hueco entre palas)
+  \draw[cfijo, densely dashed] (-40.5,116) rectangle (-38.5,124);
 
   % ---------------- cuerda del drogue
-  \draw[cuerda] (0,262) -- (0,182);
-  \draw[cuerda] (0,180.5) circle (1.6);
+  \draw[cuerda] (0,262) -- (0,248);
+  \draw[cuerda] (0,248) -- (-3,246);
 
   % ---------------- cotas
   \draw[cota] (-62,0) -- (-62,250) node[midway, fill=white, font=\scriptsize, rotate=90] {250 (\Req{S3})};
-  \draw[cgris, line width=0.3pt] (-64,0) -- (-44,0) (-64,250) -- (-22,250);
-  \draw[cota] (-54,57) -- (-54,213) node[midway, fill=white, font=\scriptsize, rotate=90] {pala 156};
-  \draw[cgris, line width=0.3pt] (-56,57) -- (-45.6,57) (-56,213) -- (-46.5,213);
-  \draw[cota] (-47.5,-14) -- (47.5,-14) node[midway, fill=white, font=\scriptsize] {Ø\,95 (\Req{S2})};
-  \draw[cota] (-44,-7) -- (44,-7) node[midway, fill=white, font=\scriptsize] {Ø\,88};
-  \draw[cgris, line width=0.3pt] (-47.5,-16) -- (-47.5,-3) (47.5,-16) -- (47.5,-3);
-  \draw[cgris, line width=0.3pt] (-44,-9) -- (-44,0) (44,-9) -- (44,0);
-  \node[font=\scriptsize, anchor=east] at (-48.5,60) {60};
-  \node[font=\scriptsize, anchor=east] at (-48.5,213) {213};
+  \draw[cgris, line width=0.3pt] (-64,0) -- (-45,0) (-64,250) -- (-37.5,250);
+  \draw[cota] (-54,25) -- (-54,231) node[midway, fill=white, font=\scriptsize, rotate=90] {pala 206};
+  \draw[cgris, line width=0.3pt] (-56,25) -- (-42,25) (-56,231) -- (-46.5,231);
+  \draw[cota] (-45,-14) -- (45,-14) node[midway, fill=white, font=\scriptsize] {Ø\,90 (\Req{S2})};
+  \draw[cota] (-40.5,-7) -- (40.5,-7) node[midway, fill=white, font=\scriptsize] {Ø\,81};
+  \draw[cgris, line width=0.3pt] (-45,-16) -- (-45,-3) (45,-16) -- (45,-3);
+  \draw[cgris, line width=0.3pt] (-40.5,-9) -- (-40.5,0) (40.5,-9) -- (40.5,0);
+  \node[font=\scriptsize, anchor=east] at (-48.5,25) {25};
+  \node[font=\scriptsize, anchor=east] at (-48.5,231) {231};
 
   % ---------------- llamadas
   \call{(0,255)}{70,262}{1}
-  \call{(14,240)}{70,250}{2}
-  \call{(5,223.5)}{70,238}{3}
-  \call{(18,219)}{70,226}{4}
-  \call{(45.2,213)}{70,214}{6}
-  \call{(6,209.5)}{70,202}{5}
-  \call{(15.5,198)}{70,190}{10}
-  \call{(46.2,194)}{70,178}{7}
-  \call{(30,192)}{70,166}{11}
-  \call{(45.1,150)}{70,150}{8}
-  \call{(43.5,100)}{70,100}{9}
-  \call{(43,60)}{70,64}{14}
-  \call{(10,55)}{70,52}{15}
-  \call{(25,10)}{70,12}{17}
-  \call{(-1,180.5)}{-80,190}{12}
-  \call{(-43,120)}{-80,130}{19}
+  \call{(14,244)}{70,250}{2}
+  \call{(3,232)}{70,238}{3}
+  \call{(18,230)}{70,226}{4}
+  \call{(6,231)}{70,214}{5}
+  \call{(44,231)}{70,202}{6}
+  \call{(44,212)}{70,190}{7}
+  \call{(41.4,150)}{70,176}{8}
+  \call{(39.5,100)}{70,100}{9}
+  \call{(16,226)}{70,164}{10}
+  \call{(28,201)}{70,152}{11}
+  \call{(-2,222)}{-80,200}{12}
   \call{(-5,110)}{-80,110}{13}
-  \call{(-15,25)}{-80,25}{16}
-  \call{(-24,8)}{-80,8}{18}
+  \call{(41,25.8)}{70,64}{14}
+  \call{(10,40)}{70,40}{15}
+  \call{(-12,56.5)}{-80,56}{16}
+  \call{(26,66)}{70,76}{17}
+  \call{(-4,9)}{-80,10}{18}
+  \call{(-38.5,100)}{-80,128}{19}
+  \call{(41.2,10)}{70,14}{20}
+  \call{(-35,12)}{-80,26}{21}
+  \call{(-38.3,20)}{-80,36}{22}
+  \call{(-22,18)}{-80,2}{23}
 \end{tikzpicture}
-\caption{Plano 1: conjunto plegado, configuración A, corte longitudinal por el plano de
-dos palas opuestas (escala aproximada 3:4). Las referencias se listan en la
-tabla~\ref{tab:ref-p1}.}
+\caption{Plano 1: conjunto plegado, Arquitectura~1 (versión~2), corte longitudinal por el plano de
+dos palas opuestas (escala aproximada 3:4). Las palas de \SI{206}{mm} cuelgan de las bisagras
+(z\,=\,\SI{231}{mm}) hasta las pestañas de la traba (z\,=\,\SI{25}{mm}); debajo, la banda de
+\SI{25}{mm} del anillo de espuma aloja las aletas plegadas, la cámara nadir y la antena. La
+ubicación del servo~2 y de la varilla del pasador es esquemática (a confirmar en CAD). Las
+referencias se listan en la tabla~\ref{tab:ref-p1}.}
 \label{fig:plano1}
 \end{figure}
 
 \begin{table}[H]
 \centering\small
-\caption{Referencias del plano 1.}\label{tab:ref-p1}
+\caption{Referencias del plano 1 (versión~2).}\label{tab:ref-p1}
 \begin{tabularx}{\textwidth}{@{}clY@{}}
 \toprule
 \textbf{N.º} & \textbf{Pieza} & \textbf{Especificación}\\\midrule
 1 & Cuerda del drogue & Dyneema Ø\,\SI{1.5}{mm}; destorcedor a \SI{1.5}{m}\\
-2 & Copa del drogue (contenedor mínimo) & PETG, Ø\,44 × 25, fija al eje; drogue Ø\,25 plegado\\
-3 & Tuerca de retención & M8 × 0,75 fina, con traba química; tope superior del cubo\\
-4 & Cubo giratorio & PETG o nylon, Ø\,44, 4 brazos a las bisagras\\
+2 & Copa aplanada del drogue & PETG, Ø\,75 $\times$ \SI{10}{mm}, fija al eje; con el drogue plegado y el carro del pasador (llenado estimado \SI{59}{\percent})\\
+3 & Eje fijo y tuerca de retención & Eje macizo Ø\,8 sin cuerda; tuerca M8 × 0,75 fina con traba química\\
+4 & Cubo giratorio & PETG o nylon, Ø\,44, 4 brazos a las bisagras (z\,=\,\SI{231}{mm})\\
 5 & Rodamientos & 2 × 688ZZ (8 × 16 × 5), separados \SI{3}{mm}\\
-6 & Bisagra de batimiento & Pasador de acero Ø\,2, resorte de torsión \SI{0.005}{N.m}\\
-7 & Portapala & Impreso, paso fijado ($\ang{-6}$ a $\ang{0}$), con llave de orientación\\
-8 & Pala & Placa de carbono curvada 7\,\%, $156\times45\times0{,}5$\\
-9 & Pared del cuerpo & PETG Ø\,88, pared \SI{2}{mm} (\Req{S6})\\
+6 & Bisagra de batimiento & Pasador de acero Ø\,3 m6, oreja a \SI{4}{mm} del borde (capítulo~\ref{cap:estructura}); resorte de torsión\\
+7 & Portapala & Impreso, paso fijado, con llave de orientación; ojo Ø\,3,1\\
+8 & Pala & Placa de carbono curvada 7\,\%, $206\times45\times0{,}5$\\
+9 & Pared del cuerpo & PETG Ø\,81, pared \SI{2}{mm} (\Req{S6})\\
 10 & Sensor de rpm & Imán de neodimio Ø\,3 en el cubo + sensor hall en la tapa\\
 11 & Cámara cenit & Fuera del eje, en un hueco entre palas, inclinada \ang{15} hacia afuera\\
-12 & Eje y anclaje & Tubo de aluminio Ø\,8 × 5 fijo; argolla en el travesaño\\
+12 & Servo 2 y varilla del pasador & MG90S en la pila de electrónica; varilla que atraviesa la tapa hasta el carro (a confirmar en CAD)\\
 13 & Batería & 18650 Li-ion en portapila con brida (\Req{E2}, \Req{S8})\\
-14 & Pestañas de punta & Acero inoxidable \SI{0.5}{mm} con ojal; entran por ranuras de $3\times1$ y las retienen los dientes del anillo interno\\
-15 & Anillo de traba y servo & Anillo interno con 4 dientes tangenciales; micro servo (MG90S, engranajes metálicos) que lo gira \ang{15}\\
-16 & Lastre & Disco de acero o plomo, ajusta la masa a \SI{500}{g}\\
+14 & Pestañas de punta & Acero inoxidable \SI{0.5}{mm} con ojal; entran por ranuras de $3\times1$ en $z=\SI{25}{mm}$ y las retienen los dientes del anillo interno\\
+15 & Anillo de traba y servo 1 & Anillo interno con 4 dientes tangenciales; micro servo MG90S que lo gira \ang{15}\\
+16 & Lastre & Disco de acero o plomo, ajusta la masa a \SI{500}{g} (\SI{3}{g} con los cambios; sección~\ref{sec:arq-integracion})\\
 17 & Baliza & Zumbador con pila propia (\Req{C8})\\
-18 & Cámara nadir & En la tapa inferior, mirando abajo (\Req{C7})\\
+18 & Cámara nadir & Mirando abajo por el hueco de Ø\,58 del anillo de espuma (\Req{C7})\\
 19 & Interruptores & Orificios de \SI{8}{mm} en los huecos entre palas (\Req{E4}, \Req{E5}, \Req{E9})\\
+20 & Aletas antigiro (4) & $40\times\SI{25}{mm}$, plegadas en bolsillos de \SI{1.5}{mm} del anillo de espuma; resorte de torsión; calaje \ang{1.7}\\
+21 & Anillo de espuma de aterrizaje & EPP o TPU, Ø\,81/58 $\times$ \SI{25}{mm}, bajo la tapa inferior\\
+22 & Dientes de alambre (4 más) & Prolongan el anillo de traba hasta la banda y retienen el borde libre de cada aleta\\
+23 & Antena & Hélice compacta en la zona libre de $z<\SI{25}{mm}$ (capítulo~\ref{cap:electronica})\\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -203,80 +221,75 @@ tabla~\ref{tab:ref-p1}.}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.36mm, y=0.36mm]
-  % ---- vista lateral
-  \draw[eje] (0,-10) -- (0,330);
-  % drogue con corte de cuerda
-  \draw[cuerda, fill=ccuerda!12] (-125,300) .. controls (-90,345) and (90,345) .. (125,300)
-       .. controls (60,290) and (-60,290) .. (-125,300);
-  \foreach \x in {-125,-62,0,62,125}{\draw[ccuerda, line width=0.3pt] (\x,300) -- (0,262);}
-  \fill[ccuerda] (0,262) circle (2.2);
-  \draw[cuerda] (0,262) -- (0,246);
-  \draw[cuerda] (0,238) -- (0,222);
-  \draw[black] (-6,243) -- (6,249) (-6,235) -- (6,241);
-  \node[font=\scriptsize, anchor=west] at (8,242) {cuerda \SI{1.5}{m} (cortada)};
-  \node[font=\scriptsize, anchor=west] at (128,305) {drogue Ø\,250};
-  % copa y cubo
-  \filldraw[fijo] (-22,195) rectangle (22,222);
-  \filldraw[rot] (-22,178) rectangle (22,195);
-  % palas con conicidad 4,4°
-  \filldraw[rot] (-44,186) -- (-200,198) -- (-200,201) -- (-44,189) -- cycle;
-  \filldraw[rot] (44,186) -- (200,198) -- (200,201) -- (44,189) -- cycle;
-  \draw[cgris] (90,186) -- (200,186);
-  \draw[cgris] (150,186) arc (0:4.4:106);
-  \node[font=\scriptsize, anchor=west] at (152,180) {$\beta_0\approx\ang{4.4}$};
-  % cuerpo
-  \filldraw[fijo] (-44,-27) rectangle (44,178);
-  \node[font=\scriptsize, cfijo, rotate=90] at (0,75) {cuerpo Ø\,88};
-  % aletas antigiro opcionales
-  \filldraw[fijo] (-44,-27) -- (-58,-27) -- (-44,5) -- cycle;
-  \filldraw[fijo] (44,-27) -- (58,-27) -- (44,5) -- cycle;
+\begin{tikzpicture}[x=0.30mm, y=0.30mm]
+  % ---- vista lateral (etapa 2: el drogue ya se soltó)
+  \draw[eje] (0,-10) -- (0,265);
+  % copa aplanada y cubo
+  \filldraw[fijo] (-37.5,240) rectangle (37.5,250);
+  \filldraw[rot] (-22,225) rectangle (22,240);
+  % palas con conicidad 4,2° desde las bisagras (z = 231, e = 44)
+  \filldraw[rot] (-44,231) -- (-250,246) -- (-250,248.5) -- (-44,233.5) -- cycle;
+  \filldraw[rot] (44,231) -- (250,246) -- (250,248.5) -- (44,233.5) -- cycle;
+  \draw[cgris] (90,231) -- (250,231);
+  \draw[cgris] (190,231) arc (0:4.2:190);
+  \node[font=\scriptsize, anchor=west] at (194,222) {$\beta_0\approx\ang{4.2}$};
+  % cuerpo Ø81
+  \filldraw[fijo] (-40.5,0) rectangle (40.5,225);
+  \node[font=\scriptsize, cfijo, rotate=90] at (0,110) {cuerpo Ø\,81};
+  % anillo de espuma y aletas abiertas (calaje 1,7°)
+  \filldraw[cgris!40] (-40.5,0) rectangle (40.5,25);
+  \filldraw[cfijo!70] (40.5,0) -- (80.5,0) -- (80.5,25) -- (40.5,25) -- cycle;
+  \filldraw[cfijo!70] (-40.5,0) -- (-80.5,0) -- (-80.5,25) -- (-40.5,25) -- cycle;
+  \node[font=\scriptsize, cfijo, anchor=west] at (84,12) {aletas $40\times25$};
   % cotas
-  \draw[cota] (-200,-50) -- (200,-50) node[midway, fill=white, font=\scriptsize] {Ø\,400 ($R=200$, versión~1; en la v2 es Ø\,500, $R=250$)};
-  \draw[cgris, line width=0.3pt] (-200,-53) -- (-200,197) (200,-53) -- (200,197);
-  \draw[cota] (44,165) -- (200,165) node[midway, fill=white, font=\scriptsize] {156};
-  \draw[cota] (0,150) -- (44,150) node[midway, fill=white, font=\scriptsize] {$e=44$};
+  \draw[cota] (-250,-30) -- (250,-30) node[midway, fill=white, font=\scriptsize] {Ø\,500 ($R=250$)};
+  \draw[cgris, line width=0.3pt] (-250,-33) -- (-250,244) (250,-33) -- (250,244);
+  \draw[cota] (44,262) -- (250,262) node[midway, fill=white, font=\scriptsize] {206};
+  \draw[cota] (0,275) -- (44,275) node[midway, fill=white, font=\scriptsize] {$e=44$};
   % flechas
-  \draw[flecha, cgris] (-170,120) -- (-170,40); \node[font=\scriptsize, align=right, anchor=east] at (-176,80) {descenso\\ $\approx$\SI{6.4}{m/s}};
-  \draw[flecha, cfijo!70] (-120,40) -- (-120,120);
-  \draw[flecha, cfijo!70] (120,40) -- (120,120);
-  \node[font=\scriptsize, cfijo, anchor=west] at (124,80) {aire relativo};
-  \draw[crot, -{Latex}, line width=0.8pt] (110,214) arc (60:120:220 and 30);
-  \node[font=\scriptsize, crot] at (0,232) {};
-  \node[font=\scriptsize, crot, anchor=south] at (160,206) {$\approx$\,1150 rpm};
+  \draw[flecha, cgris] (-215,180) -- (-215,100); \node[font=\scriptsize, align=left, anchor=west] at (-208,140) {descenso\\ $\approx$\SI{6.4}{m/s}};
+  \draw[flecha, cfijo!70] (-120,100) -- (-120,180);
+  \draw[flecha, cfijo!70] (120,100) -- (120,180);
+  \node[font=\scriptsize, cfijo, anchor=west] at (124,140) {aire relativo};
+  \node[font=\scriptsize, crot, anchor=north] at (150,226) {$\approx$\,1230 rpm};
 \end{tikzpicture}
 
-\caption{Plano 2a: conjunto desplegado, vista lateral (escala aproximada 1:3). La
-cuerda del drogue está cortada; su largo real es \SI{1.5}{m}.}
+\caption{Plano 2a: conjunto desplegado en la etapa~2 (drogue soltado), vista lateral (escala
+aproximada 1:3,3). La copa vacía queda sobre el cubo.}
 \label{fig:plano2}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.3mm, y=0.3mm]
+\begin{tikzpicture}[x=0.26mm, y=0.26mm]
   % ---- vista superior (planta)
-  \draw[crot, densely dashed] (0,0) circle (200);
-  \draw[cgris, densely dashed] (0,0) circle (47.5);
+  \draw[crot, densely dashed] (0,0) circle (250);
+  \draw[cgris, densely dashed] (0,0) circle (45);
   \foreach \a in {0,90,180,270}{
     \begin{scope}[rotate=\a]
-      \filldraw[rot] (44,-22.5) rectangle (200,22.5);
-      \draw[crot, line width=1.2pt] (44,22.5) -- (200,22.5);   % borde de ataque
+      \filldraw[rot] (44,-22.5) rectangle (250,22.5);
+      \draw[crot, line width=1.2pt] (44,22.5) -- (250,22.5);   % borde de ataque
       \filldraw[rot] (22,-6) rectangle (46,6);
+    \end{scope}}
+  % aletas abiertas, a 45° de las palas
+  \foreach \a in {45,135,225,315}{
+    \begin{scope}[rotate=\a]
+      \draw[cfijo, line width=0.9pt] (40.5,-0.5) rectangle (80.5,0.5);
     \end{scope}}
   \filldraw[rot] (0,0) circle (22);
   \filldraw[fijo] (0,0) circle (4);
-  \fill[ccuerda] (0,0) circle (1.6);
-  \draw[crot, -{Latex}, line width=0.9pt] (150,150) arc (45:75:212);
-  \node[font=\scriptsize, crot, anchor=south west, align=left] at (150,152) {giro antihorario\\ visto desde arriba};
-  \node[font=\scriptsize, anchor=west, align=left] at (150,-150) {borde de ataque\\(línea gruesa)};
-  \draw[ref] (150,-140) -- (175,22.5);
+  \draw[crot, -{Latex}, line width=0.9pt] (190,190) arc (45:75:268);
+  \node[font=\scriptsize, crot, anchor=south west, align=left] at (190,192) {giro antihorario\\ visto desde arriba};
+  \node[font=\scriptsize, anchor=west, align=left] at (190,-190) {borde de ataque\\(línea gruesa)};
+  \draw[ref] (190,-180) -- (215,22.5);
   \draw[cota] (44,-40) -- (44,40);
-  \node[font=\scriptsize, fill=white] at (120,-38) {cuerda 45};
-  \draw[cota] (120,-22.5) -- (120,22.5);
-  \node[font=\scriptsize, cgris, anchor=north] at (0,-50) {Ø\,95};
+  \node[font=\scriptsize, fill=white] at (140,-38) {cuerda 45};
+  \draw[cota] (140,-22.5) -- (140,22.5);
+  \node[font=\scriptsize, cfijo, anchor=north west] at (60,-60) {aletas};
+  \node[font=\scriptsize, cgris, anchor=north] at (0,-62) {Ø\,90};
 \end{tikzpicture}
-\caption{Plano 2b: rotor desplegado, planta (escala aproximada 1:3,5). La línea gruesa
-de cada pala es el borde de ataque.}
+\caption{Plano 2b: rotor desplegado, planta (escala aproximada 1:3,8). La línea gruesa
+de cada pala es el borde de ataque; las aletas abren a \ang{45} de las palas.}
 \label{fig:plano2b}
 \end{figure}
 
@@ -286,44 +299,45 @@ de cada pala es el borde de ataque.}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=0.9mm, y=0.9mm]
-  % envolvente
-  \draw[cgris, densely dashed] (0,0) circle (47.5);
-  % pared del cuerpo
-  \fill[ffijo] (0,0) circle (44);
-  \fill[white] (0,0) circle (42);
-  \fill[pattern=north east lines, pattern color=cfijo!80, even odd rule] (0,0) circle (44) (0,0) circle (42);
-  \draw[cfijo, line width=0.7pt] (0,0) circle (44) (0,0) circle (42);
-  % palas curvadas (cara cóncava hacia adentro)
+  % envolvente Ø90
+  \draw[cgris, densely dashed] (0,0) circle (45);
+  % pared del cuerpo Ø81, pared 2
+  \fill[ffijo] (0,0) circle (40.5);
+  \fill[white] (0,0) circle (38.5);
+  \fill[pattern=north east lines, pattern color=cfijo!80, even odd rule] (0,0) circle (40.5) (0,0) circle (38.5);
+  \draw[cfijo, line width=0.7pt] (0,0) circle (40.5) (0,0) circle (38.5);
+  % palas curvadas, apoyadas en el cuerpo (cara exterior de la pala a 41,0 mm en el centro)
   \foreach \a in {90,180,270,360}{
     \begin{scope}[rotate=\a-90]
-      \draw[crot, line width=1.6pt] (0,-36.9) ++(74.05:81.9) arc (74.05:105.95:81.9);
+      \draw[crot, line width=1.6pt] (0,-40.9) ++(74.05:81.9) arc (74.05:105.95:81.9);
     \end{scope}}
   % batería
   \filldraw[fijo] (0,0) circle (9);
   \node[font=\scriptsize, cfijo] at (0,0) {18650};
   % elementos en los huecos a 45°
   \foreach \a/\t in {45/interr., 135/panel, 225/panel, 315/interr.}{
-    \node[font=\tiny, rotate=\a-90] at (\a:38) {\t};}
-  \foreach \a in {45,315}{ \fill[white] (\a:42) circle (2.2); \draw[cfijo] (\a:42) circle (2.2);}
-  \foreach \a in {135,225}{ \draw[ccuerda!60!black, line width=1.5pt] (\a-8:44.6) arc (\a-8:\a+8:44.6);}
-  % cotas angulares
-  \draw[cgris] (61.95:20) -- (61.95:52) (118.05:20) -- (118.05:52);
-  \draw[cota] (61.95:50) arc (61.95:118.05:50);
-  \node[font=\scriptsize, fill=white] at (90:53) {\ang{56.5}};
-  \draw[cgris] (28.05:20) -- (28.05:52);
-  \draw[cota] (28.05:50) arc (28.05:61.95:50);
-  \node[font=\scriptsize, fill=white] at (45:54) {\ang{33.5}};
-  \draw[cota] (-47.5,-55) -- (47.5,-55) node[midway, fill=white, font=\scriptsize] {Ø\,95};
-  \draw[cota] (-44,-50) -- (44,-50) node[midway, fill=white, font=\scriptsize] {Ø\,88};
-  \draw[cgris, line width=0.3pt] (-47.5,-57) -- (-47.5,0) (47.5,-57) -- (47.5,0) (-44,-52) -- (-44,0) (44,-52) -- (44,0);
+    \node[font=\tiny, rotate=\a-90] at (\a:34) {\t};}
+  \foreach \a in {45,315}{ \fill[white] (\a:39.5) circle (2.2); \draw[cfijo] (\a:39.5) circle (2.2);}
+  \foreach \a in {135,225}{ \draw[ccuerda!60!black, line width=1.5pt] (\a-8:41.5) arc (\a-8:\a+8:41.5);}
+  % cotas angulares: cada pala abarca ±30,7° (borde a 44,03 mm del eje)
+  \draw[cgris] (59.3:20) -- (59.3:51) (120.7:20) -- (120.7:51);
+  \draw[cota] (59.3:49) arc (59.3:120.7:49);
+  \node[font=\scriptsize, fill=white] at (90:52) {\ang{61.4}};
+  \draw[cgris] (30.7:20) -- (30.7:51);
+  \draw[cota] (30.7:49) arc (30.7:59.3:49);
+  \node[font=\scriptsize, fill=white] at (45:53) {\ang{28.6}};
+  \draw[cota] (-45,-55) -- (45,-55) node[midway, fill=white, font=\scriptsize] {Ø\,90};
+  \draw[cota] (-40.5,-50) -- (40.5,-50) node[midway, fill=white, font=\scriptsize] {Ø\,81};
+  \draw[cgris, line width=0.3pt] (-45,-57) -- (-45,0) (45,-57) -- (45,0) (-40.5,-52) -- (-40.5,0) (40.5,-52) -- (40.5,0);
   \node[font=\scriptsize, crot, anchor=west] at (50,20) {pala: cara cóncava};
   \node[font=\scriptsize, crot, anchor=west] at (50,15) {hacia el cuerpo};
-  \draw[ref] (49.5,18) -- (46,8);
+  \draw[ref] (49.5,18) -- (43,8);
 \end{tikzpicture}
 \caption{Plano 3: corte A--A a media altura con las palas plegadas (escala aproximada
-1:1). Cada pala ocupa \ang{56.5}; en los cuatro huecos de \ang{33.5} van los
-interruptores (\Req{E4}, \Req{E5}) y los paneles solares (\Req{E3}). Los bordes de las
-palas tocan la envolvente de Ø\,95 sin excederla.}
+1:1). Cada pala ocupa \ang{61.4}; en los cuatro huecos de \ang{28.6} van los
+interruptores (\Req{E4}, \Req{E5}) y los paneles solares (\Req{E3}). La pala apoya en el cuerpo de
+Ø\,81 y su borde queda a \SI{44.03}{mm} del eje, \SI{0.97}{mm} dentro de la envolvente de Ø\,90
+(capítulo~\ref{cap:fabricacion}).}
 \label{fig:plano3}
 \end{figure}
 

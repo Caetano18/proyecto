@@ -26,11 +26,11 @@ bom = [
  ('R', 'Rodamiento 688ZZ (2 de vuelo + 2 de repuesto)', 4, 1.0, 2, 4),
  ('R', 'Tubo de aluminio 6061 Ø8x5 (300 mm)', 1, 0.0, 3, 6),
  ('R', 'Tuerca M8x0,75 baja y arandelas', 2, 1.5, 1, 2),
- ('R', 'Pasador de acero Ø2 m6 (varilla plata) x8', 1, 0.0, 2, 4),
+ ('R', 'Pasador de acero Ø3 m6 (varilla plata) x8 (4 de vuelo + 4 de repuesto)', 1, 0.0, 2, 4),   # v2: Ø3 (antes Ø2); precio supuesto igual
  ('R', 'Chapa de inox. 0,5 mm (100x100) y alambre de piano Ø1', 1, 0.0, 3, 6),
  ('R', 'Resorte de torsión 0,005 N m (x6)', 1, 0.0, 3, 8),
  ('R', 'Imán NdFeB Ø3x1 y sensor hall', 1, 0.0, 2, 4),
- ('R', 'Micro servo MG90S (1 + 1 repuesto)', 2, 13.4, 5, 10),
+ ('R', 'Micro servos MG90S de engranajes metálicos: anillo de traba y pasador del drogue (2)', 2, 13.4, 5, 10),
  ('R', 'Adhesivos: epoxi estructural, retención, cianoacrilato', 1, 0.0, 15, 30),
  ('E', 'Filamento PETG 1 kg (todas las piezas impresas)', 1, 0.0, 18, 30),
  ('E', 'Insertos de latón M2/M2,5 y tornillería', 1, 0.0, 6, 12),
@@ -81,17 +81,19 @@ with open(os.path.join(D, 'fabricacion_bom.dat'), 'w') as f:
 # ---------------------------------------------------------------- masa de la cabeza del rotor
 # Estimaciones geométricas (densidades nominales); no son pesadas.
 rho_al, rho_st = 2.70e-3, 7.85e-3          # g/mm3
-eje = np.pi/4*(8**2-5**2)*67*rho_al
+L_EJE = 45                                   # mm, v2: sin travesaño ni guía de cuerda (antes 67); a confirmar en CAD
+M_PIN3 = np.pi/4*3**2*11*rho_st             # pasador Ø3 x 11 de acero
+eje = np.pi/4*(8**2-5**2)*L_EJE*rho_al
 nut = lambda rho: (0.866*13**2 - np.pi/4*8**2)*4*rho   # tuerca baja M8, entre caras 13, alto 4
 mrot = {
  'Palas con portapala, varilla y pestaña (4)': 4*9.5,
  'Cubo con almohadillas, imán y contrapeso': 12.0,
  'Rodamientos 688ZZ (2)': 2*3.5,
- 'Eje Al 6061 Ø8x5x67': eje,
+ f'Eje Al 6061 Ø8x5x{L_EJE}': eje,
  'Tuerca de retención M8x0,75 (acero)': nut(rho_st),
  'Contratuerca y tuerca de copa (aluminio)': 2*nut(rho_al),
  'Collar, separador y arandela': 1.5,
- 'Pasadores Ø2 (4), resortes (4), sensor hall': 4*0.27 + 4*0.12 + 0.3,
+ 'Pasadores Ø3 (4), resortes (4), sensor hall': 4*M_PIN3 + 4*0.12 + 0.3,
 }
 tot = 0
 for k, v in mrot.items():

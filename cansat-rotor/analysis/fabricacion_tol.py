@@ -266,6 +266,14 @@ else:
     print('Barrido de T_s (alabeo 0,15 / 0,30): margen 3 sigma, peor caso, P [%]')
     for r_ in rows[::3]:
         print('  ', ' '.join(f'{v:8.4f}' for v in r_))
+    # tolerancia de flecha máxima con la que el peor caso (suma lineal) todavía cierra (m >= 0)
+    for ta in (0.15, 0.30):
+        lo, hi = 0.0, 2.0
+        for _ in range(60):
+            mid = 0.5*(lo+hi)
+            f0_, wc_, _, _ = lin_B2(mid, ta)
+            lo, hi = (mid, hi) if f0_ - wc_ >= 0 else (lo, mid)
+        print(f'T_s máxima con cierre en peor caso, alabeo +-{ta}: +-{lo:.3f} mm')
 
 # ---------------------------------------------------------------- C. traba
 # Radial (solo para insertar sin forzar): ojal de 1,70 con alambre Ø1,00 -> 0,35 por lado.
