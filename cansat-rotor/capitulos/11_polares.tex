@@ -31,8 +31,10 @@ polares extendidas a $\pm\ang{180}$ que necesita la teoría de elemento de pala 
         $\theta\le\ang{-3}$ la sección neutra cae dentro del salto inferior, y las rpm
         quedan entre \num{1600} y \num{1900}. La BEMT debe confirmar o corregir estos
         valores.
-  \item Polar para la BEMT: \texttt{analysis/data/polares\_ext\_placa7\_Re50.dat} (caso
-        base), con \texttt{\_Re75} y la polar $N_{\text{crit}}=5$ como sensibilidad.
+  \item Polares para la BEMT: la familia
+        \texttt{analysis/data/polares\_ext\_placa7\_Re\{20,35,50,75,100\}.dat}, interpolada en
+        $\ln Re$ (caso base del capítulo~\ref{cap:bemt}); \texttt{\_Re50} sola y la polar
+        $N_{\text{crit}}=5$ como sensibilidad.
 \end{itemize}
 \end{resultado}
 
@@ -51,7 +53,8 @@ La sección~\ref{sec:polares-espesor} agrega el efecto de dar espesor al perfil,
 %=====================================================================
 \section{Régimen de trabajo de la pala}\label{sec:polares-regimen}
 
-Con la velocidad de giro base (\SI{120}{rad/s}), la pala trabaja entre
+Con la velocidad de giro base de la versión~1 (\SI{120}{rad/s}, rotor de $R=\SI{0.20}{m}$; para
+el rotor vigente véase la nota inicial), la pala trabaja entre
 $Re\approx\num{16000}$ en la raíz y $\num{72000}$ en la punta, y el número de Reynolds que
 pesa en el empuje es $\approx\num{56000}$. Por eso las polares se
 calculan a $Re=\num{20000}$, \num{35000}, \num{50000}, \num{75000} y \num{100000}.
@@ -79,8 +82,8 @@ por el empuje entre $e$ y $R$ es
      =\left(\frac35\,\frac{R^5-e^5}{R^3-e^3}\right)^{1/2}\approx\SI{0.155}{m}=0{,}78\,R,
   \label{eq:polares-rt}
 \end{equation}
-donde $Re\approx\num{56000}$. El valor de referencia de \num{36000} del
-capítulo~\ref{cap:dim} corresponde a $r\approx\SI{0.10}{m}$, la mitad de la pala medida
+donde $Re\approx\num{56000}$. El valor de referencia de \num{36000} de la primera
+estimación del capítulo~\ref{cap:dim} corresponde a $r\approx\SI{0.10}{m}$, la mitad de la pala medida
 desde el eje: describe bien la zona interior, pero no la zona que sostiene el CanSat.
 
 \begin{figure}[H]
