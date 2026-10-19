@@ -1,4 +1,4 @@
-\chapter{Arranque del rotor en autorrotación y métodos para inducirlo}\label{cap:arranque}
+\chapter[Arranque del rotor en autorrotación]{Arranque del rotor en autorrotación y métodos para inducirlo}\label{cap:arranque}
 \usepgfplotslibrary{groupplots}
 
 Con el paso de diseño $\theta=\ang{-3}$ el rotor arranca solo, sin trampas, con un margen de
@@ -117,7 +117,7 @@ hacia adelante. El giro se dibuja hacia la izquierda: el borde de ataque está a
 Al crecer $\Omega$, $\phi$ baja y $\alpha$ recorre la pérdida profunda desde \ang{87}
 hasta el flujo adherido (figura~\ref{fig:arranque-alfa}). A \SI{13.4}{m/s} la sección de
 $0{,}75R$ pasa por \ang{45} a \SI{60}{rad/s} y por \ang{17} a \SI{150}{rad/s}; solo por
-encima de \SI{170}{rad/s} se adhiere ($\alpha\approx\ang{5}$). En toda la travesía $C_l$
+encima de \SI{155}{rad/s} se adhiere ($\alpha\approx\ang{5}$). En toda la travesía $C_l$
 sube de 0,06 a 0,9 mientras $C_d$ baja de 1,17 a 0,17, y el término
 $C_l\sin\phi-C_d\cos\phi$ se mantiene positivo. Las secciones exteriores (mayor $\Omega r$)
 se adhieren antes; la raíz sigue en pérdida a rpm de régimen. Por eso el par crece con
@@ -202,9 +202,9 @@ queda parado o arranca de forma errática.
 \addplot[black, thin, domain=-40:120] {0};
 \addplot[black!60, dashed, domain=-40:120] {0.73};
 \addplot[only marks, mark=*, mark size=2pt, ccuerda] coordinates {(-3,0)};
-\addplot[only marks, mark=o, mark size=2.5pt, cfreno, thick] coordinates {(41,0)};
+\addplot[only marks, mark=o, mark size=2.5pt, cfreno, thick] coordinates {(34,0)};
 \node[font=\scriptsize, anchor=north] at (axis cs:-5,-1) {trampa};
-\node[font=\scriptsize, anchor=north] at (axis cs:48,-1) {umbral};
+\node[font=\scriptsize, anchor=north] at (axis cs:34,-1) {umbral};
 \end{groupplot}
 \end{tikzpicture}
 \caption{Curvas $Q(\Omega)$. Izquierda: paso de diseño a varias velocidades. Derecha: zona de
@@ -401,7 +401,7 @@ cinético tiene otra consecuencia, que es la clave para la pre-rotación: un gir
 
 \paragraph{Soltar el drogue antes de abrir (configuración v2).} Sin el drogue la caja
 acelera mientras las palas se abren: en \SI{0.2}{s} gana \SI{1.7}{m/s} y en \SI{0.3}{s},
-\SI{2.5}{m/s} (capítulo~\ref{cap:arq}). Con la liberación a \SI{16}{m/s} (casos 13),
+\SI{2.5}{m/s} (capítulo~\ref{cap:arq}). Con la liberación a \SI{16}{m/s} (caso 13),
 $t_{90}$ baja \SI{0.17}{s}: el par crece con $V^2$ y la caída libre previa ayuda al
 arranque, aunque el rotor tiene que frenar desde más velocidad (más sobrepaso). Con la
 Arquitectura~2 ($m_2=\SI{0.36}{kg}$) el arranque tarda \SI{1.65}{s} y \SI{20.9}{m}
@@ -446,7 +446,7 @@ régimen a \SI{8}{s}. $Q_f=\SI{0.73}{mN.m}$ salvo indicación.}
 16 & Paso variable pasivo \ang{-8}$\to$\ang{-3} ($\Omega_s=\SI{80}{rad/s}$) & 0,95 & 13,4 & 128,7 & 6,36 \\
 17 & $\delta_3=\ang{30}$ & 0,76 & 10,8 & 129,2 & 6,36 \\
 18 & $\delta_3=\ang{45}$ & 0,71 & 10,1 & 129,4 & 6,36 \\
-19 & Motor \SI{3}{mN.m} durante \SI{1}{s} & 1,48 & 20,3 & 128,7 & 6,36 \\
+19 & Motor \SI{3}{mN.m} durante \SI{1}{s} & 1,48 & 20,6 & 128,7 & 6,36 \\
 20 & Resorte, $\Omega_0=\SI{20}{rad/s}$ (palas abiertas) & 0,98 & 13,0 & 128,7 & 6,36 \\
 21 & Resorte, $\Omega_0=\SI{40}{rad/s}$ & 0,61 & 7,9 & 128,7 & 6,36 \\
 22 & Resorte, $\Omega_0=\SI{80}{rad/s}$ & 0,18 & 2,3 & 128,7 & 6,36 \\
@@ -481,8 +481,8 @@ figura~\ref{fig:arranque-tiempos} resume los dos barridos continuos.
 \nextgroupplot[xlabel={paso fijo $\theta$ [\si{\degree}]}, ylabel={$t_{90}$ [s]}, xmin=-10, xmax=0,
   ymin=0, ymax=6, axis y line*=left]
 \addplot[crot, very thick, mark=*, mark size=1.4pt] table[x=th, y=t90] {analysis/data/arranque_tpaso.dat};
-\addplot[only marks, mark=square*, black, mark size=2pt] coordinates {(-3,2.394)};
-\node[font=\scriptsize, anchor=south west] at (axis cs:-3,2.6) {diseño};
+\addplot[only marks, mark=square*, black, mark size=2pt] coordinates {(-3,1.552)};
+\node[font=\scriptsize, anchor=south east] at (axis cs:-3.1,1.75) {diseño};
 \nextgroupplot[xlabel={$\Omega_0$ del resorte [rad/s]}, ylabel={$t_{90}$ [s] \,/\, $z_{90}/10$ [m]},
   xmin=0, xmax=120, ymin=0, ymax=3, legend pos=north east]
 \addplot[ccont, very thick, mark=*, mark size=1.4pt] table[x=Om0, y=t90] {analysis/data/arranque_resorte.dat};
@@ -494,17 +494,17 @@ figura~\ref{fig:arranque-tiempos} resume los dos barridos continuos.
 \end{groupplot}
 \end{tikzpicture}
 \caption{Izquierda: tiempo de arranque con paso fijo (con \ang{-0.5} el arranque tarda
-\SI{8.9}{s}; a \ang{0} no ocurre). Derecha: efecto de la pre-rotación $\Omega_0$ con palas
+\SI{5.0}{s}; a \ang{0} no ocurre). Derecha: efecto de la pre-rotación $\Omega_0$ con palas
 abiertas, con $\theta=\ang{-3}$, y energía cinética $\frac12I_z\Omega_0^2$ correspondiente.}
 \label{fig:arranque-tiempos}
 \end{figure}
 
 \subsection{Paso más negativo}
 
-Cada grado de paso negativo adicional quita unos \SI{0.25}{s} y \SI{3}{m} de arranque, a
+El primer grado de paso negativo adicional quita \SI{0.26}{s} y \SI{3.6}{m} de arranque, a
 costa de rpm: de \ang{-3} a \ang{-4}, $t_{90}$ baja de 1,55 a \SI{1.29}{s} y la caída de 21,7
 a \SI{18.0}{m}, mientras $\Omega_f$ sube de 129 a \SI{135}{rad/s} y $V_2$ de 6,36 a
-\SI{6.43}{m/s}. A \ang{-6} se ganan \SI{0.55}{s} y \SI{7.6}{m}, con \num{1406}~rpm y
+\SI{6.43}{m/s}. A \ang{-6} se ganan \SI{0.56}{s} y \SI{7.6}{m}, con \num{1406}~rpm y
 $V_2=\SI{6.60}{m/s}$, todavía dentro de C4 pero con más carga centrífuga y menos margen de
 flameo (cap.~\ref{cap:estructura}). El rendimiento decrece: por debajo de \ang{-6} el
 arranque solo mejora \SI{0.1}{s} por grado. La curva también muestra lo contrario: hacia
@@ -524,8 +524,8 @@ que aporta en el arranque el mismo efecto del primer orden.
 
 \subsection{Pre-rotación por resorte en el cubo}
 
-Un resorte que dé $\Omega_0$ al soltar acorta el arranque casi linealmente: \SI{-0.025}{s}
-por cada rad/s, hasta $\Omega_0\approx\SI{100}{rad/s}$ (figura~\ref{fig:arranque-tiempos}).
+Un resorte que dé $\Omega_0$ al soltar acorta el arranque: \SI{-0.025}{s}
+por cada rad/s al principio y cada vez menos, hasta anularlo cerca de $\Omega_0\approx\SI{120}{rad/s}$ (figura~\ref{fig:arranque-tiempos}).
 Su función depende del paso.
 
 \paragraph{Con paso de diseño.} No hace falta para arrancar, solo para ganar altura:
@@ -533,9 +533,8 @@ $\Omega_0=\SI{40}{rad/s}$ da $t_{90}=\SI{0.61}{s}$ y $z_{90}=\SI{7.9}{m}$ (\SI{-
 
 \paragraph{Con paso $\ge0$ (trampa).} El resorte debe llevar el rotor por encima del umbral
 inestable. Por bisección de la simulación se obtuvo el $\Omega_0$ mínimo
-(tabla~\ref{tab:arranque-om0}). Con \ang{+1} se necesitan \num{28} a \SI{37}{rad/s}, algo
-menos que el cero de $Q$ (\SI{34}{rad/s} a \SI{13.4}{m/s}) porque la caída se frena mientras
-tanto. Con \ang{0} basta $\approx\SI{15}{rad/s}$ (valor acotado por la ventana de simulación
+(tabla~\ref{tab:arranque-om0}). Con \ang{+1} se necesitan \num{28} a \SI{37}{rad/s}; a \SI{13.4}{m/s},
+\SI{34.6}{rad/s}, prácticamente el cero de $Q$ (\SI{34}{rad/s}). Con \ang{0} basta $\approx\SI{15}{rad/s}$ (valor acotado por la ventana de simulación
 de \SI{4}{s}, por lo lento de la aceleración).
 
 \begin{table}[H]
@@ -573,19 +572,19 @@ estimados).
 El resorte se apoya en el eje fijo, es decir, en el cuerpo. Sin par externo, el cuerpo recibe
 el momento cinético opuesto: con $I_\text{cuerpo}\approx\SI{4.5e-4}{kg.m^2}$ gira a
 $-I_z\Omega_0/I_\text{cuerpo}\approx\SI{-76}{rad/s}$ (\num{730}~rpm). Es cien veces el criterio
-de video del capítulo~\ref{cap:estabilidad} y el drogue y las aletas tardarían segundos en
-amortiguarlo. Esta es la objeción principal a toda pre-rotación con reacción interna (resorte,
+de video del capítulo~\ref{cap:estabilidad} y las aletas tardarían segundos en
+amortiguarlo (el drogue ya está soltado). Esta es la objeción principal a toda pre-rotación con reacción interna (resorte,
 servo, motor).
 \end{nota}
 
 \subsection{Pre-rotación con el servo o con un motor}
 
-El servo del equipo (SG90, \SI{0.18}{N.m} según su hoja de datos; el MG90S da algo más) pero gira a \SI{60}{\degree} en \SI{0.1}{s}, unos
+Los servos del diseño (dos MG90S, para el anillo de traba y el pasador de suelta; \SI{0.18}{N.m} nominales, el mismo par que el SG90 de la planilla) giran \SI{60}{\degree} en \SI{0.1}{s}, unos
 \SI{10}{rad/s} (valores de catálogo típicos); acoplado directo al cubo con un trinquete no
 puede dar más que $\Omega_0\approx\SI{10}{rad/s}$, que vale \SI{0.3}{s} de ganancia. Además
-ya está asignado a la traba. Un motor sin escobillas o con núcleo hueco pequeño
-(\SIrange{3}{5}{g}) con \SI{3}{mN.m} durante \SI{1}{s} gana solo \SI{0.07}{s} y \SI{1.3}{m}
-(caso 19): su par es la sexta parte del aerodinámico. Ambos comparten la reacción sobre el
+los dos ya están asignados a la traba y a la suelta. Un motor sin escobillas o con núcleo hueco pequeño
+(\SIrange{3}{5}{g}) con \SI{3}{mN.m} durante \SI{1}{s} gana solo \SI{0.07}{s} y \SI{1.0}{m}
+(caso 19): su par es la décima parte del aerodinámico a $\Omega=0$. Ambos comparten la reacción sobre el
 cuerpo.
 
 \subsection{Aprovechar la apertura de las palas}
@@ -746,7 +745,7 @@ elásticos o actuadores en rojo.
   \draw[rot] (-1.0,-0.9) rectangle (-0.3,0.9);
   \node[font=\scriptsize, anchor=west] at (1.1,0.6) {cubo};
   \node[cfreno, font=\scriptsize, anchor=west] at (1.1,0) {resorte de torsión};
-  \node[cfreno, font=\scriptsize, anchor=west] at (1.1,-0.4) {$d=\SI{1.1}{mm}$, 11 esp.};
+  \node[cfreno, font=\scriptsize, anchor=west] at (1.1,-0.4) {$d=\SI{1.3}{mm}$, 11 esp.};
   \draw[act] (1.0,-0.9) -- (1.4,-1.3) node[right, font=\scriptsize] {gatillo};
   \draw[-{Stealth}, cfreno, thick] (-0.9,-1.7) arc (200:340:1.0);
   \node[font=\scriptsize] at (0,-2.2) {reacción sobre el cuerpo};
@@ -790,9 +789,9 @@ Método & $\Delta t_{90}$ [s] & $\Delta z_{90}$ [m] & Masa [g] & Compl. & Riesgo
 Paso \ang{-4} (fijo) & $-0{,}26$ & $-3{,}6$ & 0 & 1 & 1 & Sí. $V_2$ $+\SI{0.07}{m/s}$, +\SI{5}{\percent} rpm \\
 Paso \ang{-6} (fijo) & $-0{,}56$ & $-7{,}6$ & 0 & 1 & 2 & Sí. $V_2=6{,}60$; más carga y flameo \\
 Torsión $+\ang{10}$ & $-0{,}15$ & $-2{,}1$ & 0 & 3 & 2 & Sí. +\ang{0.6} de margen; molde \\
-Resorte $\Omega_0=40$ & $-0{,}94$ & $-13{,}8$ & 8--10 & 4 & 4 & Gira el cuerpo $\approx\SI{76}{rad/s}$ \\
-Servo (trinquete) & $\approx-0{,}3$ & $\approx-5$ & 2 & 3 & 3 & Servo ocupado en la traba; reacción \\
-Motor \SI{3}{mN.m}, \SI{1}{s} & $-0{,}07$ & $-1{,}3$ & 4--6 & 4 & 3 & Consumo, cableado al cubo, reacción \\
+Resorte $\Omega_0=40$ & $-0{,}94$ & $-13{,}8$ & 10--12 & 4 & 4 & Gira el cuerpo $\approx\SI{76}{rad/s}$ \\
+Servo (trinquete) & $\approx-0{,}3$ & $\approx-5$ & 2 & 3 & 3 & Servos ocupados en la traba y la suelta; reacción \\
+Motor \SI{3}{mN.m}, \SI{1}{s} & $-0{,}07$ & $-1{,}0$ & 4--6 & 4 & 3 & Consumo, cableado al cubo, reacción \\
 Apertura con bisagra girada & $\approx-0{,}2$ & $\approx-3$ & 0 & 2 & 2 & Es un $\delta_3$ (fila siguiente) \\
 Paso variable centrífugo & $-0{,}60$ & $-8{,}3$ & 8--12 & 5 & 3 & Falla benigna; cubo \SI{44}{mm} saturado \\
 $\delta_3=\ang{30}$ & $-0{,}79$ & $-10{,}9$ & 0 & 2 & 3 & Recalcular $\nu_\beta$ y tope \\
@@ -817,7 +816,7 @@ Rozamiento $0{,}73\to0{,}34$ & $-0{,}01$ & $-0{,}1$ & 0 & 1 & 1 & Sí. Gana marg
         $Q_f=\SI{5}{mN.m}$ lo agotaría.
   \item \textbf{Si se necesita altura}, el siguiente paso es la bisagra con
         $\delta_3\approx\ang{30}$: \SI{-11}{m} sin masa añadida, mejor que el resorte
-        (\SI{-14}{m} pero con \SI{76}{rad/s} de giro del cuerpo y \SI{10}{g}) y que el paso
+        (\SI{-14}{m} pero con \SI{76}{rad/s} de giro del cuerpo y \SIrange{10}{12}{g}) y que el paso
         variable centrífugo (\SI{-8}{m}, mecanismo complejo). Requiere recalcular el
         batimiento (cap.~\ref{cap:estabilidad}) y validarlo en banco.
   \item \textbf{Descartados}: motor, servo, Savonius, pestaña retráctil y liberación más
@@ -853,7 +852,7 @@ A6. Caída real & Lanzamiento desde dron a $\ge\SI{60}{m}$ con la etapa 1 comple
 
 \begin{nota}[Límites del banco]
 Un ventilador da un chorro de \SI{30}{cm} a \SI{1}{m} con perfil no uniforme y turbulencia
-alta, y el rotor de \SI{40}{cm} lo bloquea: las $V$ medidas son de referencia, no
+alta, y el rotor de \SI{50}{cm} lo bloquea: las $V$ medidas son de referencia, no
 absolutas. Por eso los criterios de A2 y A4 son relativos al modelo y amplios, y la
 validación final es el ensayo A6. Si A3 da un paso crítico por debajo de \ang{-2}, el diseño
 pasa a \ang{-4} sin más análisis.

@@ -32,7 +32,7 @@ polares extendidas a $\pm\ang{180}$ que necesita la teoría de elemento de pala 
         quedan entre \num{1600} y \num{1900}. La BEMT debe confirmar o corregir estos
         valores.
   \item Polares para la BEMT: la familia
-        \texttt{analysis/data/polares\_ext\_placa7\_Re\{20,35,50,75,100\}.dat}, interpolada en
+        \texttt{analysis/data/polares\_ext\_\allowbreak placa7\_Re\{20,35,50,75,100\}.dat}, interpolada en
         $\ln Re$ (caso base del capítulo~\ref{cap:bemt}); \texttt{\_Re50} sola y la polar
         $N_{\text{crit}}=5$ como sensibilidad.
 \end{itemize}
@@ -42,12 +42,12 @@ polares extendidas a $\pm\ang{180}$ que necesita la teoría de elemento de pala 
 Las polares de este capítulo no dependen del radio y se conservan. Cambian las condiciones de trabajo del rotor de $R=\SI{0.25}{m}$
 (BEMT del capítulo~\ref{cap:bemt}, paso \ang{-3}, rotor solo): la velocidad de giro de equilibrio es de \num{1229}~rpm ($\Omega=\SI{128.7}{rad/s}$) y la
 pala trabaja entre $Re\approx\num{17000}$ en la raíz y \num{97000} en la punta; el número de Reynolds ponderado por el empuje es
-\num{66000} (en la versión~1, \num{56000}). A $0{,}75R$ el ángulo de ataque es de \ang{1.6} con $C_l=0{,}48$ y $C_l/C_d=13$; el
+\num{66000} (en la versión~1, \num{56000}). A $0{,}75R$ el ángulo de ataque es de \ang{1.6} con $C_l=0{,}47$ y $C_l/C_d=13$; el
 $C_l$ ponderado por el empuje, $0{,}56$; es decir, la misma rama baja de la polar que antes. Las cifras de rpm de 1150 a 1900 de esta
 sección y de la~\ref{sec:polares-trabajo} corresponden al rotor de $R=\SI{0.20}{m}$ y a la estimación de sección representativa; el
 resultado vigente es el de la BEMT. Las polares extendidas se construyeron con $C_{D,\max}$ de una pala de alargamiento 3,5 (versión~1); con el
 alargamiento 4,6 de la pala de \SI{206}{mm} sube 0,02, lo que solo afecta a las secciones fuera de la zona de trabajo.
-La sección~\ref{sec:polares-espesor} agrega el efecto de dar espesor al perfil, posible si el contenedor es propio.
+La sección~\ref{sec:polares-espesor-v2} agrega el efecto de dar espesor al perfil, posible si el contenedor es propio.
 \end{nota}
 
 %=====================================================================
@@ -281,8 +281,8 @@ correlación de Mack,
 \end{equation}
 de modo que $N_{\text{crit}}=9$ corresponde a $Tu\approx\SI{0.07}{\percent}$ (túnel
 silencioso, aire calmo) y $N_{\text{crit}}=5$ a $Tu\approx\SI{0.37}{\percent}$. Una pala de
-rotor gira en la estela de las palas anteriores y en aire con ráfagas, y el drogue deja una
-estela arriba del rotor: es razonable esperar $Tu$ mayor que el de un túnel, por lo que
+rotor gira en la estela de las palas anteriores y en aire con ráfagas (y, en la versión~1, con el drogue atado
+dejando una estela arriba del rotor): es razonable esperar $Tu$ mayor que el de un túnel, por lo que
 $N_{\text{crit}}=5$ es al menos tan representativo como el valor estándar 9. Se usó
 $N_{\text{crit}}=9$ como caso base (es el de la mayoría de las comparaciones publicadas) y
 $N_{\text{crit}}=5$ como sensibilidad para la placa al \SI{7}{\percent} y el NACA~6412.
@@ -841,7 +841,7 @@ $\alpha=\ang{4}$ para varios $Re$ y $N_{\text{crit}}$.}
 
 \begin{table}[H]
 \centering\small
-\caption{Puntos característicos de la capa límite del extradós según XFOIL
+\caption[Puntos característicos de la capa límite del extradós según XFOIL]{Puntos característicos de la capa límite del extradós según XFOIL
 (archivo \texttt{polares\_burbuja.dat}). --: no ocurre.}
 \label{tab:polares-bur}
 \begin{tabular}{@{}lccccccl@{}}
@@ -917,6 +917,7 @@ de $R=\SI{0.25}{m}$ con paso \ang{-3} (\texttt{analysis/v2\_espesor.py}).
 \centering\small
 \caption{Efecto del espesor. Polares de XFOIL ($N_{\text{crit}}=9$; $(C_l/C_d)_{\max}$ y $C_l(\alpha=\ang{2})$ a $Re=\num{75000}$) y rotor solo
 con la BEMT interpolada entre $Re=\num{50000}$ y \num{75000}: $V_2$ y rpm para $m_2=\SI{0.49}{kg}$ (Arq.~1) y $V_2$ para \SI{0.36}{kg} (Arq.~2).}\label{tab:polares-espesor-v2}
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lrcccccccc@{}}
 \toprule
 \textbf{Perfil} & $\boldsymbol{t/c}$ [\%] & $\boldsymbol{C_{l,\max}}$ & $\boldsymbol{(C_l/C_d)_{\max}}$ & $\boldsymbol{C_l(\ang{2})}$ & $\boldsymbol{V_2}$ & \textbf{rpm} & $\boldsymbol{C_R}$ & $\boldsymbol{V_2}$ (Arq.~2)\\\midrule
@@ -945,7 +946,7 @@ Placa curvada & 11,7 & 1,48 & 27,4 & $-0{,}47$ & 6,89 & 1331 & 0,817 & 5,90\\
         \SI{8}{\percent} con piel de \SI{0.25}{mm} (el mismo apilado a la mitad de espesor) y núcleo de espuma de \SI{32}{kg/m^3} da $GJ\approx\SI{2.1}{N.m^2}$
         (46 veces el de la pala abierta B, \SI{0.045}{N.m^2}; con piel de \SI{0.5}{mm}, \SI{4.1}{N.m^2}), $EI_{\text{bat}}\approx\SI{4.3}{N.m^2}$
         (3 veces; la pala BV con varilla tiene \SI{5.1}{N.m^2}) y una masa de \SI{8.0}{g} por pala, igual que la de la BV (\SI{8.2}{g}). Con la piel de \SI{0.5}{mm} la masa
-        sube a \SI{15}{g} por pala (\SI{+31}{g} en el rotor). Con esa rigidez a torsión la divergencia y el flameo salen del intervalo de
+        sube a \SI{15}{g} por pala (\SI{+29}{g} en el rotor). Con esa rigidez a torsión la divergencia y el flameo salen del intervalo de
         trabajo (\texttt{analysis/v2\_pala\_cerrada.py}). Es una estimación que no incluye el borde de fuga ni el pegado de las mitades, y la fabricación de una piel de
         \SI{0.25}{mm} sobre núcleo hay que probarla.
   \item \textbf{Fiabilidad de estas polares.} XFOIL converge peor con las placas gruesas a $Re=\num{50000}$ (la de \SI{11.7}{\percent} tiene 11 ángulos sin solución,
@@ -1067,9 +1068,9 @@ transición desde el último punto adherido.
 \subsection{Elección de $C_{D,\max}$}
 Es el parámetro más incierto. Una placa bidimensional normal a la corriente tiene
 $C_D\approx2$~\cite{hoerner1965}; una placa rectangular de alargamiento pequeño tiene
-$C_D\approx1{,}2$. La pala, de alargamiento $\mathcal A=156/45=3{,}47$, está entre ambos
+$C_D\approx1{,}2$. La pala de la versión~1, de alargamiento $\mathcal A=156/45=3{,}47$ (con la pala de \SI{206}{mm}, $\mathcal A=4{,}58$), está entre ambos
 casos: es una placa aislada en el arranque (rotor parado, pala casi normal al viento) y
-forma parte de un disco de cuatro palas con solidez 0,286 en régimen. El modelo base usa
+forma parte de un disco de cuatro palas con solidez 0,286 en régimen (versión~1; 0,229 con $R=\SI{0.25}{m}$). El modelo base usa
 \begin{equation}
   C_{D,\max}=1{,}11+0{,}018\times3{,}47=1{,}17 ,
   \label{eq:polares-cdmax}
@@ -1118,9 +1119,10 @@ tabla~\ref{tab:polares-ext}. Los resultados que importan para la BEMT son:
         \textbf{Pero la magnitud no coincide}: la ec.~\eqref{eq:Q0} usa $C_n\approx2\sin\alpha$
         (placa bidimensional), es decir $C_l(\ang{90}+\theta)\approx-\sin2\theta$, y la
         polar base da $-0{,}59\sin2\theta$. Con $V=\SI{13.4}{m/s}$ y $\theta=\ang{-2}$, la
-        polar base da $Q_0\approx\SI{0.015}{N.m}$, frente a \SI{0.026}{N.m} en la tabla
+        polar base da $Q_0\approx\SI{0.020}{N.m}$ (rotor de $R=\SI{0.25}{m}$, capítulo~\ref{cap:bemt}), frente a \SI{0.042}{N.m} en la tabla
         de arranque del capítulo~\ref{cap:dim}. La variante \texttt{\_2D}
-        ($C_{D,\max}=1{,}98$) reproduce ese valor. La polar base es, por lo tanto,
+        ($C_{D,\max}=1{,}98$) da \SI{0.030}{N.m}; el resto de la diferencia es el bloqueo del
+        disco, que la BEMT incluye. La polar base es, por lo tanto,
         pesimista para el arranque: si el rotor arranca con ella, arranca con la otra.
   \item \textbf{Empalme inferior.} A \ang{-10} la placa al \SI{7}{\percent} da
         $C_l=-0{,}39$ y $C_d=0{,}105$. Este tramo solo aparece en la raíz durante
@@ -1173,7 +1175,7 @@ post-pérdida que el modelo descarta).}
 
 \begin{table}[H]
 \centering\small
-\caption{Parámetros de las polares extendidas ($N_{\text{crit}}=9$, $C_{D,\max}=1{,}172$).
+\caption[Parámetros de las polares extendidas]{Parámetros de las polares extendidas ($N_{\text{crit}}=9$, $C_{D,\max}=1{,}172$).
 Bloque XFOIL usado y constantes de Viterna y Corrigan en el empalme superior. Archivos:
 \texttt{analysis/data/polares\_ext\_\ldots.dat}.}
 \label{tab:polares-ext}
@@ -1330,7 +1332,7 @@ NACA~6412, $Re$ 50k, $N$5  & $-3$ & 0,0 & 3,0 & 0,54 & 19,1 & \num{1480}\\
         \SI{36}{N} por pala. Es una discrepancia con la estimación base que la
         BEMT debe resolver; aquí se reporta sin corregir los datos de otros capítulos.
   \item \textbf{El empuje no cambia.} $T$ lo fija el equilibrio vertical: un $C_l$ menor
-        se compensa con más rpm. La velocidad de descenso depende de $C_R$ y del drogue
+        se compensa con más rpm. La velocidad de descenso depende de $C_R$ y, en la versión~1, del drogue atado
         (capítulo~\ref{cap:teoria}), no directamente de $C_l$; sí depende de $C_l/C_d$,
         que en la rama baja es 11--15, inferior a la eficiencia máxima.
   \item \textbf{Elección del paso.} Un paso menos negativo ($\theta=\ang{-2}$) sube $C_l$
@@ -1346,7 +1348,7 @@ NACA~6412, $Re$ 50k, $N$5  & $-3$ & 0,0 & 3,0 & 0,54 & 19,1 & \num{1480}\\
 \begin{nota}[Límite de este análisis]
 La sección neutra es un modelo de un solo radio con $Re$ fijo; ignora la variación radial
 de $\phi$, la pérdida en la raíz, las pérdidas de punta y la solidez alta del rotor
-(0,286). El $C_l$ medio ponderado de la pala puede diferir del de $r_T$ en
+(0,286 en la versión~1; 0,229 en la 2). El $C_l$ medio ponderado de la pala puede diferir del de $r_T$ en
 $\pm\SI{20}{\percent}$ (valor supuesto, no calculado). La conclusión robusta es
 cualitativa: con paso negativo la pala trabaja en la rama baja de la polar, a $C_l$
 bastante menor que 0,9, y cerca del salto inferior.

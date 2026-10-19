@@ -41,7 +41,7 @@ puntual y \SI{6.0}{\percent} como media cuando se incluye la incertidumbre (inte
 \SI{90}{\percent}: \SIrange{3.0}{11}{\percent}). La de perder el CanSat es
 \SI{2.2}{\percent} puntual y \SI{3.4}{\percent} de media
 (\SIrange{1.6}{6.2}{\percent}). Este capítulo amplía el AMFE del
-capítulo~\ref{cap:riesgos} de 9 a 37 modos. Agrega árboles de fallas cuantificados, el
+capítulo~\ref{cap:riesgos} de 12 a 37 modos. Agrega árboles de fallas cuantificados, el
 diagrama de bloques de la liberación, los peligros para las personas, la gestión de
 configuración y los criterios de vuelo.
 
@@ -81,6 +81,12 @@ $m_2=\SI{0.49}{kg}$, $C_R\sim N(0{,}963;\,0{,}116)$ de la BEMT, arranque de 1 a 
         $V_2\le(h_r-V_1t_s/2)/(h_{\max}/8-0{,}2\,h_{\max}/V_1-t_s/2)=\SI{7.19}{m/s}$ (\SI{7.26}{m/s} sin arranque). El criterio de \Req{C4}
         pasa a un límite inferior (95\,\%) de $C_R\ge0{,}80$ (con \num{0.75} bastaría a $\rho=\SI{1.225}{kg/m^3}$; a \SI{35}{\celsius}
         hacen falta \num{0.80}, sin margen) y a caídas con el rotor solo.
+  \item \textbf{Caída sin freno ($x_{26}$, modo de emergencia):} con el cuerpo de Ø\,90 y
+        $m=\SI{0.49}{kg}$ la velocidad terminal (una cota) es de \SI{39.3}{m/s} en lugar de \SI{37.6}{m/s}. La
+        liberación de emergencia ocurre a \SI{33.3}{m/s}, \SI{100}{m} bajo el apogeo (\SI{72}{\percent} de
+        las cargas a la terminal), y la normal a \SI{125}{m} bajo el apogeo, a \SI{35.0}{m/s}
+        (\SI{80}{\percent}): el modo gana unos \SI{25}{m} y 8 puntos porcentuales de carga. Los valores del
+        cuerpo del capítulo (\SI{37.6}{m/s}, \SI{33}{m/s}, \SI{34}{m/s}) son los de la versión~1.
 \end{itemize}
 \end{nota}
 
@@ -709,13 +715,15 @@ Con las mitigaciones de la tabla~\ref{tab:confiabilidad-peligros}, todos los pel
 para las personas quedan en riesgo bajo o medio según
 MIL-STD-882E~\cite{confiabilidad-milstd882e} (severidad: 1 catastrófica, 2 crítica,
 3 marginal, 4 despreciable; probabilidad: de A frecuente a E improbable). Las energías en
-juego son tres. El \textbf{rotor} acumula $\tfrac12 I\Omega^2=\SI{3.7}{J}$, con la punta
-a \SI{24}{m/s} y bordes de carbono de \SI{0.5}{mm}. Una pala suelta se lleva la cuarta
-parte, unos \SI{0.9}{J}: su centro de masa (a unos \SI{122}{mm} del eje) sale a unos
-\SI{15}{m/s}.
+juego son tres. El \textbf{rotor} acumula $\tfrac12 I\Omega^2=\SI{7.1}{J}$
+(\SI{3.7}{J} en la versión~1, con $R=\SI{0.20}{m}$; capítulo~\ref{cap:estructura}), con la punta
+a \SI{32}{m/s} y bordes de carbono de \SI{0.5}{mm}. Una pala suelta (\SI{9.5}{g}) se lleva
+unos \SI{1.5}{J}: su centro de masa (a unos \SI{136}{mm} del eje) sale a unos
+\SI{17.6}{m/s} (capítulo~\ref{cap:ensayos}).
 El \textbf{impacto del CanSat} transfiere \SI{10}{J} a \SI{6.4}{m/s}, \SI{15}{J} a
-\SI{7.8}{m/s}, \SI{45}{J} con el rotor fallado y \SI{353}{J} sin ningún freno
-(\SI{37.6}{m/s}). Como referencia, la FAA admite drones sobre personas si no transfieren
+\SI{7.8}{m/s}, \SI{45}{J} con el rotor fallado y el drogue sin soltar, y \SI{353}{J} sin ningún freno
+(\SI{37.6}{m/s} en la versión~1; con el cuerpo de Ø\,90 y \SI{0.49}{kg} la terminal es de
+\SI{39.3}{m/s}, unos \SI{380}{J}). Como referencia, la FAA admite drones sobre personas si no transfieren
 más de \SI{11}{ft.lbf} ($\approx\SI{14.9}{J}$, \SI{7.7}{m/s} para \SI{0.5}{kg}) y no
 tienen partes giratorias expuestas que puedan cortar~\cite{confiabilidad-faa2021}. La
 norma no aplica a un CanSat, pero muestra que solo la etapa 2 normal queda por debajo y
@@ -868,7 +876,7 @@ $\square$ & Sensores & Barómetro e IMU coherentes; GPS con fijación; rpm $>0$ 
 $\square$ & Cámaras & Graban; tarjetas vacías; encuadre cenit con palas y cuerda\\
 $\square$ & Baliza (\Req{E9}) & Encendida y audible\\
 $\square$ & Palas plegadas y trabadas & 4 pestañas enganchadas; tirón suave sin juego\\
-$\square$ & Envolvente & Nada sobresale del gálibo de Ø\,95\\
+$\square$ & Envolvente & Nada sobresale del gálibo de Ø\,90 (\Req{S2})\\
 \multicolumn{3}{@{}l}{\textbf{Plataforma}}\\
 $\square$ & \texttt{CAL} y \texttt{ST} & Altitud $0\pm\SI{1}{m}$; hora UTC configurada\\
 $\square$ & \texttt{CX,ON} & Paquetes llegan sin pérdidas; contador avanza\\

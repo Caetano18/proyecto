@@ -111,7 +111,7 @@ y nunca cruza el borde de $2\,v_h$ de forma apreciable.
 
 \paragraph{Margen ante ráfagas y caída de rpm.} Una ráfaga ascendente $w$ reduce la
 velocidad relativa a $V_2-w$. Para llegar a $1{,}5\,v_h$ hace falta
-$w=V_2-1{,}5v_h=\SI{1.7}{m/s}$ (\SI{1.4}{m/s} en la Arquitectura~2). Para el borde de
+$w=V_2-1{,}5v_h=\SI{1.7}{m/s}$ (\SI{1.5}{m/s} en la Arquitectura~2). Para el borde de
 $2\,v_h$ basta con \SI{0.12}{m/s}, de modo que contra ese criterio el margen es nulo. La
 perturbación dura poco: la constante de tiempo vertical es
 $\tau_V=m/(\partial D/\partial V)\approx mV_2/2W=\SI{0.32}{s}$. Una
@@ -193,7 +193,7 @@ Deriva lateral amortiguada   & $-1{,}56$ & --- & --- & $-1{,}70$\\
 Ningún barrido lleva un autovalor al semiplano derecho. Al bajar el centro de masa (más
 $h$) sube la frecuencia del modo de inclinación, porque crece la rigidez $k_HTh$, y
 también su amortiguamiento, que crece con $c_rh^2$. Con $h=\SI{0.05}{m}$ el modo baja a \SIrange{1.15}{1.6}{Hz} y $\zeta=0{,}23$; con
-$h=\SI{0.22}{m}$ sube a \SI{2.8}{Hz} y $\zeta=0{,}43$. Las rpm actúan a través de
+$h=\SI{0.22}{m}$ sube a \SI{2.8}{Hz} y $\zeta=0{,}42$. Las rpm actúan a través de
 $T\propto\Omega^2$ y de $K_h$. El largo de cuerda (solo con el drogue atado) casi no
 cambia el modo de inclinación: solo mueve el péndulo lento, de \SI{0.48}{Hz} con
 $L=\SI{0.5}{m}$ a \SI{0.16}{Hz} con \SI{3}{m}.
@@ -261,7 +261,7 @@ El cuerpo llega a \num{150}~rpm a los \SI{10}{s}, a \num{490}~rpm a los \SI{40}{
 \SI{1}{mm} radial sobre las palas plegadas. Unas aletas fijas de esa altura darían
 $c\sim\num{e-6}$, inútiles. Las aletas tienen que ser \textbf{desplegables}: plegadas contra
 el cuerpo y abiertas por resorte al liberar el rotor (en la Arquitectura~2 se pliegan en el
-espacio anular dentro del contenedor y se abren al salir de él). Cada aleta de envergadura $s$ y cuerda $l$, con centro a $r_f=R_c+s/2$, aporta
+espacio anular dentro del contenedor y se abren al salir de él). Cada aleta de envergadura $s$ y cuerda $l$, con centro a $r_f=R_c+s/2$ ($R_c=\SI{45}{mm}$, el radio del envolvente Ø\,90), aporta
 \begin{equation}
   c_f=\tfrac12\rho V a_fSr_f^2,\qquad
   M_\delta=\tfrac12\rho V^2a_fSr_f\,\delta,\qquad
@@ -318,7 +318,7 @@ puntos es el criterio de \SI{0.5}{rad/s}.}
 \end{figure}
 
 Las aletas también suman amortiguamiento lateral bajo el centro de masa: la deriva
-lateral amortiguada pasa de $\mathrm{Re}\,\lambda=-1{,}56$ a $-1{,}69$. Es un efecto chico
+lateral amortiguada pasa de $\mathrm{Re}\,\lambda=-1{,}56$ a $-1{,}67$ con las de $40\times25$ ($-1{,}69$ con las de $40\times40$). Es un efecto chico
 pero favorable.
 
 %=====================================================================
@@ -400,7 +400,7 @@ centro de masa.
 
 \begin{resultado}[Aeroelasticidad]
 Hay que usar la pala BV (varilla de borde de ataque y capas a $\pm\ang{45}$). Su centro
-de masa debe quedar en $y_{cm}\le0{,}41c$ (con el centro de masa en $0{,}45c$ el flameo
+de masa debe quedar en $y_{cm}\le0{,}45c$ (el de diseño es $0{,}441c$; con el centro de masa en $0{,}45c$ el flameo
 aparece a \num{3030}~rpm, 2,5 veces el régimen). Con BV los márgenes son
 $\Omega_D/\Omega\ge2{,}8$ y $\Omega_F/\Omega\approx2{,}5$ (2,0 sobre el sobrepaso).
 \end{resultado}
@@ -419,8 +419,8 @@ cuerda llegue al disco tendría que formar
   \phi_\text{crit}=90^\circ-\arctan\frac{z_\text{sal}-z_\text{punta}}{R}\approx\ang{87}
 \end{equation}
 con el eje, es decir, el drogue tendría que estar casi a la altura del rotor. Con tensión
-$N=\SI{0.81}{N}$, una ráfaga lateral $w$ inclina la cuerda unos $\arctan(w/V_2)$:
-\ang{19} con \SI{2}{m/s}. El modo de péndulo del drogue tiene $\zeta=0{,}46$, sin
+$N=\SI{0.81}{N}$, una ráfaga lateral $w$ inclina la cuerda unos $\arctan(w/V)$, con la velocidad de
+descenso del caso atado, $V=\SI{5.81}{m/s}$: \ang{19} con \SI{2}{m/s}. El modo de péndulo del drogue tiene $\zeta=0{,}46$, sin
 amplificación. Los ángulos normales están lejos de \ang{87}.
 
 \begin{figure}[H]
@@ -431,14 +431,14 @@ amplificación. Los ángulos normales están lejos de \ang{87}.
   \draw[rot, very thick] (0.15,0.07) -- (2.0,0.27);
   \draw[rot, very thick] (-0.15,0.07) -- (-2.0,0.27);
   \draw[eje] (0,-1.8) -- (0,2.3);
-  \draw[cuerda, very thick] (0,0.3) -- (0.62,2.25) node[above, font=\scriptsize] {drogue};
+  \draw[cuerda, very thick] (0,0.3) -- (0.67,2.25) node[above, font=\scriptsize] {drogue};
   \draw[cuerda, dashed] (0,0.3) -- (2.2,0.45);
   \draw[cota] (0,0.07) -- (0,0.3);
   \node[font=\scriptsize, anchor=east] at (-0.05,0.42) {salida};
-  \draw (0,1.0) arc (90:72:0.7);
-  \node[font=\scriptsize] at (0.25,1.15) {\ang{16}};
-  \node[font=\scriptsize, anchor=west] at (2.2,0.45) {$\phi_\text{crit}\approx\ang{86}$};
-  \node[font=\scriptsize, anchor=west] at (2.0,0.15) {punta, $\beta_0=\ang{6.1}$};
+  \draw (0,1.0) arc (90:71:0.7);
+  \node[font=\scriptsize] at (0.25,1.15) {\ang{19}};
+  \node[font=\scriptsize, anchor=west] at (2.2,0.45) {$\phi_\text{crit}\approx\ang{87}$};
+  \node[font=\scriptsize, anchor=west] at (2.0,0.15) {punta, $\beta_0=\ang{4.2}$};
   \draw[cfreno, thick, -{Stealth}] (1.8,1.5) -- (1.8,2.1) node[right, font=\scriptsize, black] {aire relativo};
 \end{tikzpicture}
 \caption{Geometría de interferencia (sin escala). La cuerda tendría que bajar a la línea
@@ -482,7 +482,7 @@ Drogue contra palas (si no se suelta) & \ang{19} frente a \ang{87} & con tensió
 \end{table}
 
 \begin{enumerate}
-  \item \textbf{Pala BV}, con el centro de masa en $\le0{,}41c$ y verificado con el
+  \item \textbf{Pala BV}, con el centro de masa en $\le0{,}45c$ (diseño: $0{,}441c$) y verificado con el
         ensayo de balanceo sobre filo.
   \item \textbf{Cuatro aletas desplegables} de $40\times\SI{25}{mm}$ en la banda inferior
         del cuerpo (alojadas en el anillo de espuma y retenidas por la traba; sección~\ref{sec:arq-integracion}),

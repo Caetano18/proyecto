@@ -297,7 +297,7 @@ if __name__ == "__main__":
     print(f"  cota con el descenso completo ({T1 + T2:.1f} s, rotor plegado en la etapa 1):", OM * 30 / np.pi * (T1 + T2) / 60)
 
     print("\n== 6. Impacto ==")
-    for V, mm in ((6.4, 0.49), (7.4, 0.49), (5.5, 0.33)):
+    for V, mm in ((6.4, 0.49), (7.4, 0.49), (5.5, 0.36)):      # Arq. 2: m2 = 0,36 kg del modelo (presupuesto 352 g)
         E = 0.5 * mm * V**2
         pr(f"V={V}, m={mm}: energía", E, "J")
         for s_, lab in ((2e-3, "suelo duro, sin amortiguador"), (10e-3, "suelo blando"),
@@ -307,6 +307,6 @@ if __name__ == "__main__":
     sp = 0.5 * 7.4**2 / (0.8 * 17.5e-3) * 0.49 / (np.pi / 4 * (81e-3**2 - 58e-3**2))
     pr("tensión de meseta necesaria (7,4 m/s, 0,49 kg, anillo 81/58)", sp / 1e6, "MPa")
     for acc in (150, 200):
-        pr(f"a {acc} g: batería 48 g / rotor 64 g / lastre 28 g [N]", 0.048 * acc * g,
-           f"/ {0.064*acc*g:.0f} / {0.028*acc*g:.0f}")
+        pr(f"a {acc} g: batería 48 g / rotor 71 g / lastre 3 g (32 g con panel de 8 g) [N]", 0.048 * acc * g,
+           f"/ {0.071*acc*g:.0f} / {0.003*acc*g:.0f} ({0.032*acc*g:.0f})")
     pr("energía del rotor a régimen", 0.5 * v2c.Iz(0.1) * OM**2, "J")

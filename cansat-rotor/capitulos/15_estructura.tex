@@ -153,7 +153,7 @@ centro de corte y el centro de masa.}
 
 \begin{table}[H]
 \centering\small
-\caption{Propiedades de sección del tramo libre de la pala (cálculo propio,
+\caption[Propiedades de sección del tramo libre de la pala]{Propiedades de sección del tramo libre de la pala (cálculo propio,
 \texttt{estructura\_seccion.py}). $y$ desde el borde de ataque.}\label{tab:estructura-seccion}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -222,7 +222,7 @@ bisagra, donde casi no aporta rigidez centrífuga. Con esa distribución y la pa
 $\beta_0\approx\ang{4.2}$ (\ang{3.6} en BV) y el número de Lock vale $\gamma=12{,}6$. La
 fuerza centrífuga por pala en la bisagra es \SI{18.9}{N} en régimen (\SI{21.7}{N} en BV) y
 \SI{30.2}{N} en el sobrepaso del arranque, a \SI{162.6}{rad/s}; el centro de masa de la pala
-está a \SI{78}{mm} de la bisagra. Con una ráfaga que lleve la sustentación al límite de
+está a \SI{82}{mm} de la bisagra. Con una ráfaga que lleve la sustentación al límite de
 pérdida ($n\approx C_{l,\max}/C_l\approx1{,}5$), la pala llega a \ang{6.4}: a \ang{8.6} del tope
 de \ang{+15}. En BV (pala más pesada) los valores son \ang{3.6} y \ang{5.5}.
 
@@ -665,7 +665,7 @@ de espuma de \SI{25}{mm}, lo que cabe dentro del largo de \SI{250}{mm}, los baja
 \SI{110}{g}.
 
 La energía es $\frac12mV^2=\SI{10.0}{J}$ (diseño) a \SI{13.4}{J} (percentil 95 de $V_2$),
-más \SI{7.1}{J} en el rotor (\SI{5.0}{J} en total, sin el rotor, en la Arquitectura~2). Con una
+más \SI{7.1}{J} en el rotor (\SI{5.4}{J} en total, sin el rotor, en la Arquitectura~2). Con una
 carrera de frenado $s$ y una eficiencia de fuerza constante $\eta\approx0{,}8$,
 \begin{equation}
   a=\frac{V^2}{2\,\eta\,s}.
@@ -707,9 +707,10 @@ cámara nadir mirando por el centro. Para absorber \SI{13.4}{J} en \SI{17.5}{mm}
 (70\,\% de compresión) necesita una tensión de meseta de $\approx\SI{0.38}{MPa}$, del orden
 de la de un EPP de \SIrange{50}{70}{kg/m^3} (valor de catálogo a verificar con un ensayo
 de compresión). Los \SI{25}{mm} salen de la zona de baliza y lastre
-(tabla~\ref{tab:largo}): el lastre de acero de \SI{28}{g} ocupa menos de \SI{1}{mm} de
+(tabla~\ref{tab:largo}): el lastre de acero (\SI{3}{g} con el panel de la planilla y \SI{32}{g} con uno
+de \SI{8}{g}; tabla~\ref{tab:arq-masa-mc}) ocupa de \SI{0.1}{mm} a \SI{1.1}{mm} de
 espesor a Ø\,70. A \SI{200}{g} las fijaciones internas ven: batería \SI{94}{N}, rotor
-\SI{126}{N} (rodamientos con $s_0\approx10$), lastre \SI{55}{N}; las bridas y tornillos
+\SI{139}{N} (\SI{71}{g}; rodamientos con $s_0\approx8$), lastre de \SI{6}{N} (\SI{3}{g}) a \SI{63}{N} (\SI{32}{g}); las bridas y tornillos
 deben dimensionarse para esas cargas, no para 30\,G.
 
 \begin{nota}[El rotor al tocar el suelo]

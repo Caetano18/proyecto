@@ -10,13 +10,13 @@ ensayo se ha hecho todavía.
 \begin{itemize}[leftmargin=*]
   \item \textbf{Banco vertical} (E2, E3): chorro abierto de Ø\,\SI{1.0}{m} o más
         ($D_j\ge2D$, con $D=\SI{0.5}{m}$), \SIrange{6}{8}{m/s}. Mide $\CR$ con
-        $U\approx\pm\num{0.055}$ (95\,\%), rpm, conicidad y par.
+        $U\approx\pm\num{0.044}$ (95\,\%; \SI{4.6}{\percent} de $\CR=0{,}96$), rpm, conicidad y par.
   \item \textbf{Auto} (E2b): cubre lo que el ventilador no alcanza, el arranque a
         \SIrange{10}{14}{m/s}, con tramos cortos para no pasar de las rpm de diseño.
   \item \textbf{Caídas desde drone} (E4): de 80 a \SI{100}{m} de caída por ensayo según el
         modelo nominal (el capítulo~\ref{cap:riesgos} usa de 80 a \SI{120}{m});
         10 caídas dan $\Vr$ con $U\approx\pm\SI{0.33}{m/s}$. Si la dispersión entre caídas
-        es de \SI{0.4}{m/s} o menos, 3 caídas alcanzan para demostrar $\Vr\le\SI{7.5}{m/s}$.
+        es de \SI{0.4}{m/s} o menos, 3 caídas alcanzan para demostrar $\Vr\le\SI{7.3}{m/s}$.
   \item \textbf{Ambientales} (E5, E7--E9) con recursos de universidad, y una matriz que
         lleva cada requisito del anexo a su método y criterio.
 \end{itemize}
@@ -36,6 +36,10 @@ capítulo se conserva como método de ensayo, con estos cambios: (i) el chorro d
 Ø\,90 (Arq.~2), no de Ø\,95, y ya no hay cuerda del drogue por el eje (el vástago de la celda de carga va por el eje, sin cuerda); (iii) la caída E4
 se hace con el rotor solo (promedio global) y con el drogue atado; (iv) se agregan el ensayo de la secuencia de suelta del drogue (E7) y los de electrónica (E8) del
 capítulo~\ref{cap:riesgos}. Las rpm de la maqueta de pruebas y el pico de arranque ($+26$\,\%) son los de los capítulos~\ref{cap:arranque} y~\ref{cap:estructura}.
+El modelo de orden reducido de la sección~\ref{sec:ensayos-drone} (tabla de alturas, figura de caída, $\lambda_d$, $Q_0$, $C_s$) y los presupuestos de incertidumbre salen de
+\texttt{analysis/ensayos\_calculos.py}, que todavía usa la geometría de la versión~1 ($R=\SI{0.2}{m}$, $\CR=1{,}2$, cuerpo Ø\,95, drogue atado en el caso A):
+esas cifras son un orden de magnitud hasta rehacerlas con la versión~2. Los valores de la versión~2 que sí se usan en el texto (ensayo en auto, conicidad,
+pala plegada, autonomía) están en la última sección de ese script.
 \end{nota}
 
 \begin{table}[H]
@@ -59,10 +63,10 @@ Tiempo de arranque ($t_{90}$) & \SI{1.55}{s} (\SIrange{1.1}{2.0}{s}) & \SI{\pm0.
 \section{Banco vertical de ventilador (E2 y E3)}\label{sec:ensayos-banco}
 
 \subsection{Tamaño del chorro y bloqueo}
-El chorro debe tener al menos el doble del diámetro del rotor. A $\Vr/\vh=1{,}83$ el rotor
+El chorro debe tener al menos el doble del diámetro del rotor. A $\Vr/\vh=2{,}04$ (BEMT; la estimación simple da 1,83) el rotor
 está en el estado de estela turbulenta (figura~\ref{fig:estados}): el caudal neto a
-través del disco es casi nulo y el rotor se comporta como un cuerpo romo de
-$\CR\approx1{,}2$. Por eso no sirve la corrección clásica de Glauert para hélices~\cite{ensayos-barlow1999},
+través del disco es casi nulo y el rotor se comporta como un cuerpo romo (para el bloqueo
+se toma $\CR\approx1{,}2$, por encima del $0{,}96$ esperado). Por eso no sirve la corrección clásica de Glauert para hélices~\cite{ensayos-barlow1999},
 que supone un tubo de corriente bien definido a través del disco, hipótesis que falla en
 este estado. El modelo adecuado es el de bloqueo de cuerpos
 romos.
@@ -119,8 +123,8 @@ anterior ya no sirve.
 \subsection{Calidad del flujo}
 El chorro debe ser uniforme y sin remolino; si no, las rpm medidas quedan sesgadas. Un
 remolino de ángulo $\psi$ suma $V\tan\psi$ a la velocidad tangencial de la pala: a
-\SI{6.4}{m/s} y $\psi=\ang{2}$ son \SI{0.22}{m/s} frente a $\Omega r=\SI{18}{m/s}$ en
-$0{,}75R$, es decir un sesgo de 1,2\,\% en las rpm. El acondicionamiento sigue las
+\SI{6.4}{m/s} y $\psi=\ang{2}$ son \SI{0.22}{m/s} frente a $\Omega r=\SI{24}{m/s}$ en
+$0{,}75R$, es decir un sesgo de 0,9\,\% en las rpm. El acondicionamiento sigue las
 reglas de Mehta y Bradshaw~\cite{ensayos-mehta1979}: panal de celdas con largo de 6 a 8
 veces su diámetro (elimina el remolino) y dos mallas finas (bajan la turbulencia).
 \begin{itemize}
@@ -137,10 +141,10 @@ veces su diámetro (elimina el remolino) y dos mallas finas (bajan la turbulenci
 \end{itemize}
 
 \subsection{Instrumentación}
-La figura~\ref{fig:ensayos-banco} muestra el banco. La maqueta del cuerpo (Ø\,95) va
+La figura~\ref{fig:ensayos-banco} muestra el banco. La maqueta del cuerpo (Ø\,81 en la Arquitectura~1, Ø\,90 en la 2) va
 \textbf{aguas arriba} del rotor, como en vuelo, con soporte propio que no carga la
-balanza. El rotor cuelga de un vástago que pasa por el eje hueco, en la posición de la
-cuerda del drogue, y lleva el empuje a la celda de carga.
+balanza. El rotor cuelga de un vástago que pasa por el eje hueco (sin cuerda del drogue) y lleva el
+empuje a la celda de carga.
 
 \begin{table}[H]
 \centering\small
@@ -265,13 +269,13 @@ sin pasar por $\rho$:
   \end{equation}
   donde $Q_f$ es el rozamiento, medido con un ensayo de desaceleración libre sin palas. La
   derivada sale de los períodos del sensor hall, suavizados con un filtro de
-  Savitzky--Golay. Una aceleración de \SI{10}{rad/s^2} ya equivale a \SI{5.1e-3}{N.m}.
+  Savitzky--Golay. Una aceleración de \SI{10}{rad/s^2} ya equivale a \SI{8.6e-3}{N.m} ($I_p\approx\SI{8.6e-4}{kg.m^2}$).
   La inercia $I_p$ se mide con un péndulo trifilar,
   \begin{equation}
     I = \frac{m\,g\,r^2\,\tau^2}{4\pi^2 L} - I_\text{plato},
     \label{eq:ensayos-trifilar}
   \end{equation}
-  con hilos de $L=\SI{0.8}{m}$ a $r=\SI{0.10}{m}$: el período es $\tau\approx\SI{1.5}{s}$ y
+  con hilos de $L=\SI{0.8}{m}$ a $r=\SI{0.10}{m}$: el período es $\tau\approx\SI{1.7}{s}$ y
   se toma el promedio de 20 oscilaciones.
   \item \textbf{Freno de Foucault.} Un disco de aluminio de \SI{2}{mm} en el cubo y un imán
   de neodimio sobre un brazo que apoya en una celda de \SI{100}{g}. Al acercar el imán
@@ -280,7 +284,7 @@ sin pasar por $\rho$:
   modelo de arranque (sección~\ref{sec:ensayos-drone}).
 \end{enumerate}
 
-\paragraph{Conicidad.} La punta sube $\Delta z=(R-e)\sin\beta_0\approx\SI{12}{mm}$ sobre la
+\paragraph{Conicidad.} La punta sube $\Delta z=(R-e)\sin\beta_0\approx\SI{15}{mm}$ sobre la
 bisagra, de donde
 \begin{equation}
   \beta_0 = \arcsin\frac{\Delta z}{R-e}.
@@ -304,21 +308,21 @@ perspectiva no incline el plano de las puntas.
   \item Video lateral a \SIlist{6;8}{m/s} para $\beta_0$; foto con flash para el
         seguimiento de puntas (diferencia de altura entre palas $<\SI{2}{mm}$).
 \end{enumerate}
-Criterio de E3: $\CR\ge1{,}0$ con su cota inferior al 95\,\%. El punto de diseño se acepta
-si $\CR\ge1{,}1$; con $\CR$ entre 1,0 y 1,1 el diseño cumple \Req{C4}, pero con menos
+Criterio de E3: $\CR\ge0{,}80$ con su cota inferior al 95\,\% (nominal $0{,}96$; capítulo~\ref{cap:riesgos}).
+Con $\CR$ por debajo del nominal el diseño todavía cumple \Req{C4}, pero con menos
 margen (tabla~\ref{tab:rotor}).
 
 %=====================================================================
 \section{Alternativa en auto (E2b)}\label{sec:ensayos-auto}
 El auto da gratis el rango de \SIrange{10}{14}{m/s} (\SIrange{36}{50}{km/h}), que el
 ventilador no alcanza; por eso se usa para el arranque, no para medir $\CR$. A velocidad
-constante el rotor no se queda en las rpm de diseño: tiende a la misma relación de
-velocidad de punta $\lambda_d\approx3{,}76$, es decir a unas \num{1930}~rpm a
-\SI{13.4}{m/s} (punta a \SI{50}{m/s}, fuerza centrífuga de \SI{53}{N} por pala, 2,4 veces
-la de régimen de la versión~2). En vuelo eso no ocurre porque el CanSat frena mientras el rotor acelera
+constante el rotor no se queda en las rpm de diseño: tiende a una relación de
+velocidad de punta casi constante ($\lambda\approx4{,}9$ a $5{,}1$ según la BEMT de la versión~2), es decir a unas \num{2525}~rpm a
+\SI{13.4}{m/s} (punta a \SI{66}{m/s}, fuerza centrífuga de \SI{91}{N} por pala, 4,2 veces
+la de régimen). En vuelo eso no ocurre porque el CanSat frena mientras el rotor acelera
 (figura~\ref{fig:ensayos-caida}, de la versión~1: máximo de unas \num{1220}~rpm; en la versión~2, con el pico de arranque, unas \num{1550}~rpm). Cada tramo en auto mide
 entonces solo el arranque, de 0 a \num{1230}~rpm, y al llegar a ese valor el auto baja a
-\SI{31}{km/h} (\SI{8.6}{m/s}: \num{1230}~rpm de equilibrio). El rotor va
+\SI{23}{km/h} (\SI{6.4}{m/s}: \num{1230}~rpm de equilibrio). El rotor va
 con el eje horizontal, alineado con la marcha, en un mástil a \SI{1}{m} o más sobre el
 techo (figura~\ref{fig:ensayos-auto}).
 
@@ -332,7 +336,7 @@ techo (figura~\ref{fig:ensayos-auto}).
         \SI{13.4}{m/s} equivalen a \SI{1.2}{m/s} de viento cruzado. Por eso se ensaya
         con calma, temprano por la mañana.
   \item \textbf{Gravedad}: con el eje horizontal el peso de cada pala
-        (\SI{0.073}{N}) actúa en el plano de giro. Es el 0,6\,\% de la fuerza centrífuga
+        (\SI{0.093}{N}) actúa en el plano de giro. Es el 0,4\,\% de la fuerza centrífuga
         en régimen, pero en el arranque las palas cuelgan de forma asimétrica. Se espera que
         eso alargue algo el arranque (no está cuantificado), así que los tiempos en auto
         se toman como una cota pesimista.
@@ -345,9 +349,9 @@ techo (figura~\ref{fig:ensayos-auto}).
 Solo en un predio cerrado (pista, aeródromo o estacionamiento vacío), nunca en la vía
 pública; máximo \SI{50}{km/h}. Mástil sujeto a las barras de techo con cintas con
 trinquete; malla de protección alrededor del disco. Nadie en el plano de giro: una pala
-suelta de \SI{9.5}{g} lleva \SI{1.5}{J} a \num{1230}~rpm y \SI{3.6}{J} a \num{1930}~rpm
+suelta de \SI{9.5}{g} lleva \SI{1.5}{J} a \num{1230}~rpm y \SI{6.2}{J} a \num{2525}~rpm
 (velocidad de su centro de masa, a \SI{136}{mm} del eje). Antes del primer tramo, cada
-portapala se prueba con una carga estática de \SI{60}{N} (la centrífuga a \num{1930}~rpm es de \SI{53}{N}).
+portapala se prueba con una carga estática de \SI{100}{N} (la centrífuga a \num{2525}~rpm es de \SI{91}{N}).
 Si el hall pasa de \num{1600}~rpm, el auto frena. El conductor solo conduce; un
 segundo operador maneja la adquisición, y antes de cada tramo se revisan pasadores y
 portapalas.
@@ -606,9 +610,9 @@ en función de la rigidez de toda la cadena cuerda--soporte--CanSat
 
 \begin{resultado}[Plan secuencial de caídas]
 Se hacen 3 caídas y se calcula $s$. Para el \textbf{cumplimiento} basta la cota superior
-unilateral al 95\,\%, con el límite de \SI{7.5}{m/s} que fija el equipo como margen sobre
-los \SI{8}{m/s} del anexo: si $\bar V=\SI{6.4}{m/s}$, con $s=\SI{0.4}{m/s}$ y $n=3$ es
-$\bar V+t_{0{,}95;2}\,s/\sqrt3=\SI{7.07}{m/s}<\SI{7.5}{m/s}$. Para la
+unilateral al 95\,\%, con el límite de \SI{7.3}{m/s}, la $V_2$ con la que el promedio de todo el descenso llega a
+los \SI{8}{m/s} del anexo (capítulo~\ref{cap:req}): si $\bar V=\SI{6.4}{m/s}$, con $s=\SI{0.4}{m/s}$ y $n=3$ es
+$\bar V+t_{0{,}95;2}\,s/\sqrt3=\SI{7.07}{m/s}<\SI{7.3}{m/s}$. Para la
 \textbf{caracterización} se completan las caídas que pida el $s$ medido
 (figura~\ref{fig:ensayos-ic}): con $s=\SI{0.3}{m/s}$ hacen falta 9 caídas para
 $\pm\SI{0.25}{m/s}$ y 16 para $\pm2{,}5$\,\%; con $s=\SI{0.4}{m/s}$, 13 y 27. Medir
@@ -671,7 +675,7 @@ Masa ($\pm\SI{1}{g}$) & B & 0,002 & $\infty$\\\midrule
 
 \begin{resultado}[Incertidumbre esperada]
 \begin{itemize}[leftmargin=*]
-  \item Banco: $\CR=1{,}20\pm0{,}055$ (95\,\%). Domina el bloqueo del chorro (1,7\,\%), y
+  \item Banco: $\CR=0{,}96\pm0{,}044$ (95\,\%; $U$ de \SI{4.6}{\percent}). Domina el bloqueo del chorro (1,7\,\%), y
         por eso se mide con el disco de referencia.
   \item Caídas: $\Vr=\SI{6.40 \pm 0.33}{m/s}$ (95\,\%). Dominan la dispersión y el viento
         vertical; más caídas solo reducen la primera.
@@ -704,7 +708,7 @@ tamaño habitual en los laboratorios de vibraciones de ingeniería mecánica.
 \end{enumerate}
 La primera frecuencia de flexión de una pala plegada, estimada como viga de placa curvada
 ($E\approx\SI{50}{GPa}$) apoyada en la bisagra y en la traba de la punta, es de unos
-\SI{340}{Hz}: cae dentro de la banda de exposición, así que la punta y la traba verán
+\SI{195}{Hz} (escalada con $1/L^2$ desde los \SI{340}{Hz} de la pala de \SI{156}{mm}): cae dentro de la banda de exposición, así que la punta y la traba verán
 una respuesta amplificada y conviene un acelerómetro pequeño cerca de una punta. Si la
 traba no sujeta la punta, la pala queda articulada en la bisagra y libre en el otro
 extremo: no tiene un modo elástico bajo, sino que pivota y golpea contra el cuerpo. Eso
@@ -738,7 +742,7 @@ sigue.
   \item[E7 Térmico.] Estufa de laboratorio, o caja aislante con secador y termostato, a
         \SI{60}{\celsius} durante \SI{2}{h}~\cite{ensayos-cansatenv}. El PETG ablanda cerca de
         \SI{80}{\celsius}, así que se vigilan cubo, anillo de traba y portapalas.
-        \emph{Criterio}: funciona durante y después; el servo libera; el rotor gira libre más
+        \emph{Criterio}: funciona durante y después; los dos servos (anillo de traba y pasador de suelta) liberan; el rotor gira libre más
         de \SI{5}{s}; el anillo se deforma menos de \SI{0.2}{mm}.
   \item[E8 Alcance de radio.] A \SI{915}{MHz} la pérdida en espacio libre es de
         \SI{91.7}{dB} a \SI{1}{km} y \SI{97.7}{dB} a \SI{2}{km}. Se ensaya a \SI{2}{km} con
@@ -747,10 +751,10 @@ sigue.
         equivale a 10 veces la distancia. \emph{Criterio}: menos de 1\,\% de paquetes
         perdidos en \SI{10}{min} a \SI{1}{Hz}, con el CanSat en configuración de vuelo.
   \item[E9 Autonomía en plataforma.] \SI{3}{h} en \texttt{LAUNCH\_PAD} con telemetría
-        (\Req{E7} pide 2) y luego la secuencia completa en modo simulación, con actuación del
-        servo; se registran tensión y corriente (\Req{SN3}, \Req{SN8}). La estimación es de
-        \SI{3.7}{h} con todo encendido y \SI{13}{h} con las cámaras apagadas en plataforma
-        (tabla~\ref{tab:energia}). \emph{Criterio}: completa la secuencia con la celda
+        (\Req{E7} pide 2) y luego la secuencia completa en modo simulación, con actuación de los
+        servos; se registran tensión y corriente (\Req{SN3}, \Req{SN8}). La estimación es de
+        \SI{2.3}{h} con todo encendido (no cumple con margen) y \SI{8.6}{h} con las cámaras apagadas en plataforma
+        (tabla~\ref{tab:energia}), que es la política con la que se hace este ensayo. \emph{Criterio}: completa la secuencia con la celda
         sobre \SI{3.5}{V}.
 \end{description}
 
@@ -778,8 +782,8 @@ $\rightarrow$ criterio.}\label{tab:ensayos-matriz}\\
 \Req{C1} & I & E10 & Contenedor entra en una maqueta del fuselaje con las medidas de la organización\\
 \Req{C2} & I, D & E10 & La expulsión la da el cohete; el CanSat no necesita orden propia y sale libre del tubo de referencia (ver \Req{S7})\\
 \Req{C3} & A, E & E4 & Drogue inflado en menos de \SI{1}{s} sin orden del software; velocidad de la etapa 1 entre \SIlist{12;18}{m/s} (previsto 13,4) en caídas con rotor trabado\\
-\Req{C4} & A, E & E3, E4 & $\CR\ge1{,}0$ (cota inferior 95\,\%); $\Vr$ con cota superior 95\,\% $\le\SI{7.5}{m/s}$ (margen del equipo; el anexo admite 8); media de la etapa 2 por análisis\\
-\Req{C5}, \Req{X5} & D & E6, E8 & Paquetes cada \SI{1.0 \pm 0.1}{s} durante toda la secuencia\\
+\Req{C4} & A, E & E3, E4 & $\CR\ge0{,}80$ (cota inferior 95\,\%); $\Vr$ con cota superior 95\,\% $\le\SI{7.3}{m/s}$ (la $V_2$ con la que el promedio global llega a 8; el anexo admite 5\,$\pm$\,3); media de la etapa 2 por análisis\\
+\Req{C5}, \Req{X4} & D & E6, E8 & Paquetes cada \SI{1.0 \pm 0.1}{s} durante toda la secuencia\\
 \Req{C6}, \Req{C7} & D & E4, E6 & Video cenit y nadir continuo desde la suelta hasta el suelo; se ven drogue, apertura y giro de palas\\
 \Req{C8}, \Req{E8}, \Req{E9} & I, D & E10 & Baliza suena con la batería principal desconectada; interruptor propio accesible; audible a \SI{30}{m} (criterio del equipo)\\
 \Req{C9} & I & --- & Lista de costos con comprobantes $<\$1.000.000$\\
@@ -794,16 +798,16 @@ $\rightarrow$ criterio.}\label{tab:ensayos-matriz}\\
 Equipo (copa) & I & E10 & El drogue real, el destorcedor y el carro del pasador entran en la copa de Ø\,75 $\times$ \SI{10}{mm} con un llenado de \SI{80}{\percent} o menos (estimado \SI{59}{\percent}; si no, copa de \SI{25}{mm} y pila interna comprimida, capítulo~\ref{cap:arq})\\
 Equipo (aletas) & D & E10, E4 & Las cuatro aletas abren en 10 de 10 liberaciones antes de \SI{0.3}{s}; el calaje queda en \ang{1.7}\,$\pm$\,\ang{0.3} y el giro del cuerpo se mide en la caída\\
 \Req{S9} & I & --- & Lista de materiales sin contaminantes\\
-\Req{M1}, \Req{M2} & I & --- & Liberación con servo; sin pirotecnia ni elementos calientes\\
+\Req{M1}, \Req{M2} & I & --- & Liberación con servos (MG90S); sin pirotecnia ni elementos calientes\\
 \Req{M3} & E & E1, E5 & 20 de 20 liberaciones; la traba no se abre con vibración ni choque\\
 \Req{M4} & I, E & E5b & Batería con conexiones soldadas o atornilladas; sin caída de tensión ni reinicio en el choque\\
 \Req{E1}, \Req{E2} & I & E10 & Celda 18650 de litio con envase metálico\\
-\Req{E3}, \Req{X7} & D & E11 & El panel iluminado cambia la señal transmitida; con telecomando se recibe el estado del panel y de la batería\\
+\Req{E3}, \Req{X6} & D & E11 & El panel iluminado cambia la señal transmitida; con telecomando se recibe el estado del panel y de la batería\\
 \Req{E4}--\Req{E6} & I, D & E10 & Interruptores accesibles con el contenedor puesto; orificios de \SI{10}{mm} o menos; indicador visible\\
 \Req{E7} & E & E9 & \SI{3}{h} en plataforma y secuencia completa después\\
-\Req{X1}--\Req{X3} & I, D & E11 & Frecuencia en banda; NetID/PanID igual al número de equipo; un tercer módulo con otra dirección no recibe tramas\\
-\Req{X4} & D & E4, E6 & La telemetría arranca sola al detectar la separación\\
-\Req{X6} & D & E11 & El CSV contiene todos los campos con el formato y la resolución del anexo\\
+\Req{X1}, \Req{X2} & I, D & E11 & Frecuencia en banda; NetID/PanID igual al número de equipo; un tercer módulo con otra dirección no recibe tramas\\
+\Req{X3} & D & E4, E6 & El comando automático y la telemetría arrancan solos al detectar la separación (luz del panel e IMU)\\
+\Req{X5} & D & E11 & El CSV contiene todos los campos con el formato y la resolución del anexo\\
 \Req{SN1} & E & E4, E11 & Altitud barométrica frente a la del drone o la de una escalera medida (hasta \SI{120}{m}): $\pm\SI{1}{m}$\\
 \Req{SN2}, \Req{SN3}, \Req{SN8} & E & E7, E11 & Temperatura $\pm\SI{1}{\celsius}$; tensión $\pm\SI{0.05}{V}$; corriente $\pm\SI{0.01}{A}$ frente a instrumentos de referencia\\
 \Req{SN4} & D & E11 & Posición GPS y número de satélites coherentes con un punto conocido\\

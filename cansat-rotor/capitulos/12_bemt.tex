@@ -1,4 +1,4 @@
-\chapter{Modelo de elemento de pala y cantidad de movimiento (BEMT) del rotor en autorrotación vertical}\label{cap:bemt}
+\chapter[Modelo BEMT del rotor en autorrotación]{Modelo de elemento de pala y cantidad de movimiento (BEMT) del rotor en autorrotación vertical}\label{cap:bemt}
 \usepgfplotslibrary{groupplots}
 
 El modelo BEMT con las polares extendidas de la placa curvada al \SI{7}{\percent}
@@ -8,7 +8,7 @@ $\approx\num{1230}$~rpm con $m_2=\SI{0.49}{kg}$. Es el \SI{11}{\percent} más qu
 simple de cantidad de movimiento con $C_R=1{,}2$ (\SI{5.7}{m/s}), porque el
 coeficiente de resistencia del rotor que resulta es $C_R\approx0{,}96$ y no 1,2. Este capítulo
 se rehízo para la configuración v2 (capítulo~\ref{cap:arq}): rotor solo, sin el drogue ni su
-cuerda, $R=\SI{0.25}{m}$ y cuerpo de Ø\,90. Deduce el modelo, discute el cierre de cantidad de
+cuerda, $R=\SI{0.25}{m}$ y envolvente del cuerpo de Ø\,90. Deduce el modelo, discute el cierre de cantidad de
 movimiento en el estado de molino turbulento, lo valida (también con el libro de
 Bramwell~\cite{bramwell2001}), barre paso, cuerda, número de palas y torsión, y analiza el
 arranque desde $\Omega=0$ a \SI{13.4}{m/s}. También entrega el mapa $T(\Omega,V)$,
@@ -107,8 +107,8 @@ se desprende un torbellino:
          \arccos\!\Big[e^{-\frac{B}{2}\frac{r-e}{r\sin\phi}}\Big].
   \label{eq:bemt-F}
 \end{equation}
-Como $\phi$ es pequeño (2--\ang{8}), $F$ cae con rapidez solo en el último
-\SI{3}{\percent} del radio.
+Como $\phi$ es pequeño (2--\ang{9}) salvo en la raíz, $F$ cae con rapidez en la punta solo en el último
+\SI{5}{\percent} del radio.
 
 \subsection{Cierre de cantidad de movimiento: el problema del molino turbulento}\label{sec:bemt-cierre}
 
@@ -329,16 +329,17 @@ Anillos $N$ & $T$ [N] & $Q$ [mN·m] & Error de $T$ respecto de $N=320$ \\
 \section{Punto de diseño}\label{sec:bemt-base}
 
 Con $\theta=\ang{-3}$ el rotor desciende a \SI{6.36}{m/s} y gira a \num{1229}~rpm. El
-empuje es \SI{4.68}{N}; el cuerpo de Ø\,90 aporta \SI{0.13}{N} y entre los dos equilibran
-$W=\SI{4.807}{N}$ ($m_2=\SI{0.49}{kg}$). Si el drogue no se soltara aportaría \SI{0.9}{N} y la
+empuje es \SI{4.68}{N}; el cuerpo, con el arrastre del envolvente de Ø\,90, aporta \SI{0.13}{N} y entre los dos equilibran
+$W=\SI{4.807}{N}$ ($m_2=\SI{0.49}{kg}$). Si el drogue no se soltara aportaría \SI{0.81}{N} y la
 velocidad bajaría a \SI{5.81}{m/s} (\num{1127}~rpm).
 
 \subsection{Distribuciones radiales}
 
-La figura~\ref{fig:bemt-dist} muestra el estado de cada anillo. El \SI{58}{\percent}
+La figura~\ref{fig:bemt-dist} muestra el estado de cada anillo. El \SI{59}{\percent}
 interior del radio ($0{,}18<r/R<0{,}77$) es impulsor y el \SI{23}{\percent} exterior es
-impulsado. Salvo el anillo de la raíz, no hay anillos en pérdida: $\alpha$ va de \ang{5.9}
-en la raíz a \ang{-0.6} en la punta, por debajo del $\alpha$ de $C_{l,\max}$. El factor
+impulsado. Los 12 anillos entre $r/R=0{,}19$ y $0{,}30$ están en pérdida ($\alpha=16$--\ang{24}, por encima del
+$\alpha$ de $C_{l,\max}$) y aportan solo el \SI{5}{\percent} del empuje (4 a \SI{11}{N/m}, contra 13 a \SI{36}{N/m} en el resto);
+fuera de esa zona $\alpha$ va de \ang{5.5} a \ang{-0.6} en la punta. El factor
 $a$ va de 0,86 en la raíz a 0,79 en la punta. $Re$ va de \num{18000} a \num{96000}, y en
 $0{,}75R$ vale \num{72000}, igual que en la configuración anterior (a menos rpm pero con
 más radio). En $0{,}75R$ la sección trabaja a $\alpha=\ang{1.6}$ y $C_l=0{,}47$, dentro del
@@ -400,7 +401,7 @@ la estimación simple de cantidad de movimiento con $C_R=1{,}2$ (cap.~\ref{cap:d
 Magnitud & Estimación simple & BEMT (helicópteros) & BEMT (Buhl) \\
 \midrule
 $V_2$, rotor solo [m/s]   & 5,71 & 6,36 & 5,68 \\
-$V_2$ con drogue atado [m/s] & 5,2 & 5,81 & --- \\
+$V_2$ con drogue atado [m/s] & 5,3 & 5,81 & --- \\
 $\Omega$ [rpm]           & \num{910} & \num{1229} & \num{1229} \\
 Velocidad de punta [m/s] & 23,8 & 32,2 & 32,2 \\
 $T$ [N]                  & 4,71 & 4,68 & 4,71 \\
@@ -429,8 +430,8 @@ La tabla~\ref{tab:bemt-base} resume las diferencias, que tienen dos causas:
 \end{enumerate}
 Esto confirma la estimación por sección neutra del capítulo~\ref{cap:polares} y corrige
 las rpm de la estimación simple. Las cargas centrífugas crecen con $\Omega^2$ y con el
-largo de la pala: unas \SI{23}{N} por pala en el régimen y hasta \SI{37}{N} en el sobrepaso
-del arranque (sección~\ref{sec:bemt-arranque}).
+largo de la pala: unos \SI{19}{N} por pala en el régimen (\SI{22}{N} con la pala BV) y hasta \SI{30}{N} en el sobrepaso
+del arranque (\SI{35}{N} con la BV; sección~\ref{sec:bemt-arranque} y capítulo~\ref{cap:estructura}).
 
 La conicidad del capítulo de estructura inclina el empuje de cada pala. Su componente
 vertical baja en $\cos\beta_0\approx0{,}99$ y el radio efectivo en el mismo factor. Al
@@ -722,8 +723,8 @@ capítulo~\ref{cap:dim}: con paso $\ge\ang{0}$ el rotor no arranca solo.
 \addlegendentry{$\theta=\ang{+1}$, estable}
 \addplot[cfreno, thick, dashed] table[x=V, y=Om_inest] {analysis/data/bemt_locus_t1.dat};
 \addlegendentry{$\theta=\ang{+1}$, inestable (umbral)}
-\addplot[only marks, mark=*, mark size=2pt, black] coordinates {(6.94,157.6)};
-\node[font=\scriptsize, anchor=west] at (axis cs:7.1,150) {diseño};
+\addplot[only marks, mark=*, mark size=2pt, black] coordinates {(6.36,128.7)};
+\addlegendentry{punto de diseño}
 \end{axis}
 \end{tikzpicture}
 \caption{Lugar de equilibrio de par $Q(\Omega,V)=0$. Con $\theta=\ang{+1}$ aparece una

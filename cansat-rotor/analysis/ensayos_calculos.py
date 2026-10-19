@@ -397,3 +397,48 @@ titulo("Autonomía")
 E_Wh = 3.0*3.6*0.85
 for P in (2.5, 0.7):
     linea(f"autonomía a {P} W", E_Wh/P, "h")
+
+# ------------------------------------------------- 10. valores de la versión 2 (R = 0,25 m) que usa el texto
+# Todo lo anterior de este script sigue con la geometría de la versión 1 (R = 0,2 m, C_R = 1,2, cuerpo Ø95). Estos
+# valores salen de v2_config.py y de analysis/data/bemt_qomega_V.dat (BEMT v2, paso -3 grados).
+titulo("Versión 2: valores usados en el texto (R = 0,25 m)")
+import v2_config as cfg
+R2, e2, Om2 = cfg.R, cfg.E, 128.7                       # radio, excentricidad, velocidad de régimen [rad/s]
+Lp2 = R2 - e2                                           # largo de pala 0,206 m
+linea("altura de la punta sobre la bisagra con beta0 = 4,2 grados", Lp2*np.sin(np.radians(4.2))*1000, "mm")
+linea("u(beta0) con 0,25 mm/px y +-2 px", np.degrees(2*0.25/np.sqrt(3)/1000/Lp2), "deg")
+linea("velocidad tangencial en 0,75 R a régimen", Om2*0.75*R2, "m/s")
+linea("sesgo de rpm por remolino de 2 grados a 6,4 m/s", 6.4*np.tan(np.radians(2))/(Om2*0.75*R2)*100, "%")
+I2 = cfg.Iz(np.radians(4.2))
+linea("inercia polar del rotor I_p (v2_config)", I2, "kg m2")
+linea("par para dOmega/dt = 10 rad/s2", I2*10, "N m")
+Tper2 = 2*np.pi*np.sqrt((I2 + I_pl) * Lh / ((0.071 + m_pl) * g * r_hilo**2))
+linea("período del trifilar con el rotor v2 (71 g)", Tper2, "s")
+linea("f1 pala plegada con L = 0,206 m (escala con 1/L^2)", f1*(L_pala/Lp2)**2, "Hz")
+# equilibrio a velocidad constante: cruce por cero de Q(Omega) en la BEMT v2
+dq = np.loadtxt(os.path.join(DATA, "bemt_qomega_V.dat"), skiprows=1)
+Vs = (4.0, 6.0, 8.0, 10.0, 13.4, 16.0)
+mb2, rg2 = cfg.MB, cfg.E + cfg.XG                       # masa de pala con portapala y radio de su c.d.m.
+for j, Vx in enumerate(Vs, start=1):
+    q_ = dq[:, j]; i = np.where((q_[:-1] > 0) & (q_[1:] <= 0))[0][0]
+    Oe = dq[i, 0] + (0 - q_[i]) * (dq[i+1, 0] - dq[i, 0]) / (q_[i+1] - q_[i])
+    if Vx in (6.0, 13.4):
+        linea(f"V = {Vx} m/s: rpm de equilibrio", Oe*60/2/np.pi, "rpm")
+        linea("   lambda = Omega R / V", Oe*R2/Vx)
+        linea("   velocidad de punta", Oe*R2, "m/s")
+        linea("   fuerza centrífuga por pala", mb2*rg2*Oe**2, "N")
+        linea("   energía de una pala suelta (v del c.d.m.)", 0.5*mb2*(Oe*rg2)**2, "J")
+        linea("   cociente de fuerza centrífuga con la de régimen", (Oe/Om2)**2)
+linea("fuerza centrífuga por pala a régimen (1229 rpm)", mb2*rg2*Om2**2, "N")
+linea("energía de una pala suelta a régimen", 0.5*mb2*(Om2*rg2)**2, "J")
+linea("peso de una pala de 9,5 g", mb2*g, "N")
+linea("   cociente con la fuerza centrífuga a régimen", mb2*g/(mb2*rg2*Om2**2)*100, "%")
+linea("velocidad del auto para 1229 rpm de equilibrio (V2 = 6,36 m/s)", 6.36*3.6, "km/h")
+# autonomía en plataforma con la planilla del equipo (tabla de energía del capítulo de dimensionamiento)
+E2 = 3.4*3.6*0.90                                       # celda de 3400 mAh, 90 % útil [Wh]
+for P in (4.81, 1.28):
+    linea(f"autonomía a {P} W (celda de 3400 mAh, 90 % útil)", E2/P, "h")
+# criterio de Vr para C4 (promedio global de 8 m/s con 20 % de la altura a 13,44 m/s)
+linea("Vr con el que el promedio global llega a 8 m/s", 0.8/(1/8 - 0.2/13.44), "m/s")
+linea("cota superior 95 % con n = 3, s = 0,4 y media 6,4 m/s", 6.4 + stats.t.ppf(0.95, 2)*0.4/np.sqrt(3), "m/s")
+linea("U(C_R) banco con C_R = 0,96 (4,6 %)", 0.96*0.0458)

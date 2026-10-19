@@ -76,7 +76,11 @@ def modos(h=0.15, Om=Om0, L=1.5, kH=1.0, atado=False, It=3.0e-3, fin=0.0, lf=0.1
 lam0 = modos(); out['modos nominal (rotor solo)'] = lam0[abs(lam0)>1e-6]
 out['modos con drogue atado (falla de liberacion)'] = [l for l in modos(atado=True) if abs(l)>1e-6]
 out['modos h=0.05'] = modos(h=0.05)[1:]
-out['modos con aletas'] = modos(fin=0.5*rho*V0*2.6*0.0016*4/2)[1:]
+def _af(s, l):                    # pendiente de sustentación de la aleta (envergadura s, cuerda l)
+    AR = 2*s/l
+    return 2*np.pi*AR/(2 + np.sqrt(AR**2 + 4))
+out['modos con aletas 40x25 (adoptada)'] = modos(fin=0.5*rho*V0*_af(0.040, 0.025)*0.040*0.025*4/2)[1:]
+out['modos con aletas 40x40 (referencia)'] = modos(fin=0.5*rho*V0*_af(0.040, 0.040)*0.040*0.040*4/2)[1:]
 def barrido(name, par, vals, **kw):
     with abrir(f'estabilidad_rl_{name}.dat') as f:
         f.write('p re im\n')
