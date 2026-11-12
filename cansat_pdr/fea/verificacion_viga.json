@@ -1,0 +1,24 @@
+{
+ "nodos": 21768,
+ "elementos": 12392,
+ "f_fem": [
+  163.5714,
+  1017.41,
+  2815.665
+ ],
+ "f_analitico": [
+  163.20670618600107,
+  1022.7989202536148,
+  2863.866605308657
+ ],
+ "flecha_1g_fem": 0.0143346,
+ "flecha_1g_analitico": 0.014411078555878084,
+ "flecha_1g_suma_modal": 0.014334774320086396,
+ "signo_ok": true,
+ "sigma_raiz_fem": 0.28712469923285694,
+ "sigma_raiz_analitico": 0.2954699748407396,
+ "arm_punta_fem": 5.448214256911683,
+ "arm_punta_analitico": 5.47656144052406,
+ "choque_punta_fem": 0.5730868530182057,
+ "choque_punta_1gdl": 0.5826638063374902
+}

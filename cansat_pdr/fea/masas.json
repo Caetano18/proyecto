@@ -1,0 +1,413 @@
+{
+ "filas": [
+  {
+   "sub": "Estructura del planeador",
+   "item": "Cuaderna de nariz C1 (PA12-CF)",
+   "cant": 1,
+   "unit": 21.67907786821234,
+   "masa": 21.67907786821234,
+   "inc": 2.167907786821234,
+   "fuente": "CAD",
+   "x": 3.111747332082123
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Cuadernas C2 y C3 (PA12-CF)",
+   "cant": 2,
+   "unit": 8.005375178719483,
+   "masa": 16.010750357438965,
+   "inc": 1.6010750357438965,
+   "fuente": "CAD",
+   "x": 100.99999999999996
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Cuaderna de cola C4 (PA12-CF)",
+   "cant": 1,
+   "unit": 23.142919077475664,
+   "masa": 23.142919077475664,
+   "inc": 2.3142919077475663,
+   "fuente": "CAD",
+   "x": 203.76765866975785
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Largueros CFRP d5/3,5 x 201",
+   "cant": 4,
+   "unit": 3.2204466291948988,
+   "masa": 12.881786516779595,
+   "inc": 0.6440893258389798,
+   "fuente": "CAD",
+   "x": 103.5
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Paneles laterales G10 0,5",
+   "cant": 2,
+   "unit": 10.95385,
+   "masa": 21.9077,
+   "inc": 1.095385,
+   "fuente": "CAD",
+   "x": 103.50000000000001
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Tapa superior G10 0,5",
+   "cant": 1,
+   "unit": 9.805462499999999,
+   "masa": 9.805462499999999,
+   "inc": 0.490273125,
+   "fuente": "CAD",
+   "x": 103.5
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Bandeja de avionica G10 0,8",
+   "cant": 1,
+   "unit": 15.406059999999998,
+   "masa": 15.406059999999998,
+   "inc": 0.770303,
+   "fuente": "CAD",
+   "x": 103.5
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Cunas de ala (PA12-CF)",
+   "cant": 4,
+   "unit": 0.9461030578916496,
+   "masa": 3.7844122315665985,
+   "inc": 0.37844122315665985,
+   "fuente": "CAD",
+   "x": 101.0
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Guias de botalon (PA12-CF)",
+   "cant": 2,
+   "unit": 0.44960198649982674,
+   "masa": 0.8992039729996535,
+   "inc": 0.08992039729996536,
+   "fuente": "CAD",
+   "x": 101.0
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Cubierta inferior PC 0,25",
+   "cant": 1,
+   "unit": 3.0,
+   "masa": 3.0,
+   "inc": 0.6,
+   "fuente": "Estimado",
+   "x": 103.0
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Tornillos M2/M2,5, insertos y adhesivo",
+   "cant": 1,
+   "unit": 8.0,
+   "masa": 8.0,
+   "inc": 1.6,
+   "fuente": "Estimado",
+   "x": 103.0
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Varillas de borde de ataque (4 tramos)",
+   "cant": 4,
+   "unit": 2.2500092063715416,
+   "masa": 9.000036825486166,
+   "inc": 0.4500018412743083,
+   "fuente": "CAD",
+   "x": 74.41570337182416
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Tirantes de borde de fuga",
+   "cant": 2,
+   "unit": 1.2483017899016682,
+   "masa": 2.4966035798033364,
+   "inc": 0.12483017899016682,
+   "fuente": "CAD",
+   "x": 103.50000000000001
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Varillas de raiz",
+   "cant": 2,
+   "unit": 1.174955652442583,
+   "masa": 2.349911304885166,
+   "inc": 0.1174955652442583,
+   "fuente": "CAD",
+   "x": 103.5
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Manguitos de traba Al 7075",
+   "cant": 2,
+   "unit": 2.682967878374017,
+   "masa": 5.365935756748034,
+   "inc": 0.26829678783740174,
+   "fuente": "CAD",
+   "x": 122.63140674364834
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Herrajes A, B y T (Al 7075)",
+   "cant": 6,
+   "unit": 0.6389027658074128,
+   "masa": 3.8334165948444765,
+   "inc": 0.38334165948444765,
+   "fuente": "CAD",
+   "x": 56.88680913780397
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Membrana ripstop con costuras",
+   "cant": 2,
+   "unit": 1.05,
+   "masa": 2.1,
+   "inc": 0.4,
+   "fuente": "Nota de membrana",
+   "x": 136.0
+  },
+  {
+   "sub": "Ala de membrana",
+   "item": "Articulaciones, resortes, cordon elastico",
+   "cant": 2,
+   "unit": 2.0,
+   "masa": 4.0,
+   "inc": 0.8,
+   "fuente": "Estimado",
+   "x": 140.0
+  },
+  {
+   "sub": "Cola (nota de cola)",
+   "item": "Botalon + cola en V + herrajes",
+   "cant": 1,
+   "unit": 21.0,
+   "masa": 21.0,
+   "inc": 4.2,
+   "fuente": "Asignacion",
+   "x": 110.0
+  },
+  {
+   "sub": "Cola (nota de cola)",
+   "item": "Servo de cola",
+   "cant": 1,
+   "unit": 9.0,
+   "masa": 9.0,
+   "inc": 0.5,
+   "fuente": "Hoja de datos",
+   "x": 23.5
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Bateria Li-ion 18650",
+   "cant": 1,
+   "unit": 46.0,
+   "masa": 46.0,
+   "inc": 1.0,
+   "fuente": "Hoja de datos",
+   "x": 100.5
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Sillas + cincha de bateria",
+   "cant": 1,
+   "unit": 5.0,
+   "masa": 5.0,
+   "inc": 1.0,
+   "fuente": "Estimado",
+   "x": 100.5
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "PCB principal (MCU, IMU, baro, SD)",
+   "cant": 1,
+   "unit": 25.0,
+   "masa": 25.0,
+   "inc": 5.0,
+   "fuente": "Asignacion",
+   "x": 101.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "PCB radio + GNSS + antena",
+   "cant": 1,
+   "unit": 20.0,
+   "masa": 20.0,
+   "inc": 4.0,
+   "fuente": "Asignacion",
+   "x": 170.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Camaras cenit y nadir",
+   "cant": 2,
+   "unit": 8.0,
+   "masa": 16.0,
+   "inc": 3.2,
+   "fuente": "Asignacion",
+   "x": 100.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Baliza sonora + pila boton",
+   "cant": 1,
+   "unit": 8.0,
+   "masa": 8.0,
+   "inc": 1.6,
+   "fuente": "Asignacion",
+   "x": 170.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Celdas solares",
+   "cant": 1,
+   "unit": 6.0,
+   "masa": 6.0,
+   "inc": 1.2,
+   "fuente": "Asignacion",
+   "x": 103.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Servo del cerrojo",
+   "cant": 1,
+   "unit": 9.0,
+   "masa": 9.0,
+   "inc": 0.5,
+   "fuente": "Hoja de datos",
+   "x": 176.5
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Separadores, cableado y conectores",
+   "cant": 1,
+   "unit": 13.0,
+   "masa": 13.0,
+   "inc": 2.6,
+   "fuente": "Estimado",
+   "x": 103.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Llave de bayoneta + plato de apoyo (inox)",
+   "cant": 1,
+   "unit": 8.255206451081394,
+   "masa": 8.255206451081394,
+   "inc": 0.4,
+   "fuente": "CAD",
+   "x": 210.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Aislador elastomerico de la llave",
+   "cant": 1,
+   "unit": 0.4978462172605835,
+   "masa": 0.4978462172605835,
+   "inc": 0.1,
+   "fuente": "CAD",
+   "x": 217.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Patines de elastomero con cara de PTFE",
+   "cant": 8,
+   "unit": 0.11,
+   "masa": 0.88,
+   "inc": 0.2,
+   "fuente": "CAD",
+   "x": 103.0
+  },
+  {
+   "sub": "Contenedor",
+   "item": "Tubo d90 x 242, pared 2 (LW-PLA)",
+   "cant": 1,
+   "unit": 86.88341562429838,
+   "masa": 86.88341562429838,
+   "inc": 8.688341562429839,
+   "fuente": "CAD",
+   "x": 118.93844068504328
+  },
+  {
+   "sub": "Contenedor",
+   "item": "Tapa nervada (PA12-CF)",
+   "cant": 1,
+   "unit": 25.570116134600852,
+   "masa": 25.570116134600852,
+   "inc": 2.5570116134600855,
+   "fuente": "CAD",
+   "x": 214.240318968241
+  },
+  {
+   "sub": "Contenedor",
+   "item": "Paracaidas de 15 m/s",
+   "cant": 1,
+   "unit": 15.0,
+   "masa": 15.0,
+   "inc": 3.0,
+   "fuente": "Asignacion",
+   "x": 230.0
+  },
+  {
+   "sub": "Contenedor",
+   "item": "Brida de 3 puntos + eslabon giratorio",
+   "cant": 1,
+   "unit": 5.0,
+   "masa": 5.0,
+   "inc": 1.0,
+   "fuente": "Estimado",
+   "x": 232.0
+  },
+  {
+   "sub": "Avionica y equipos",
+   "item": "Lastre de centrado / margen",
+   "cant": 1,
+   "unit": 14.250138986518778,
+   "masa": 14.250138986518778,
+   "inc": 0.0,
+   "fuente": "Ajuste",
+   "x": 33.0
+  }
+ ],
+ "sub": {
+  "Estructura del planeador": {
+   "masa": 136.51737252447282,
+   "inc": 4.258986935943124,
+   "x": 104.13673689310123
+  },
+  "Ala de membrana": {
+   "masa": 29.14590406176718,
+   "inc": 1.1184021784891205,
+   "x": 99.26133852968506
+  },
+  "Cola (nota de cola)": {
+   "masa": 30.0,
+   "inc": 4.2296571965113205,
+   "x": 84.05
+  },
+  "Avionica y equipos": {
+   "masa": 171.88319165486075,
+   "inc": 8.02869852466762,
+   "x": 116.11676731314259
+  },
+  "Contenedor": {
+   "masa": 132.45353175889923,
+   "inc": 9.59299679437117,
+   "x": 154.181829214262
+  }
+ },
+ "total": 500.0,
+ "inc_rss": 13.919963385375658,
+ "inc_lin": 55.04100601032881,
+ "lastre": 14.250138986518778,
+ "m_planeador": 367.5464682411008,
+ "m_contenedor": 132.45353175889923,
+ "x_cg_planeador_estibado": 107.71306255133258,
+ "x_cg_lanzamiento": 120.02296707330298,
+ "x_cg_planeador_vuelo": 117.62304017310501,
+ "x_centroide_ala": 136.6,
+ "carga_alar": 91.38490006015397,
+ "w_estimado": 4.284597163083504
+}
