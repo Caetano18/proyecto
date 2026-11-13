@@ -397,6 +397,25 @@ fuera del plano pasa al tirante.
 \chequeo Varilla: $MS=<<MS_LE>>$ con 400\,MPa admisibles. Pandeo del tirante: $P_{cr}/N=<<PCR>>$. El manguito se dimensiona para
 <<MJ>>\,N$\cdot$mm. El primer modo del ala abierta está en <<FALA>>\,Hz (sin contar la rigidez que da la tensión de la tela).
 
+\subsection{Sustentación: Polhamus y su rango de validez}
+\que El coeficiente de sustentación del ala con la analogía de succión de borde de ataque de Polhamus (NASA TN D-3767), con las
+constantes de ese informe de NASA, y cuánto cambia la velocidad de descenso según cuánta sustentación de vórtice se cuente.
+\porque Para un ala delta de borde afilado,
+\[C_L=K_p\,\mathrm{sen}\,\alpha\cos^2\alpha+f\,K_v\cos\alpha\,\mathrm{sen}^2\alpha,\qquad C_{D,i}=C_L\tan\alpha .\]
+El primer término es el flujo potencial sin succión de borde de ataque; el segundo, la sustentación del vórtice. De las figuras 6
+y 9 del informe de NASA, para alargamiento 4: $K_p\approx<<PH_KP>>$ y $K_v\approx<<PH_KV>>$. Con $f=1$ es Polhamus completo, con $f=0{,}5$
+es lo que usa la nota de membrana y con $f=0$ no se cuenta el vórtice. El resto de la resistencia ($<<PH_CD0>>$) se toma de la nota.
+<<T_POLH>>
+<<FIG_POLH>>
+\chequeo El informe valida el método con ensayos de alas de alargamiento 0{,}5 a 2{,}0; esta ala tiene 4. En la de alargamiento
+2{,}0, la mayor ensayada, la sustentación medida cae por debajo de la teoría a partir de unos 18° y el autor lo atribuye a
+separación en el borde de fuga, que empeora al crecer el alargamiento; leído del gráfico, a 25° la diferencia es del orden del
+15\,\%. A 20° y alargamiento 4 hay que esperar entonces menos que Polhamus completo, y quizá menos que el término potencial solo.
+Polhamus aclara además que el método no da el momento de cabeceo y que no está probado para plantas distintas del delta
+convencional; tampoco contempla la panza de la membrana ni el número de Reynolds bajo ($\sim10^5$). Para el requisito de descenso
+alcanza, porque todo el rango queda dentro de $5\pm3$\,m/s. Para la estabilidad no alcanza: el centro de presión y el momento hay
+que medirlos en una maqueta. Las cargas estructurales de este informe no dependen de este modelo: salen del peso sobre el área.
+
 \section{Análisis estructural}
 \subsection{Modelo y verificación}
 \que Con qué modelo se calculan las tensiones y cuánto se le puede creer.
@@ -539,9 +558,17 @@ if acc:
            r"\chequeo Las tres correcciones son locales y no cambian la arquitectura ni la masa en más de 3\,g. No se volvió a correr "
            r"el modelo con ellas: quedan como primera tarea de la próxima iteración.")
 
+PH = json.load(open(os.path.join(FEA, "polhamus.json")))
+t_polh = tab("lccccccc", ["Hipótesis", "$f$", "$C_L$ potencial", "$C_L$ vórtice", "$C_L$", "$C_D$", "$w$ con 500\\,g", "$w$ con %s\\,g" % n(PH["m_vuelo"], 0)],
+             [[r_["nombre"], n(r_["f"]), n(r_["CLp"], 2), n(r_["CLv"], 2), n(r_["CL"], 2), n(r_["CD"], 2), n(r_["w500"], 2), n(r_["w_vuelo"], 2)]
+              for r_ in PH["filas"]],
+             "Sustentación a $\\alpha=20$° y velocidad de descenso [m/s] según la fracción de sustentación de vórtice.", r"\footnotesize")
+
 fl = R.get("freq_libre")
 V = {
-    "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "TEMPORADA": P.TEMPORADA, "FECHA": P.FECHA, "REV": P.REV,
+    "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "T_POLH": t_polh, "PH_KP": n(PH["Kp"], 2), "PH_KV": n(PH["Kv"], 2),
+    "PH_CD0": n(PH["cd_resto"], 2),
+    "FIG_POLH": fig("polhamus.png", 0.95, "Izquierda: sustentación según Polhamus para alargamiento 4. Derecha: velocidad de descenso contra la fracción de vórtice."), "TEMPORADA": P.TEMPORADA, "FECHA": P.FECHA, "REV": P.REV,
     "EST_M": n(est_m, 0), "NEL": f"{R['elementos']:,}".replace(",", "\\,"), "NNOD": f"{R['nodos']:,}".replace(",", "\\,"),
     "F1": n(f[0], 0), "RIG_T": n(RIG["armonico"]["x"]["trans_max"]["Bateria"], 0), "ZAX": n(zm[ix] * 100, 0),
     "T_AX": n(R["armonico"]["x"]["trans_max"]["Bateria"]), "MS_CE": ms(ms_ce), "MS_ARM": ms(ms_arm), "MS_CH": ms(ms_ch),

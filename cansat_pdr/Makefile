@@ -18,6 +18,7 @@ fea:
 	$(PY) fe_analisis.py $(FEA_TMP) e ../fea/resultados_fea.json $(FEA_TMP)/res.npz
 	$(PY) wing_frame.py ../fea/ala_desplegada.json ../fea/ala_desplegada.npz
 	$(PY) masas.py ../fea/masas.json
+	$(PY) polhamus.py ../fea/polhamus.json ../figs/polhamus.png
 	$(PY) figs_fea.py $(FEA_TMP) e ../fea/resultados_fea.json $(FEA_TMP)/res.npz ../fea/ala_desplegada.npz ../figs
 
 informe:
