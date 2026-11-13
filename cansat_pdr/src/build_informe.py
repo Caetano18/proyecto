@@ -5,6 +5,7 @@ import os, json, math, subprocess, shutil
 from PIL import Image
 import params as P
 import fe_model as F
+import aero_planeador as AP
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FIGS, FEA, PLANOS, BUILD = (os.path.join(BASE, d) for d in ("figs", "fea", "planos", "build"))
@@ -398,42 +399,7 @@ fuera del plano pasa al tirante.
 \chequeo Varilla: $MS=<<MS_LE>>$ con 400\,MPa admisibles. Pandeo del tirante: $P_{cr}/N=<<PCR>>$. El manguito se dimensiona para
 <<MJ>>\,N$\cdot$mm. El primer modo del ala abierta está en <<FALA>>\,Hz (sin contar la rigidez que da la tensión de la tela).
 
-\subsection{Sustentación: Polhamus y su rango de validez}
-\que El coeficiente de sustentación del ala con la analogía de succión de borde de ataque de Polhamus (NASA TN D-3767), con las
-constantes de ese informe de NASA, y cuánto cambia la velocidad de descenso según cuánta sustentación de vórtice se cuente.
-\porque Para un ala delta de borde afilado,
-\[C_L=K_p\,\mathrm{sen}\,\alpha\cos^2\alpha+f\,K_v\cos\alpha\,\mathrm{sen}^2\alpha,\qquad C_{D,i}=C_L\tan\alpha .\]
-El primer término es el flujo potencial sin succión de borde de ataque; el segundo, la sustentación del vórtice. De las figuras 6
-y 9 del informe de NASA, para alargamiento 4: $K_p\approx<<PH_KP>>$ y $K_v\approx<<PH_KV>>$. Con $f=1$ es Polhamus completo, con $f=0{,}5$
-es lo que usa la nota de membrana y con $f=0$ no se cuenta el vórtice. La resistencia es $C_D=C_{D,ala}+C_{D,cuerpo}+C_{D,cola}+C_L\tan\alpha$, con $C_{D,ala}=<<PH_CDA>>$, $C_{D,cola}=<<PH_CDC>>$ y el cuerpo de \diam84 con la nariz plana ($C_{D,cuerpo}=<<PH_CD0>>$ a 20°, referido al área del ala). Con 500\,g y la resistencia de la nota, sin cuerpo, este cálculo reproduce 5{,}0\,m/s.
-<<T_POLH>>
-<<FIG_POLH>>
-\chequeo El informe valida el método con ensayos de alas de alargamiento 0{,}5 a 2{,}0; esta ala tiene 4. En la de alargamiento
-2{,}0, la mayor ensayada, la sustentación medida cae por debajo de la teoría a partir de unos 18° y el autor lo atribuye a
-separación en el borde de fuga, que empeora al crecer el alargamiento; leído del gráfico, a 25° la diferencia es del orden del
-15\,\%. A 20° y alargamiento 4 hay que esperar entonces menos que Polhamus completo, y quizá menos que el término potencial solo.
-Polhamus aclara además que el método no da el momento de cabeceo y que no está probado para plantas distintas del delta
-convencional; tampoco contempla la panza de la membrana ni el número de Reynolds bajo ($\sim10^5$). Para el requisito de descenso
-alcanza, porque todo el rango queda dentro de $5\pm3$\,m/s (subsección siguiente). Para la estabilidad no alcanza: el centro de presión y el momento hay
-que medirlos en una maqueta. Las cargas estructurales de este informe no dependen de este modelo: salen del peso sobre el área.
-
-\subsection{Velocidad de descenso como planeador}
-\que La velocidad de descenso en régimen de planeo estacionario, con la resistencia del cuerpo incluida, y cuánto cambia con las
-incertidumbres. Se compara el ala delta con un avión de ala recta de igual área, masa y cuerpo.
-\porque El equilibrio es $\tfrac12\rho V^2 S\,C_R=n\,m\,g$ con $C_R=\sqrt{C_L^2+C_D^2}$, $n=1/\cos20^\circ$ (espiral con
-20° de alabeo) y $w=V\,C_D/C_R$. El planeador vuela con <<MPLAN>>\,g, no con los 500\,g del CanSat: el contenedor, con su
-paracaídas, queda atrás. El cuerpo es el del diseño: un cilindro de \diam84 con disco de nariz plano, que aporta una resistencia
-considerable. Las incertidumbres se muestrean 20\,000 veces: sustentación de vórtice $f\in[0;1]$, ángulo de ataque
-$20\pm2{,}5^\circ$, resistencia del ala, del cuerpo y de la cola, densidad entre 1{,}05 y 1{,}25\,kg/m$^3$ y masa $\pm15$\,g. Para
-el avión recto, el $C_L$ de trim $0{,}8\pm0{,}15$ y la eficiencia de Oswald entre 0{,}7 y 0{,}9. Los rangos son juicio del autor, no datos.
-<<T_PLANEO>>
-<<FIG_PLANEO>>
-\chequeo Con el cuerpo romo el delta baja a <<PL_WD>>\,m/s y casi no depende del ángulo de ataque: es robusto al trim pero no
-tiene palanca para regularlo. El avión recto baja más lento y llega más lejos, y su descenso se regula con el trim del elevador
-(de <<PL_R40>> a <<PL_R100>>\,m/s para $C_L$ de 0{,}4 a 1{,}0). Con una ojiva en la nariz el delta baja a <<PL_WDO>>\,m/s y el avión
-a <<PL_WRO>>\,m/s, cerca del límite inferior de 2\,m/s. El avión recto no está diseñado ni analizado estructuralmente: sus
-números son de orden de magnitud. Con los 500\,g completos el delta bajaría a <<PL5_WD>>\,m/s; no es el caso, porque el contenedor se
-separa.
+<<AERO>>
 
 \section{Análisis estructural}
 \subsection{Modelo y verificación}
@@ -596,7 +562,7 @@ t_planeo = tab("lcccccc", ["Configuración", "$C_L$", "$C_D$", "L/D", r"$w$ nomi
 
 fl = R.get("freq_libre")
 V = {
-    "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "T_POLH": t_polh, "PH_KP": n(PH["Kp"], 2), "PH_KV": n(PH["Kv"], 2),
+    "AERO": AP.fragmento(), "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "T_POLH": t_polh, "PH_KP": n(PH["Kp"], 2), "PH_KV": n(PH["Kv"], 2),
     "PH_CD0": n(PH["cd_cuerpo"], 2), "PH_CDA": n(PH["cd_ala"], 2), "PH_CDC": n(PH["cd_cola"], 2),
     "T_PLANEO": t_planeo,
     "FIG_PLANEO": fig("planeo.png", 1.0, "Izquierda: polar de velocidades. Derecha: dispersión del descenso con las incertidumbres de modelo y de trim."),

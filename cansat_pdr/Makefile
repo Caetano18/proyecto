@@ -24,7 +24,13 @@ fea:
 informe:
 	$(PY) build_informe.py
 
+aero:
+	$(PY) polhamus.py ../fea/polhamus.json ../figs/polhamus.png
+	$(PY) planeo.py ../fea/planeo.json ../figs/planeo.png
+	$(PY) planeo.py ../fea/planeo_500g.json ../figs/planeo_500g.png 500
+	$(PY) aero_planeador.py
+
 laminas:
 	$(PY) build_pdr.py
 
-.PHONY: all cad planos fea informe laminas
+.PHONY: all cad planos fea informe laminas aero

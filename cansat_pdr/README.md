@@ -6,6 +6,7 @@ para el CanSat Argentina Universitario (Apéndice A: Ø90 mm, 200 a 250 mm, 500 
 | Archivo | Qué es |
 |---|---|
 | `PDR_Mecanica_CanSat_AlaDelta.pdf` | Informe (LaTeX), con los planos como anexo |
+| `Aerodinamica_Planeador.pdf` | Sección de aerodinámica del planeador, suelta (también es la sección 8 del informe) |
 | `PDR_Mecanica_Laminas.pdf` | El mismo contenido en láminas 4:3, formato PDR |
 | `planos/Planos_CanSat_AlaDelta.pdf` | Siete planos A3 (CS-MEC-01 a 07) |
 | `cad/*.step` | Modelo 3D en lanzamiento y desplegado |
@@ -16,6 +17,7 @@ para el CanSat Argentina Universitario (Apéndice A: Ø90 mm, 200 a 250 mm, 500 
 
     make cad planos     # CAD, renders y planos (1 min)
     make fea            # malla + CalculiX + respuesta dinámica (20 min, 8 GB de RAM)
+    make aero           # aerodinámica del planeador (Polhamus, polar, descenso, estabilidad)
     make informe        # PDF en LaTeX
     make laminas        # PDF de láminas
 
