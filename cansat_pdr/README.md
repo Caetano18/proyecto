@@ -17,7 +17,7 @@ para el CanSat Argentina Universitario (Apéndice A: Ø90 mm, 200 a 250 mm, 500 
 
     make cad planos     # CAD, renders y planos (1 min)
     make fea            # malla + CalculiX + respuesta dinámica (20 min, 8 GB de RAM)
-    make aero           # aerodinámica del planeador (Polhamus, polar, descenso, estabilidad)
+    make aero           # aerodinámica del planeador (Polhamus, polar, descenso, distribución de carga con VLM, estabilidad)
     make informe        # PDF en LaTeX
     make laminas        # PDF de láminas
 

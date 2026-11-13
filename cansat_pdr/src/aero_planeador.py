@@ -68,8 +68,11 @@ def calcular():
     d = 1.0
     clf = lambda a: float(sum(ph.cl(a, r["AR"], 0.5)))
     aw = (clf(a20 + d) - clf(a20 - d)) / math.radians(2 * d)           # pendiente local de sustentacion [1/rad]
+    D = json.load(open(os.path.join(FEA, "aero_dist.json")))
+    r["dist"] = D
     xA, cr = P.X_A, P.D_AB
-    x_ac = (xA + 0.50 * cr, xA + 2 / 3 * cr)                           # 25 % de la CAM (0,50 cr) a ala esbelta (0,667 cr)
+    x_ac = (D["xnp_20"]["0"], D["xnp_20"]["1"])                        # punto neutro del ala a 20 grados, f de 0 a 1 (VLM + Polhamus)
+    x_w5 = D["xnp_20"]["0.5"]
     St, lt = 80e-4, 0.217                                              # nota de cola
     ART = 2.0
     at = 2 * math.pi * ART / (2 + math.sqrt(4 + ART ** 2))
@@ -86,7 +89,13 @@ def calcular():
     np_lo = (x_ac[0] + k * x_t) / (1 + k) - sh_b[1]
     np_hi = (x_ac[1] + k * x_t) / (1 + k) - sh_b[0]
     mm = r["mac"]
-    r["est"] = dict(aw=aw, x_ac=x_ac, k=k, at=at, de=de, x_t=x_t, x_cg=x_cg, sh_b=sh_b, np=(np_lo, np_hi),
+    sh_c = 0.5 * (sh_b[0] + sh_b[1])
+    np_c = (x_w5 + k * x_t) / (1 + k) - sh_c
+    def k_req(xw, sh):
+        T = x_cg + 0.10 * mm + sh
+        return (T - xw) / (x_t - T)
+    k_lo, k_c = k_req(x_ac[0], sh_b[1]), k_req(x_w5, sh_c)
+    r["est"] = dict(aw=aw, x_ac=x_ac, np_c=np_c, SM_c=(np_c - x_cg) / mm, St_req_lo=80.0 * k_lo / k, St_req_c=80.0 * k_c / k, k=k, at=at, de=de, x_t=x_t, x_cg=x_cg, sh_b=sh_b, np=(np_lo, np_hi),
                     SM=((np_lo - x_cg) / mm, (np_hi - x_cg) / mm), cg_req=np_lo - 0.10 * mm, dcg=x_cg - (np_lo - 0.10 * mm),
                     dcg_bat=0.046 * 60 / m, x_centroide=MAS["x_centroide_ala"])
     return r
@@ -157,7 +166,7 @@ def figuras(r):
     ax.text(P.X_B + 6, 3.2, "ala (planta, esquemática)", fontsize=8.6, color="#a0520f")
     ax.text(318, -3.0, "cola", fontsize=8.6, color="#a0520f", ha="center")
     ax.barh(-6.4, e["x_ac"][1] - e["x_ac"][0], left=e["x_ac"][0], height=1.2, color="#7d3c98", alpha=0.85)
-    ax.text(e["x_ac"][0] - 3, -6.4, "centro aerodinámico del ala\n(0,50 a 0,67 de la cuerda de raíz)", ha="right", va="center", fontsize=8.8)
+    ax.text(e["x_ac"][0] - 3, -6.4, "punto neutro del ala\n(VLM + Polhamus, f de 0 a 1)", ha="right", va="center", fontsize=8.8)
     ax.barh(-8.6, e["np"][1] - e["np"][0], left=e["np"][0], height=1.2, color=AZ, alpha=0.85)
     ax.text(e["np"][0] - 3, -8.6, "punto neutro del conjunto\n(con cola y cuerpo)", ha="right", va="center", fontsize=8.8)
     ax.axvline(e["x_cg"], color=RJ, lw=2.2)
@@ -355,6 +364,100 @@ no se rehízo con esta geometría.
         _fig("aero_estabilidad.png", 1.0, "Posición del centro de gravedad frente al punto neutro estimado, medidas desde la nariz."),
         n(E["np"][0], 0), n(E["np"][1], 0), n(E["x_cg"], 0), "%+.0f" % (100 * SM[0]) + r"\,\%", "%+.0f" % (100 * SM[1]) + r"\,\%",
         n(E["cg_req"], 0), n(E["dcg"], 0), n(E["dcg_bat"], 1))
+    D = r["dist"]
+    V = D["varilla"]
+    def fila(c, nom, caso):
+        x = V[f"{c}_{caso}"]
+        return [nom, n(x["M_apice"], 0), n(x["M_J"], 0), n(x["sigma_LE"], 0), n(x["flecha_z_punta"], 1)]
+    t_val = _tab("lccc", ["Comprobación del VLM", "VLM", "Referencia", "Diferencia"], [
+        ["Ala rectangular $A=6$: $dC_L/d\\alpha$ [1/rad]", n(D["valid"]["rect_AR6"], 2), "%s (Helmbold)" % n(D["valid"]["helmbold_AR6"], 2),
+         "%+.1f" % (100 * (D["valid"]["rect_AR6"] / D["valid"]["helmbold_AR6"] - 1)) + r"\,\%"],
+        ["Delta $A=4$: $K_p$ [1/rad]", n(D["valid"]["delta_AR4"], 2), "%s (fig. 6 de NASA)" % n(D["valid"]["paper_Kp_AR4"], 2),
+         "%+.1f" % (100 * (D["valid"]["delta_AR4"] / D["valid"]["paper_Kp_AR4"] - 1)) + r"\,\%"],
+    ], "Comprobación del método de red de vórtices.", r"\footnotesize")
+    t_dist = _tab("lc", ["Resultado", "Valor"], [
+        ["Área de la planta con el cuerpo / expuesta (membrana)", "%s / %s\\,cm$^2$" % (n(D["S_gross_cm2"], 0), n(D["S_exp_cm2"], 0))],
+        ["Alargamiento de la planta completa", n(D["AR_gross"], 2)],
+        ["$K_p$ de la planta real (referido al área total)", "%s\\,/rad" % n(D["Kp"], 2)],
+        ["Centro aerodinámico lineal", "%s\\,mm (%s de la cuerda de raíz)" % (n(D["x_ac"], 0), n(D["x_ac_cr"], 2))],
+        ["Centro de la fuerza de vórtice", "%s\\,mm (%s)" % (n(D["x_v"], 0), n(D["x_v_cr"], 2))],
+        ["Fuerza normal potencial / de vórtice, en vuelo", "%s / %s\\,N" % (n(D["N_pot"], 2), n(D["N_vor"], 2))],
+        ["Parte que cae sobre la membrana expuesta", "%.0f\\,\\%% (potencial), %.0f\\,\\%% (vórtice)" % (100 * D["pot_frac_exp"], 100 * D["vor_frac_exp"])],
+        ["Presión uniforme equivalente sobre la membrana", "%s\\,Pa (nota: 122)" % n(D["p_unif"], 0)],
+        ["Presión dinámica y velocidad de diseño", "%s\\,Pa, %s\\,m/s" % (n(D["q"], 0), n(D["V_dist"], 1))],
+    ], "Distribución aerodinámica a $\\alpha=20^\\circ$ con $f=0{,}5$.", r"\footnotesize")
+    t_var = _tab("lcccc", ["Caso", "$M$ ápice", "$M$ en J", r"$\sigma$ varilla", "Flecha"], [
+        fila("uniforme", "Presión uniforme, vuelo", "vuelo"), fila("distribuida", "Distribuida, vuelo", "vuelo"), "-",
+        fila("uniforme", "Presión uniforme, apertura (3$\\times$)", "apertura"), fila("distribuida", "Distribuida, apertura (3$\\times$)", "apertura"),
+    ], "Varilla de borde de ataque: momentos en N$\\cdot$mm, tensión en MPa, flecha en mm.", r"\footnotesize")
+    Eg = r["est"]
+    nvA, nuA = V["distribuida_apertura"], V["uniforme_apertura"]
+    wa = D["w_area"]
+    nuevo = r"""\subsection{Distribución de carga sobre el ala}
+\que Cómo se reparte la fuerza aerodinámica en la planta del ala, qué parte llega a la membrana y a la varilla de borde de ataque, y dónde
+actúa.
+\porque El ala no es el delta completo de la nota: los pivotes están a 34\,mm del eje y la planta real tiene el borde de ataque recto en
+el centro, donde va el cuerpo, y 45° de flecha afuera. Su área con el cuerpo es de %s\,cm$^2$ y la de membrana de %s\,cm$^2$ (la nota usa
+394). El alargamiento de la planta completa es %s, dentro de lo ensayado por Polhamus. Se calcula en dos partes:
+\begin{itemize}
+\item \textbf{Potencial.} Red de vórtices (VLM) de placa plana sobre la planta continuada a través del cuerpo, con %d paneles. Da la
+carga $\Delta C_p(x,y)$ y se escala con $\mathrm{sen}\,\alpha\cos\alpha$, como en Polhamus.
+\item \textbf{Vórtice.} La fuerza normal $f\,K_v\,q\,S\,\mathrm{sen}^2\alpha$ se reparte a lo largo del borde como en un ala esbelta,
+proporcional a la semienvergadura local, y hacia adentro del borde con una huella triangular centrada en $0{,}70$ de la semienvergadura
+(hipótesis del autor).
+\end{itemize}
+%s
+%s
+%s
+\chequeo La presión uniforme equivalente (%s\,Pa) coincide con los 122\,Pa de la nota. El VLM es lineal: da la forma de la carga
+potencial, pero no el pico de borde de ataque, que en flujo real se desprende y lo reemplaza el vórtice; la huella del vórtice es una
+hipótesis, el total no. El %.0f\,\%% de la fuerza cae sobre la membrana; el resto lo toma el cuerpo. Con el área efectiva de la planta real
+($%s$\,cm$^2$) el descenso baja de %s a %s\,m/s, y a %s\,m/s si el cuerpo carga todo el centro (%s\,cm$^2$): el valor de la sección anterior,
+calculado con los 394\,cm$^2$ de la nota, es conservador.
+
+\subsection{Efecto de la distribución sobre la varilla}
+\que Cuánto cambian los esfuerzos de la varilla de borde de ataque al usar la carga real en lugar de la presión uniforme.
+\porque La reacción de cada tira de membrana sobre la varilla se calcula con la presión local, y el pórtico de la sección del ala se
+resuelve con esa carga, en vuelo y en la apertura (tres veces la de vuelo).
+%s
+\chequeo El momento en el ápice y la tensión casi no cambian (%+.0f\,\%% y %+.0f\,\%%); en la articulación J el momento sube %+.0f\,\%% (de %s
+a %s\,N$\cdot$mm), %+.0f\,\%% sobre los 424 de la nota. El manguito trabaja a unos %s\,MPa contra 402 admisibles: el dimensionamiento no cambia.
+
+\subsection{Centro de presión y estabilidad longitudinal estática}
+\que Dónde actúa la fuerza del ala y si el centro de gravedad queda delante del punto neutro, con margen suficiente.
+\porque El punto neutro del ala sale de las derivadas de las dos partes: el potencial actúa en el centro aerodinámico (%s\,mm) y el
+vórtice a %s\,mm. A $\alpha=20^\circ$ el centro de presión del ala está en %s\,mm y su punto neutro en %s\,mm (de %s a %s\,mm según $f$);
+el vórtice lo corre hacia atrás con el ataque. Para el conjunto se suma la cola de la nota de cola (80\,cm$^2$, brazo de 217\,mm,
+pendiente $%s$/rad, $\eta=0{,}9$, $d\varepsilon/d\alpha=%s$), que aporta el factor $k=%s$ de la pendiente del ala, y el cuerpo, que desestabiliza
+por efecto Munk ($k_2-k_1$ entre 0{,}5 y 0{,}7) y corre el punto neutro %s a %s\,mm hacia la nariz.
+%s
+%s
+\begin{resultado}Punto neutro del conjunto: %s a %s\,mm desde la nariz (%s en el caso central). Centro de gravedad en vuelo: %s\,mm. Margen estático
+de $%s$ a $%s$ de la cuerda media ($%s$ en el caso central): \textbf{negativo en todo el rango}. Según esta estimación el planeador sería
+inestable en cabeceo con la cola de 80\,cm$^2$.\end{resultado}
+\chequeo Para $10\,\%%$ de margen aun en el peor caso hace falta una cola de %s\,cm$^2$ con el mismo brazo (%s\,cm$^2$ en el caso central),
+o llevar el centro de gravedad a %s\,mm, unos %s\,mm más adelante. Mover la batería 60\,mm hacia la nariz lo corre solo %s\,mm, y el lastre
+necesario sería de más de 200\,g, que no hay: la solución es la cola. Es una estimación de orden de magnitud: el punto neutro de la maqueta
+puede diferir de éste, y la cola de la nota de cola no se dimensionó para esta ala.
+
+""" % (n(D["S_gross_cm2"], 0), n(D["S_exp_cm2"], 0), n(D["AR_gross"], 2), D["n_paneles"], t_val, t_dist,
+       _fig("aero_distribucion.png", 1.0, "Presión de diseño en vuelo, carga en la envergadura y reacción sobre la varilla."),
+       n(D["p_unif"], 0), 100 * D["share_exp"], n(wa["expuesta"]["S_cm2"], 0), n(wa["nota"]["w"], 1), n(wa["expuesta"]["w"], 1),
+       n(wa["total"]["w"], 1), n(wa["total"]["S_cm2"], 0), t_var,
+       100 * (nvA["M_apice"] / nuA["M_apice"] - 1), 100 * (nvA["sigma_LE"] / nuA["sigma_LE"] - 1), 100 * (nvA["M_J"] / nuA["M_J"] - 1),
+       n(nuA["M_J"], 0), n(nvA["M_J"], 0), 100 * (nvA["M_J"] / 424 - 1), n(nvA["M_J"] * 4 / 167.8, 0),
+       n(D["x_ac"], 0), n(D["x_v"], 0), n(D["xcp_20"]["0.5"], 0), n(D["xnp_20"]["0.5"], 0), n(D["xnp_20"]["0"], 0), n(D["xnp_20"]["1"], 0),
+       n(Eg["at"], 1), n(Eg["de"], 2), n(Eg["k"], 3), n(Eg["sh_b"][0], 0), n(Eg["sh_b"][1], 0),
+       _fig("aero_cp.png", 1.0, "Izquierda: centro de presión y punto neutro del ala contra el ataque. Derecha: fuerza que llega a la varilla."),
+       _fig("aero_estabilidad.png", 1.0, "Posición del centro de gravedad frente al punto neutro estimado, medidas desde la nariz."),
+       n(Eg["np"][0], 0), n(Eg["np"][1], 0), n(Eg["np_c"], 0), n(Eg["x_cg"], 0),
+       "%+.0f" % (100 * Eg["SM"][0]) + r"\,\%", "%+.0f" % (100 * Eg["SM"][1]) + r"\,\%", "%+.0f" % (100 * Eg["SM_c"]) + r"\,\%",
+       n(Eg["St_req_lo"], 0), n(Eg["St_req_c"], 0), n(Eg["cg_req"], 0), n(Eg["dcg"], 0), n(Eg["dcg_bat"], 1))
+    i0 = s.index("\\subsection{Estabilidad longitudinal estática}")
+    i1 = s.index("\\subsection{Lo que falta}")
+    s = s[:i0] + nuevo + s[i1:]
+    s = s.replace("La\nestabilidad longitudinal no se puede asegurar con este nivel de modelo: el centro de gravedad cae dentro del rango de incertidumbre\ndel punto neutro.",
+                  "Según\nla estimación de la sección, con la cola de 80\\,cm$^2$ el punto neutro queda por delante del centro de gravedad: hace falta una cola mayor.")
     s = s.replace("@@W368@@", n(pl.sink(*pl.delta(20.0), m=0.3675)[0], 1))
     return s + _tab("lcc", ["Parámetro", "Delta", "Avión recto"], [
         ["Parámetro que más lo mueve", sd[0][0], sr[0][0]], ["Correlación de rangos", "%+.2f" % sd[0][1], "%+.2f" % sr[0][1]]],

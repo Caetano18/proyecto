@@ -28,6 +28,7 @@ aero:
 	$(PY) polhamus.py ../fea/polhamus.json ../figs/polhamus.png
 	$(PY) planeo.py ../fea/planeo.json ../figs/planeo.png
 	$(PY) planeo.py ../fea/planeo_500g.json ../figs/planeo_500g.png 500
+	$(PY) aero_dist.py
 	$(PY) aero_planeador.py
 
 laminas:

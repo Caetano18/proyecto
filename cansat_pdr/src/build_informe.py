@@ -16,6 +16,7 @@ MAS = json.load(open(os.path.join(FEA, "masas.json")))
 ALA = json.load(open(os.path.join(FEA, "ala_desplegada.json")))
 VER = json.load(open(os.path.join(FEA, "verificacion_viga.json")))
 PL500 = json.load(open(os.path.join(FEA, "planeo_500g.json")))
+AD = json.load(open(os.path.join(FEA, "aero_dist.json")))
 EJES = "xyz"
 MT = P.MAT
 
@@ -403,7 +404,7 @@ fuera del plano pasa al tirante.
 <<T_ALA>>
 <<FIG_ALA>>
 \chequeo Varilla: $MS=<<MS_LE>>$ con 400\,MPa admisibles. Pandeo del tirante: $P_{cr}/N=<<PCR>>$. El manguito se dimensiona para
-<<MJ>>\,N$\cdot$mm. El primer modo del ala abierta está en <<FALA>>\,Hz (sin contar la rigidez que da la tensión de la tela).
+<<MJ>>\,N$\cdot$mm. El primer modo del ala abierta está en <<FALA>>\,Hz (sin contar la rigidez que da la tensión de la tela). Con la distribución de presiones de la sección~\\ref{sec:aero} el momento en J sube a <<MJD>>\\,N$\\cdot$mm y la tensión en la varilla casi no cambia.
 
 <<AERO>>
 
@@ -568,7 +569,7 @@ t_planeo = tab("lcccccc", ["Configuración", "$C_L$", "$C_D$", "L/D", r"$w$ nomi
 
 fl = R.get("freq_libre")
 V = {
-    "AERO": AP.fragmento(), "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "T_POLH": t_polh, "PH_KP": n(PH["Kp"], 2), "PH_KV": n(PH["Kv"], 2),
+    "AERO": AP.fragmento(), "MJD": n(AD["varilla"]["distribuida_apertura"]["M_J"], 0), "ACCIONES": ACC, "EQUIPO": P.EQUIPO, "T_POLH": t_polh, "PH_KP": n(PH["Kp"], 2), "PH_KV": n(PH["Kv"], 2),
     "PH_CD0": n(PH["cd_cuerpo"], 2), "PH_CDA": n(PH["cd_ala"], 2), "PH_CDC": n(PH["cd_cola"], 2),
     "T_PLANEO": t_planeo,
     "FIG_PLANEO": fig("planeo.png", 1.0, "Izquierda: polar de velocidades. Derecha: dispersión del descenso con las incertidumbres de modelo y de trim."),
