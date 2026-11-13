@@ -5,6 +5,7 @@ import sys, json
 import numpy as np
 import params as P
 import cad
+import planeo as _pl
 
 M = P.M_EQ
 
@@ -104,7 +105,8 @@ def main(out):
                m_contenedor=m_cont, x_cg_planeador_estibado=x_plan, x_cg_lanzamiento=x_tot,
                x_cg_planeador_vuelo=x_vuelo, x_centroide_ala=P.X_A + 2 * P.D_AB / 3,
                carga_alar=m_plan / 1000 * P.G0 / (P.S_TRI * 1e-4),
-               w_estimado=P.NOTA["w"] * float(np.sqrt(m_plan / 500.0 * P.NOTA["S"] / P.S_TRI)))
+               w_estimado=float(_pl.sink(*_pl.delta(20.0), m=m_plan / 1000)[0]),
+               w_estimado_sin_cuerpo_nota=P.NOTA["w"] * float(np.sqrt(m_plan / 500.0 * P.NOTA["S"] / P.S_TRI)))
     json.dump(res, open(out, "w"), indent=1)
     for k, s in sub.items():
         print(f"{k:<28s} {s['masa']:7.1f} +/- {s['inc']:.1f} g   x = {s['x']:.0f}")

@@ -409,5 +409,6 @@
  "x_cg_planeador_vuelo": 117.62304017310501,
  "x_centroide_ala": 136.6,
  "carga_alar": 91.38490006015397,
- "w_estimado": 4.284597163083504
+ "w_estimado": 4.970320806050084,
+ "w_estimado_sin_cuerpo_nota": 4.284597163083504
 }

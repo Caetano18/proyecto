@@ -11,6 +11,9 @@ PDF = os.path.join(BASE, "PDR_Mecanica_Laminas.pdf")
 os.makedirs(os.path.join(BUILD, "img"), exist_ok=True)
 
 R = json.load(open(os.path.join(FEA, "resultados_fea.json")))
+PL = json.load(open(os.path.join(FEA, "planeo.json")))
+PL500 = json.load(open(os.path.join(FEA, "planeo_500g.json")))
+POLH = json.load(open(os.path.join(FEA, "polhamus.json")))
 MAS = json.load(open(os.path.join(FEA, "masas.json")))
 ALA = json.load(open(os.path.join(FEA, "ala_desplegada.json")))
 VER = json.load(open(os.path.join(FEA, "verificacion_viga.json")))
@@ -322,7 +325,7 @@ slide("Configuración del sistema: selección", tabla(
         ["Despliegue del ala", "Alto", "Activo: trabas + servo", "Pasivo: resortes"],
         ["Protección del ala en la eyección (S5)", "Medio", "Expuesta", "Protegida por el tubo"],
         ["Masa que vuela con el ala", "Medio", "500 g", f"{m_plan:.0f} g"],
-        ["Velocidad de descenso estimada (C4)", "Alto", "5,0 m/s (nota de membrana)", f"{n(MAS['w_estimado'], 1)} m/s"],
+        ["Velocidad de descenso estimada (C4)", "Alto", f"{n(PL500['nominal']['cuerpo romo (disco de nariz plano)']['delta']['w'], 1)} m/s con 500 g", f"{n(MAS['w_estimado'], 1)} m/s con {m_plan:.0f} g"],
         ["Mecanismos críticos", "Medio", "Trabas de ala + suelta del drogue", "Una llave de bayoneta"],
         ["Objetos que descienden", "Bajo", "Uno", "Dos (contenedor con paracaídas)"],
     ], [200, 46, 205, 205], fs=10) + cols(
@@ -373,6 +376,18 @@ slide("Concepto de operaciones mecánico", img("conops.png", w=676) + tabla(
         ["6 · Planeo", "122 Pa sobre la membrana", "Varillas y tirante (pandeo)"],
     ], [200, 220, 236], fs=9.4))
 
+_n = PL["nominal"]["cuerpo romo (disco de nariz plano)"]
+_o = PL["nominal"]["con ojiva en la nariz"]
+slide("Velocidad de descenso del planeador (C4)", img("planeo.png", w=676) + tabla(
+    ["Configuración", "C_L", "C_D", "L/D", "w nominal [m/s]", "w 5–95 % [m/s]", "Alcance desde 400 m"], [
+        ["Delta, α = 20°, f = 0,5", n(_n["delta"]["CL"], 2), n(_n["delta"]["CD"], 2), n(_n["delta"]["LD"], 1), n(_n["delta"]["w"], 1),
+         f"{n(PL['mc']['delta']['p'][0], 1)} a {n(PL['mc']['delta']['p'][2], 1)}", f"{400 * _n['delta']['LD']:.0f} m"],
+        ["Avión recto (referencia), C_L = 0,8", n(_n["recta"]["CL"], 2), n(_n["recta"]["CD"], 2), n(_n["recta"]["LD"], 1), n(_n["recta"]["w"], 1),
+         f"{n(PL['mc']['recta']['p'][0], 1)} a {n(PL['mc']['recta']['p'][2], 1)}", f"{400 * _n['recta']['LD']:.0f} m"],
+    ], [180, 40, 40, 40, 100, 100, 110], fs=9.2, alin=[None, "c", "c", "c", "c", "c", "c"]) + nota(
+    f"Planeador de {PL['masa_g']:.0f} g con S = 394 cm² y 20° de alabeo; el contenedor se separa. Cuerpo romo del diseño incluido. "
+    f"Con ojiva en la nariz: delta {n(_o['delta']['w'], 1)} m/s, avión {n(_o['recta']['w'], 1)} m/s. Polhamus está fuera de su rango "
+    "de validez (alargamiento 4, ensayado hasta 2): los rangos son juicio del autor. El avión recto no está diseñado."))
 slide("Compatibilidad con el cohete", cols(
     tabla(["Verificación", "Valor", "Requisito"], [
         ["Diámetro exterior", "90,0 mm", "S2: 90 mm"],
@@ -828,7 +843,7 @@ slide("Presupuesto de masa (3/3): total y centro de gravedad", cols(
         ["Centroide del ala (2/3 de la cuerda)", n(MAS["x_centroide_ala"], 0)],
     ], [200, 60], fs=9.6, alin=[None, "c"]) + caja("Para aerodinámica",
         f"Masa en vuelo: <b>{m_plan:.0f} g</b> (la nota de membrana supone 500 g). Carga alar: {n(MAS['carga_alar'], 0)} N/m². "
-        f"Con la misma ala, la velocidad de descenso escala con la raíz de la masa: <b>{n(MAS['w_estimado'], 1)} m/s</b> "
+        f"Calculada como planeador, con la resistencia del cuerpo: <b>{n(MAS['w_estimado'], 1)} m/s</b> "
         f"(C4: 5 ± 3 m/s).<br><br>El CG en vuelo queda {MAS['x_centroide_ala'] - MAS['x_cg_planeador_vuelo']:.0f} mm por delante "
         "del centroide del ala. El margen estático hay que recalcularlo con la cola."), w=[350, None]))
 slide("Plan de ensayos", tabla(["Ensayo", "Requisito", "Método", "Criterio de aceptación"], [

@@ -24,21 +24,17 @@ def cl(alfa_deg, AR, f):
 
 
 def main(out_json, out_fig, m_vuelo_g):
-    N = P.NOTA
-    AR = N["AR"]
+    import planeo as pl
+    AR = P.NOTA["AR"]
     a = math.radians(ALFA)
-    # resto de la resistencia (parasita + cuerpo), de la nota de membrana: C_D = 0,50 con C_L = 1,20
-    cd_resto = 0.50 - 1.20 * math.tan(a)
-    k_w = N["w"] / (0.50 / math.hypot(1.20, 0.50) ** 1.5)          # w = k C_D / C_R^1,5 a masa y area fijas
     filas = []
     for f, nombre in ((0.0, "Sin sustentación de vórtice"), (0.5, "Nota de membrana"), (1.0, "Polhamus completo")):
         clp, clv = cl(ALFA, AR, f)
-        c_l = float(clp + clv)
-        c_d = cd_resto + c_l * math.tan(a)
-        w500 = k_w * c_d / math.hypot(c_l, c_d) ** 1.5
-        filas.append(dict(f=f, nombre=nombre, CLp=float(clp), CLv=float(clv), CL=c_l, CD=c_d, LD=c_l / c_d, w500=w500,
-                          w_vuelo=w500 * math.sqrt(m_vuelo_g / 500.0)))
-    res = dict(AR=AR, alfa=ALFA, Kp=float(np.interp(AR, AR_KP, KP)), Kv=KV4, cd_resto=cd_resto, filas=filas, m_vuelo=m_vuelo_g)
+        c_l, c_d = pl.delta(ALFA, f)
+        filas.append(dict(f=f, nombre=nombre, CLp=float(clp), CLv=float(clv), CL=float(c_l), CD=float(c_d), LD=float(c_l / c_d),
+                          w500=float(pl.sink(c_l, c_d, m=0.5)[0]), w_vuelo=float(pl.sink(c_l, c_d, m=m_vuelo_g / 1000)[0])))
+    res = dict(AR=AR, alfa=ALFA, Kp=float(np.interp(AR, AR_KP, KP)), Kv=KV4, filas=filas, m_vuelo=m_vuelo_g,
+               cd_ala=0.03, cd_cola=0.01, cd_cuerpo=float(pl.cuerpo(0.8, a)))
     json.dump(res, open(out_json, "w"), indent=1)
     plt.rcParams.update({"font.family": "Inter", "font.size": 11, "axes.spines.top": False, "axes.spines.right": False,
                          "axes.grid": True, "grid.color": "0.88"})
@@ -62,14 +58,8 @@ def main(out_json, out_fig, m_vuelo_g):
     ax.set_ylim(0, 2.0)
     ax = axs[1]
     fs = np.linspace(0, 1, 41)
-    for m, c, lab in ((500.0, "#555555", "500 g (nota de membrana)"), (m_vuelo_g, "#2f3192", f"{m_vuelo_g:.0f} g (este diseño)")):
-        ws = []
-        for f in fs:
-            clp, clv = cl(ALFA, AR, f)
-            c_l = clp + clv
-            c_d = cd_resto + c_l * math.tan(a)
-            ws.append(k_w * c_d / math.hypot(c_l, c_d) ** 1.5 * math.sqrt(m / 500.0))
-        ax.plot(fs, ws, color=c, lw=2, label=lab)
+    for m, c, lab in ((0.5, "#555555", "500 g"), (m_vuelo_g / 1000, "#2f3192", f"{m_vuelo_g:.0f} g (planeador de este diseño)")):
+        ax.plot(fs, [pl.sink(*pl.delta(ALFA, f_), m=m)[0] for f_ in fs], color=c, lw=2, label=lab)
     ax.axhspan(2, 8, color="#1a8a55", alpha=0.08, lw=0)
     ax.axhline(5, color="#1a8a55", lw=1, ls="--")
     ax.text(0.02, 7.45, "requisito C4: 5 ± 3 m/s", fontsize=9, color="#1a8a55")
