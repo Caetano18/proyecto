@@ -39,15 +39,19 @@ def recta(cl, e=0.85, cdw=0.04, cdf=0.8, cdt=0.01):
     return cl, cdw + cuerpo(cdf, max(a, 0.0)) + cdt + cl ** 2 / (math.pi * e * AR_PL)
 
 
-def sink(cl, cd, m=M_PLAN, rho=1.2, bank=BANK):
+def sink(cl, cd, m=None, rho=1.2, bank=BANK):
+    m = M_PLAN if m is None else m
     n = 1 / math.cos(math.radians(bank))
     cr = math.hypot(cl, cd)
     v = math.sqrt(2 * n * m * G / (rho * S * cr))
     return v * cd / cr, v * cl / cr, v
 
 
-def main(out_json, out_fig):
-    res = {}
+def main(out_json, out_fig, masa_g=None):
+    global M_PLAN
+    if masa_g:
+        M_PLAN = float(masa_g) / 1000
+    res = {"masa_g": M_PLAN * 1000}
     # control: reproduce la nota de membrana (500 g, S = 394 cm2, CL = 1,20, CD = 0,50)
     res["control_nota"] = sink(1.20, 0.50, m=0.5)[0]
     nom = {}
@@ -125,4 +129,4 @@ def main(out_json, out_fig):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])
