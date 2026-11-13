@@ -13,8 +13,8 @@ import cadquery as cq
 from cadquery import Vector as V
 import params as P
 
-GRIS = (0.20, 0.22, 0.25)
-CF = (0.07, 0.07, 0.08)
+GRIS = (0.34, 0.36, 0.40)
+CF = (0.13, 0.13, 0.15)
 ALU = (0.75, 0.77, 0.80)
 G10C = (0.55, 0.68, 0.42)
 TELA = (0.95, 0.45, 0.10)

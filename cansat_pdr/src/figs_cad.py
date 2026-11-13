@@ -34,6 +34,65 @@ def explotar(parts):
     return out
 
 
+def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5):
+    """Agrega llamadas (linea roja + recuadro) a un render, usando las marcas proyectadas."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams["font.family"] = "Inter"
+    im = plt.imread(f"{out}/{img}.png")
+    h, w = im.shape[:2]
+    cl, cr = (col if izq else 0.0), (col if der else 0.0)
+    W = ancho
+    wi = W * (1 - cl - cr)
+    H = wi * h / w
+    fig = plt.figure(figsize=(W, H))
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, W)
+    ax.set_ylim(H, 0)
+    ax.axis("off")
+    x0 = W * cl
+    ax.imshow(im, extent=(x0, x0 + wi, H, 0), interpolation="lanczos")
+    mk = M[key]
+    for lado, labs in (("i", izq), ("d", der)):
+        labs = sorted(labs, key=lambda t: mk[t[0]][1])
+        for j, (m, txt) in enumerate(labs):
+            yc = H * (j + 0.5) / len(labs)
+            px, py = x0 + mk[m][0] * wi, mk[m][1] * H
+            xt = W * cl - 0.08 if lado == "i" else x0 + wi + 0.08
+            ax.plot([xt, px], [yc, py], color="#d62020", lw=0.9, zorder=3)
+            ax.plot([px], [py], "o", color="#d62020", ms=3, zorder=4)
+            ax.text(xt, yc, txt, ha="right" if lado == "i" else "left", va="center", fontsize=fs, zorder=5,
+                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#2f3192", lw=0.9))
+    fig.savefig(f"{out}/{img}_anot.png", dpi=250)
+    plt.close(fig)
+
+
+def anotar_todo(out, M):
+    anotar(out, M, "lan_corte", "lan", izq=[("paracaidas", "Paracaídas (15 m/s)"), ("llave", "Llave de bayoneta\ny aislador"),
+                                            ("bateria", "Batería 18650"), ("lastre", "Lastre de centrado"), ("boca", "Boca abierta\n(salida del planeador)")],
+           der=[("tapa", "Tapa nervada\nPA12-CF"), ("tubo", "Tubo LW-PLA\npared 2 mm"), ("pcb", "PCB principal"), ("ala", "Ala plegada"),
+                ("c1", "Cuaderna C1")], ancho=6.2, col=0.31)
+    anotar(out, M, "equipos", "equipos", izq=[("c1", "Cuaderna C1\n(pivotes A)"), ("lastre", "Lastre de centrado"), ("servo_cola", "Servo de cola"),
+                                              ("bandeja", "Bandeja de aviónica\nG10 0,8"), ("pcb", "PCB principal")],
+           der=[("larguero", "Larguero CFRP Ø5/3,5"), ("bateria", "Batería 18650\nsobre sillas"), ("pcb_radio", "PCB radio / GNSS"),
+                ("c4", "Cuaderna C4\n(pivotes B)"), ("servo_cerrojo", "Servo del cerrojo"), ("llave", "Llave de bayoneta")], ancho=9.0, col=0.22)
+    anotar(out, M, "bastidor_explotado", "bastidor", izq=[("tapa", "Tapa superior G10 0,5"), ("c1", "C1 (nariz)"), ("p_lat", "Panel lateral G10 0,5"),
+                                                          ("bandeja", "Bandeja G10 0,8"), ("c2", "C2")],
+           der=[("guia", "Guía de botalón"), ("c4", "C4 (cola)"), ("larguero", "Larguero CFRP"), ("c3", "C3"), ("cuna", "Cuna de ala")],
+           ancho=9.0, col=0.20)
+    anotar(out, M, "cerrojo", "cerrojo", izq=[("brida", "Anclaje de brida\n(Ø3 en el nervio)"), ("tapa", "Tapa nervada"), ("c4", "Cuaderna C4")],
+           der=[("pasador", "Pasador Ø3 y plato"), ("llave", "Eje de la llave Ø5"), ("servo", "Servo del cerrojo"), ("nervio", "Nervio radial")],
+           ancho=8.0, col=0.24)
+    anotar(out, M, "est_iso", "est", izq=[("c1", "Cuaderna C1"), ("membrana", "Membrana plegada"), ("varilla_ext", "Tramo exterior\ndel borde de ataque"),
+                                          ("patin", "Patín de guía")],
+           der=[("botalon", "Botalón de cola"), ("tapa", "Tapa superior\n(celdas solares)"), ("manguito", "Manguito de traba"), ("tirante", "Tirante"),
+                ("cuna", "Cuna de ala")], ancho=9.0, col=0.21)
+    anotar(out, M, "des_iso", "des", izq=[("T", "T: herraje de punta"), ("J", "J: articulación\ncon manguito"), ("A", "A: pivote de ápice"), ("ba", "Borde de ataque\nCFRP Ø5/3,5")],
+           der=[("cola", "Cola en V (ref.)"), ("botalon", "Botalón"), ("solar", "Celdas solares"), ("membrana", "Membrana ripstop"),
+                ("tirante", "Tirante Ø3/2"), ("B", "B: pivote del tirante")], ancho=9.0, col=0.20)
+
+
 def main(out):
     os.makedirs(out, exist_ok=True)
     est, lan, des = cad.build("estibado"), cad.build("lanzamiento"), cad.build("desplegado")
@@ -98,6 +157,7 @@ def main(out):
                               "larguero": (100, -20.5, 26), "p_lat": (100, -82.5, 0), "tapa": (100, 0, 91),
                               "bandeja": (100, 0, -59.5), "cuna": (62, -108, 0), "guia": (140, 0, 122)})
     json.dump(M, open(f"{out}/marcas.json", "w"), indent=1)
+    anotar_todo(out, M)
     print("renders ok")
 
 

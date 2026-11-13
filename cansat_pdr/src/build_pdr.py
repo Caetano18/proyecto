@@ -692,32 +692,21 @@ slide("Análisis modal: frecuencias y masas efectivas", cols(
         (f"Sin la guía del fuselaje (contenedor en voladizo) el primer modo baja a {R['freq_libre'][0]:.0f} Hz."
          if R.get("freq_libre") else ""),
     ], "s"), w=[404, None]))
-slide("Formas modales", '<div class="grid2x2">' + "".join(
-    img(f"fea_modo{i + 1}.png", h=188, cap=f"Modo {i + 1}: {f[i]:.0f} Hz · {desc_modo(i)} · ζ = {zm[i] * 100:.1f} %")
-    for i in (0, 1, 2, 3)) + "</div>")
+slide("Formas modales", img("fea_modos.png", h=410))
 tm = lambda e, k: R["armonico"][e]["trans_max"][k]
-slide("Respuesta en frecuencia a 15 G: aceleraciones", img("fea_respuesta_g.png", w=676) + tabla(
+slide("Respuesta en frecuencia a 15 G: aceleraciones", cols(img("fea_respuesta_g.png", h=410), tabla(
     ["Punto", "Pico en X [G]", "a [Hz]", "Pico en Y [G]", "a [Hz]", "Pico en Z [G]", "a [Hz]"], [
         [k] + sum([[f"{15 * tm(e, k):.0f}", f"{R['armonico'][e]['f_trans_max'][k]:.0f}"] for e in EJES], [])
         for k in R["armonico"]["x"]["trans_max"]
-    ], [150, 80, 60, 80, 60, 80, 60], fs=8.8, alin=[None, "c", "c", "c", "c", "c", "c"]) + nota(
+    ], [78, 30, 30, 30, 30, 30, 30], fs=7.4, alin=[None, "c", "c", "c", "c", "c", "c"]) + nota(
     "Aceleración absoluta de respuesta para una entrada senoidal de 15 G en la base. La línea de trazos es la entrada. "
-    "Dato para el subsistema eléctrico: es el nivel que ven las placas y la batería."))
-slide("Respuesta en frecuencia a 15 G: tensiones", img("fea_util_frecuencia.png", w=676) + ul([
+    "Dato para el subsistema eléctrico: es el nivel que ven las placas y la batería."), w=[390, None]))
+slide("Respuesta en frecuencia a 15 G: tensiones", cols(img("fea_util_frecuencia.png", h=410), ul([
     "Índice de utilización = FS·σ/σ<sub>adm</sub> de cada grupo de piezas, contra la frecuencia de excitación. Por debajo de 1 hay margen.",
     "Cada pico es una resonancia. La curva se calcula con el campo completo de tensiones en los puntos de integración de CalculiX.",
     f"Los picos del eje X quedan achatados por el aislador (ζ = {zm[ix] * 100:.0f} % en el modo axial). En Y y Z mandan los modos del planeador sobre los patines.",
-], "s"))
-
-eje_peor_arm = min(EJES, key=lambda e: min(v["MS"] for v in M_("armonico", e).values()))
-slide("Respuesta en frecuencia a 15 G: mapa en resonancia", cols(
-    img(f"fea_arm_util_{eje_peor_arm}.png", w=420, cap=f"Envolvente del índice de utilización en las resonancias, excitación en {eje_peor_arm.upper()}"),
-    tabla(["Grupo", "Criterio", "σ [MPa]", "f [Hz]", "MS"], [
-        [GNOM[g], CNOM[peor("armonico", g)[3]], n(peor("armonico", g)[1]), f"{peor('armonico', g)[4]['f_crit']:.0f} ({peor('armonico', g)[2]})",
-         ms(peor("armonico", g)[0])] for g in GRUPOS
-    ], [118, 62, 40, 46, 34], fs=8.2) + nota(
-        "Peor caso de cada grupo sobre los tres ejes y todas las resonancias de 5 a 1000 Hz. La tensión es el máximo en los puntos de "
-        "integración: incluye las concentraciones en aristas pegadas, que dependen de la malla."), w=[424, None]))
+], "s"), w=[390, None]))
+slide("Respuesta en frecuencia a 15 G: mapas", img("fea_arm_mapas.png", h=412))
 slide("Choque de 30 G: pulso y respuesta", img("fea_choque_pulso.png", w=676) + cols(
     ul(["Pulso <b>semiseno de 30 G</b> aplicado en la base, en cada eje. Duración nominal de 11 ms.",
         "La duración real del golpe de eyección no se conoce: se barre de 1 a 20 ms y se toma la peor.",
@@ -726,23 +715,15 @@ slide("Choque de 30 G: pulso y respuesta", img("fea_choque_pulso.png", w=676) + 
     tabla(["Punto", "X [G]", "Y [G]", "Z [G]"], [
         [k] + [n(R["choque"][e]["acc_max_g"][k]) for e in EJES] for k in list(R["choque"]["x"]["acc_max_g"])[:6]
     ], [130, 46, 46, 46], fs=8.8, alin=[None, "c", "c", "c"]), w=[380, None]))
-eje_peor_ch = min(EJES, key=lambda e: min(v["MS"] for v in M_("choque", e).values()))
-slide("Choque de 30 G: tensiones y sensibilidad a la duración", cols(
-    img(f"fea_choque_util_{eje_peor_ch}.png", w=330, cap=f"Envolvente del índice de utilización, choque en {eje_peor_ch.upper()}"),
-    img("fea_choque_duracion.png", w=340, cap="Índice de utilización contra la duración del pulso"), gap=6) + tabla(
+slide("Choque de 30 G: mapas", img("fea_choque_mapas.png", h=412))
+slide("Choque de 30 G: sensibilidad a la duración", img("fea_choque_duracion.png", w=640) + tabla(
     ["Grupo", "Criterio", "σ a 11 ms [MPa]", "σ peor duración [MPa]", "Duración crítica", "MS"], [
         [GNOM[g], CNOM[peor("choque", g)[3]], n(peor("choque", g)[4]["sigma_11ms"]), n(peor("choque", g)[1]),
          f"{peor('choque', g)[4]['tau_crit'] * 1e3:.0f} ms ({peor('choque', g)[2]})", ms(peor("choque", g)[0])] for g in GRUPOS
     ], [190, 100, 90, 110, 100, 50], fs=8.6, alin=[None, None, "c", "c", "c", "c"]))
-slide("Tirón del paracaídas", cols(
-    img("fea_parac_util.png", w=390, cap="Índice de utilización; deformada amplificada. Fijo en los tres anclajes de la brida"),
-    tabla(["Grupo", "Criterio", "σ [MPa]", "MS"], [
-        [GNOM[g], CNOM[peor("paracaidas", g)[3]], n(peor("paracaidas", g)[1]), ms(peor("paracaidas", g)[0])] for g in GRUPOS
-    ], [130, 78, 44, 38], fs=8.6) + ul([
-        f"Todo el CanSat cuelga de la brida y se frena a 30 G × FAD {R['paracaidas']['FAD']:.1f} = {30 * R['paracaidas']['FAD']:.0f} G equivalentes.",
-        f"Fuerza en la brida: {F_par:.0f} N. Fuerza en la llave: {F_ret:.0f} N.",
-        f"Desplazamiento máximo: {n(R['paracaidas']['umax'], 2)} mm (estiramiento del aislador).",
-        "Es un caso estático conservador: el FAD de 1,8 es el máximo posible para un semiseno."], "s"), w=[394, None]))
+slide("Tirón del paracaídas", img("fea_parac_mapas.png", w=600) + tabla(["Grupo", "Criterio", "σ [MPa]", "MS"], [
+    [GNOM[g], CNOM[peor("paracaidas", g)[3]], n(peor("paracaidas", g)[1]), ms(peor("paracaidas", g)[0])] for g in GRUPOS
+], [300, 140, 80, 80], fs=8.4, alin=[None, None, "c", "c"]))
 ch = ALA["choque"]
 slide("Ala desplegada: modos y choque", img("ala_modos.png", w=640) + cols(
     tabla(["Modo", "1", "2", "3", "4", "5"], [["f [Hz]"] + [n(x, 0) for x in ALA["modal"]["freq"][:5]]], [60, 50, 50, 50, 50, 50], fs=9.2,

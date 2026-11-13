@@ -24,6 +24,22 @@ VIEWS = {
 }
 
 
+def recortar(path, marcas=None, margen=24):
+    """Recorta el fondo blanco de la imagen y corrige las marcas (fracciones del ancho/alto)."""
+    from PIL import Image, ImageChops
+    im = Image.open(path).convert("RGB")
+    bb = ImageChops.difference(im, Image.new("RGB", im.size, (255, 255, 255))).getbbox()
+    if bb is None:
+        return marcas or {}
+    x0, y0 = max(bb[0] - margen, 0), max(bb[1] - margen, 0)
+    x1, y1 = min(bb[2] + margen, im.width), min(bb[3] + margen, im.height)
+    im.crop((x0, y0, x1, y1)).save(path)
+    out = {}
+    for k, (fx, fy) in (marcas or {}).items():
+        out[k] = ((fx * im.width - x0) / (x1 - x0), (fy * im.height - y0) / (y1 - y0))
+    return out
+
+
 def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hide=(), edges=True,
            background="white", parallel=True, clip=None, marcas=None):
     """opac: dict nombre-parcial -> opacidad.  hide: nombres parciales a omitir.
@@ -31,6 +47,7 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
     opac = opac or {}
     pl = pv.Plotter(off_screen=True, window_size=size)
     pl.set_background(background)
+    transl = False
     for p in parts:
         if any(h in p["nombre"] for h in hide) or any(h == p["grupo"] for h in hide):
             continue
@@ -40,20 +57,26 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
             if m.n_points == 0:
                 continue
         o = 1.0
-        for k, v in opac.items():
+        for k, v_ in opac.items():
             if k in p["nombre"] or k == p["grupo"]:
-                o = v
+                o = v_
+        transl = transl or o < 1.0
         pl.add_mesh(m, color=p["color"], opacity=o, smooth_shading=True, split_sharp_edges=True,
-                    specular=0.25, specular_power=20, ambient=0.25, diffuse=0.8)
+                    specular=0.35, specular_power=28, ambient=0.24, diffuse=0.85)
         if edges and o > 0.6:
             fe = m.extract_feature_edges(feature_angle=35, boundary_edges=True, manifold_edges=False)
             if fe.n_points:
-                pl.add_mesh(fe, color=(0.05, 0.05, 0.05), line_width=1.2)
+                pl.add_mesh(fe, color=(0.08, 0.08, 0.1), line_width=1.1)
     d, up = VIEWS[view] if isinstance(view, str) else view
-    pl.view_vector([-d[0], -d[1], -d[2]] if False else d, viewup=up)
+    pl.view_vector(d, viewup=up)
     if parallel:
         pl.enable_parallel_projection()
     pl.camera.zoom(zoom)
+    if not transl:
+        try:
+            pl.enable_ssao(radius=10, bias=0.5, kernel_size=128, blur=True)
+        except Exception:
+            pass
     pl.enable_anti_aliasing("ssaa")
     pl.screenshot(path)
     out = {}
@@ -62,7 +85,7 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
         for k, p in marcas.items():
             ren.SetWorldPoint(p[0], p[1], p[2], 1.0)
             ren.WorldToView()
-            v = ren.GetViewPoint()
-            out[k] = (0.5 * (v[0] + 1), 1 - 0.5 * (v[1] + 1))       # fraccion del ancho / alto, origen arriba-izquierda
+            vp = ren.GetViewPoint()
+            out[k] = (0.5 * (vp[0] + 1), 1 - 0.5 * (vp[1] + 1))
     pl.close()
-    return out
+    return recortar(path, out)
