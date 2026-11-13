@@ -257,7 +257,7 @@ del punto neutro.\end{resultado}
 %s
 \porque En régimen estacionario el empuje aerodinámico equilibra el peso, afectado por el factor de carga de la espiral:
 \[\tfrac12\rho V^2 S\,C_R=n\,m\,g,\qquad C_R=\sqrt{C_L^2+C_D^2},\qquad w=V\,\frac{C_D}{C_R},\qquad V_h=V\,\frac{C_L}{C_R},\]
-con $n=1/\cos(\mathrm{alabeo})$ y ángulo de planeo $\gamma=\arctan(C_D/C_L)$. La masa de vuelo es la del CanSat completo, 500\,g.
+con $n=1/\cos(\mathrm{alabeo})$ y ángulo de planeo $\gamma=\arctan(C_D/C_L)$. La masa de vuelo es la del CanSat completo, 500\,g, el caso más desfavorable: con el contenedor separado el planeador vuela con 368\,g y baja a @@W368@@\,m/s (línea de puntos de la figura de masa).
 Con los datos de la nota de membrana ($C_L=1{,}20$, $C_D=0{,}50$) este cálculo da %s\,m/s, contra 5{,}00 de la nota.
 
 \subsection{Sustentación: analogía de succión de borde de ataque}
@@ -355,6 +355,7 @@ no se rehízo con esta geometría.
         _fig("aero_estabilidad.png", 1.0, "Posición del centro de gravedad frente al punto neutro estimado, medidas desde la nariz."),
         n(E["np"][0], 0), n(E["np"][1], 0), n(E["x_cg"], 0), "%+.0f" % (100 * SM[0]) + r"\,\%", "%+.0f" % (100 * SM[1]) + r"\,\%",
         n(E["cg_req"], 0), n(E["dcg"], 0), n(E["dcg_bat"], 1))
+    s = s.replace("@@W368@@", n(pl.sink(*pl.delta(20.0), m=0.3675)[0], 1))
     return s + _tab("lcc", ["Parámetro", "Delta", "Avión recto"], [
         ["Parámetro que más lo mueve", sd[0][0], sr[0][0]], ["Correlación de rangos", "%+.2f" % sd[0][1], "%+.2f" % sr[0][1]]],
         "Sensibilidad del descenso (correlación de rangos de Spearman).").replace("%+.2f", "").replace(".", "{,}") if False else s

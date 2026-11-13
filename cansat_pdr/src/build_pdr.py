@@ -332,9 +332,9 @@ slide("Configuración del sistema: selección", tabla(
     caja("Seleccionada: B", "Es la única que cumple S6, S7 y E5 al pie de la letra, simplifica el despliegue y baja la carga alar. "
          "El costo es que el contenedor desciende aparte con su paracaídas."),
     caja("Si el equipo prefiere A", "El bastidor, el ala y el análisis del planeador valen igual: el tubo se parte en dos tejas "
-         "atornilladas a C1 y C4. Habría que rehacer el análisis del tubo ranurado."), gap=12) + nota("<b>Conflicto con la masa de vuelo.</b> Los 500 g del CanSat completo tienen que bajar con el ala, y en esta revisión el contenedor "
-         f"({m_cont:.0f} g) se separa: el planeador vuela con {m_plan:.0f} g. Con 500 g la opción B no sirve como está dibujada; hay que volver al cuerpo integral (A) "
-         "o hacer que el contenedor baje con el ala. Pendiente de decisión y de rehacer la estructura."))
+         "atornilladas a C1 y C4. Habría que rehacer el análisis del tubo ranurado."), gap=12) + nota("<b>Masa de vuelo.</b> El CanSat completo suma 500 g y nada queda fuera del presupuesto. Con el contenedor separado el planeador vuela con "
+         f"{m_plan:.0f} g y baja a {n(MAS['w_planeador_solo'], 1)} m/s; si todo bajara con el ala (500 g), {n(MAS['w_estimado'], 1)} m/s. Los dos cumplen C4. "
+         "El Apéndice A no dice si el contenedor baja con el ala; si el equipo lo exige, B no sirve como está dibujada y se pasa al cuerpo integral (A)."))
 
 slide("Layout físico (1/3): configuración de lanzamiento", img("lay_lanzamiento.png", w=676) + cols(
     ul([f"Diámetro exterior <b>90,0 mm</b> (S2) y largo total <b>{P.CT_LEN:g} mm</b>, con el paracaídas adentro (S3: 200 a 250).",

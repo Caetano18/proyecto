@@ -323,11 +323,12 @@ salen por ranuras laterales. En la segunda el cilindro es un contenedor cerrado 
 \chequeo Se elige B. Es la única que cumple S6, S7 y E5 al pie de la letra, el ala se abre sola al salir del cilindro y la carga
 alar baja. El costo es que el contenedor (<<M_CONT>>\,g con paracaídas) no vuela con el ala. Si el equipo prefiere A, el bastidor
 y el ala de este informe valen igual; hay que rehacer el análisis del tubo ranurado.
-\begin{resultado}\textbf{Conflicto con la masa de vuelo.} El requisito del equipo es que los 500\,g del CanSat completo bajen con el
-ala. En esta revisión el contenedor (tubo, tapa y paracaídas: <<M_CONT>>\,g) se separa y el planeador vuela con <<MPLAN>>\,g, de modo
-que esa condición no se cumple. La aerodinámica (sección~\ref{sec:aero}) se calculó con los 500\,g. Con 500\,g de masa de vuelo la
-configuración B no sirve como está dibujada: hay que volver al cuerpo integral (opción A), con el cilindro de \diam90 como fuselaje del
-planeador, o hacer que el contenedor baje con el ala. Está pendiente de decisión y de rehacer la estructura y su análisis.\end{resultado}
+\begin{resultado}\textbf{Masa de vuelo.} El CanSat completo (contenedor, paracaídas y planeador) suma 500\,g y nada queda fuera del
+presupuesto (sección~\ref{sec:masa}). En esta configuración el contenedor (<<M_CONT>>\,g) se separa y el planeador vuela con <<MPLAN>>\,g:
+baja a <<W368>>\,m/s. Si todo el CanSat bajara con el ala (500\,g) serían <<W>>\,m/s; la aerodinámica de la sección~\ref{sec:aero} se
+calculó con esos 500\,g, el caso más desfavorable. Los dos valores cumplen C4 ($5\pm3$\,m/s). El Apéndice A no dice si el contenedor
+baja con el ala; si el equipo lo exige, la configuración B no sirve como está dibujada y hay que pasar al cuerpo integral (opción A).
+\end{resultado}
 <<FIG_CONOPS>>
 
 \section{Dimensiones}
@@ -471,7 +472,7 @@ máximo del espectro de respuesta de un semiseno.
 \chequeo Deformación del aislador: <<EPS15>>\,\% a 15\,G y <<EPSCH>>\,\% en el tirón (admisible 20\,\% y 30\,\%). La varilla
 plegada entre apoyos tiene su primer modo local cerca de 1{,}2\,kHz y 2\,MPa a 30\,G.
 
-\section{Masa y centro de gravedad}
+\section{Masa y centro de gravedad}\label{sec:masa}
 <<T_MASA>>
 \begin{resultado}Total: 500\,g con <<LASTRE>>\,g de lastre, que es a la vez el margen. Incertidumbre: $\pm<<INC>>$\,g, mayor que
 la tolerancia de S1, así que la masa se ajusta en la pesada final. Masa de vuelo: 500\,g (el CanSat completo); carga alar <<WS>>\,N/m$^2$;
@@ -612,7 +613,7 @@ V = {
     "T_MS": t_ms, "MS_MIN": ms(ms_min[0]), "G_MIN": GNOM[ms_min[1]], "C_MIN": CASO[ms_min[2]], "T_UN": t_un,
     "EPS15": n(100 * (m_plan / 1000 * 15 * G0 / A_iso) / Ec_iso, 0), "EPSCH": n(100 * (F_ret / A_iso) / Ec_iso, 0),
     "T_MASA": t_masa, "LASTRE": n(MAS["lastre"], 0), "INC": n(MAS["inc_rss"], 0), "WS": n(MAS["carga_alar"], 0),
-    "W": n(MAS["w_estimado"]), "XLAN": n(MAS["x_cg_lanzamiento"], 0), "XEST": n(MAS["x_cg_planeador_estibado"], 0),
+    "W": n(MAS["w_estimado"]), "W368": n(MAS["w_planeador_solo"]), "XLAN": n(MAS["x_cg_lanzamiento"], 0), "XEST": n(MAS["x_cg_planeador_estibado"], 0),
     "XVUE": n(MAS["x_cg_vuelo_total"], 0), "XALA": n(MAS["x_centroide_ala"], 0), "FRET15": n(1.5 * F_ret, 0),
     "PLANOS": os.path.join(PLANOS, "Planos_CanSat_AlaDelta.pdf"),
 }
