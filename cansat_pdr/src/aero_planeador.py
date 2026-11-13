@@ -79,7 +79,7 @@ def calcular():
     eta = 0.9
     de = 2 * aw / (math.pi * r["AR"])
     atp = at * eta * (1 - de)
-    k = atp * St / (aw * pl.S)
+    k = atp * St / (aw * D["S_gross_cm2"] * 1e-4)
     x_cg = MAS["x_cg_vuelo_total"]
     x_t = x_cg + lt * 1000
     vol = math.pi * pl.DB ** 2 / 4 * pl.LB
@@ -95,7 +95,21 @@ def calcular():
         T = x_cg + 0.10 * mm + sh
         return (T - xw) / (x_t - T)
     k_lo, k_c = k_req(x_ac[0], sh_b[1]), k_req(x_w5, sh_c)
-    r["est"] = dict(aw=aw, x_ac=x_ac, np_c=np_c, SM_c=(np_c - x_cg) / mm, St_req_lo=80.0 * k_lo / k, St_req_c=80.0 * k_c / k, k=k, at=at, de=de, x_t=x_t, x_cg=x_cg, sh_b=sh_b, np=(np_lo, np_hi),
+    Sg_ = D["S_gross_cm2"] * 1e-4
+    sh_m = 0.5 * (sh_b[0] + sh_b[1])
+    def Sreq(cg, arm, marg, xw, shb):
+        T = cg + marg * mm + shb
+        kk = (T - xw) / (cg + arm - T)
+        return max(kk, 0.0) * aw * Sg_ / atp * 1e4
+    cola = []
+    for cg_, nom_ in ((x_cg, "CanSat completo, 500 g"), (MAS["x_cg_planeador_vuelo"], "Planeador solo, 368 g")):
+        for arm_ in (217, 300, 400):
+            cola.append([nom_, arm_, Sreq(cg_, arm_, 0.05, x_w5, sh_m), Sreq(cg_, arm_, 0.05, x_ac[0], sh_b[1]),
+                         Sreq(cg_, arm_, 0.10, x_w5, sh_m), Sreq(cg_, arm_, 0.10, x_ac[0], sh_b[1])])
+    combos = {f"arm{a_}_cg{d_}": (Sreq(x_cg - d_, a_, 0.10, x_w5, sh_m), Sreq(x_cg - d_, a_, 0.10, x_ac[0], sh_b[1]),
+                                  Sreq(x_cg - d_, a_, 0.05, x_w5, sh_m), Sreq(x_cg - d_, a_, 0.05, x_ac[0], sh_b[1]))
+              for a_ in (217, 300, 400) for d_ in (0, 10, 20)}
+    r["est"] = dict(cola_tabla=cola, combos=combos, aw=aw, x_ac=x_ac, np_c=np_c, SM_c=(np_c - x_cg) / mm, St_req_lo=80.0 * k_lo / k, St_req_c=80.0 * k_c / k, k=k, at=at, de=de, x_t=x_t, x_cg=x_cg, sh_b=sh_b, np=(np_lo, np_hi),
                     SM=((np_lo - x_cg) / mm, (np_hi - x_cg) / mm), cg_req=np_lo - 0.10 * mm, dcg=x_cg - (np_lo - 0.10 * mm),
                     dcg_bat=0.046 * 60 / m, x_centroide=MAS["x_centroide_ala"])
     return r
@@ -435,10 +449,14 @@ por efecto Munk ($k_2-k_1$ entre 0{,}5 y 0{,}7) y corre el punto neutro %s a %s\
 \begin{resultado}Punto neutro del conjunto: %s a %s\,mm desde la nariz (%s en el caso central). Centro de gravedad en vuelo: %s\,mm. Margen estático
 de $%s$ a $%s$ de la cuerda media ($%s$ en el caso central): \textbf{negativo en todo el rango}. Según esta estimación el planeador sería
 inestable en cabeceo con la cola de 80\,cm$^2$.\end{resultado}
+@@TCOLA@@
 \chequeo Para $10\,\%%$ de margen aun en el peor caso hace falta una cola de %s\,cm$^2$ con el mismo brazo (%s\,cm$^2$ en el caso central),
 o llevar el centro de gravedad a %s\,mm, unos %s\,mm más adelante. Mover la batería 60\,mm hacia la nariz lo corre solo %s\,mm, y el lastre
-necesario sería de más de 200\,g, que no hay: la solución es la cola. Es una estimación de orden de magnitud: el punto neutro de la maqueta
-puede diferir de éste, y la cola de la nota de cola no se dimensionó para esta ala.
+necesario sería de más de 200\,g, que no hay. La salida es combinar un brazo mayor, una cola mayor y masas reubicadas hacia la nariz; la tabla da la cola
+para cada brazo. Un brazo mayor puede chocar con S3 (largo total de 200 a 250\,mm, incluidos los sistemas de descenso) si ese límite cuenta el
+vehículo desplegado. Es una estimación de orden de magnitud: el punto neutro de la maqueta
+puede diferir de éste, y la cola de la nota de cola no se dimensionó para esta ala. Las áreas son las efectivas en el plano horizontal: una cola en V a 35° necesita
+1{,}5 veces esa área de chapa.
 
 """ % (n(D["S_gross_cm2"], 0), n(D["S_exp_cm2"], 0), n(D["AR_gross"], 2), D["n_paneles"], t_val, t_dist,
        _fig("aero_distribucion.png", 1.0, "Presión de diseño en vuelo, carga en la envergadura y reacción sobre la varilla."),
@@ -458,6 +476,10 @@ puede diferir de éste, y la cola de la nota de cola no se dimensionó para esta
     s = s[:i0] + nuevo + s[i1:]
     s = s.replace("La\nestabilidad longitudinal no se puede asegurar con este nivel de modelo: el centro de gravedad cae dentro del rango de incertidumbre\ndel punto neutro.",
                   "Según\nla estimación de la sección, con la cola de 80\\,cm$^2$ el punto neutro queda por delante del centro de gravedad: hace falta una cola mayor.")
+    t_cola = _tab("lccccc", ["Caso", "Brazo [mm]", r"5\,\% central", r"5\,\% peor", r"10\,\% central", r"10\,\% peor"],
+                  [[c_[0], c_[1]] + [n(v_, 0) for v_ in c_[2:]] for c_ in Eg["cola_tabla"]],
+                  "Área de cola efectiva necesaria [cm$^2$] para un margen estático de 5 y 10\\,\\% de la cuerda media, en el caso central y en el peor, según el centro de gravedad y el brazo.", r"\footnotesize")
+    s = s.replace("@@TCOLA@@", t_cola)
     s = s.replace("@@W368@@", n(pl.sink(*pl.delta(20.0), m=0.3675)[0], 1))
     return s + _tab("lcc", ["Parámetro", "Delta", "Avión recto"], [
         ["Parámetro que más lo mueve", sd[0][0], sr[0][0]], ["Correlación de rangos", "%+.2f" % sd[0][1], "%+.2f" % sr[0][1]]],
