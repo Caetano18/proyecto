@@ -19,9 +19,9 @@ AR_PL = SPAN ** 2 / S                 # alargamiento del ala recta de igual area
 A_PL = 2 * math.pi * AR_PL / (2 + math.sqrt(4 + AR_PL ** 2))     # pendiente de sustentacion [1/rad]
 BANK = 20.0
 try:
-    M_PLAN = json.load(open("../fea/masas.json"))["m_planeador"] / 1000
+    M_PLAN = json.load(open("../fea/masas.json"))["m_vuelo"] / 1000
 except Exception:
-    M_PLAN = 0.368
+    M_PLAN = 0.5
 
 
 def cuerpo(cdf, alfa):

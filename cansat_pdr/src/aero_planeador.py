@@ -30,7 +30,7 @@ def calcular():
     PLJ = json.load(open(os.path.join(FEA, "planeo.json")))
     PL5 = json.load(open(os.path.join(FEA, "planeo_500g.json")))
     PHJ = json.load(open(os.path.join(FEA, "polhamus.json")))
-    m = MAS["m_planeador"] / 1000
+    m = MAS["m_vuelo"] / 1000
     pl.M_PLAN = m
     a20 = 20.0
     r = dict(m=m, S=pl.S, AR=P.NOTA["AR"], cr=P.D_AB, mac=2 / 3 * P.D_AB, span_aero=2 * P.D_AB, span_total=P.SPAN, DB=pl.DB, LB=pl.LB,
@@ -52,7 +52,7 @@ def calcular():
     # barridos
     r["w_alfa"] = {f"{f:g}": [(a, pl.sink(*pl.delta(a, f))[0]) for a in range(8, 31, 2)] for f in (0.0, 0.5, 1.0)}
     r["w_masa"] = {f"{f:g}": [(mg, pl.sink(*pl.delta(a20, f), m=mg / 1000)[0]) for mg in range(300, 521, 20)] for f in (0.0, 0.5, 1.0)}
-    r["w_masas_tabla"] = [(mg, pl.sink(*pl.delta(a20), m=mg / 1000)[0]) for mg in (340, m * 1000, 400, 450, 500)]
+    r["w_masas_tabla"] = [(mg, pl.sink(*pl.delta(a20), m=mg / 1000)[0]) for mg in (340, 368, 400, 450, 500)]
     r["w_area"] = []
     S0 = pl.S
     for k in (1.0, 1.1, 1.2, 1.3):
@@ -77,7 +77,7 @@ def calcular():
     de = 2 * aw / (math.pi * r["AR"])
     atp = at * eta * (1 - de)
     k = atp * St / (aw * pl.S)
-    x_cg = MAS["x_cg_planeador_vuelo"]
+    x_cg = MAS["x_cg_vuelo_total"]
     x_t = x_cg + lt * 1000
     vol = math.pi * pl.DB ** 2 / 4 * pl.LB
     mac = r["mac"] / 1000
@@ -137,10 +137,10 @@ def figuras(r):
         ax.plot([p[0] for p in pts], [p[1] for p in pts], ls=ls, lw=lw, color=AZ)
     ax.axhspan(2, 8, color=VD, alpha=0.08, lw=0)
     ax.axhline(5, color=VD, lw=1, ls="--")
-    ax.axvline(r["m"] * 1000, color=GR, lw=0.9)
-    ax.text(r["m"] * 1000 + 4, 7.6, f"planeador\n{r['m'] * 1000:.0f} g", fontsize=8.5, color=GR)
-    ax.axvline(500, color=GR, lw=0.9, ls=":")
-    ax.text(496, 2.0, "500 g", fontsize=8.5, color=GR, ha="right")
+    ax.axvline(r["m"] * 1000, color=GR, lw=1.1)
+    ax.text(r["m"] * 1000 - 4, 7.6, f"CanSat\ncompleto\n{r['m'] * 1000:.0f} g", fontsize=8.5, color=GR, ha="right", va="top")
+    ax.axvline(368, color=GR, lw=0.9, ls=":")
+    ax.text(364, 2.0, "solo el planeador\n368 g", fontsize=8.3, color=GR, ha="right")
     ax.set_ylim(1.5, 8.5)
     ax.set_xlabel("Masa de vuelo [g]")
     ax.set_title("Con la masa, a $S$ = %.0f cm²" % (r["S"] * 1e4), weight="bold", fontsize=11)
@@ -206,7 +206,7 @@ def fragmento(r=None):
     sr = sorted(r["sens"]["recta"].items(), key=lambda kv: -abs(kv[1]))
     cdd, cdr = r["cd_delta"], r["cd_recta"]
     t_datos = _tab("lc", ["Dato", "Valor"], [
-        ["Masa de vuelo (planeador; el contenedor se separa)", "%s\\,g" % n(r["m"] * 1000, 0)],
+        ["Masa de vuelo (CanSat completo, S1)", "%s\\,g" % n(r["m"] * 1000, 0)],
         ["Área de las dos alas $S$", "%.0f\\,cm$^2$" % (r["S"] * 1e4)],
         ["Envergadura de las alas / con el cuerpo", "%s / %s\\,mm" % (n(r["span_aero"], 0), n(r["span_total"], 0))],
         ["Alargamiento $A=b^2/S$, flecha", "%s, 45°" % n(r["AR"], 1)],
@@ -257,8 +257,8 @@ del punto neutro.\end{resultado}
 %s
 \porque En régimen estacionario el empuje aerodinámico equilibra el peso, afectado por el factor de carga de la espiral:
 \[\tfrac12\rho V^2 S\,C_R=n\,m\,g,\qquad C_R=\sqrt{C_L^2+C_D^2},\qquad w=V\,\frac{C_D}{C_R},\qquad V_h=V\,\frac{C_L}{C_R},\]
-con $n=1/\cos(\mathrm{alabeo})$ y ángulo de planeo $\gamma=\arctan(C_D/C_L)$. Con los datos de la nota de membrana (500\,g,
-$C_L=1{,}20$, $C_D=0{,}50$) este cálculo da %s\,m/s, contra 5{,}00 de la nota.
+con $n=1/\cos(\mathrm{alabeo})$ y ángulo de planeo $\gamma=\arctan(C_D/C_L)$. La masa de vuelo es la del CanSat completo, 500\,g.
+Con los datos de la nota de membrana ($C_L=1{,}20$, $C_D=0{,}50$) este cálculo da %s\,m/s, contra 5{,}00 de la nota.
 
 \subsection{Sustentación: analogía de succión de borde de ataque}
 \que $C_L(\alpha)$ del ala delta de borde afilado con el método de Polhamus (NASA TN D-3767).
@@ -283,7 +283,7 @@ referido a su área frontal, más la resistencia de flujo cruzado por el ataque 
 %s
 \chequeo El cuerpo aporta %s de los %s de $C_D$ del delta, y sin él el descenso sería de %s\,m/s en vez de %s. La nota de
 membrana no contaba esta resistencia. Con una ojiva en la nariz ($C_D\approx0{,}3$ en el cuerpo) el delta baja a %s\,m/s; no hay
-lugar en el contenedor para agregarla sin acortar el compartimento de nariz.
+lugar en el compartimento de nariz para agregarla.
 
 \subsection{Polar y velocidad de descenso}
 \que La velocidad de descenso en el punto de operación y su relación con el ángulo de ataque, la masa y el área.
@@ -291,9 +291,9 @@ lugar en el contenedor para agregarla sin acortar el compartimento de nariz.
 %s
 %s
 \chequeo El descenso casi no depende del ángulo de ataque ($%s$\,m/s a 12°, %s a 20°, %s a 28°): el ala es robusta al trim, pero
-tampoco hay palanca para regularlo. Con la masa varía como $\sqrt{m}$; el área necesaria para volver a 5{,}0\,m/s con los 500\,g
-completos sería de unos 500\,cm$^2$ (+27\,\%%), que no entra en el cuerpo ni en el pliegue plano. Con 500\,g el delta bajaría a
-%s\,m/s; no es el caso porque el contenedor se separa.
+tampoco hay palanca para regularlo. Con la masa varía como $\sqrt{m}$. Con los 500\,g del CanSat completo el descenso
+queda en %s\,m/s, a %s\,m/s del límite superior de 8. Volver a 5{,}0\,m/s exigiría unos 500\,cm$^2$ de tela (+27\,\%%), que no
+entra en el cuerpo ni en el pliegue plano: se acepta el valor de %s\,m/s.
 
 \subsection{Incertidumbre del descenso}
 \que Qué parámetros mueven más el resultado.
@@ -327,7 +327,7 @@ de $%s$ a $%s$ de la cuerda media. El margen puede ser negativo: no se puede ase
 \end{resultado}
 \chequeo Para tener 10\,\%% de margen aun en el peor caso el CG tendría que estar en %s\,mm, unos %s\,mm más adelante.
 Mover la batería 60\,mm hacia la nariz corre el CG solo %s\,mm, de modo que hace falta más: lastre en la nariz, una cola
-mayor o ambas. El centro de gravedad en vuelo supone la tela y la cola abiertas con las masas de la nota. Lo que falta es medir
+mayor o ambas. El centro de gravedad en vuelo supone el CanSat completo con la tela y la cola abiertas, con las masas de la nota. Lo que falta es medir
 el punto neutro en una maqueta o en un túnel.
 
 \subsection{Lo que falta}
@@ -348,7 +348,7 @@ no se rehízo con esta geometría.
         t_op.replace(r"\caption{", r"\caption{\label{tab:aero_op}", 1),
         _fig("planeo.png", 1.0, "Izquierda: polar de velocidades. Derecha: dispersión del descenso con las incertidumbres."),
         _fig("aero_resistencia.png", 1.0, "Resistencia por componente, descenso contra el ángulo de ataque y contra la masa."),
-        n(r["w_alfa"]["0.5"][2][1], 1), n(o["w"], 1), n(r["w_alfa"]["0.5"][10][1], 1), n(r["w500"], 1),
+        n(r["w_alfa"]["0.5"][2][1], 1), n(o["w"], 1), n(r["w_alfa"]["0.5"][10][1], 1), n(o["w"], 1), n(8 - o["w"], 1), n(o["w"], 1),
         t_mc, rank(sd, "delta").replace("(", "$(").replace(")", ")$"),
         n(pl.AR_PL, 1), n(7.67, 1), n(2.85, 1), n(nom["recta"]["w"], 1), n(ojv["recta"]["w"], 1), n(mcr[0], 1), n(mcr[2], 1),
         n(E["at"], 1), n(E["de"], 2), n(E["k"], 3), n(E["aw"], 1), n(E["sh_b"][0], 0), n(E["sh_b"][1], 0),

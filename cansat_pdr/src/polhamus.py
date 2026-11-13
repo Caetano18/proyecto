@@ -58,7 +58,7 @@ def main(out_json, out_fig, m_vuelo_g):
     ax.set_ylim(0, 2.0)
     ax = axs[1]
     fs = np.linspace(0, 1, 41)
-    for m, c, lab in ((0.5, "#555555", "500 g"), (m_vuelo_g / 1000, "#2f3192", f"{m_vuelo_g:.0f} g (planeador de este diseño)")):
+    for m, c, lab in ((m_vuelo_g / 1000, "#2f3192", f"{m_vuelo_g:.0f} g (CanSat completo)"), (0.3675, "#888888", "368 g (planeador solo, referencia)")):
         ax.plot(fs, [pl.sink(*pl.delta(ALFA, f_), m=m)[0] for f_ in fs], color=c, lw=2, label=lab)
     ax.axhspan(2, 8, color="#1a8a55", alpha=0.08, lw=0)
     ax.axhline(5, color="#1a8a55", lw=1, ls="--")
@@ -76,5 +76,5 @@ def main(out_json, out_fig, m_vuelo_g):
 
 
 if __name__ == "__main__":
-    m = json.load(open("../fea/masas.json"))["m_planeador"]
+    m = json.load(open("../fea/masas.json"))["m_vuelo"]
     main(sys.argv[1], sys.argv[2], m)

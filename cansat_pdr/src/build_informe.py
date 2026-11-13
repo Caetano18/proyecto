@@ -146,7 +146,7 @@ t_req = tab(r"lp{6.3cm}p{6.6cm}", ["N.º", "Requisito", "Cómo lo cumple el dise
     ["C1--C3", "El contenedor va dentro del fuselaje, sale con la carga de expulsión y baja a $15\\pm3$\,m/s con paracaídas.",
      "Contenedor cilíndrico liso; paracaídas alojado sobre la tapa, brida de tres puntos."],
     ["C4", "Al 80\,\\% de la altitud máxima se libera otro sistema de descenso: $5\\pm3$\,m/s.",
-     "Planeador de ala delta; estimado %s\,m/s con %s\,g en vuelo." % (n(MAS["w_estimado"]), n(m_plan, 0))],
+     "Planeador de ala delta; estimado %s\,m/s con %s\,g en vuelo." % (n(MAS["w_estimado"]), n(MAS["m_vuelo"], 0))],
     ["S1", "Masa de CanSat y contenedor: $500\\pm10$\,g.", "Presupuesto de 500\,g con %s\,g de lastre." % n(MAS["lastre"], 0)],
     ["S2, S3", "Diámetro 90\,mm; largo total de 200 a 250\,mm.", "Contenedor de \\diam90 $\\times$ %g\,mm." % P.CT_LEN],
     ["S4", "Soportar vibraciones de 15\,G.", "Casi-estático y barrido senoidal de 15\,G en tres ejes (FEA)."],
@@ -165,8 +165,8 @@ t_conf = tab(r"p{4.6cm}p{4.9cm}p{4.9cm}", ["Criterio", "A: cuerpo integral con r
     ["Deslizamiento libre (S7)", "Riesgo: varillas contra el fuselaje", "Cumple: exterior liso"],
     ["Orificios de hasta 10\,mm (E5)", "No cumple: ranuras de $16\\times200$", "Cumple: \\diam8 y \\diam5"],
     ["Despliegue del ala", "Activo: trabas y servo", "Pasivo: resortes"],
-    ["Masa que vuela con el ala", "500\,g", "%s\,g" % n(m_plan, 0)],
-    ["Velocidad de descenso estimada", "%s\,m/s (500\,g)" % n(PL500["nominal"]["cuerpo romo (disco de nariz plano)"]["delta"]["w"]), "%s\,m/s (%s\,g)" % (n(MAS["w_estimado"]), n(m_plan, 0))],
+    ["Masa que vuela con el ala", "500\,g", "%s\,g si el contenedor se separa; 500\,g si no" % n(m_plan, 0)],
+    ["Velocidad de descenso estimada", "%s\,m/s (500\,g)" % n(MAS["w_estimado"]), "%s\,m/s (368\,g) o %s\,m/s (500\,g)" % (n(MAS["w_planeador_solo"]), n(MAS["w_estimado"]))],
     ["Objetos que descienden", "Uno", "Dos (el contenedor baja con su paracaídas)"],
 ], "Comparación de las dos configuraciones de sistema.")
 
@@ -323,6 +323,11 @@ salen por ranuras laterales. En la segunda el cilindro es un contenedor cerrado 
 \chequeo Se elige B. Es la única que cumple S6, S7 y E5 al pie de la letra, el ala se abre sola al salir del cilindro y la carga
 alar baja. El costo es que el contenedor (<<M_CONT>>\,g con paracaídas) no vuela con el ala. Si el equipo prefiere A, el bastidor
 y el ala de este informe valen igual; hay que rehacer el análisis del tubo ranurado.
+\begin{resultado}\textbf{Conflicto con la masa de vuelo.} El requisito del equipo es que los 500\,g del CanSat completo bajen con el
+ala. En esta revisión el contenedor (tubo, tapa y paracaídas: <<M_CONT>>\,g) se separa y el planeador vuela con <<MPLAN>>\,g, de modo
+que esa condición no se cumple. La aerodinámica (sección~\ref{sec:aero}) se calculó con los 500\,g. Con 500\,g de masa de vuelo la
+configuración B no sirve como está dibujada: hay que volver al cuerpo integral (opción A), con el cilindro de \diam90 como fuselaje del
+planeador, o hacer que el contenedor baje con el ala. Está pendiente de decisión y de rehacer la estructura y su análisis.\end{resultado}
 <<FIG_CONOPS>>
 
 \section{Dimensiones}
@@ -469,11 +474,11 @@ plegada entre apoyos tiene su primer modo local cerca de 1{,}2\,kHz y 2\,MPa a 3
 \section{Masa y centro de gravedad}
 <<T_MASA>>
 \begin{resultado}Total: 500\,g con <<LASTRE>>\,g de lastre, que es a la vez el margen. Incertidumbre: $\pm<<INC>>$\,g, mayor que
-la tolerancia de S1, así que la masa se ajusta en la pesada final. Planeador en vuelo: <<MPLAN>>\,g; carga alar <<WS>>\,N/m$^2$;
-velocidad de descenso estimada <<W>>\,m/s. Centro de gravedad desde la nariz: <<XLAN>>\,mm en lanzamiento, <<XEST>>\,mm el
-planeador estibado y <<XVUE>>\,mm en vuelo; el centroide del ala está en <<XALA>>\,mm.\end{resultado}
+la tolerancia de S1, así que la masa se ajusta en la pesada final. Masa de vuelo: 500\,g (el CanSat completo); carga alar <<WS>>\,N/m$^2$;
+velocidad de descenso estimada <<W>>\,m/s (sección~\ref{sec:aero}). Centro de gravedad desde la nariz: <<XLAN>>\,mm en lanzamiento
+y <<XVUE>>\,mm en vuelo, con el CanSat completo y el ala y la cola abiertas; el centroide del ala está en <<XALA>>\,mm.\end{resultado}
 \chequeo Las masas de electrónica, cola y paracaídas son asignaciones a confirmar por cada subsistema. La nota de membrana supone
-500\,g en vuelo; el planeador vuela con <<MPLAN>>\,g porque el contenedor se separa, y la resistencia del cuerpo no estaba en la nota.
+500\,g en vuelo, igual que aquí; la diferencia con su 5{,}0\,m/s es la resistencia del cuerpo, que la nota no contaba.
 
 \section{Ensayos, riesgos y pendientes}
 \begin{table}[H]\centering\footnotesize\begin{tabular}{p{3.2cm}p{1.6cm}p{5.6cm}p{4.2cm}}\toprule
@@ -608,7 +613,7 @@ V = {
     "EPS15": n(100 * (m_plan / 1000 * 15 * G0 / A_iso) / Ec_iso, 0), "EPSCH": n(100 * (F_ret / A_iso) / Ec_iso, 0),
     "T_MASA": t_masa, "LASTRE": n(MAS["lastre"], 0), "INC": n(MAS["inc_rss"], 0), "WS": n(MAS["carga_alar"], 0),
     "W": n(MAS["w_estimado"]), "XLAN": n(MAS["x_cg_lanzamiento"], 0), "XEST": n(MAS["x_cg_planeador_estibado"], 0),
-    "XVUE": n(MAS["x_cg_planeador_vuelo"], 0), "XALA": n(MAS["x_centroide_ala"], 0), "FRET15": n(1.5 * F_ret, 0),
+    "XVUE": n(MAS["x_cg_vuelo_total"], 0), "XALA": n(MAS["x_centroide_ala"], 0), "FRET15": n(1.5 * F_ret, 0),
     "PLANOS": os.path.join(PLANOS, "Planos_CanSat_AlaDelta.pdf"),
 }
 for _ in range(2):

@@ -273,7 +273,7 @@ slide("Requisitos derivados", tabla(["N.º", "Requisito derivado", "Origen", "Va
     ["RD-4", "Factores de seguridad: 1,25 a fluencia en metales, 1,5 en laminados, 2,0 en piezas impresas. MS ≥ 0.", "S4, S5", "Aplicados en todos los márgenes"],
     ["RD-5", "La retención del planeador soporta 30 G × FAD 1,8 sin que la carga pase por el servo.", "S5, M3", f"{F_ret:.0f} N por la llave de bayoneta"],
     ["RD-6", "Las frecuencias propias en lanzamiento quedan por encima de 100 Hz.", "S4", f"f₁ = {f[0]:.0f} Hz"],
-    ["RD-7", "Masa del planeador en vuelo compatible con 5 ± 3 m/s con S = 394 cm².", "C4, S1", f"{m_plan:.0f} g → {n(MAS['w_estimado'], 1)} m/s"],
+    ["RD-7", "Masa de vuelo (CanSat completo) compatible con 5 ± 3 m/s con S = 394 cm².", "C4, S1", f"500 g → {n(MAS['w_estimado'], 1)} m/s"],
 ], [44, 330, 70, 210], fs=10) + nota(
     "S4 y S5 no dicen cómo se aplica la carga. Los interpretamos así: <b>15 G</b> como aceleración casi-estática y como amplitud "
     "de un barrido senoidal de 5 a 1000 Hz en la base; <b>30 G</b> como pulso semiseno en la base (11 ms nominal, se barre la "
@@ -324,15 +324,17 @@ slide("Configuración del sistema: selección", tabla(
         ["Orificios de hasta 10 mm (E5)", "Medio", "No cumple (ranuras de 16 × 200)", "Cumple (Ø8 y Ø5)"],
         ["Despliegue del ala", "Alto", "Activo: trabas + servo", "Pasivo: resortes"],
         ["Protección del ala en la eyección (S5)", "Medio", "Expuesta", "Protegida por el tubo"],
-        ["Masa que vuela con el ala", "Medio", "500 g", f"{m_plan:.0f} g"],
-        ["Velocidad de descenso estimada (C4)", "Alto", f"{n(PL500['nominal']['cuerpo romo (disco de nariz plano)']['delta']['w'], 1)} m/s con 500 g", f"{n(MAS['w_estimado'], 1)} m/s con {m_plan:.0f} g"],
+        ["Masa que vuela con el ala", "Medio", "500 g", f"{m_plan:.0f} g si se separa; 500 g si no"],
+        ["Velocidad de descenso estimada (C4)", "Alto", f"{n(MAS['w_estimado'], 1)} m/s con 500 g", f"{n(MAS['w_planeador_solo'], 1)} m/s con {m_plan:.0f} g; {n(MAS['w_estimado'], 1)} con 500 g"],
         ["Mecanismos críticos", "Medio", "Trabas de ala + suelta del drogue", "Una llave de bayoneta"],
         ["Objetos que descienden", "Bajo", "Uno", "Dos (contenedor con paracaídas)"],
     ], [200, 46, 205, 205], fs=10) + cols(
     caja("Seleccionada: B", "Es la única que cumple S6, S7 y E5 al pie de la letra, simplifica el despliegue y baja la carga alar. "
          "El costo es que el contenedor desciende aparte con su paracaídas."),
     caja("Si el equipo prefiere A", "El bastidor, el ala y el análisis del planeador valen igual: el tubo se parte en dos tejas "
-         "atornilladas a C1 y C4. Habría que rehacer el análisis del tubo ranurado."), gap=12))
+         "atornilladas a C1 y C4. Habría que rehacer el análisis del tubo ranurado."), gap=12) + nota("<b>Conflicto con la masa de vuelo.</b> Los 500 g del CanSat completo tienen que bajar con el ala, y en esta revisión el contenedor "
+         f"({m_cont:.0f} g) se separa: el planeador vuela con {m_plan:.0f} g. Con 500 g la opción B no sirve como está dibujada; hay que volver al cuerpo integral (A) "
+         "o hacer que el contenedor baje con el ala. Pendiente de decisión y de rehacer la estructura."))
 
 slide("Layout físico (1/3): configuración de lanzamiento", img("lay_lanzamiento.png", w=676) + cols(
     ul([f"Diámetro exterior <b>90,0 mm</b> (S2) y largo total <b>{P.CT_LEN:g} mm</b>, con el paracaídas adentro (S3: 200 a 250).",
@@ -355,7 +357,7 @@ slide("Layout físico (3/3): planeador desplegado", cols(img("lay_desplegado.png
           ["Borde de ataque (A–T)", f"{n(P.L_LE)} mm"], ["Tramos del borde de ataque", f"2 × {n(P.L_SEG)} mm"],
           ["Flecha", "45°"], ["Área (dos triángulos)", f"{P.S_TRI:.0f} cm²"],
           ["Área de tela con franja de raíz", f"{P.S_WING:.0f} cm²"], ["Alargamiento", "4,0"],
-          ["Masa en vuelo", f"{m_plan:.0f} g"], ["Carga alar", f"{n(MAS['carga_alar'], 0)} N/m²"],
+          ["Masa de vuelo (CanSat completo)", "500 g"], ["Carga alar", f"{n(MAS['carga_alar'], 0)} N/m²"],
       ], [150, 100], fs=9.6) + nota(
           "La cola en V y el botalón son geometría de referencia de la nota de cola. La franja de tela entre la varilla de "
           "raíz y la línea de pivotes agrega 18 cm² que la nota no contaba."), w=[410, None]))
@@ -385,7 +387,7 @@ slide("Velocidad de descenso del planeador (C4)", img("planeo.png", w=676) + tab
         ["Avión recto (referencia), C_L = 0,8", n(_n["recta"]["CL"], 2), n(_n["recta"]["CD"], 2), n(_n["recta"]["LD"], 1), n(_n["recta"]["w"], 1),
          f"{n(PL['mc']['recta']['p'][0], 1)} a {n(PL['mc']['recta']['p'][2], 1)}", f"{400 * _n['recta']['LD']:.0f} m"],
     ], [180, 40, 40, 40, 100, 100, 110], fs=9.2, alin=[None, "c", "c", "c", "c", "c", "c"]) + nota(
-    f"Planeador de {PL['masa_g']:.0f} g con S = 394 cm² y 20° de alabeo; el contenedor se separa. Cuerpo romo del diseño incluido. "
+    f"CanSat completo de {PL['masa_g']:.0f} g con S = 394 cm² y 20° de alabeo. Cuerpo romo del diseño incluido. "
     f"Con ojiva en la nariz: delta {n(_o['delta']['w'], 1)} m/s, avión {n(_o['recta']['w'], 1)} m/s. Polhamus está fuera de su rango "
     "de validez (alargamiento 4, ensayado hasta 2): los rangos son juicio del autor. El avión recto no está diseñado."))
 slide("Compatibilidad con el cohete", cols(
@@ -839,12 +841,12 @@ slide("Presupuesto de masa (3/3): total y centro de gravedad", cols(
     tabla(["Centro de gravedad (desde la nariz)", "x [mm]"], [
         ["Conjunto de lanzamiento", n(MAS["x_cg_lanzamiento"], 0)],
         ["Planeador estibado", n(MAS["x_cg_planeador_estibado"], 0)],
-        ["Planeador en vuelo (ala y cola abiertas)", n(MAS["x_cg_planeador_vuelo"], 0)],
+        ["En vuelo, CanSat completo (ala y cola abiertas)", n(MAS["x_cg_vuelo_total"], 0)],
         ["Centroide del ala (2/3 de la cuerda)", n(MAS["x_centroide_ala"], 0)],
     ], [200, 60], fs=9.6, alin=[None, "c"]) + caja("Para aerodinámica",
-        f"Masa en vuelo: <b>{m_plan:.0f} g</b> (la nota de membrana supone 500 g). Carga alar: {n(MAS['carga_alar'], 0)} N/m². "
+        f"Masa de vuelo: <b>500 g</b> (como en la nota de membrana). Carga alar: {n(MAS['carga_alar'], 0)} N/m². "
         f"Calculada como planeador, con la resistencia del cuerpo: <b>{n(MAS['w_estimado'], 1)} m/s</b> "
-        f"(C4: 5 ± 3 m/s).<br><br>El CG en vuelo queda {MAS['x_centroide_ala'] - MAS['x_cg_planeador_vuelo']:.0f} mm por delante "
+        f"(C4: 5 ± 3 m/s).<br><br>El CG en vuelo queda {MAS['x_centroide_ala'] - MAS['x_cg_vuelo_total']:.0f} mm por delante "
         "del centroide del ala. El margen estático hay que recalcularlo con la cola."), w=[350, None]))
 slide("Plan de ensayos", tabla(["Ensayo", "Requisito", "Método", "Criterio de aceptación"], [
     ["Calibre y deslizamiento", "S2, S3, S7", "Tubo calibre Ø90,5 × 260. El CanSat armado sale por su peso.", "Sale sin trabarse en 10 de 10 intentos"],

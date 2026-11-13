@@ -101,11 +101,14 @@ def main(out):
     x_ala_des = P.X_A + 0.60 * P.D_AB           # varillas a 45 grados + tela: centroide aprox. al 60 % de la cuerda
     x_cola_des = 250.0
     x_vuelo = (x_plan * m_plan - ala_est + m_ala * x_ala_des - M["cola"] * 110.0 + M["cola"] * x_cola_des) / m_plan
+    x_vuelo_tot = (x_tot * tot - ala_est + m_ala * x_ala_des - M["cola"] * 110.0 + M["cola"] * x_cola_des) / tot
     res = dict(filas=filas, sub=sub, total=tot, inc_rss=inc, inc_lin=inc_lin, lastre=lastre, m_planeador=m_plan,
                m_contenedor=m_cont, x_cg_planeador_estibado=x_plan, x_cg_lanzamiento=x_tot,
                x_cg_planeador_vuelo=x_vuelo, x_centroide_ala=P.X_A + 2 * P.D_AB / 3,
-               carga_alar=m_plan / 1000 * P.G0 / (P.S_TRI * 1e-4),
-               w_estimado=float(_pl.sink(*_pl.delta(20.0), m=m_plan / 1000)[0]),
+               m_vuelo=tot, x_cg_vuelo_total=x_vuelo_tot,
+               carga_alar=tot / 1000 * P.G0 / (P.S_TRI * 1e-4), carga_alar_planeador=m_plan / 1000 * P.G0 / (P.S_TRI * 1e-4),
+               w_estimado=float(_pl.sink(*_pl.delta(20.0), m=tot / 1000)[0]),
+               w_planeador_solo=float(_pl.sink(*_pl.delta(20.0), m=m_plan / 1000)[0]),
                w_estimado_sin_cuerpo_nota=P.NOTA["w"] * float(np.sqrt(m_plan / 500.0 * P.NOTA["S"] / P.S_TRI)))
     json.dump(res, open(out, "w"), indent=1)
     for k, s in sub.items():
