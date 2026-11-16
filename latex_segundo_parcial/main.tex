@@ -1,0 +1,94 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-noshorthands]{babel}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2.3cm,right=2.3cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{icomma}
+\spanishplainpercent
+\usepackage{graphicx,booktabs,array,multirow,multicol,enumitem}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{RGB}{35,85,140}
+\definecolor{azulclaro}{RGB}{238,244,251}
+\definecolor{rojo}{RGB}{180,40,40}
+\definecolor{rojoclaro}{RGB}{252,240,238}
+\definecolor{verde}{RGB}{30,110,50}
+\definecolor{verdeclaro}{RGB}{238,248,240}
+\definecolor{gris}{RGB}{245,245,245}
+
+\captionsetup{font=small}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{itemsep=1pt,topsep=2pt}
+
+\titleformat{\part}[display]{\centering\Huge\bfseries\color{azul}}{Parte \thepart}{6pt}{}
+\titleformat{\section}{\Large\bfseries\color{azul}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{8pt}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Probabilidad y Estadística -- Segundo Parcial resuelto}
+\rhead{\small Resolución paso a paso}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{enun}[1][Enunciado]{colback=gris,colframe=black!40,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fontupper=\small,fonttitle=\bfseries\small,coltitle=black,colbacktitle=black!10,title={#1},breakable}
+\newtcolorbox{metodo}[1][Método]{colback=verdeclaro,colframe=verde!70,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=verde!75,title={#1},breakable}
+\newtcolorbox{resp}[1][Respuesta]{colback=azulclaro,colframe=azul!70,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=azul!80,title={#1},breakable}
+\newtcolorbox{ojo}[1][Ojo]{colback=rojoclaro,colframe=rojo!80,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=rojo!80,title={#1},breakable}
+
+\newcommand{\inciso}[1]{\par\needspace{5\baselineskip}\medskip{\bfseries\color{azul}#1}\par\smallskip}
+\newcommand{\paso}[1]{\par\smallskip\textbf{#1}\quad}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\V}{\mathrm{V}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Nor}{\mathcal{N}}
+\newcommand{\xb}{\bar{x}}
+\newcommand{\Xb}{\bar{X}}
+\newcommand{\chis}{\chi^2}
+\newcommand{\res}[1]{\boxed{#1}}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{azul} Probabilidad y Estadística}\\[4pt]
+{\large Segundo Parcial --- Resolución paso a paso}\\[2pt]
+{\normalsize Parcial 2025 (Temas 1 y 2) $\cdot$ Modelos de parcial $\cdot$ Temarios de años anteriores}\\[8pt]
+{\normalsize Caetano Gimenez}\\[1pt]
+{\small UTN - Facultad Regional Haedo \ $\cdot$\ Noviembre 2026}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=azul!60,boxrule=0.5pt,arc=2pt,title={\bfseries Cómo está resuelto cada ejercicio},colbacktitle=azul!80,fonttitle=\small]
+\small
+\begin{enumerate}[leftmargin=14pt]
+\item \textbf{Enunciado} resumido, con los datos (recuadro gris).
+\item \textbf{Método}: qué herramienta se usa y por qué (recuadro verde). Es lo que la cátedra pide: ``mencionar el/los teorema/s y/o propiedades usados''.
+\item \textbf{Planteo y cálculo paso a paso}: definición de variables, hipótesis, fórmula y reemplazo numérico.
+\item \textbf{Respuesta} en el contexto del problema (recuadro azul). Las trampas típicas van en rojo.
+\end{enumerate}
+Los resultados están con 4 decimales, como pide el parcial, y todos se verificaron con Python (\texttt{scipy}). Notación: $\Phi(z)=P(Z\le z)$; los valores críticos dejan el área \emph{a la derecha}: $P(Z>z_\alpha)=\alpha$, $P(T_\nu>t_{\alpha,\nu})=\alpha$, $P(\chis_\nu>\chis_{\alpha,\nu})=\alpha$.
+\end{tcolorbox}
+
+{\small\setcounter{tocdepth}{2}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}}
+
+\input{p2025}
+\input{modelos}
+\input{temarios}
+
+\end{document}

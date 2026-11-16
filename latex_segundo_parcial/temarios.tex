@@ -1,0 +1,615 @@
+% =====================================================================
+\newpage
+\part{Temarios de años anteriores}
+% =====================================================================
+\section{Temario 1}
+
+\subsection{Ejercicio 1 --- Cartuchos sin reposición}
+\begin{enun}
+Una caja tiene 3 repuestos azules, 2 rojos y 1 verde. Se extraen 2 sin reposición. $X$ = número de azules; $Y$ = número de rojos.
+a) $p(x,y)$. \ b) ¿Independientes? \ c) $P(X=Y\,|\,Y\ge1)$.
+\end{enun}
+\begin{metodo}
+Como el orden no importa para contar colores, se usa el conteo combinatorio (hipergeométrica multivariada):
+$p(x,y)=\dfrac{\binom3x\binom2y\binom1{2-x-y}}{\binom62}$, con $\binom62=15$.
+\end{metodo}
+\inciso{a) Matriz conjunta}
+$(0,0)$: harían falta 2 verdes y hay solo 1, así que vale 0. \ $(0,1)$: $\binom21\binom11=2$. \ $(0,2)$: $\binom22=1$. \ $(1,0)$: $\binom31\binom11=3$. \ $(1,1)$: $\binom31\binom21=6$. \ $(2,0)$: $\binom32=3$.
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}c|ccc|c@{}}
+\toprule
+$p(x,y)$ & $y=0$ & $y=1$ & $y=2$ & $p_X(x)$\\\midrule
+$x=0$ & 0 & $2/15$ & $1/15$ & $\mathbf{3/15}$\\
+$x=1$ & $3/15$ & $6/15$ & 0 & $\mathbf{9/15}$\\
+$x=2$ & $3/15$ & 0 & 0 & $\mathbf{3/15}$\\\midrule
+$p_Y(y)$ & $\mathbf{6/15}$ & $\mathbf{8/15}$ & $\mathbf{1/15}$ & 1\\\bottomrule
+\end{tabular}
+\end{center}
+\inciso{b) Independencia}
+$p(0,0)=0$, pero $p_X(0)\,p_Y(0)=\frac3{15}\cdot\frac6{15}=0{,}08\neq0$. \textbf{No son independientes}.
+
+\inciso{c) $P(X=Y\,|\,Y\ge1)$}
+Con $Y\ge1$, el único par con $X=Y$ posible es $(1,1)$ ($(2,2)$ es imposible):
+\[
+P(X=Y\,|\,Y\ge1)=\frac{p(1,1)}{p_Y(1)+p_Y(2)}=\frac{6/15}{9/15}=\res{\frac23=0{,}6667}
+\]
+
+\subsection{Ejercicio 2 --- Combinación lineal y suma de variables}
+\begin{enun}
+$\E(X)=\E(Y)=0$, $\V(X)=2$, $\V(Y)=4$, $\Cov(X,Y)=-2$.
+a) $\V(W)$ con $W=5X-3Y+8$. \ b) $T=Y_1+\dots+Y_n$ (m.a.\ de $Y$): ¿se puede hallar $n$ para que $P(|T-\E(T)|>35)\ge0{,}12$?
+\end{enun}
+\inciso{a) Varianza de una combinación lineal}
+\[
+\V(5X-3Y+8)=5^2\V(X)+(-3)^2\V(Y)+2(5)(-3)\Cov(X,Y)
+\]
+\[
+=25(2)+9(4)-30(-2)=50+36+60=\res{146}
+\]
+(La constante 8 no cambia la varianza.)
+
+\inciso{b) Tamaño $n$}
+\paso{Paso 1 --- Momentos de $T$.} Las $Y_i$ son iid, así que $\E(T)=n\cdot0=0$ y $\V(T)=n\cdot4=4n$.
+
+\paso{Paso 2 --- Qué herramienta sirve.} No se conoce la distribución de $Y$. Chebyshev da solo una \emph{cota superior}, $P(|T|>35)\le\frac{4n}{35^2}$, y no sirve para asegurar ``al menos 0,12''. Lo que permite calcularlo es el \textbf{TCL}: para $n$ grande, $T\approx\Nor(0;\,4n)$.
+
+\paso{Paso 3 --- Despeje.}
+\[
+P(|T|>35)\approx2\Big[1-\Phi\Big(\frac{35}{2\sqrt n}\Big)\Big]\ge0{,}12\iff\Phi\Big(\frac{35}{2\sqrt n}\Big)\le0{,}94
+\]
+\[
+\iff\frac{35}{2\sqrt n}\le z_{0,06}=1{,}5548
+\]
+\[
+\sqrt n\ge\frac{35}{2(1{,}5548)}=11{,}2557\ \Rightarrow\ n\ge126{,}69\ \Rightarrow\ \res{n\ge127}
+\]
+Comprobación: con $n=127$ la probabilidad es 0,1205 \checkmark; con $n=126$ es 0,1190, que no alcanza.
+\begin{resp}
+Sí es posible, \textbf{en forma aproximada, con el TCL}: hace falta $n\ge127$. Como $n$ resulta grande, el uso del TCL es razonable. (La probabilidad crece con $n$, porque el desvío de $T$ crece como $2\sqrt n$.)
+\end{resp}
+
+\subsection{Ejercicio 3 --- Cuántos registros más para el IC}
+\begin{enun}
+D.D.B.O.\ normal con $\sigma$ conocido. Con $n=25$ días, el IC del 90\,\% tuvo amplitud $\varepsilon$. Se quiere un IC de al menos 98\,\% con amplitud $\varepsilon/2$. ¿Cuántos registros más hacen falta como mínimo?
+\end{enun}
+\begin{metodo}
+Con $\sigma$ conocido y población normal, la amplitud del IC es $A=2z_{\alpha/2}\,\sigma/\sqrt n$. Se plantea la condición nueva en función de la amplitud anterior y $\sigma$ se cancela.
+\end{metodo}
+\paso{Paso 1.} Amplitud anterior: $\varepsilon=2\,z_{0,05}\,\frac{\sigma}{\sqrt{25}}=2(1{,}6449)\frac{\sigma}{5}$.
+
+\paso{Paso 2.} Condición nueva: $2\,z_{0,01}\frac{\sigma}{\sqrt n}\le\frac{\varepsilon}{2}=\frac{1{,}6449\,\sigma}{5}$, con $z_{0,01}=2{,}3263$:
+\[
+\frac{2(2{,}3263)}{\sqrt n}\le\frac{1{,}6449}{5}\ \Rightarrow\ \sqrt n\ge\frac{10\,(2{,}3263)}{1{,}6449}=14{,}1425\ \Rightarrow\ n\ge200{,}01\ \Rightarrow\ n=201.
+\]
+\begin{resp}
+Hacen falta $n=201$ registros en total, es decir, \textbf{$201-25=176$ registros más}.
+(El resultado queda justo en el límite de 200. Con los valores redondeados de tabla, 2,326 y 1,645, daría 199,93, o sea 200 registros y 175 más. Por eso conviene usar 4 decimales, como pide el parcial.)
+\end{resp}
+
+\subsection{Ejercicio 4 --- Prueba para la varianza (arenas)}
+\begin{enun}
+Las arenas de buena calidad tienen varianza de material perdido menor que 2. Con 10 muestras se obtuvo $s^2=1{,}6$. ¿Hay evidencia significativa para afirmar que la arena puede usarse? Parámetro, hipótesis, errores en contexto, estadístico, suposiciones y conclusión.
+\end{enun}
+\begin{metodo}
+Prueba para una varianza. Se supone que el material perdido tiene distribución \textbf{normal} y que las muestras son independientes. Así, $\frac{(n-1)S^2}{\sigma^2}\sim\chis_{n-1}$.
+Como no se da $\alpha$, se usa $\alpha=0{,}05$ y se informa también el valor $P$.
+\end{metodo}
+\paso{Parámetro:} $\sigma^2$, la varianza del material perdido (g/muestra) en el ensayo a 10\,000 psi.
+
+\paso{Hipótesis.} Lo que se quiere demostrar es que la arena es apta, o sea $\sigma^2<2$, y eso va en $H_1$:
+\[
+H_0:\sigma^2=2\ (\sigma^2\ge2)\qquad\text{vs.}\qquad H_1:\sigma^2<2.
+\]
+\paso{Errores en contexto.}
+\begin{itemize}
+\item \textbf{Tipo I:} concluir que la arena es apta ($\sigma^2<2$) cuando no lo es. Se usaría una arena inadecuada en los pozos: es el error grave, y por eso es el que se controla con $\alpha$.
+\item \textbf{Tipo II:} no encontrar evidencia de aptitud cuando la arena sí es apta. Se descartaría una arena buena.
+\end{itemize}
+\paso{Estadístico:} $\chis=\frac{(n-1)S^2}{\sigma_0^2}\ \overset{H_0}{\sim}\ \chis_{9}$. Región de rechazo: $\chis_0<\chis_{0,95;\,9}=3{,}3251$.
+
+\paso{Cálculo:} $\chis_0=\frac{9\cdot1{,}6}{2}=7{,}2>3{,}3251$, así que \textbf{no se rechaza $H_0$}. Valor $P=P(\chis_9\le7{,}2)=0{,}3837$.
+\begin{resp}
+No hay evidencia significativa para afirmar que $\sigma^2<2$. Aunque $s^2=1{,}6<2$, con solo 10 muestras esa diferencia puede deberse al azar ($P=0{,}38$). \textbf{No se puede asegurar que la arena sea apta.}
+\end{resp}
+
+\subsection{Ejercicio 5 --- Lectura de una curva de potencia}
+\begin{enun}
+El gráfico anexo es la potencia de una prueba para la proporción $p$ (muestra grande). Deducir: i) $H_0$ y $H_1$; ii) el nivel de significación; iii) la probabilidad de no rechazar $H_0$ si $p=0{,}7$. ¿Es una probabilidad de error?
+\end{enun}
+\begin{metodo}
+La potencia $\pi(p)=P(\text{rechazar }H_0\,|\,p)$ vale $\alpha$ en el valor de $H_0$ (es su mínimo) y crece hacia 1 a medida que $p$ se aleja de $p_0$. La forma (simétrica o monótona) indica si la prueba es bilateral o unilateral.
+\end{metodo}
+En la hoja de gráficos hay tres curvas distintas, cada una repetida dos veces. Todas son simétricas, con mínimo en $p=0{,}5$ y potencia 1 en los extremos. Se resuelven las tres:
+\begin{center}
+\small\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& Gráficos 1 y 2 (fila 1) & Gráficos 3 y 4 (fila 2) & Gráficos 5 y 6 (fila 3)\\\midrule
+i) Hipótesis & \multicolumn{3}{c}{$H_0:p=0{,}5$ \ vs.\ $H_1:p\neq0{,}5$ (bilateral, por la simetría)}\\
+ii) $\alpha=\pi(0{,}5)$ & $0{,}10$ & $0{,}05$ & $0{,}05$\\
+Potencia en $p=0{,}7$ & $\approx0{,}90$ & $\approx0{,}83$ & $\approx0{,}89$\\
+iii) $P(\text{no rechazar}\,|\,p=0{,}7)$ & $\approx0{,}10$ & $\approx0{,}17$ & $\approx0{,}11$\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{resp}
+i) $H_0:p=0{,}5$ vs.\ $H_1:p\neq0{,}5$: la curva es simétrica con mínimo en 0,5. \quad
+ii) $\alpha$ es la potencia en $p_0=0{,}5$, el mínimo de la curva. \quad
+iii) $P(\text{no rechazar}\,|\,p=0{,}7)=1-\pi(0{,}7)=\beta(0{,}7)$. \textbf{Sí es una probabilidad de error}: con $p=0{,}7$, $H_0$ es falsa, y no rechazarla es un \textbf{error de tipo II}.
+(Consistencia: las tres curvas corresponden aproximadamente a $n\approx50$ con $\alpha=0{,}10$, $n\approx50$ con $\alpha=0{,}05$ y $n\approx60$ con $\alpha=0{,}05$. Por eso la fila 1 tiene más potencia que la 2 con el mismo $n$: tiene un $\alpha$ mayor.)
+\end{resp}
+
+% =====================================================================
+\newpage
+\section{Temario 2}
+
+\subsection{Problema 1 --- Bolillas: conjunta, correlación y TCL}
+\begin{enun}
+Una caja tiene 3 bolillas rojas, 3 blancas y 4 negras. Se extraen 2 sin reemplazo y después se devuelven. $X=1$ si la primera es roja (0 si no); $Y$ = número de rojas extraídas.
+a) $p_{XY}$; ¿independientes? \ b) $\rho(X,Y)$. \ c) Si el experimento se repite 90 veces, probabilidad de que el total de rojas sea por lo menos 60.
+\end{enun}
+\inciso{a) Conjunta e independencia}
+Por la regla del producto (R = roja, N = no roja, con 7 no rojas):
+$p(1,2)=\frac3{10}\cdot\frac29=\frac{6}{90}$; \ $p(1,1)=\frac3{10}\cdot\frac79=\frac{21}{90}$; \ $p(0,1)=\frac7{10}\cdot\frac39=\frac{21}{90}$; \ $p(0,0)=\frac7{10}\cdot\frac69=\frac{42}{90}$.
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}c|ccc|c@{}}
+\toprule
+$p(x,y)$ & $y=0$ & $y=1$ & $y=2$ & $p_X$\\\midrule
+$x=0$ & $42/90=0{,}4667$ & $21/90=0{,}2333$ & 0 & \textbf{0,7000}\\
+$x=1$ & 0 & $21/90=0{,}2333$ & $6/90=0{,}0667$ & \textbf{0,3000}\\\midrule
+$p_Y$ & \textbf{0,4667} & \textbf{0,4667} & \textbf{0,0667} & 1\\\bottomrule
+\end{tabular}
+\end{center}
+$p(1,0)=0\neq p_X(1)\,p_Y(0)=0{,}3\cdot0{,}4667$: \textbf{no son independientes} (si la primera es roja, $Y\ge1$).
+
+\inciso{b) Coeficiente de correlación}
+$\E(X)=0{,}3$, $\V(X)=0{,}3\cdot0{,}7=0{,}21$. \
+$\E(Y)=\frac{42+2\cdot6}{90}=0{,}6$, \ $\E(Y^2)=\frac{42+4\cdot6}{90}=0{,}7333$, \ $\V(Y)=0{,}7333-0{,}36=0{,}3733$. \
+$\E(XY)=1\cdot1\cdot\frac{21}{90}+1\cdot2\cdot\frac6{90}=\frac{33}{90}=0{,}3667$.
+\[
+\Cov=0{,}3667-0{,}3\cdot0{,}6=0{,}1867;\qquad\rho=\frac{0{,}1867}{\sqrt{0{,}21\cdot0{,}3733}}=\frac{0{,}1867}{0{,}28}=\res{0{,}6667}
+\]
+\inciso{c) Total de rojas en 90 repeticiones}
+\paso{Variables.} $S=\sum_{i=1}^{90}Y_i$, con $Y_i$ iid (las bolillas se devuelven entre repeticiones). $\E(S)=90(0{,}6)=54$, \ $\V(S)=90(0{,}3733)=33{,}6$, \ $\sigma_S=5{,}7966$.
+
+\paso{TCL con corrección por continuidad} ($S$ es discreta y $n=90$ es grande):
+\[
+P(S\ge60)\approx1-\Phi\Big(\frac{59{,}5-54}{5{,}7966}\Big)=1-\Phi(0{,}9488)=\res{0{,}1714}
+\]
+(La probabilidad exacta, por convolución, es 0,1710. Sin corrección por continuidad daría 0,1503.)
+
+\subsection{Problema 2 --- Estimador combinado}
+\begin{enun}
+$Y=a\Xb_1+b\Xb_2$, con $0<a<1$, y dos muestras independientes de tamaños $n_1$ y $n_2$. a) $b$ en función de $a$ para que $Y$ sea insesgado. b) ¿Depende de la distribución o de $n$? c) $b$ que minimiza $\V(Y)$ si $n_2=4n_1$.
+\end{enun}
+\inciso{a)} $\E(Y)=a\mu+b\mu=(a+b)\mu=\mu\iff\res{b=1-a}$.
+
+\inciso{b)} \textbf{No depende} de la distribución de $X$ ni de los tamaños de muestra. Solo usa la linealidad de la esperanza y que $\E(\Xb_i)=\mu$, que vale para cualquier m.a. La única limitación es que $\mu$ exista (sea finita). Para la parte c) hace falta además que $\sigma^2$ sea finita.
+
+\inciso{c)} $\V(Y)=a^2\frac{\sigma^2}{n_1}+(1-a)^2\frac{\sigma^2}{4n_1}$. Derivando respecto de $a$: $2a-\frac{2(1-a)}{4}=0\Rightarrow a=\frac15$, así que $\res{b=\frac45}$. (Pesos proporcionales a los tamaños: $b=\frac{n_2}{n_1+n_2}$.)
+
+\subsection{Problema 3 --- Satisfacción de usuarios}
+\begin{enun}
+Satisfacción aproximadamente normal. Objetivo: media mayor que 70. $n=16$, $\xb=79$, $s=12$. a) ¿Hay prueba significativa de que se alcanzó el objetivo? ($\alpha=0{,}05$; errores en contexto.) b) IC 95\,\% para la varianza.
+\end{enun}
+\inciso{a) Prueba $t$ unilateral}
+$H_0:\mu=70$ vs.\ $H_1:\mu>70$ (lo que se quiere probar va en $H_1$). Población normal, $\sigma$ desconocido y $n$ chico: $T=\frac{\Xb-70}{S/\sqrt{16}}\sim t_{15}$.
+\[
+t_0=\frac{79-70}{12/4}=\res{3{,}0}>t_{0,05;15}=1{,}7531\ \Rightarrow\ \textbf{se rechaza }H_0.
+\]
+Valor $P=P(t_{15}>3)=0{,}0045$.
+\begin{resp}
+Sí: con $\alpha=0{,}05$ hay evidencia de que la satisfacción media supera 70, o sea que se alcanzó el objetivo.
+\textbf{Tipo I:} concluir que se alcanzó el objetivo cuando no fue así. \textbf{Tipo II:} no detectar que se alcanzó cuando en realidad sí.
+\end{resp}
+\inciso{b) IC 95\,\% para $\sigma^2$}
+$(n-1)s^2=15\cdot144=2160$; \ $\chis_{0,025;15}=27{,}4884$, \ $\chis_{0,975;15}=6{,}2621$:
+\[
+\frac{2160}{27{,}4884}\le\sigma^2\le\frac{2160}{6{,}2621}\ \Rightarrow\ \res{78{,}58\le\sigma^2\le344{,}93}
+\]
+Para el desvío: $8{,}86\le\sigma\le18{,}57$.
+
+\subsection{Problema 4 --- Plan de muestreo de partidas}
+\begin{enun}
+Partidas buenas: resistencia media $\ge1250$ kg; el proveedor quiere que se rechace a lo sumo el 5\,\% de ellas. Partidas malas: media $<1100$ kg; el cliente quiere rechazar al menos el 90\,\% de ellas. $\sigma=180$ kg. a) Tipo de prueba y fórmula general de $n$. b) $n$ para estos datos.
+\end{enun}
+\inciso{a) Tipo de prueba y deducción de $n$}
+Prueba $Z$ unilateral izquierda para la media con $\sigma$ conocido:
+\[
+H_0:\mu=1250\ (\mu\ge1250)\qquad\text{vs.}\qquad H_1:\mu<1250;\qquad\text{se rechaza la partida si }\xb<c.
+\]
+Supuestos: la resistencia es normal (o $n$ es lo bastante grande para el TCL), las unidades son independientes y $\sigma$ es conocido.
+Condiciones: $\alpha=P(\Xb<c\,|\,\mu_0=1250)=0{,}05$ y $\beta=P(\Xb\ge c\,|\,\mu_1=1100)=0{,}10$. De la primera, $c=\mu_0-z_\alpha\frac{\sigma}{\sqrt n}$; de la segunda, $c=\mu_1+z_\beta\frac{\sigma}{\sqrt n}$. Igualando:
+\[
+\mu_0-\mu_1=(z_\alpha+z_\beta)\frac{\sigma}{\sqrt n}\ \Rightarrow\ \boxed{n=\Big[\frac{(z_\alpha+z_\beta)\,\sigma}{\mu_0-\mu_1}\Big]^2}
+\]
+\inciso{b) Cálculo}
+\[
+n=\Big[\frac{(1{,}6449+1{,}2816)\cdot180}{150}\Big]^2=(3{,}5118)^2=12{,}33\ \Rightarrow\ \res{n=13}
+\]
+Regla: se rechaza la partida si $\xb<1250-1{,}6449\cdot\frac{180}{\sqrt{13}}=1167{,}88$ kg. Comprobación: $\beta(1100)=0{,}0870\le0{,}10$ \checkmark. Con $n=13$, que es chico, hace falta suponer que la resistencia es normal.
+
+% =====================================================================
+\newpage
+\section{Temario 3}
+
+\subsection{P1 --- Tabla conjunta dada}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}c|cccc|c@{}}
+\toprule
+$X\backslash Y$ & $-1$ & 0 & 1 & 2 & $p_X$\\\midrule
+0 & 0,12 & 0,01 & 0,04 & 0 & \textbf{0,17}\\
+1 & 0,05 & 0,20 & 0,05 & 0,05 & \textbf{0,35}\\
+2 & 0,03 & 0,25 & 0,10 & 0,10 & \textbf{0,48}\\\midrule
+$p_Y$ & \textbf{0,20} & \textbf{0,46} & \textbf{0,19} & \textbf{0,15} & 1\\\bottomrule
+\end{tabular}
+\end{center}
+\inciso{a) $\E(XY)$}
+Solo aportan $x=1,2$ (para $x=0$ el producto es 0):
+\[
+\E(XY)=1\,[(-1)(0{,}05)+1(0{,}05)+2(0{,}05)]+2\,[(-1)(0{,}03)+1(0{,}10)+2(0{,}10)]=0{,}10+0{,}54=\res{0{,}64}
+\]
+\inciso{b) Independencia}
+$p(0,2)=0\neq p_X(0)\,p_Y(2)=0{,}17\cdot0{,}15=0{,}0255$: \textbf{no son independientes}.
+
+\inciso{c) $P(Y>0\,|\,X>Y)$}
+Pares con $X>Y$: $(0,-1)$, $(1,-1)$, $(1,0)$, $(2,-1)$, $(2,0)$, $(2,1)$. Su suma es $0{,}12+0{,}05+0{,}20+0{,}03+0{,}25+0{,}10=0{,}75$. De ellos, el único con $Y>0$ es $(2,1)$, que vale $0{,}10$.
+\[
+P(Y>0\,|\,X>Y)=\frac{0{,}10}{0{,}75}=\res{0{,}1333}
+\]
+
+\subsection{P2 --- Baterías: diseño de la prueba}
+\begin{enun}
+Vida útil actual: $\mu=24\,500$ h, normal, $\sigma=4500$ h. El fabricante promete un aumento del 20\,\%, es decir $\mu=29\,400$ h. El ente aprueba solo si se prueba la mejora. Debe no avalar con probabilidad 0,98 los productos que no tienen la mejora. El productor no acepta que se dictamine en su contra equivocadamente con probabilidad mayor que 0,05.
+a) Hipótesis y estadística. \ b) ¿Alcanza con $n=12$? \ c) Condición de rechazo y regla de decisión.
+\end{enun}
+\begin{metodo}
+Se plantea como prueba entre dos valores: $\mu_0=24\,500$ (sin mejora) y $\mu_1=29\,400$ (con la mejora prometida). ``No avalar con probabilidad 0,98 a los que no cumplen'' da $\alpha=0{,}02$. ``No dictaminar en contra equivocadamente con probabilidad mayor que 0,05'' da $\beta(29\,400)\le0{,}05$.
+\end{metodo}
+\inciso{a) Hipótesis y estadística}
+\[
+H_0:\mu=24\,500\ \text{(no hay mejora)}\qquad\text{vs.}\qquad H_1:\mu=29\,400\ \text{(o }\mu>24\,500)
+\]
+\[
+Z=\frac{\Xb-24\,500}{4500/\sqrt n}\ \overset{H_0}{\sim}\ \Nor(0;1).
+\]
+\inciso{b) ¿Alcanza con $n=12$?}
+$\sigma/\sqrt{12}=1299{,}04$; \ $z_{0,02}=2{,}0537$; \ valor crítico $c=24\,500+2{,}0537\cdot1299{,}04=27\,167{,}90$ h.
+\begin{align*}
+\beta(29\,400)&=P(\Xb\le27\,167{,}90\,|\,\mu=29\,400)=\Phi\Big(\frac{27\,167{,}90-29\,400}{1299{,}04}\Big)\\
+&=\Phi(-1{,}7183)=\res{0{,}0429}\le0{,}05
+\end{align*}
+\textbf{Sí, alcanza.} Con la fórmula: $n=\big[\frac{(2{,}0537+1{,}6449)\,4500}{4900}\big]^2=11{,}54$, así que hacen falta 12.
+
+\inciso{c) Regla de decisión}
+Se rechaza $H_0$, y se avala el producto, si $\xb>27\,167{,}90$ h (o sea, $z_0>2{,}0537$). Si no, no se avala.
+
+\subsection{P3 --- Lluvia mensual}
+\begin{enun}
+Lluvia mensual $\Nor(100;\,15^2)$ mm. Año de sequía: lluvia anual menor que 1050 mm. a) $P(\text{sequía})$. \ b) Probabilidad de que el promedio mensual del año supere en 10 mm o más al esperado.
+\end{enun}
+\begin{metodo}
+Se supone que los 12 meses son independientes. Por la \textbf{propiedad reproductiva de la normal}, la suma anual es $T\sim\Nor(12\cdot100;\,12\cdot225)=\Nor(1200;\,2700)$, con $\sigma_T=51{,}9615$. El promedio mensual es $\Xb\sim\Nor(100;\,225/12)$, con $\sigma_{\Xb}=4{,}3301$.
+\end{metodo}
+\inciso{a)} $P(T<1050)=\Phi\big(\frac{1050-1200}{51{,}9615}\big)=\Phi(-2{,}8868)=\res{0{,}0019}$.
+
+\inciso{b)} $P(\Xb\ge110)=1-\Phi\big(\frac{110-100}{4{,}3301}\big)=1-\Phi(2{,}3094)=\res{0{,}0105}$.
+
+\subsection{T1 --- Error cuadrático medio}
+\textbf{Definición:} $\mathrm{ECM}(\hat\Theta)=\E\big[(\hat\Theta-\theta)^2\big]$. Mide el error total del estimador.
+
+\textbf{Deducción.} Se suma y resta $\E(\hat\Theta)$:
+\begin{align*}
+\mathrm{ECM}&=\E\Big[\big(\hat\Theta-\E\hat\Theta+\E\hat\Theta-\theta\big)^2\Big]\\
+&=\E\big[(\hat\Theta-\E\hat\Theta)^2\big]+2\big(\E\hat\Theta-\theta\big)\underbrace{\E\big[\hat\Theta-\E\hat\Theta\big]}_{=0}+\big(\E\hat\Theta-\theta\big)^2\\
+&=\V(\hat\Theta)+b(\hat\Theta)^2,\qquad b(\hat\Theta)=\E(\hat\Theta)-\theta\ \text{(sesgo)}.
+\end{align*}
+El factor $\E\hat\Theta-\theta$ es constante y sale de la esperanza, y el término cruzado se anula. Si el estimador es insesgado, $\mathrm{ECM}=\V$.
+
+\subsection{T2 --- IC para la varianza de una población normal}
+\paso{Paso 1 --- Pivote.} Si $X\sim\Nor(\mu;\sigma^2)$ y $X_1,\dots,X_n$ es una m.a., entonces $Q=\frac{(n-1)S^2}{\sigma^2}\sim\chis_{n-1}$. Su distribución no depende de $\sigma^2$.
+
+\paso{Paso 2 --- Probabilidad central.} Con $\chis_{1-\alpha/2}$ y $\chis_{\alpha/2}$, que dejan $\alpha/2$ en cada cola:
+\[
+P\Big(\chis_{1-\alpha/2,\,n-1}\le\frac{(n-1)S^2}{\sigma^2}\le\chis_{\alpha/2,\,n-1}\Big)=1-\alpha.
+\]
+
+\paso{Paso 3 --- Despeje.} Se invierten los tres miembros (todos positivos), lo que da vuelta las desigualdades, y se multiplica por $(n-1)S^2>0$:
+\[
+P\Big(\frac{(n-1)S^2}{\chis_{\alpha/2,\,n-1}}\le\sigma^2\le\frac{(n-1)S^2}{\chis_{1-\alpha/2,\,n-1}}\Big)=1-\alpha.
+\]
+\paso{Paso 4.} Con la muestra observada se reemplaza $S^2$ por $s^2$ y se obtiene el IC del $(1-\alpha)100\,\%$. Para $\sigma$ se toma la raíz de los dos extremos. El intervalo no es simétrico alrededor de $s^2$.
+
+% =====================================================================
+\newpage
+\section{Temario 4}
+
+\subsection{Ejercicio 1 --- Azufre en la materia prima}
+\begin{enun}
+La cantidad media de azufre debe ser menor que 5,5 g. Se toman 20 lotes de un proveedor nuevo; el azufre es normal con $\sigma=0{,}4$ g.
+a) Riesgo de incorporar al proveedor indebidamente = 5\,\%: hipótesis, condición de rechazo y regla. \ b) Con $\xb=5{,}4$, ¿se firma? \ c) Si $\mu=5{,}3$, probabilidad de incorporarlo.
+\end{enun}
+\inciso{a) Planteo}
+Para incorporar al proveedor hay que \emph{probar} que cumple ($\mu<5{,}5$), así que eso va en $H_1$:
+\[
+H_0:\mu=5{,}5\ (\mu\ge5{,}5)\qquad\text{vs.}\qquad H_1:\mu<5{,}5;\qquad Z=\frac{\Xb-5{,}5}{0{,}4/\sqrt{20}}\sim\Nor(0;1).
+\]
+$\sigma/\sqrt n=0{,}0894$. ``Incorporarlo indebidamente'' es rechazar $H_0$ cuando es cierta: $\alpha=0{,}05$. Se rechaza si $z_0<-1{,}6449$, es decir, si $\xb<5{,}5-1{,}6449(0{,}0894)=\res{5{,}3529}$ g.
+\textbf{Regla:} se firma el contrato si $\xb<5{,}3529$; si no, no se firma.
+
+\inciso{b) $\xb=5{,}4$}
+$5{,}4>5{,}3529$, así que \textbf{no se rechaza $H_0$}: \textbf{no se firma}. Aunque $5{,}4<5{,}5$, la diferencia no es significativa ($z_0=-1{,}1180$, $P=0{,}1318$).
+
+\inciso{c) Probabilidad de incorporarlo si $\mu=5{,}3$}
+Es la potencia en $\mu=5{,}3$:
+\[
+P(\Xb<5{,}3529\,|\,\mu=5{,}3)=\Phi\Big(\frac{5{,}3529-5{,}3}{0{,}0894}\Big)=\Phi(0{,}5916)=\res{0{,}7228}
+\]
+
+\subsection{Ejercicio 2 --- Opinión de los operarios}
+\begin{enun}
+$n=120$. El IC para la proporción de operarios de acuerdo es $[0{,}5330;\ 0{,}669]$. a) ¿Con qué nivel de confianza? b) ¿Cuántas muestras más para reducir el error a la mitad?
+\end{enun}
+\inciso{a) Nivel de confianza}
+\paso{Paso 1.} El IC es simétrico alrededor de $\hat p$, así que $\hat p=\frac{0{,}5330+0{,}669}{2}=0{,}601$ y $E=\frac{0{,}669-0{,}5330}{2}=0{,}068$.
+
+\paso{Paso 2.} Error estándar: $\sqrt{\hat p(1-\hat p)/n}=\sqrt{0{,}601\cdot0{,}399/120}=0{,}0447$.
+
+\paso{Paso 3.} $z=\frac{E}{0{,}0447}=1{,}5212$, y la confianza es $1-\alpha=2\Phi(1{,}5212)-1=\res{0{,}8718\approx87\,\%}$.
+
+\inciso{b) Error a la mitad}
+$E=z\sqrt{\hat p\hat q/n}$ es proporcional a $1/\sqrt n$. Para $E'=E/2$ con la misma confianza hace falta $\sqrt{n'}=2\sqrt n$, o sea $n'=4n=480$. \textbf{Hacen falta 360 operarios más.}
+
+\subsection{Ejercicio 3 --- Consumo de combustible}
+\begin{enun}
+Consumo mensual $\Nor(20\,000;\,2500^2)$ litros. a) Capacidad del tanque para cubrir el consumo con probabilidad 0,90. b) $P(\text{consumo anual}>230\,000)$. c) A \$8,5 por litro, $P(\text{gasto mensual}<175\,000)$.
+\end{enun}
+\inciso{a)} Se busca $c$ con $P(X\le c)=0{,}90$: $c=20\,000+z_{0,10}\cdot2500=20\,000+1{,}2816\cdot2500=\res{23\,203{,}88\ \ell}$.
+
+\inciso{b)} Suponiendo meses independientes, por la propiedad reproductiva: $T\sim\Nor(240\,000;\,12\cdot2500^2)$, con $\sigma_T=2500\sqrt{12}=8660{,}25$.
+$P(T>230\,000)=1-\Phi\big(\frac{230\,000-240\,000}{8660{,}25}\big)=1-\Phi(-1{,}1547)=\res{0{,}8759}$.
+
+\inciso{c)} $G=8{,}5X\sim\Nor(170\,000;\,(8{,}5\cdot2500)^2)$, con $\sigma_G=21\,250$. $P(G<175\,000)=\Phi\big(\frac{5000}{21\,250}\big)=\Phi(0{,}2353)=\res{0{,}5930}$.
+
+\subsection{T1 --- Teorema central del límite}
+\textbf{Enunciado:} si $X_1,\dots,X_n$ son independientes e idénticamente distribuidas, con media $\mu$ y varianza $\sigma^2$ finita, entonces
+\[
+Z_n=\frac{\Xb-\mu}{\sigma/\sqrt n}\xrightarrow[n\to\infty]{}\Nor(0;1),\quad\text{es decir}\quad\Xb\approx\Nor\Big(\mu;\frac{\sigma^2}{n}\Big)\ \text{ y }\ \sum X_i\approx\Nor(n\mu;\,n\sigma^2)\ \text{ para }n\text{ grande}.
+\]
+\textbf{¿Cuándo $\Xb$ es normal?}
+\begin{itemize}
+\item \textbf{Exactamente}, para cualquier $n$, si la población es normal: es la propiedad reproductiva de la normal, porque $\Xb$ es una combinación lineal de normales independientes.
+\item \textbf{Aproximadamente}, si la población es cualquiera con varianza finita y $n$ es grande (regla práctica: $n\ge30$), por el TCL.
+\end{itemize}
+
+\subsection{T2 --- Combinación lineal de normales}
+Sea $w=1{,}3x+y+2$, con $x\sim\Nor(\mu;\sigma_1^2)$ e $y\sim\Nor(\mu;\sigma_2^2)$.
+\begin{itemize}
+\item \textbf{Media} (linealidad, vale siempre): $\E(w)=1{,}3\mu+\mu+2=2{,}3\mu+2$.
+\item \textbf{Varianza:} $\V(w)=1{,}69\,\sigma_1^2+\sigma_2^2+2(1{,}3)\Cov(x,y)$. \textbf{Si $x$ e $y$ son independientes}: $\V(w)=1{,}69\,\sigma_1^2+\sigma_2^2$.
+\item \textbf{Distribución:} si son independientes, por la \textbf{propiedad reproductiva}, $w\sim\Nor\big(2{,}3\mu+2;\ 1{,}69\sigma_1^2+\sigma_2^2\big)$.
+\end{itemize}
+Sin independencia (o normalidad conjunta), no se puede asegurar que $w$ sea normal. El enunciado no la menciona, así que hay que aclararla como supuesto.
+
+% =====================================================================
+\newpage
+\section{Temario 5}
+
+\subsection{Problema 1 --- Dos dados}
+\begin{enun}
+Se tiran dos dados. $X$ = resultado del primero; $Y$ = el mayor de los dos. a) ¿Independientes? \ b) Si el mayor fue 5, probabilidad de que el primero sea $\le3$.
+\end{enun}
+\paso{Conjunta.} Hay 36 resultados equiprobables. Si $y>x$, el segundo dado debe valer $y$: $p(x,y)=\frac1{36}$. Si $y=x$, el segundo debe ser $\le x$: $p(x,x)=\frac{x}{36}$. Si $y<x$: $p=0$.
+Marginal: $p_Y(y)=\frac{2y-1}{36}$ (por ejemplo, $p_Y(5)=\frac9{36}$).
+
+\inciso{a) No son independientes}
+Contraejemplo: $p(6,1)=0$ (si el primero es 6, el máximo no puede ser 1), pero $p_X(6)\,p_Y(1)=\frac16\cdot\frac1{36}\neq0$.
+
+\inciso{b)}
+\[
+P(X\le3\,|\,Y=5)=\frac{p(1,5)+p(2,5)+p(3,5)}{p_Y(5)}=\frac{3/36}{9/36}=\res{\frac13=0{,}3333}
+\]
+
+\subsection{Problema 2 --- Tiempo total del proceso}
+\begin{enun}
+Tarea 1: media 12, desvío 2. Tarea 2: media 4, desvío 1 (independientes). Para 150 piezas, $P(\text{tiempo total}>2450\ \text{min})$. Definir variables y supuestos.
+\end{enun}
+\paso{Variables.} $D_i=T_{1i}+T_{2i}$, duración de la pieza $i$: $\E(D_i)=16$ y $\V(D_i)=4+1=5$ (independencia entre tareas). $S=\sum_{i=1}^{150}D_i$: $\E(S)=2400$, $\V(S)=750$, $\sigma_S=27{,}3861$.
+
+\paso{Supuestos.} Las duraciones son independientes entre piezas y tienen la misma distribución. La distribución no se conoce, pero $n=150$ es grande, así que se usa el \textbf{TCL}.
+\[
+P(S>2450)\approx1-\Phi\Big(\frac{2450-2400}{27{,}3861}\Big)=1-\Phi(1{,}8257)=\res{0{,}0339}
+\]
+
+\subsection{Problema 3 --- Densidad de capa de tinte}
+\begin{enun}
+$n=69$ árboles, $\xb=1{,}028$, $s=0{,}163$. a) IC 95\,\% para $\mu$. b) Con $\sigma=0{,}16$, ¿qué $n$ da una amplitud de 0,03 con 95\,\%?
+\end{enun}
+\paso{Planteo.} Variable: $X$ = densidad de capa de tinte de un árbol sano. Parámetro: $\mu$. Estimador: $\Xb$. Con $n=69$ grande, por el TCL $\Xb\approx\Nor(\mu;\sigma^2/n)$, y $\sigma$ se estima con $s$.
+
+\inciso{a)} $1{,}028\pm1{,}96\cdot\frac{0{,}163}{\sqrt{69}}=1{,}028\pm0{,}0385\ \Rightarrow\ \res{0{,}9895\le\mu\le1{,}0665}$. Con $t_{0,025;68}=1{,}9955$ se obtiene $[0{,}9888;\,1{,}0672]$, prácticamente igual.
+
+\inciso{b)} Amplitud 0,03 equivale a error máximo $E=0{,}015$: $n=\big(\frac{1{,}96\cdot0{,}16}{0{,}015}\big)^2=437{,}09\Rightarrow\res{n=438}$.
+
+\subsection{Problema 4 --- Valor $P$ y regiones de rechazo}
+\inciso{a)} $P=0{,}084>\alpha=0{,}05$: \textbf{no se rechaza $H_0$}. Se rechaza solo si $P\le\alpha$, y el resultado observado no es lo bastante extremo para ese nivel.
+
+\inciso{b-i) Región más adecuada}
+$H_1:p\neq0{,}5$ es bilateral, así que la región tiene que estar en \textbf{las dos colas}: \textbf{R1} $=\{x\le7\ \vee\ x\ge18\}$. R2 y R3 son de una sola cola, para pruebas unilaterales.
+Bajo $H_0$, $X\sim\mathrm{Bin}(25;0{,}5)$ y $\alpha_{R1}=P(X\le7)+P(X\ge18)=0{,}0433$. Para comparar: $\alpha_{R2}=\alpha_{R3}=0{,}0539$.
+
+\inciso{b-ii) Errores en contexto}
+\textbf{Tipo I:} concluir que los suscriptores prefieren una de las empresas cuando en realidad las prefieren por igual ($p=0{,}5$). \textbf{Tipo II:} concluir que no hay preferencia cuando en realidad sí la hay ($p\neq0{,}5$).
+
+\subsection{Problema 5 --- Control con límites $\mu_0\pm2\sigma/\sqrt n$}
+\inciso{a)} $H_0:\mu=\mu_0$ vs.\ $H_1:\mu\neq\mu_0$. Con $n>30$, el \textbf{TCL} da $\Xb\approx\Nor(\mu;\sigma^2/n)$, y $\sigma$ es conocido.
+
+\inciso{b)} $\alpha=P\big(|\Xb-\mu_0|>2\sigma/\sqrt n\,\big|\,\mu_0\big)=P(|Z|>2)=2[1-\Phi(2)]=\res{0{,}0455}$.
+
+\inciso{c)} Si $\mu_v=\mu_0+\sigma/\sqrt n$, entonces $Z_v=\frac{\Xb-\mu_v}{\sigma/\sqrt n}$, y los límites quedan en $Z_v=2-1=1$ y $Z_v=-2-1=-3$:
+\[
+\beta=P(-3\le Z\le1)=\Phi(1)-\Phi(-3)=0{,}8413-0{,}0013=\res{0{,}8400}
+\]
+
+% =====================================================================
+\newpage
+\section{Temario 6}
+
+\subsection{Problema 1 --- Dado y dos monedas}
+\begin{enun}
+$X$ = caras en dos monedas; $Y$ = ases en un dado (0 o 1), independientes. Tabla conjunta y $P(X+Y\le2\,|\,Y=1)$.
+\end{enun}
+$X\sim\mathrm{Bin}(2;\frac12)$: $\big(\frac14;\frac12;\frac14\big)$. \ $Y$: $P(Y=1)=\frac16$. Por independencia, $p(x,y)=p_X(x)\,p_Y(y)$:
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}c|cc|c@{}}
+\toprule
+$p(x,y)$ & $y=0$ & $y=1$ & $p_X$\\\midrule
+$x=0$ & $5/24$ & $1/24$ & $1/4$\\
+$x=1$ & $10/24$ & $2/24$ & $1/2$\\
+$x=2$ & $5/24$ & $1/24$ & $1/4$\\\midrule
+$p_Y$ & $5/6$ & $1/6$ & 1\\\bottomrule
+\end{tabular}
+\end{center}
+\[
+P(X+Y\le2\,|\,Y=1)=P(X\le1\,|\,Y=1)=\frac{\frac1{24}+\frac2{24}}{\frac16}=\res{\frac34=0{,}75}
+\]
+(Por independencia es directamente $P(X\le1)=\frac34$.)
+
+\subsection{Problema 2 --- Dos estimadores de $p$}
+\begin{enun}
+$X\sim\mathrm{Bin}(n;p)$ e $Y\sim\mathrm{Bin}(m;p)$ independientes, con $m=3n$. $\hat p_1=\frac12\big(\frac Xn+\frac Ym\big)$, \ $\hat p_2=\frac{X+Y}{n+m}$. ¿Cuál es preferible?
+\end{enun}
+\paso{Sesgo.} $\E(\hat p_1)=\frac12(p+p)=p$; \ $\E(\hat p_2)=\frac{np+mp}{n+m}=p$. Los dos son insesgados.
+
+\paso{Varianza} (independencia, $\V(X)=npq$):
+\[
+\V(\hat p_1)=\frac14\Big(\frac{pq}{n}+\frac{pq}{3n}\Big)=\frac{pq}{3n},\qquad
+\V(\hat p_2)=\frac{npq+3npq}{(4n)^2}=\frac{pq}{4n}.
+\]
+\begin{resp}
+Es preferible $\hat p_2$: los dos son insesgados y $\hat p_2$ tiene menor varianza. La eficiencia relativa es $\V(\hat p_1)/\V(\hat p_2)=4/3$. $\hat p_2$ junta todas las observaciones en un solo promedio, mientras que $\hat p_1$ le da el mismo peso a dos muestras de distinto tamaño.
+\end{resp}
+
+\subsection{Problema 3 --- DBO: IC 99\,\% para $\mu$ y $\sigma^2$}
+$n=25$, $\xb=35$, $s^2=0{,}184$ ($s=0{,}4290$); población normal.
+\inciso{Media} ($\sigma$ desconocido): $t_{0,005;24}=2{,}7969$, \ $E=2{,}7969\cdot\frac{0{,}4290}{5}=0{,}2400$:
+\[
+\res{34{,}7600\le\mu\le35{,}2400\ \text{mg}/\ell}
+\]
+\inciso{Varianza:} $(n-1)s^2=4{,}416$; \ $\chis_{0,005;24}=45{,}5585$, \ $\chis_{0,995;24}=9{,}8862$:
+\[
+\frac{4{,}416}{45{,}5585}\le\sigma^2\le\frac{4{,}416}{9{,}8862}\ \Rightarrow\ \res{0{,}0969\le\sigma^2\le0{,}4467}
+\]
+
+\subsection{Problema 4 --- Lámparas dicroicas}
+\begin{enun}
+Proveedor: $\mu=1000$ h, $\sigma=80$ h. Se compra si la media de 100 lámparas es al menos 990.
+a) $P(\text{comprar})$. \ b) Dos muestras de 100: $P(|\Xb_1-\Xb_2|>10)$. \ c) Sospecha de que $\mu<1000$; $n=200$, $\xb=987$: prueba, valor $P$ y conclusión con $\alpha=0{,}05$.
+\end{enun}
+\inciso{a)} Por el TCL ($n=100$), $\Xb\approx\Nor(1000;\,8^2)$:
+$P(\Xb\ge990)=1-\Phi\big(\frac{990-1000}{8}\big)=\Phi(1{,}25)=\res{0{,}8944}$.
+
+\inciso{b)} $D=\Xb_1-\Xb_2\approx\Nor(0;\,64+64)$ (muestras independientes: las varianzas se suman), con $\sigma_D=11{,}3137$.
+$P(|D|>10)=2\big[1-\Phi\big(\frac{10}{11{,}3137}\big)\big]=2[1-\Phi(0{,}8839)]=\res{0{,}3768}$.
+
+\inciso{c-i) Prueba y valor $P$}
+$H_0:\mu=1000$ vs.\ $H_1:\mu<1000$. Estadístico $Z=\frac{\Xb-1000}{80/\sqrt{200}}\approx\Nor(0;1)$ por el TCL ($n=200$, $\sigma$ conocido); $\sigma/\sqrt n=5{,}6569$.
+\[
+z_0=\frac{987-1000}{5{,}6569}=-2{,}2981;\qquad P=\Phi(-2{,}2981)=\res{0{,}0108}
+\]
+\inciso{c-ii) Conclusión con $\alpha=0{,}05$}
+Región de rechazo: $Z<-1{,}6449$, o sea $\xb<990{,}69$. Como $z_0=-2{,}2981<-1{,}6449$ (y $P=0{,}0108<0{,}05$), \textbf{se rechaza $H_0$}: la sospecha del contratista queda confirmada, porque hay evidencia de que la duración media es menor que 1000 h.
+
+\subsection{Problema 5 --- Prueba para $p$ unilateral: $\beta$ y $n$}
+\paso{Estadístico y región.} $Z=\frac{\hat P-p_0}{\sqrt{p_0q_0/n}}\ \overset{H_0}{\approx}\ \Nor(0;1)$ (TCL). Se rechaza si $Z<-z_\alpha$, es decir, si $\hat p<c=p_0-z_\alpha\sqrt{p_0q_0/n}$.
+
+\paso{$\beta(p_v)$} con $p_v<p_0$. Ahora $\hat P\approx\Nor(p_v;\,p_vq_v/n)$:
+\[
+\beta(p_v)=P(\hat P\ge c\,|\,p_v)=1-\Phi\left(\frac{p_0-p_v-z_\alpha\sqrt{p_0q_0/n}}{\sqrt{p_vq_v/n}}\right).
+\]
+\paso{Tamaño de muestra.} Se pide que el argumento de $\Phi$ sea igual a $z_\beta$:
+\[
+\frac{\sqrt n\,(p_0-p_v)-z_\alpha\sqrt{p_0q_0}}{\sqrt{p_vq_v}}=z_\beta\ \Rightarrow\ \boxed{n=\left[\frac{z_\alpha\sqrt{p_0q_0}+z_\beta\sqrt{p_vq_v}}{p_0-p_v}\right]^2}
+\]
+
+% =====================================================================
+\newpage
+\section{Temario 7}
+
+\subsection{Problema 1 --- Densidad conjunta continua}
+\begin{enun}
+$f(x,y)=2xy$ para $0\le x\le2$, $0\le y\le x/2$ (y 0 fuera). a) ¿Independientes? \ b) $P(X\le3Y)$. \ c) $\V(W)$ con $W=X-Y$.
+\end{enun}
+\paso{Control.} $\int_0^2\!\int_0^{x/2}2xy\,dy\,dx=\int_0^2 2x\frac{x^2}{8}\,dx=\int_0^2\frac{x^3}{4}dx=1$. \checkmark
+
+\inciso{a) Independencia}
+Marginales: $f_X(x)=\int_0^{x/2}2xy\,dy=\frac{x^3}{4}$ en $[0;2]$; \ $f_Y(y)=\int_{2y}^{2}2xy\,dx=4y(1-y^2)$ en $[0;1]$.
+$f_X(x)\,f_Y(y)=x^3y(1-y^2)\neq2xy$: \textbf{no son independientes}. Se ve también porque el soporte no es rectangular: el valor de $x$ limita el rango de $y$.
+
+\inciso{b) $P(X\le3Y)=P(Y\ge X/3)$}
+La región es $\frac x3\le y\le\frac x2$:
+\[
+\int_0^2\!\!\int_{x/3}^{x/2}2xy\,dy\,dx=\int_0^2x\Big(\frac{x^2}{4}-\frac{x^2}{9}\Big)dx=\frac{5}{36}\int_0^2x^3dx=\frac5{36}\cdot4=\res{\frac59=0{,}5556}
+\]
+\inciso{c) $\V(X-Y)$}
+\begin{itemize}
+\item $\E(X)=\int_0^2x\frac{x^3}{4}dx=\frac{8}{5}=1{,}6$; \ $\E(X^2)=\int_0^2\frac{x^5}{4}dx=\frac83$; \ $\V(X)=\frac83-\frac{64}{25}=\frac{8}{75}=0{,}1067$.
+\item $\E(Y)=\int_0^14y^2(1-y^2)dy=4\big(\frac13-\frac15\big)=\frac8{15}=0{,}5333$; \ $\E(Y^2)=4\big(\frac14-\frac16\big)=\frac13$; \ $\V(Y)=\frac13-\frac{64}{225}=\frac{11}{225}=0{,}0489$.
+\item $\E(XY)=\int_0^2\!\int_0^{x/2}2x^2y^2\,dy\,dx=\int_0^2\frac{x^5}{12}dx=\frac89$; \ $\Cov=\frac89-\frac85\cdot\frac8{15}=\frac{8}{225}=0{,}0356$.
+\end{itemize}
+\[
+\V(W)=\V(X)+\V(Y)-2\Cov(X,Y)=\frac{24}{225}+\frac{11}{225}-\frac{16}{225}=\res{\frac{19}{225}=0{,}0844}
+\]
+
+\subsection{Problema 2 --- Recipientes de ácido sulfúrico}
+\begin{enun}
+Datos (litros): 9,8; 10,2; 10,4; 9,8; 10; 10,2; 9,6 (normal). a) IC 90\,\% para $\mu$ y $\sigma$. b) Reducir el error de $\mu$ al menos 10\,\%: si no hay evidencia de que $\sigma$ aumentó respecto del histórico 0,25, calcular $n$ con $\sigma=0{,}25$. c) $n$ para estimar la proporción con contenido $\ge10$ con 95\,\% y error 0,075.
+\end{enun}
+\paso{Estadísticos.} $n=7$, $\xb=70/7=10{,}0$; desvíos: $-0{,}2;\,0{,}2;\,0{,}4;\,-0{,}2;\,0;\,0{,}2;\,-0{,}4$; $\sum(x_i-\xb)^2=0{,}48$; $s^2=0{,}08$, $s=0{,}2828$.
+
+\inciso{a) IC 90\,\%}
+\textbf{Media} (con $t$, $\nu=6$): $t_{0,05;6}=1{,}9432$, \ $E=1{,}9432\cdot\frac{0{,}2828}{\sqrt7}=0{,}2077$, así que $\res{9{,}7923\le\mu\le10{,}2077\ \ell}$.
+\textbf{Desvío:} $\chis_{0,05;6}=12{,}5916$, \ $\chis_{0,95;6}=1{,}6354$:
+$\sigma^2\in\big[\frac{0{,}48}{12{,}5916};\,\frac{0{,}48}{1{,}6354}\big]=[0{,}0381;\,0{,}2935]$, así que $\res{0{,}1952\le\sigma\le0{,}5418\ \ell}$.
+Interpretación: con 90\,\% de confianza el contenido medio está entre 9,79 y 10,21 litros, y la variabilidad de los recipientes (desvío) entre 0,20 y 0,54 litros.
+
+\inciso{b) Nuevo tamaño de muestra}
+\paso{¿Aumentó $\sigma$?} El IC del 90\,\% para $\sigma$, $[0{,}1952;\,0{,}5418]$, \textbf{contiene a 0,25}: no hay evidencia de que haya cambiado. Con una prueba, $H_0:\sigma^2=0{,}0625$ vs.\ $H_1:\sigma^2>0{,}0625$ da $\chis_0=\frac{6\cdot0{,}08}{0{,}0625}=7{,}68<\chis_{0,10;6}=10{,}6446$ ($P=0{,}26$), y tampoco se rechaza. Se usa $\sigma=0{,}25$.
+
+\paso{Cálculo.} Error nuevo: $E'\le0{,}9\cdot0{,}2077=0{,}1870$. Con $\sigma$ conocido se usa $z$:
+\[
+n=\Big(\frac{1{,}6449\cdot0{,}25}{0{,}1870}\Big)^2=4{,}84\ \Rightarrow\ n_{\min}=5.
+\]
+\begin{resp}
+Alcanza con $n\ge5$. Como ya hay 7 datos, \textbf{no hace falta ampliar la muestra}: con $\sigma=0{,}25$ conocido, el error con $n=7$ es $1{,}6449\cdot0{,}25/\sqrt7=0{,}1554$, un 25\,\% menor que 0,2077. La mejora viene de reemplazar $t$ y $s$ por $z$ y $\sigma$.
+\end{resp}
+
+\inciso{c) Tamaño para estimar la proporción}
+Variable: $Z_i=1$ si el recipiente $i$ tiene contenido $\ge10$ ($Z_i\sim$ Bernoulli$(p)$). Supuestos: recipientes independientes y $n$ grande, para que el TCL dé $\hat P\approx\Nor$.
+Como la media estimada es exactamente 10, se espera $p\approx0{,}5$, que además es el caso conservador:
+\[
+n=\frac{1{,}96^2\cdot0{,}25}{0{,}075^2}=170{,}74\ \Rightarrow\ \res{n=171}
+\]
+(Con $\hat p=4/7=0{,}5714$ de la muestra piloto daría 168.)
+
+\subsection{Problema 4 --- Tratamiento del suelo (manzanas)}
+\begin{enun}
+Producción $\Nor(90{,}4;\,6^2)$ t/ha. Después del tratamiento: $n=16$, $\xb=94{,}3$; $\sigma$ no cambia; $\alpha=0{,}05$. a) Prueba, decisión, valor $P$. \ b) Probabilidad de no adoptar si en realidad $\mu=94$; tipo de error.
+\end{enun}
+\inciso{a)}
+$H_0:\mu=90{,}4$ vs.\ $H_1:\mu>90{,}4$ (se quiere probar que el tratamiento aumenta la producción). $\sigma/\sqrt n=6/4=1{,}5$:
+\[
+z_0=\frac{94{,}3-90{,}4}{1{,}5}=\res{2{,}60}>1{,}6449\ \Rightarrow\ \textbf{se rechaza }H_0\ \text{(se adopta el tratamiento)}.
+\]
+Valor $P=1-\Phi(2{,}6)=\res{0{,}0047}$.
+Con el valor $P$: como $0{,}0047<0{,}05$, se rechaza. Coincide con la decisión por la región de rechazo.
+
+\inciso{b)}
+Se adopta si $\xb>90{,}4+1{,}6449\cdot1{,}5=92{,}8673$. Si $\mu=94$:
+\[
+\beta=P(\Xb\le92{,}8673\,|\,\mu=94)=\Phi\Big(\frac{92{,}8673-94}{1{,}5}\Big)=\Phi(-0{,}7551)=\res{0{,}2251}
+\]
+Es un \textbf{error de tipo II}: no adoptar un tratamiento que en realidad sí aumenta la producción.
