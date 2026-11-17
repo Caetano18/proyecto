@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-noshorthands]{babel}
+\usepackage[top=2.3cm,bottom=2.3cm,left=2.2cm,right=2.2cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{icomma}
+\spanishplainpercent
+\usepackage{graphicx,booktabs,array,multirow,multicol,enumitem}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{RGB}{35,85,140}
+\definecolor{azulclaro}{RGB}{238,244,251}
+\definecolor{rojo}{RGB}{180,40,40}
+\definecolor{rojoclaro}{RGB}{252,240,238}
+\definecolor{verde}{RGB}{30,110,50}
+\definecolor{verdeclaro}{RGB}{238,248,240}
+\definecolor{gris}{RGB}{245,245,245}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{itemsep=1pt,topsep=2pt}
+
+\titleformat{\section}{\Large\bfseries\color{azul}}{Bloque \thesection\ ---}{0.4em}{}
+\titleformat{\subsection}{\large\bfseries\color{azul}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{10pt}{8pt}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Probabilidad y Estadística -- Guía paso a paso del segundo parcial}
+\rhead{\small Procedimientos generales}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{cuando}{colback=verdeclaro,colframe=verde!70,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=verde!75,title={Cuándo se usa},breakable}
+\newtcolorbox{pasos}{colback=white,colframe=azul!70,boxrule=0.7pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=azul!85,title={Paso a paso},breakable}
+\newtcolorbox{modelo}[1]{colback=gris,colframe=black!40,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fontupper=\small,fonttitle=\bfseries\small,coltitle=black,colbacktitle=black!10,title={Modelo resuelto --- #1},breakable}
+\newtcolorbox{ojo}[1][Errores típicos]{colback=rojoclaro,colframe=rojo!80,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=3pt,bottom=3pt,
+  fonttitle=\bfseries\small,coltitle=white,colbacktitle=rojo!80,title={#1},breakable}
+\newtcolorbox{hoja}[2][]{colback=white,colframe=azul!70,boxrule=0.6pt,arc=2pt,left=4pt,right=4pt,top=2pt,bottom=2pt,
+  fonttitle=\bfseries\small,colbacktitle=azul!85,coltitle=white,title={#2},breakable,#1}
+
+\newenvironment{pasolista}{\begin{enumerate}[label=\textbf{Paso \arabic*.},leftmargin=*,align=left,itemsep=3pt]}{\end{enumerate}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\V}{\mathrm{V}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Nor}{\mathcal{N}}
+\newcommand{\xb}{\bar{x}}
+\newcommand{\Xb}{\bar{X}}
+\newcommand{\chis}{\chi^2}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{azul} Probabilidad y Estadística}\\[4pt]
+{\large Guía de procedimientos paso a paso --- Segundo Parcial}\\[2pt]
+{\normalsize Cómo resolver cada tipo de ejercicio, con modelos de parciales anteriores y hoja de fórmulas}\\[8pt]
+{\normalsize Caetano Gimenez}\\[1pt]
+{\small UTN - Facultad Regional Haedo \ $\cdot$\ Noviembre 2026}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=azul!60,boxrule=0.5pt,arc=2pt,title={\bfseries Cómo usar esta guía},colbacktitle=azul!80,fonttitle=\small]
+\small
+\begin{enumerate}[leftmargin=14pt]
+\item Buscá en la tabla de abajo qué pide el enunciado y andá al procedimiento indicado.
+\item Cada procedimiento tiene: \textbf{cuándo se usa} (verde), el \textbf{paso a paso general} (azul), un \textbf{modelo resuelto} con un ejercicio de los parciales y modelos de la cátedra (gris) y los \textbf{errores típicos} (rojo).
+\item Los pasos son generales: sirven para cualquier ejercicio de ese tipo, cambiando los números.
+\item Al final está la \textbf{hoja de fórmulas completa}.
+\end{enumerate}
+Notación: $\Phi(z)=P(Z\le z)$. Los valores críticos dejan el área \emph{a la derecha}: $P(Z>z_\alpha)=\alpha$, $P(T_\nu>t_{\alpha,\nu})=\alpha$, $P(\chis_\nu>\chis_{\alpha,\nu})=\alpha$. Como pide el parcial, conviene usar al menos 4 decimales.
+\end{tcolorbox}
+
+\subsection*{¿Qué tipo de ejercicio es?}
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{10.6cm}l@{}}
+\toprule
+Si el enunciado pide o dice\ldots & Procedimiento\\\midrule
+``Hallar la matriz / tabla / función de probabilidad conjunta'' & \ref{p:conjunta}\\
+``Si se sabe que\ldots, ¿cuál es la probabilidad de\ldots?'', $P(A\,|\,B)$, condicional & \ref{p:condicional}\\
+``¿Son independientes? Justificar'' & \ref{p:indep}\\
+``Covarianza'', ``coeficiente de correlación'', $\E(XY)$ & \ref{p:cov}\\
+``$f(x,y)=\dots$'' (densidad conjunta), integrales dobles & \ref{p:continuo}\\
+``Varianza de $W=aX+bY+c$'', ``media y distribución de $w$'' & \ref{p:comblin}\\
+``Total / suma / promedio de $n$\ldots'', ``consumo anual'', ``caja de 24'', ``¿cuánto debe valer $n$?'' & \ref{p:tcl}\\
+``Por lo menos $k$ de $n$'', binomial con $n$ grande, ``resultado aproximado'' & \ref{p:aprox}\\
+``Estimador insesgado'', ``¿cuál es preferible?'', ``varianza mínima'', ECM & \ref{p:estim}\\
+``Estimar la media con confianza\ldots'' & \ref{p:icmu}\\
+``Intervalo para la varianza / el desvío'' & \ref{p:icvar}\\
+``Estimar la proporción'', ``¿con qué nivel de confianza se hizo el IC?'' & \ref{p:icp}\\
+``¿Cuántos hay que muestrear para estimar\ldots?'', ``¿cuántos más?'' & \ref{p:nest}\\
+``¿Hay evidencia\ldots?'', ``plantear la prueba de hipótesis'' & \ref{p:general} y \ref{p:pmu}--\ref{p:pp}\\
+``Calcular el valor $P$'', ``¿a qué conclusión se llega si $P=\dots$?'' & \ref{p:valorp}\\
+``Nivel de significación de la regla'', ``probabilidad de error tipo II'', ``probabilidad de detectar / adoptar'' & \ref{p:ab}\\
+``Indicar el gráfico'', ``¿es una curva de potencia?'', ``deducir del gráfico'' & \ref{p:curvas}\\
+``Tamaño de muestra para que la prueba detecte\ldots con probabilidad\ldots'', ``¿alcanza con $n$?'' & \ref{p:nprueba}\\
+``Comparar el intervalo con la conclusión de la prueba'' & \ref{p:dual}\\
+``Verdadero o falso'', ``demostrar'', ``deducir'', ``enunciar'' & \ref{p:vf}--\ref{p:interp}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+{\small\setcounter{tocdepth}{2}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}}
+
+\input{bloque1}
+\input{bloque2}
+\input{bloque3}
+\input{bloque4}
+\input{bloque5}
+\input{hoja}
+
+\end{document}

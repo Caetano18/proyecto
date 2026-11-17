@@ -1,0 +1,71 @@
+% =====================================================================
+\newpage
+\section{Teoría: verdadero o falso, demostraciones e interpretación}
+% =====================================================================
+
+\subsection{Cómo encarar un verdadero o falso}\label{p:vf}
+\begin{cuando}
+``Analizar si cada proposición es verdadera o falsa. Si es verdadera, demostrarla; si es falsa, dar un contraejemplo o una explicación clara.''
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Leer las palabras clave}: ``para todo'', ``cualquiera sea la distribución'', ``siempre'', ``$<$'' estricto, ``equidistantes'', ``se debe''. Suelen ser las que hacen falsa la afirmación.
+\item \textbf{Intentar demostrarla} con definiciones y propiedades: linealidad de $\E$, $\V(aX+b)=a^2\V(X)$, bilinealidad de $\Cov$, independencia.
+\item \textbf{Buscar un caso límite} que la rompa: variable degenerada ($\V=0$), distribución asimétrica, $n$ chico, $p=0{,}5$, $\sigma$ desconocido.
+\item \textbf{Si es falsa}: dar un \textbf{contraejemplo concreto con números}, o mostrar el cálculo correcto y compararlo con el del enunciado.
+\item \textbf{Si es verdadera}: dar la demostración completa, sin saltear pasos, y nombrar las propiedades que usás.
+\item \textbf{Cerrar con una frase}: ``Es falsa porque\ldots'' o ``Es verdadera, como se demostró''.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{V/F de los parciales y modelos}
+\begin{itemize}
+\item \textbf{$\Cov(h-X,X)<0$ para todo $h$ y cualquier $X$:} \emph{falsa}. $\Cov(h-X,X)=\Cov(h,X)-\Cov(X,X)=-\V(X)\le0$, y si $X$ es constante ($\V=0$) da 0. Contraejemplo: $P(X=c)=1$.
+\item \textbf{Los límites del IC de $\sigma^2$ son equidistantes de $s^2$:} \emph{falsa}. Con $n=10$, $s^2=1$ y 95\,\% el IC es $[0{,}4731;\ 3{,}3329]$, y las distancias a $s^2$ son 0,5269 y 2,3329, porque la $\chis$ es asimétrica.
+\item \textbf{Siempre hace falta una muestra preliminar para calcular $n$ en una proporción:} \emph{falsa}. Como $p(1-p)\le\frac14$, el valor $n=z^2/(4\varepsilon^2)$ sirve para cualquier $p$.
+\item \textbf{Para reducir la longitud del IC a la mitad hay que cuadruplicar $n$:} \emph{verdadera}. Como $L=2z\sigma/\sqrt n$, para $L/2$ hace falta $\sqrt{n'}=2\sqrt n$, o sea $n'=4n$.
+\item \textbf{El IC 97\,\% con $n=9$, $\xb=6$, $s=0{,}12$ es $(5{,}9132;\ 6{,}0868)$:} \emph{falsa}. Ese intervalo se calculó con $z=2{,}1701$; corresponde $t_{0,015;8}=2{,}6338$, que da $(5{,}8946;\ 6{,}1054)$.
+\item \textbf{$aX_1+(1-a)X_2$ con $n_2=4n_1$ es insesgado y tiene varianza mínima en $a=\frac15$:} \emph{verdadera}. Se demuestra con el procedimiento \ref{p:estim}.
+\end{itemize}
+\end{modelo}
+
+% ---------------------------------------------------------------------
+\subsection{Demostraciones y deducciones típicas (esquemas)}\label{p:demos}
+\begin{pasos}
+\small
+\begin{enumerate}[label=\textbf{(\arabic*)},leftmargin=*,itemsep=4pt]
+\item \textbf{$\mathrm{ECM}=\V+b^2$.} Definición $\mathrm{ECM}=\E[(\hat\Theta-\theta)^2]$. Se suma y resta $\E\hat\Theta$, se desarrolla el cuadrado y el término cruzado se anula porque $\E[\hat\Theta-\E\hat\Theta]=0$. Queda $\V(\hat\Theta)+(\E\hat\Theta-\theta)^2$.
+\item \textbf{IC para $\sigma^2$.} Pivote: $\frac{(n-1)S^2}{\sigma^2}\sim\chis_{n-1}$ (población normal). Se plantea $P(\chis_{1-\alpha/2}\le\text{pivote}\le\chis_{\alpha/2})=1-\alpha$. Al invertir se dan vuelta las desigualdades; se multiplica por $(n-1)S^2$ y se obtiene el intervalo.
+\item \textbf{IC para $\mu$.} Pivote: $\frac{\Xb-\mu}{\sigma/\sqrt n}\sim\Nor(0;1)$. Se plantea $P(-z_{\alpha/2}\le Z\le z_{\alpha/2})=1-\alpha$ y se despeja $\mu$.
+\item \textbf{$\E(S^2)=\sigma^2$.} Se usa $\sum(X_i-\Xb)^2=\sum X_i^2-n\Xb^2$, con $\E(X_i^2)=\sigma^2+\mu^2$ y $\E(\Xb^2)=\frac{\sigma^2}n+\mu^2$. El resultado es $(n-1)\sigma^2$, y al dividir por $n-1$ queda $\sigma^2$.
+\item \textbf{Tamaño de muestra para una prueba.} Se escriben $\alpha$ y $\beta$ como condiciones sobre el valor crítico $c$, se igualan y se despeja $n$ (procedimiento \ref{p:nprueba}).
+\item \textbf{$\beta(p_v)$ en una prueba de proporción unilateral.} Región $\hat p<p_0-z_\alpha\sqrt{p_0q_0/n}$. Entonces $\beta=1-\Phi\Big(\frac{p_0-p_v-z_\alpha\sqrt{p_0q_0/n}}{\sqrt{p_vq_v/n}}\Big)$, y se iguala el argumento a $z_\beta$ para despejar $n$.
+\item \textbf{Enunciado del TCL y cuándo $\Xb$ es normal.} Si las $X_i$ son iid con $\sigma^2$ finita, $\frac{\Xb-\mu}{\sigma/\sqrt n}\to\Nor(0;1)$. $\Xb$ es normal \emph{exacta} si la población es normal (por la propiedad reproductiva) y \emph{aproximada} si $n\ge30$ (por el TCL).
+\item \textbf{$\Cov=\E(XY)-\mu_X\mu_Y$; $\V(aX+bY)$; $-1\le\rho\le1$.} Se desarrollan los productos y se usa la linealidad de $\E$. Para $\rho$, se usa que $\V(X/\sigma_X\pm Y/\sigma_Y)=2\pm2\rho\ge0$.
+\end{enumerate}
+\end{pasos}
+
+% ---------------------------------------------------------------------
+\subsection{Interpretación: conclusiones, regiones y gráficos de intervalos}\label{p:interp}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Redactar la conclusión correcta}:
+\begin{itemize}
+\item si se rechaza $H_0$: ``hay evidencia significativa (al nivel $\alpha$) de que [$H_1$ en palabras]'';
+\item si no se rechaza: ``no hay evidencia significativa de que [$H_1$]''. Nunca ``se probó $H_0$''.
+\end{itemize}
+\item \textbf{Elegir una región de rechazo entre opciones}: tiene que estar del lado (o de los lados) que indica $H_1$. Si $H_1$ es bilateral, la región tiene que tener dos colas. Después se calcula el $\alpha$ de cada región.
+\item \textbf{Gráfico de 100 intervalos}:
+\begin{itemize}
+\item contá cuántos intervalos \emph{no} contienen al valor verdadero;
+\item con confianza $1-\alpha$ se esperan alrededor de $100\alpha$, porque esa cantidad tiene distribución $\mathrm{Bin}(100;\alpha)$;
+\item si hay muchos más, el gráfico no corresponde a ese nivel;
+\item verificá también que la línea de referencia esté en el valor verdadero que dice el enunciado.
+\end{itemize}
+\item \textbf{Errores en contexto}: tipo I y tipo II, siempre como decisiones concretas del problema (``detener la producción sin necesidad'', ``aprobar un producto que no cumple'').
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo A, Ej.\ 3 y Modelo B, P3b}
+$H_0$: el método no es efectivo; se rechazó. La frase ``No hay evidencia significativa para concluir que el método no es efectivo'' está \textbf{mal}: corresponde a no rechazar. La correcta es ``Hay evidencia significativa para concluir que el método es efectivo''.
+
+\textbf{100 intervalos:} hay 14 en rojo. Con 95\,\% se esperan alrededor de 5, y $P(F\ge14)=0{,}0005$, así que el gráfico no corresponde a un nivel de 0,95. Además, la línea de referencia está en 109,39 y no en 110.
+\end{modelo}

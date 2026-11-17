@@ -1,0 +1,108 @@
+% =====================================================================
+\newpage
+\section{Combinaciones lineales, sumas, TCL y aproximaciones}
+% =====================================================================
+
+\subsection{Media, varianza y distribución de una combinación lineal}\label{p:comblin}
+\begin{cuando}
+``Hallar la varianza de $W=5X-3Y+8$'', ``indique media, varianza y distribución de $w=1{,}3x+y+2$'', ``la holgura $H=B-E$''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Escribir la combinación} $W=a_1X_1+\dots+a_kX_k+b$ e identificar cada coeficiente \emph{con su signo}.
+\item \textbf{Media} (vale siempre): $\E(W)=a_1\E(X_1)+\dots+a_k\E(X_k)+b$.
+\item \textbf{Varianza}: $\V(W)=\sum a_i^2\V(X_i)+2\sum_{i<j}a_ia_j\Cov(X_i,X_j)$. Para dos variables: $\V(aX+bY+c)=a^2\V(X)+b^2\V(Y)+2ab\Cov(X,Y)$.
+\begin{itemize}
+\item Si son independientes, la covarianza es 0.
+\item Si te dan $\rho$ en vez de la covarianza: $\Cov=\rho\,\sigma_X\sigma_Y$.
+\item La constante $b$ no cambia la varianza.
+\end{itemize}
+\item \textbf{Distribución}: si las $X_i$ son \textbf{normales e independientes}, $W$ es normal (\emph{propiedad reproductiva}), con la media y la varianza de los pasos 2 y 3. Si no, solo se conocen la media y la varianza.
+\item \textbf{Aclarar los supuestos} que no da el enunciado (por ejemplo, la independencia).
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 1, Ej.\ 2a y Temario 4, T2}
+$\V(X)=2$, $\V(Y)=4$, $\Cov=-2$. \ $\V(5X-3Y+8)=25(2)+9(4)+2(5)(-3)(-2)=50+36+60=146$.
+
+$w=1{,}3x+y+2$, con $x\sim\Nor(\mu;\sigma_1^2)$ e $y\sim\Nor(\mu;\sigma_2^2)$: $\E(w)=2{,}3\mu+2$. Si son independientes, $\V(w)=1{,}69\sigma_1^2+\sigma_2^2$ y $w\sim\Nor(2{,}3\mu+2;\ 1{,}69\sigma_1^2+\sigma_2^2)$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item No elevar los coeficientes al cuadrado, o restar varianzas: $\V(X-Y)=\V(X)+\V(Y)$ si son independientes.
+\item Equivocar el signo del término $2ab\Cov$.
+\item Confundir $\V(2X)=4\V(X)$ (una pieza duplicada) con $\V(X_1+X_2)=2\V(X)$ (dos piezas distintas).
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Probabilidades de totales y promedios (propiedad reproductiva o TCL)}\label{p:tcl}
+\begin{cuando}
+``Tiempo total de 150 piezas'', ``consumo de 1 año'', ``peso de una caja de 24'', ``promedio mensual'', ``capacidad del tanque'', ``¿cuánto debe valer $n$ para que\ldots?''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Variable individual}: definí $X_i$ (una pieza, un mes, un envase) con su media $\mu$ y su desvío $\sigma$. Si cada unidad es a su vez una suma de partes (tarea 1 + tarea 2, contenido + envase), calculá antes su media y varianza con el procedimiento \ref{p:comblin}.
+\item \textbf{Variable de interés}: el \textbf{total} $T=\sum_{i=1}^nX_i$ o el \textbf{promedio} $\Xb=T/n$.
+\item \textbf{Supuestos}: las $X_i$ son independientes y tienen la misma distribución. Decilo explícitamente.
+\item \textbf{Elegir y nombrar el resultado que se usa}:
+\begin{itemize}
+\item población \textbf{normal}: el resultado es \emph{exacto}, por la propiedad reproductiva;
+\item población no normal o desconocida y $n$ grande ($\ge30$): el resultado es \emph{aproximado}, por el \textbf{TCL}.
+\end{itemize}
+\item \textbf{Parámetros}: $T\sim\Nor(n\mu;\,n\sigma^2)$ y $\Xb\sim\Nor(\mu;\,\sigma^2/n)$. Para un cambio de escala $Y=aX$: $Y\sim\Nor(a\mu;\,a^2\sigma^2)$.
+\item \textbf{Estandarizar y buscar en la tabla}: $z=\dfrac{\text{valor}-\text{media}}{\text{desvío}}$. Luego $P(\cdot<\text{valor})=\Phi(z)$ y $P(\cdot>\text{valor})=1-\Phi(z)$.
+\item \textbf{Si piden un percentil} (capacidad, valor que se cumple con probabilidad 0,90): $c=\mu+z_\alpha\sigma$, con $z_\alpha$ tal que $\Phi(z_\alpha)=1-\alpha$.
+\item \textbf{Si piden $n$}: plantear la desigualdad de probabilidad, despejar el valor $z$ de la tabla, despejar $n$, \emph{redondear hacia arriba} y verificar con $n$ y con $n-1$.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 5, P2 (150 piezas) y Temario 1, Ej.\ 2b (despejar $n$)}
+\emph{Paso 1:} $D_i=T_{1i}+T_{2i}$, con $\E(D_i)=12+4=16$ y $\V(D_i)=2^2+1^2=5$. \emph{Paso 2:} $S=\sum_{i=1}^{150}D_i$. \emph{Paso 4:} no se conoce la distribución y $n=150$, así que se usa el TCL.
+\emph{Paso 5:} $S\approx\Nor(2400;\,750)$, $\sigma_S=27{,}3861$. \ \emph{Paso 6:} $P(S>2450)=1-\Phi\big(\frac{50}{27{,}3861}\big)=1-\Phi(1{,}8257)=0{,}0339$.
+
+\textbf{Despeje de $n$:} con $T=\sum Y_i$, $\E=0$ y $\V=4n$, se pide $P(|T|>35)\ge0{,}12$. Por el TCL: $2[1-\Phi(\frac{35}{2\sqrt n})]\ge0{,}12\Rightarrow\frac{35}{2\sqrt n}\le z_{0,06}=1{,}5548\Rightarrow n\ge126{,}7\Rightarrow n=127$. Verificación: $n=127$ da 0,1205 \checkmark; $n=126$ da 0,1190.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Para el total de 24 unidades \emph{distintas} usar $24^2\sigma^2$: lo correcto es $24\sigma^2$.
+\item No decir qué teorema se usa: reproductiva si la población es normal, TCL si no lo es.
+\item Confundir total con promedio: la varianza es $n\sigma^2$ en un caso y $\sigma^2/n$ en el otro.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Aproximaciones de la binomial (normal o Poisson)}\label{p:aprox}
+\begin{cuando}
+``De 100 circuitos, ¿probabilidad de que funcionen al menos 96?'', ``si el experimento se repite 90 veces\ldots'', ``dar un resultado aproximado''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Identificar la binomial}: $X$ = cantidad de éxitos en $n$ ensayos independientes, cada uno con probabilidad $p$. A veces $p$ hay que calcularlo antes (por ejemplo, la probabilidad de que un circuito funcione).
+\item \textbf{Elegir la aproximación}:
+\begin{itemize}
+\item si $np\ge5$ y $n(1-p)\ge5$: \textbf{normal}, $X\approx\Nor(np;\,np(1-p))$;
+\item si el evento es raro ($np<5$ o $n(1-p)<5$): \textbf{Poisson} para la cantidad del evento raro, con $\lambda=n\cdot p_{\text{raro}}$.
+\end{itemize}
+\item \textbf{Normal con corrección por continuidad}:
+\begin{itemize}
+\item $P(X\le k)\to$ hasta $k+0{,}5$;
+\item $P(X<k)\to$ hasta $k-0{,}5$;
+\item $P(X\ge k)\to$ desde $k-0{,}5$;
+\item $P(X>k)\to$ desde $k+0{,}5$;
+\item $P(X=k)\to$ entre $k-0{,}5$ y $k+0{,}5$.
+\end{itemize}
+\item \textbf{Poisson}: $P(F\le k)=\sum_{j=0}^{k}e^{-\lambda}\frac{\lambda^j}{j!}$.
+\item \textbf{Totales de variables discretas que no son binomiales} (por ejemplo, $\sum Y_i$ con $Y_i\in\{0,1,2\}$): se usa el TCL (procedimiento \ref{p:tcl}) con la misma corrección por continuidad.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo B, P1d y Temario 2, P1c}
+\textbf{Circuitos:} $P(\text{funciona})=0{,}987712$, así que en $n=100$ se esperan $100(0{,}012288)=1{,}2288<5$ fallas. Normal no; Poisson para las fallas $F\approx\mathrm{Poi}(1{,}2288)$:
+$P(W\ge96)=P(F\le4)=0{,}9915$.
+
+\textbf{Bolillas:} $S=\sum_{i=1}^{90}Y_i$, con $\E(S)=54$ y $\sigma_S=5{,}7966$. Corrección: $P(S\ge60)\to$ desde 59,5, y $1-\Phi\big(\frac{59{,}5-54}{5{,}7966}\big)=0{,}1714$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Usar la normal cuando $n(1-p)<5$.
+\item Olvidar la corrección por continuidad, o aplicarla en el sentido equivocado.
+\end{itemize}
+\end{ojo}

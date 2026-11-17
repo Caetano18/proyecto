@@ -1,0 +1,154 @@
+% =====================================================================
+\newpage
+\section{Estimación}
+% =====================================================================
+
+\subsection{Estimadores: insesgadez, varianza, eficiencia y ECM}\label{p:estim}
+\begin{cuando}
+``Demostrar que $T$ es un estimador insesgado de\ldots'', ``determinar $b$ para que $Y$ sea insesgado'', ``¿cuál es preferible?'', ``valor que minimiza la varianza'', ``error cuadrático medio''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Escribir el estimador} en función de variables cuya media y varianza conocés: $\Xb$ (media $\mu$, varianza $\sigma^2/n$), $X/n$ con $X$ binomial (media $p$, varianza $pq/n$), $X_i^2$ (con $\E(X^2)=\V(X)+\E(X)^2$).
+\item \textbf{Calcular $\E(\hat\Theta)$} por linealidad y compararla con el parámetro: el sesgo es $b=\E(\hat\Theta)-\theta$. Si $\E(\hat\Theta)=\theta$ para todo $\theta$, el estimador es \textbf{insesgado}.
+\item \textbf{Si hay una constante libre} ($a$, $b$) y piden que sea insesgado: igualar $\E(\hat\Theta)=\theta$ y despejar.
+\item \textbf{Calcular $\V(\hat\Theta)$}: con muestras independientes, los coeficientes salen al cuadrado y no hay covarianzas.
+\item \textbf{Comparar}: entre insesgados, es mejor (\emph{más eficiente}) el de menor varianza. En general se compara el $\mathrm{ECM}=\V+b^2$. La eficiencia relativa es $\V_1/\V_2$.
+\item \textbf{Minimizar la varianza} respecto de una constante: derivar, igualar a 0, despejar y verificar que la derivada segunda sea positiva.
+\item \textbf{Preguntas conceptuales}, del tipo ``¿depende de la distribución o de $n$?'': decir qué propiedades se usaron (linealidad de $\E$, independencia) y qué hace falta que exista ($\mu$ y $\sigma^2$ finitos).
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo A, Ej.\ 5a / Temario 2, P2 / Temario 6, P2 / Modelo B, P2}
+$Y=a\Xb_1+(1-a)\Xb_2$ con $n_2=4n_1$. \emph{Paso 2:} $\E(Y)=a\mu+(1-a)\mu=\mu$, insesgado.
+\emph{Paso 4:} $\V(Y)=\frac{\sigma^2}{n_1}\big[a^2+\frac{(1-a)^2}{4}\big]$.
+\emph{Paso 6:} derivando, $2a-\frac{1-a}{2}=0\Rightarrow a=\frac15$, y $b=\frac45$.
+
+$\hat p_1=\frac12(\frac Xn+\frac Y{3n})$ y $\hat p_2=\frac{X+Y}{4n}$: los dos son insesgados; $\V(\hat p_1)=\frac{pq}{3n}>\V(\hat p_2)=\frac{pq}{4n}$, así que se prefiere $\hat p_2$.
+
+$X\sim U(-a;a)$: $\E(X^2)=\V(X)=\frac{a^2}3$, y entonces $\E\big(\frac3n\sum X_i^2\big)=\frac3n\cdot n\cdot\frac{a^2}{3}=a^2$, insesgado.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Olvidar la independencia (o los coeficientes al cuadrado) al calcular la varianza.
+\item Decir ``es el mejor'' solo porque es insesgado: también hay que comparar la varianza.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Intervalo de confianza para la media}\label{p:icmu}
+\begin{cuando}
+``Estimar la media / el promedio poblacional con una confianza del\ldots'', ``construir un IC de nivel\ldots''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Datos}: $n$, $\xb$, y $\sigma$ (si es conocido) o $s$. Si te dan los datos crudos, calculá $\xb=\frac{\sum x_i}{n}$ y $s^2=\frac{\sum(x_i-\xb)^2}{n-1}$.
+\item \textbf{Elegir el caso y justificarlo}:
+\begin{itemize}
+\item $\sigma$ conocido y (población normal o $n\ge30$): $Z=\frac{\Xb-\mu}{\sigma/\sqrt n}\sim\Nor(0;1)$;
+\item $\sigma$ desconocido, población normal y $n$ chico: $T=\frac{\Xb-\mu}{S/\sqrt n}\sim t_{n-1}$;
+\item $\sigma$ desconocido y $n\ge30$: $Z$ con $s$ (por el TCL); con $t$ da casi lo mismo.
+\end{itemize}
+Si el enunciado no dice que la población es normal y $n$ es chico, señalá que falta ese dato.
+\item \textbf{Valor crítico}: de la confianza $1-\alpha$ sale $\alpha/2$, y de ahí $z_{\alpha/2}$, o $t_{\alpha/2;\,n-1}$ en la fila $\nu=n-1$.
+\item \textbf{Error estándar}: $\sigma/\sqrt n$ o $s/\sqrt n$.
+\item \textbf{Error máximo}: $E=(\text{valor crítico})\times(\text{error estándar})$.
+\item \textbf{Intervalo}: $[\xb-E;\ \xb+E]$, con unidades.
+\item \textbf{Interpretar}: ``con una confianza del $(1-\alpha)100\,\%$, la media poblacional está entre\ldots''. Si te preguntan por un valor, fijate si queda dentro o fuera del intervalo.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo B, P3a (frenado) y Temario 6, P3 (DBO)}
+\textbf{Frenado:} $n=20$, $\xb=109{,}8$, $s=20$, confianza 90\,\%. \emph{Paso 2:} $\sigma$ desconocido y $n<30$, así que se usa $t_{19}$, y falta el dato de que la población es normal.
+\emph{Paso 3:} $t_{0,05;19}=1{,}7291$. \emph{Pasos 4 y 5:} $E=1{,}7291\cdot\frac{20}{\sqrt{20}}=7{,}7329$. \emph{Paso 6:} $[102{,}07;\ 117{,}53]$ m.
+
+\textbf{DBO:} $n=25$, $s^2=0{,}184$, 99\,\%: $t_{0,005;24}=2{,}7969$, $E=2{,}7969\cdot\frac{0{,}4290}{5}=0{,}2400$, así que $[34{,}7600;\ 35{,}2400]$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Usar $z$ cuando $\sigma$ es desconocido y $n$ es chico. Es exactamente lo que hace falso el Modelo A, Ej.\ 5c.
+\item Buscar $\alpha$ en lugar de $\alpha/2$, o dividir por $n$ en lugar de $\sqrt n$.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Intervalo de confianza para la varianza y el desvío}\label{p:icvar}
+\begin{cuando}
+``Intervalo de confianza para la varianza / el desvío / la variabilidad''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Supuesto obligatorio}: la población es normal. Escribilo.
+\item \textbf{Calcular $(n-1)s^2$}. Si tenés los datos, es $\sum(x_i-\xb)^2$.
+\item \textbf{Valores críticos} en la fila $\nu=n-1$ de la tabla $\chis$: $\chis_{\alpha/2}$ (el grande) y $\chis_{1-\alpha/2}$ (el chico).
+\item \textbf{Intervalo para $\sigma^2$}: $\Big[\dfrac{(n-1)s^2}{\chis_{\alpha/2}}\,;\ \dfrac{(n-1)s^2}{\chis_{1-\alpha/2}}\Big]$. El valor crítico grande va en el extremo de abajo.
+\item \textbf{Para $\sigma$}: raíz cuadrada de los dos extremos.
+\item \textbf{Interpretar}. Recordá que el intervalo no es simétrico alrededor de $s^2$.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 2, P3b y Temario 7, P2a}
+$n=16$, $s=12$, 95\,\%. \emph{Paso 2:} $(n-1)s^2=15\cdot144=2160$. \emph{Paso 3:} $\chis_{0,025;15}=27{,}4884$ y $\chis_{0,975;15}=6{,}2621$.
+\emph{Paso 4:} $[2160/27{,}4884;\ 2160/6{,}2621]=[78{,}58;\ 344{,}93]$. \emph{Paso 5:} $\sigma\in[8{,}86;\ 18{,}57]$.
+
+Con datos (recipientes, 90\,\%): $\sum(x_i-\xb)^2=0{,}48$, $\chis_{0,05;6}=12{,}5916$, $\chis_{0,95;6}=1{,}6354$, así que $\sigma\in[0{,}1952;\ 0{,}5418]$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Invertir los dos $\chis$: en ese caso el extremo de abajo sale mayor que el de arriba.
+\item Usar $s$ en lugar de $s^2$, u olvidar sacar la raíz para $\sigma$.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Intervalo de confianza para una proporción (y nivel de un IC dado)}\label{p:icp}
+\begin{cuando}
+``Estimar la proporción de\ldots con una confianza\ldots'', ``¿con qué nivel de confianza se hizo la estimación $[a;b]$?''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Definir la variable}: $X_i=1$ si el individuo tiene la característica, $X_i\sim$ Bernoulli$(p)$. Calculá $\hat p=\frac{\text{éxitos}}{n}$. Ojo con qué proporción piden: por ejemplo, ``a tiempo'' y no ``tarde''.
+\item \textbf{Condiciones}: $n\hat p\ge5$ y $n\hat q\ge5$. Así, por el TCL, $\hat P$ es aproximadamente normal.
+\item \textbf{Error estándar} (con $\hat p$): $\sqrt{\hat p\hat q/n}$.
+\item \textbf{Error máximo e intervalo}: $E=z_{\alpha/2}\sqrt{\hat p\hat q/n}$; el IC es $\hat p\pm E$.
+\item \textbf{Si piden el nivel de un IC dado}: $\hat p$ = punto medio, $E$ = semiamplitud, $z=E\big/\sqrt{\hat p\hat q/n}$ y $1-\alpha=2\Phi(z)-1$.
+\item \textbf{Interpretar} en el contexto.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Parcial 2025 T1, Ej.\ 3d y Temario 4, Ej.\ 2a}
+200 pedidos, 40 tarde, así que $\hat p_{\text{a tiempo}}=0{,}80$. $\sqrt{0{,}8\cdot0{,}2/200}=0{,}0283$, \ $E=1{,}96\cdot0{,}0283=0{,}0554$, y el IC es $[0{,}7446;\ 0{,}8554]$.
+
+IC dado $[0{,}5330;\ 0{,}669]$ con $n=120$: $\hat p=0{,}601$, $E=0{,}068$, $\sqrt{0{,}601\cdot0{,}399/120}=0{,}0447$, $z=1{,}5212$, así que $1-\alpha=2\Phi(1{,}5212)-1=0{,}8718\approx87\,\%$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item En el IC se usa $\hat p$; en la \emph{prueba} se usa $p_0$. No mezclarlos.
+\item Estimar la proporción equivocada (la complementaria).
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Tamaño de muestra para estimar}\label{p:nest}
+\begin{cuando}
+``¿Cuántos hay que incluir en la muestra para que el error no supere\ldots?'', ``¿cuántos registros más?'', ``reducir el error a la mitad'', ``amplitud del intervalo de\ldots''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Identificar} el parámetro ($\mu$ o $p$), la confianza (de ahí sale $z_{\alpha/2}$) y el error máximo $E$. Si te dan la \emph{amplitud} $A$, entonces $E=A/2$. Si piden ``se desvíe a lo sumo $\varepsilon$ con probabilidad $\ge\gamma$'', es lo mismo con $E=\varepsilon$ y confianza $\gamma$.
+\item \textbf{Para $\mu$}: $n=\big(z_{\alpha/2}\,\sigma/E\big)^2$. Si $\sigma$ no se conoce, se usa una estimación previa ($s$ de una muestra piloto o un dato histórico).
+\item \textbf{Para $p$}: con una estimación previa, $n=z_{\alpha/2}^2\,\hat p\hat q/E^2$. Sin estimación, o si piden \emph{garantizarlo}, se usa el peor caso $p=0{,}5$: $n=z_{\alpha/2}^2/(4E^2)$.
+\item \textbf{Redondear siempre hacia arriba.}
+\item \textbf{``¿Cuántos más?''}: $n_{\text{nuevo}}-n_{\text{actual}}$.
+\item \textbf{Cambios relativos} (cambia la confianza y/o la amplitud): como $E\propto z/\sqrt n$, se plantea el cociente y $\sigma$ se cancela: $\sqrt{n_2}=\sqrt{n_1}\,\frac{z_2}{z_1}\cdot\frac{E_1}{E_2}$. Para reducir el error a la mitad con la misma confianza, $n$ se multiplica por 4.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo A, Ej.\ 2 / Temario 1, Ej.\ 3 / Temario 4, Ej.\ 2b}
+\textbf{Teatro} (desvío máximo 0,15 con probabilidad 0,98, sin dato de $p$): $z_{0,01}=2{,}3263$, $n=\frac{2{,}3263^2\cdot0{,}25}{0{,}15^2}=60{,}13$, así que $n=61$.
+
+\textbf{DBO} ($n_1=25$, 90\,\%, amplitud $\varepsilon$; se pide 98\,\% y amplitud $\varepsilon/2$): $\sqrt{n}\ge5\cdot\frac{2{,}3263}{1{,}6449}\cdot2=14{,}1425$, $n\ge200{,}01$, así que $n=201$: 176 registros más.
+
+\textbf{Error a la mitad} con $n=120$: $n'=4\cdot120=480$, es decir, 360 más.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Redondear hacia abajo, o usar la amplitud como si fuera $E$.
+\item Olvidar restar los que ya se tomaron cuando preguntan ``cuántos más''.
+\end{itemize}
+\end{ojo}

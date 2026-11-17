@@ -1,0 +1,254 @@
+% =====================================================================
+\newpage
+\section{Pruebas de hipótesis}
+% =====================================================================
+
+\subsection{Procedimiento general y planteo de las hipótesis}\label{p:general}
+\begin{cuando}
+Cualquier ejercicio que diga ``¿hay evidencia significativa\ldots?'', ``plantear la prueba de hipótesis'', ``¿queda confirmada la sospecha?'', ``¿se firma / se adopta / se aprueba?''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Parámetro y datos}: decir sobre qué parámetro es la prueba ($\mu$, $\sigma^2$, $p$, $\mu_D$, $\mu_1-\mu_2$) y anotar los datos ($n$, $\xb$, $s$ o $\sigma$, $\hat p$).
+\item \textbf{$H_0$}: siempre lleva el ``$=$''. Es el statu quo: lo que se afirma, la norma o lo que vale si no hay cambio.
+\item \textbf{$H_1$}: lo que se quiere \emph{demostrar}, lo que se sospecha o lo que lleva a actuar (tomar medidas, adoptar, firmar). Para la dirección, guiate por la tabla de abajo.
+\item \textbf{Nivel de significación $\alpha$}: si no lo dan, usá $0{,}05$ y decilo. Si dan ``el riesgo de\ldots indebidamente'', ese riesgo es $\alpha$.
+\item \textbf{Estadístico de prueba y su distribución bajo $H_0$}, justificando la elección: normalidad, $\sigma$ conocido o no, TCL.
+\item \textbf{Región de rechazo}: con el valor crítico de la tabla. Conviene escribirla también en unidades originales ($\xb<c$, $\hat p<c$).
+\item \textbf{Calcular el estadístico} con los datos.
+\item \textbf{Decidir y concluir en el contexto}: ``se rechaza / no se rechaza $H_0$''. Luego, ``hay / no hay evidencia significativa de que\ldots''. Si piden el error posible: si se rechazó, es de \textbf{tipo I}; si no se rechazó, de \textbf{tipo II}.
+\end{pasolista}
+\end{pasos}
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{9cm}l@{}}
+\toprule
+Palabras del enunciado & $H_1$\\\midrule
+``supera'', ``aumentó'', ``es mayor'', ``excede'', ``más de'' & $\theta>\theta_0$\\
+``es menor'', ``disminuyó'', ``menos de'', ``se sospecha que es inferior'' & $\theta<\theta_0$\\
+``difiere'', ``cambió'', ``verificar si hay que ajustar'' (desvío para cualquier lado) & $\theta\neq\theta_0$\\
+``afirma que \emph{al menos} $\theta_0$'' y ``actuará solo si hay pruebas de que no'' & $\theta<\theta_0$\\
+``asegura \emph{a lo sumo} $\theta_0$'' y ``¿hay evidencia en contra?'' & $\theta>\theta_0$\\
+``aprobará / incorporará / firmará solo si se prueba que cumple'' & $H_1$ = cumple\\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{modelo}{Parcial 2025 T1, Ej.\ 3a (pedidos a tiempo)}
+``Afirma que \emph{al menos} el 85\,\% llega a tiempo y solo tomará medidas si encuentra pruebas de que no.''
+\emph{Pasos 2 y 3:} $H_0:p=0{,}85$ (o $p\ge0{,}85$) vs.\ $H_1:p<0{,}85$. \emph{Paso 4:} $\alpha=0{,}05$.
+\emph{Paso 5:} $Z=\frac{\hat P-0{,}85}{\sqrt{0{,}85\cdot0{,}15/200}}\approx\Nor(0;1)$, por el TCL, con $np_0=170\ge5$ y $nq_0=30\ge5$.
+\emph{Paso 6:} se rechaza si $Z<-1{,}6449$, es decir, si $\hat p<0{,}8085$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Poner en $H_0$ lo que se quiere demostrar.
+\item Decir ``se acepta $H_0$'' o ``se probó $H_0$''. Lo correcto es ``no se rechaza $H_0$''.
+\item Elegir una prueba unilateral porque $\xb$ salió de un lado. La dirección la da el enunciado, no los datos.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Prueba para la media}\label{p:pmu}
+\begin{pasos}
+\begin{pasolista}
+\item Plantear $H_0:\mu=\mu_0$ y $H_1$ según el procedimiento \ref{p:general}.
+\item \textbf{Elegir el estadístico}:
+\begin{itemize}
+\item $\sigma$ conocido (normal o $n\ge30$): $Z_0=\dfrac{\xb-\mu_0}{\sigma/\sqrt n}$;
+\item $\sigma$ desconocido, población normal y $n$ chico: $T_0=\dfrac{\xb-\mu_0}{s/\sqrt n}\sim t_{n-1}$;
+\item $\sigma$ desconocido y $n\ge30$: $Z_0$ con $s$.
+\end{itemize}
+\item \textbf{Región de rechazo}: $H_1:\neq$ $\Rightarrow|z_0|>z_{\alpha/2}$; \quad $H_1:>$ $\Rightarrow z_0>z_\alpha$; \quad $H_1:<$ $\Rightarrow z_0<-z_\alpha$. Con $t$, lo mismo usando $t_{\cdot;\,n-1}$.
+\item \textbf{En unidades de $\xb$}: $c=\mu_0\pm(\text{valor crítico})\cdot\sigma/\sqrt n$.
+\item Calcular $z_0$ o $t_0$, decidir y calcular el valor $P$ (procedimiento \ref{p:valorp}).
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 7, P4 (manzanas) y Temario 2, P3 (satisfacción)}
+\textbf{Manzanas:} $H_0:\mu=90{,}4$ vs.\ $H_1:\mu>90{,}4$ (se quiere probar un aumento); $\sigma=6$ conocido, $n=16$, población normal, así que se usa $Z$.
+$z_0=\frac{94{,}3-90{,}4}{6/4}=2{,}60>1{,}6449$: se rechaza $H_0$ y se adopta el tratamiento. $P=1-\Phi(2{,}6)=0{,}0047$.
+
+\textbf{Satisfacción:} $\sigma$ desconocido, $n=16$, población normal, así que se usa $t_{15}$. $t_0=\frac{79-70}{12/4}=3{,}0>t_{0,05;15}=1{,}7531$: se rechaza $H_0$, y se alcanzó el objetivo.
+\end{modelo}
+
+% ---------------------------------------------------------------------
+\subsection{Prueba para la varianza}\label{p:pvar}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Supuesto}: la población es normal. Escribilo.
+\item \textbf{Hipótesis}: $H_0:\sigma^2=\sigma_0^2$. Para $H_1$: si se quiere probar que la variabilidad es \emph{aceptable} (menor que el límite), $H_1:\sigma^2<\sigma_0^2$; si se quiere probar que es \emph{excesiva}, $H_1:\sigma^2>\sigma_0^2$.
+\item \textbf{Estadístico}: $\chis_0=\dfrac{(n-1)s^2}{\sigma_0^2}\sim\chis_{n-1}$ bajo $H_0$.
+\item \textbf{Región de rechazo} (fila $\nu=n-1$): $>$: $\chis_0>\chis_{\alpha}$; \quad $<$: $\chis_0<\chis_{1-\alpha}$; \quad $\neq$: $\chis_0<\chis_{1-\alpha/2}$ o $\chis_0>\chis_{\alpha/2}$.
+\item Calcular, decidir, interpretar los errores en el contexto y acotar el valor $P$ con la tabla.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 1, Ej.\ 4 (arenas)}
+Se quiere probar que la arena es apta, o sea $\sigma^2<2$: $H_0:\sigma^2=2$ vs.\ $H_1:\sigma^2<2$. Se toma $\alpha=0{,}05$ y $n=10$.
+$\chis_0=\frac{9\cdot1{,}6}{2}=7{,}2$; región: $\chis_0<\chis_{0,95;9}=3{,}3251$. Como $7{,}2>3{,}3251$, \textbf{no se rechaza}: no hay evidencia de que la arena sea apta. $P=P(\chis_9\le7{,}2)=0{,}3837$.
+Tipo I: usar una arena inadecuada. Tipo II: descartar una arena buena.
+\end{modelo}
+
+% ---------------------------------------------------------------------
+\subsection{Prueba para una proporción}\label{p:pp}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Variable}: $X_i\sim$ Bernoulli$(p)$; $\hat p=\frac{x}{n}$. Fijate bien qué proporción se prueba.
+\item \textbf{Hipótesis}: $H_0:p=p_0$ y $H_1$ según el enunciado.
+\item \textbf{Muestra grande} ($np_0\ge5$ y $nq_0\ge5$): $Z_0=\dfrac{\hat p-p_0}{\sqrt{p_0q_0/n}}$. El error estándar se calcula con $p_0$, porque se supone $H_0$ cierta.
+\item \textbf{Región de rechazo}: igual que para la media con $Z$. En unidades de $\hat p$: $c=p_0\pm z\sqrt{p_0q_0/n}$.
+\item \textbf{Muestra chica}: se trabaja con $X\sim\mathrm{Bin}(n;p_0)$ exacta. La región se elige en la cola o las colas que indique $H_1$, y $\alpha$ es la probabilidad binomial de esa región.
+\item Decidir, concluir y calcular el valor $P$.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Parcial 2025 T1, Ej.\ 3b y Temario 5, P4b}
+$z_0=\frac{0{,}80-0{,}85}{0{,}0252}=-1{,}9803<-1{,}6449$: se rechaza; hay evidencia de que menos del 85\,\% llega a tiempo. $P=\Phi(-1{,}9803)=0{,}0238$. El error posible es de tipo I (medidas innecesarias).
+
+\textbf{Binomial exacta} ($n=25$, $H_1:p\neq0{,}5$): hacen falta las dos colas, así que corresponde $R_1=\{x\le7\vee x\ge18\}$, con $\alpha=P(X\le7)+P(X\ge18)=0{,}0433$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Usar $\hat p$ en el denominador de la prueba: va $p_0$.
+\item No verificar $np_0\ge5$ y $nq_0\ge5$.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Valor $P$}\label{p:valorp}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Calcular el estadístico observado} ($z_0$, $t_0$ o $\chis_0$).
+\item \textbf{Área en la dirección de $H_1$}:
+\begin{itemize}
+\item $H_1:>$: $P=P(Z\ge z_0)=1-\Phi(z_0)$;
+\item $H_1:<$: $P=\Phi(z_0)$;
+\item $H_1:\neq$: $P=2[1-\Phi(|z_0|)]$.
+\end{itemize}
+\item \textbf{Con tablas $t$ o $\chis$}: ubicar el valor observado entre dos columnas de la fila $\nu$ y \emph{acotar} el valor $P$ entre sus $\alpha$. En una prueba bilateral, se multiplica por 2.
+\item \textbf{Decidir}: si $P\le\alpha$ se rechaza $H_0$; si $P>\alpha$, no se rechaza. Tiene que coincidir con la decisión por la región de rechazo.
+\item \textbf{Si dan el valor $P$ y preguntan la conclusión}: compararlo con el $\alpha$ de la prueba. Si no lo dan, con 0,05, y comentar qué pasaría con 0,01 y 0,10.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 6, P4c y Modelo A, Ej.\ 4c}
+$z_0=\frac{987-1000}{80/\sqrt{200}}=-2{,}2981$, con $H_1:\mu<1000$: $P=\Phi(-2{,}2981)=0{,}0108<0{,}05$, así que se rechaza y se confirma la sospecha.
+
+Si el valor $P$ es $0{,}011$ y la prueba tiene $\alpha=0{,}0161$: como $0{,}011<0{,}0161$, se rechaza $H_0$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Decir que el valor $P$ es ``la probabilidad de que $H_0$ sea cierta''. No lo es.
+\item Olvidar el factor 2 en las pruebas bilaterales.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{$\alpha$, $\beta$ y potencia a partir de una regla de decisión}\label{p:ab}
+\begin{cuando}
+``Si se rechaza para $\xb\le78{,}2$, ¿cuál es el nivel de significación?'', ``probabilidad de cometer error tipo II si $\mu=\dots$'', ``probabilidad de incorporarlo / adoptarlo si en realidad\ldots'', ``contextuar los errores''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Escribir la regla en unidades originales} ($\xb$ o $\hat p$). Si la dan, se usa esa. Si no, se calcula con $\alpha$: $c=\mu_0\pm z_\alpha\,\sigma/\sqrt n$, o $\pm z_{\alpha/2}$ si es bilateral.
+\item \textbf{$\alpha$} $=P(\text{caer en la región de rechazo}\,|\,\theta=\theta_0)$, con la distribución centrada en $\theta_0$.
+\item \textbf{$\beta(\theta_1)$} $=P(\text{caer en la región de \emph{aceptación}}\,|\,\theta=\theta_1)$: la misma región, pero con la distribución centrada en $\theta_1$. Para proporciones, el desvío se calcula con $p_1$.
+\item \textbf{Potencia} $=1-\beta(\theta_1)$, que es la probabilidad de detectar (rechazar $H_0$) cuando el valor verdadero es $\theta_1$.
+\item \textbf{Elegir $\theta_1$ con cuidado}: tiene que estar del lado de $H_1$. Por ejemplo, ``difiere en 1,3'' con $H_1:\mu<80$ significa $\mu_1=78{,}7$.
+\item \textbf{Contexto}: tipo I es rechazar $H_0$ siendo cierta, y tipo II es no rechazarla siendo falsa. Escribí qué decisión concreta implica cada uno en el problema.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo A, Ej.\ 4 / Temario 4, Ej.\ 1c / Temario 5, P5}
+$\sigma/\sqrt n=0{,}84$. \emph{Paso 2:} $\alpha=P(\Xb\le78{,}2\,|\,80)=\Phi(-2{,}1429)=0{,}0161$.
+\emph{Pasos 3 y 5:} $\mu_1=78{,}7$, así que $\beta=P(\Xb>78{,}2\,|\,78{,}7)=1-\Phi(-0{,}5952)=0{,}7242$.
+
+\textbf{Azufre:} se incorpora si $\xb<5{,}3529$. Con $\mu=5{,}3$: $P=\Phi\big(\frac{5{,}3529-5{,}3}{0{,}0894}\big)=0{,}7228$, que es la potencia.
+
+\textbf{Límites $\mu_0\pm2\sigma/\sqrt n$:} $\alpha=P(|Z|>2)=0{,}0455$. Con $\mu_v=\mu_0+\sigma/\sqrt n$, $\beta=\Phi(1)-\Phi(-3)=0{,}8400$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Centrar en $\mu_0$ el cálculo de $\beta$: hay que centrar en $\mu_1$.
+\item Elegir $\mu_1$ del lado de $H_0$.
+\item Para proporciones, usar $p_0$ en el desvío de $\beta$: va $p_1$.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Curvas OC y de potencia: elegir o leer un gráfico}\label{p:curvas}
+\begin{cuando}
+``Indicar el gráfico que corresponde a la curva de la probabilidad del error tipo II'', ``¿el siguiente gráfico representa una curva de potencia?'', ``deducir del gráfico $H_0$, $H_1$ y $\alpha$''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Ver qué se grafica}: el eje vertical dice si es $\beta(\theta)$ (curva OC) o la potencia $\pi(\theta)=1-\beta(\theta)$.
+\item \textbf{Forma según el tipo de prueba}:
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Prueba & Curva OC $\beta(\theta)$ & Potencia $\pi(\theta)$\\\midrule
+bilateral ($\neq$) & campana, máximo $1-\alpha$ en $\theta_0$ & valle, mínimo $\alpha$ en $\theta_0$\\
+derecha ($H_1:\theta>\theta_0$) & decreciente & creciente\\
+izquierda ($H_1:\theta<\theta_0$) & creciente & decreciente\\\bottomrule
+\end{tabular}
+\end{center}
+\item \textbf{Valor en $\theta_0$}: la OC vale $1-\alpha$ y la potencia vale $\alpha$. Esto descarta, por ejemplo, una campana con máximo 0,90 si $\alpha=0{,}05$.
+\item \textbf{Desempatar entre opciones parecidas}: calcular $\beta$ en uno o dos puntos con el procedimiento \ref{p:ab} y compararlo con el gráfico.
+\item \textbf{Leer un gráfico de potencia}: $\theta_0$ es donde la potencia es mínima; $\alpha$ es ese mínimo; la forma da $H_1$; y $P(\text{no rechazar}\,|\,\theta_1)=1-\pi(\theta_1)=\beta$. Si $\theta_1\neq\theta_0$, esa probabilidad es un error de tipo II.
+\item \textbf{Justificar} la elección con la forma, el valor en $\theta_0$ y al menos un punto calculado.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Parcial 2025 T1/T2, Ej.\ 3c / Temario 1, Ej.\ 5 / Modelo B, P4b}
+\textbf{T1} ($H_1:p<0{,}85$, $\alpha=0{,}05$): la OC es creciente, vale 0,95 en 0,85 y $\beta(0{,}79)=0{,}2607$. Es la \textbf{Opción 3}.
+\textbf{T2} (bilateral, $\alpha=0{,}05$): campana con máximo 0,95 en $\mu=20$ y $\beta(19{,}8)=\beta(20{,}2)=0{,}1492$. Es la \textbf{Opción 4}; la 2 tiene máximo 0,90.
+\textbf{Temario 1} (potencia simétrica con mínimo 0,05 en $p=0{,}5$): $H_0:p=0{,}5$ vs.\ $H_1:p\neq0{,}5$, $\alpha=0{,}05$, y $\beta(0{,}7)=1-\pi(0{,}7)$ es un error de tipo II.
+\textbf{Modelo B} ($H_1:\mu>5$): el gráfico es decreciente y vale $\approx0{,}99$ en $\mu=5$, así que es la OC y \textbf{no} la de potencia.
+\end{modelo}
+
+% ---------------------------------------------------------------------
+\subsection{Tamaño de muestra para una prueba ($\alpha$ y $\beta$ dados)}\label{p:nprueba}
+\begin{cuando}
+``Determinar $n$ para que, si la media fuese\ldots, la prueba lo detecte con probabilidad\ldots'', ``el proveedor quiere\ldots y el cliente quiere\ldots'', ``¿alcanza con una muestra de 12?''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Traducir los requisitos}: ``rechazar a lo sumo el 5\,\% de los buenos'' da $\alpha=0{,}05$ en $\theta_0$; ``detectar con probabilidad 0,80'' o ``rechazar al menos el 80\,\% de los malos'' da $\beta=0{,}20$ en $\theta_1$; ``con probabilidad 0,98 no avalar a los que no cumplen'' da $\alpha=0{,}02$.
+\item \textbf{Plantear las dos condiciones sobre el valor crítico $c$} (en el ejemplo, prueba con $H_1:\mu<\mu_0$):
+\[
+c=\mu_0-z_\alpha\frac{\sigma}{\sqrt n}\quad(\alpha\text{ en }\mu_0),\qquad c=\mu_1+z_\beta\frac{\sigma}{\sqrt n}\quad(\beta\text{ en }\mu_1).
+\]
+\item \textbf{Igualar y despejar}: $n=\Big[\dfrac{(z_\alpha+z_\beta)\,\sigma}{|\mu_0-\mu_1|}\Big]^2$. En una prueba bilateral se usa $z_{\alpha/2}$ en lugar de $z_\alpha$. Para proporciones: $n=\Big[\dfrac{z_\alpha\sqrt{p_0q_0}+z_\beta\sqrt{p_1q_1}}{p_0-p_1}\Big]^2$.
+\item \textbf{Redondear hacia arriba} y \textbf{verificar} $\beta$ con ese $n$.
+\item \textbf{Si solo dan $\alpha$ y una regla fija} (``se detiene si $\xb>5{,}5$, con probabilidad de equivocarse 0,01''): despejar $n$ de $\frac{c-\mu_0}{\sigma/\sqrt n}=z_\alpha$.
+\item \textbf{Si preguntan ``¿alcanza con $n$?''}: calcular $c$ con ese $n$, luego $\beta$, y comparar con lo pedido.
+\item Escribir la \textbf{regla de decisión final}: ``se rechaza si $\xb<c$''.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 2, P4 (partidas) / Parcial 2025 T2, Ej.\ 3e / Temario 3, P2}
+\textbf{Partidas:} $\mu_0=1250$, $\mu_1=1100$, $\sigma=180$, $\alpha=0{,}05$, $\beta=0{,}10$: $n=\big[\frac{(1{,}6449+1{,}2816)\,180}{150}\big]^2=12{,}33$, así que $n=13$, y la regla es rechazar si $\xb<1167{,}88$. Verificación: $\beta=0{,}087$ \checkmark.
+
+\textbf{Tornillos} (bilateral, $\delta=0{,}1$, $\sigma=0{,}4$, potencia 0,80): $n=\frac{(1{,}96+0{,}8416)^2\,0{,}16}{0{,}01}=125{,}6$, así que $n=126$.
+
+\textbf{Baterías} (¿alcanza $n=12$?): $c=24\,500+2{,}0537\cdot1299{,}04=27\,167{,}9$; $\beta(29\,400)=\Phi(-1{,}7183)=0{,}0429\le0{,}05$. Sí alcanza.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Usar $z_\alpha$ en una prueba bilateral: va $z_{\alpha/2}$.
+\item Confundir $z_\beta$ con $z_{1-\beta}$: para $\beta=0{,}20$, $z_\beta=0{,}8416$.
+\item No verificar el resultado.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Relación entre el intervalo de confianza y la prueba}\label{p:dual}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Calcular el IC} que corresponde (procedimientos \ref{p:icmu}--\ref{p:icp}).
+\item \textbf{Regla de dualidad}: una prueba \emph{bilateral} con nivel $\alpha$ rechaza $H_0:\theta=\theta_0$ si y solo si $\theta_0$ queda \textbf{fuera} del IC del $(1-\alpha)$.
+\item \textbf{Si la prueba es unilateral}, la comparación correcta es con la \textbf{cota} del mismo lado (que usa $z_\alpha$): cota superior si $H_1:<$, cota inferior si $H_1:>$.
+\item \textbf{Para proporciones} la dualidad es solo aproximada, porque la prueba usa $p_0$ en el error estándar y el IC usa $\hat p$.
+\item \textbf{Concluir}: decir si el IC confirma la decisión de la prueba y, si parece que no, explicar por qué (unilateral contra bilateral, o $p_0$ contra $\hat p$).
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Parcial 2025 T2, Ej.\ 3d y T1, Ej.\ 3d}
+\textbf{Tornillos:} el IC 95\,\% es $[20{,}0193;\ 20{,}2807]$ y no contiene a 20; coincide con el rechazo bilateral.
+\textbf{Pedidos:} el IC 95\,\% bilateral $[0{,}7446;\ 0{,}8554]$ contiene a 0,85, pero la prueba unilateral rechazó. La cota superior del 95\,\%, $0{,}80+1{,}6449(0{,}0283)=0{,}8465<0{,}85$, sí coincide con el rechazo.
+\end{modelo}

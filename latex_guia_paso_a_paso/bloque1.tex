@@ -1,0 +1,183 @@
+% =====================================================================
+\newpage
+\section{Variables aleatorias bidimensionales}
+% =====================================================================
+
+\subsection{Armar la distribución conjunta (caso discreto)}\label{p:conjunta}
+\begin{cuando}
+El enunciado describe un experimento (extracciones de una caja, nodos observados de a uno, dados, monedas, clientes que eligen cajas, componentes que funcionan) y pide la \textbf{matriz}, \textbf{tabla} o \textbf{función de probabilidad conjunta} $p(x,y)$.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Definir las variables.} Escribí qué cuenta $X$ y qué cuenta $Y$, y sus \textbf{valores posibles} (rango). Ejemplo: ``$X$: cantidad de azules entre las 2 extraídas, $X\in\{0,1,2\}$''.
+\item \textbf{Reconocer el mecanismo del experimento}, porque define cómo se calculan las probabilidades:
+\begin{itemize}
+\item \emph{Sin reposición y el orden no importa} (se sacan $n$ juntos): \textbf{conteo combinatorio},
+$p(x,y)=\dfrac{\binom{N_1}{x}\binom{N_2}{y}\binom{N_3}{n-x-y}}{\binom{N}{n}}$.
+\item \emph{De a uno, con regla de parada o cuando el orden importa}: \textbf{árbol de secuencias} y \textbf{regla del producto}, $P(A_1A_2A_3)=P(A_1)\,P(A_2|A_1)\,P(A_3|A_1A_2)$.
+\item \emph{Ensayos independientes} (dados, monedas, componentes, clientes): producto de las probabilidades de cada ensayo.
+\item \emph{El enunciado dice que $X$ e $Y$ son independientes}: directamente $p(x,y)=p_X(x)\,p_Y(y)$.
+\end{itemize}
+\item \textbf{Listar todos los resultados posibles} (secuencias o combinaciones). Para cada uno calculá su probabilidad y anotá el par $(x,y)$ que le corresponde. Conviene hacerlo en una tabla: resultado, cálculo, probabilidad, $x$, $y$.
+\item \textbf{Armar la tabla de doble entrada}: cada celda $(x,y)$ es la suma de las probabilidades de los resultados con ese par. Los pares imposibles valen 0, y conviene explicar por qué.
+\item \textbf{Control:} la suma de todas las celdas tiene que dar 1. Si no da, hay un resultado mal calculado o faltante.
+\item \textbf{Marginales:} se suman las filas, que dan $p_X(x)$, y las columnas, que dan $p_Y(y)$. Se escriben en los márgenes de la tabla.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Parcial 2025, Tema 2, Ej.\ 1 (nodos con regla de parada)}
+10 nodos: 5 activos (A), 2 en reposo (R), 3 desconectados (D). Se observan de a uno; se para en el primer no activo o al tercer nodo. $X$ = activos observados; $Y$ = desconectados observados.
+
+\textbf{Paso 2:} hay regla de parada, así que se usa un árbol de secuencias.
+\textbf{Paso 3:}
+\begin{center}
+\begin{tabular}{@{}lllcc@{}}
+\toprule
+Secuencia & Cálculo & Prob. & $x$ & $y$\\\midrule
+R & $2/10$ & 0,2000 & 0 & 0\\
+D & $3/10$ & 0,3000 & 0 & 1\\
+A R & $\frac5{10}\cdot\frac29$ & 0,1111 & 1 & 0\\
+A D & $\frac5{10}\cdot\frac39$ & 0,1667 & 1 & 1\\
+A A R & $\frac5{10}\cdot\frac49\cdot\frac28$ & 0,0556 & 2 & 0\\
+A A D & $\frac5{10}\cdot\frac49\cdot\frac38$ & 0,0833 & 2 & 1\\
+A A A & $\frac5{10}\cdot\frac49\cdot\frac38$ & 0,0833 & 3 & 0\\\bottomrule
+\end{tabular}
+\qquad
+\begin{tabular}{@{}c|cc|c@{}}
+\toprule
+& $y=0$ & $y=1$ & $p_X$\\\midrule
+$x=0$ & 0,2000 & 0,3000 & 0,5000\\
+$x=1$ & 0,1111 & 0,1667 & 0,2778\\
+$x=2$ & 0,0556 & 0,0833 & 0,1389\\
+$x=3$ & 0,0833 & 0 & 0,0833\\\midrule
+$p_Y$ & 0,4500 & 0,5500 & 1\\\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Pasos 4 y 5:} $(3,1)$ es imposible (con 3 activos ya no queda lugar). La suma total da 1. \checkmark
+
+\textbf{Otro mecanismo} (Temario 1, Ej.\ 1: 2 cartuchos de una caja con 3 azules, 2 rojos y 1 verde, sin reposición). Por conteo, $p(x,y)=\binom3x\binom2y\binom1{2-x-y}/15$; por ejemplo, $p(1,1)=3\cdot2/15=6/15$, y $p(0,0)=0$ porque harían falta 2 verdes.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Tratar una regla de parada como si fuera ``$n$ fijo'' (hipergeométrica con $n=3$). Hay secuencias que terminan antes.
+\item Olvidar las celdas imposibles o no explicar por qué valen 0.
+\item No controlar que la suma dé 1.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Probabilidades de eventos y probabilidades condicionales}\label{p:condicional}
+\begin{cuando}
+``Se sabe que\ldots, ¿cuál es la probabilidad de que\ldots?'', ``si $X$ es mayor que $Y$\ldots'', ``escribir la interpretación simbólica en términos de $X$ e $Y$'', $E(Y\,|\,X=x)$.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Traducir} cada evento a una condición sobre $(x,y)$. Ojo con los eventos que no son ni $X$ ni $Y$ directamente: hay que expresarlos con ellas. Por ejemplo, ``se registró un nodo desconectado'' es $\{Y=0,\ X\le2\}$.
+\item \textbf{Escribir la expresión simbólica}: $P(A\,|\,B)=\dfrac{P(A\cap B)}{P(B)}$, con $B$ = lo que ``se sabe''.
+\item \textbf{Marcar en la tabla} las celdas de $B$ (denominador) y, entre ellas, las que además cumplen $A$ (numerador).
+\item \textbf{Sumar y dividir.} El resultado tiene que estar entre 0 y 1.
+\item \textbf{Para una distribución condicional}: $p_{Y|X}(y|x)=\dfrac{p(x,y)}{p_X(x)}$, que es la fila $x$ dividida por su total. Su esperanza es $\E(Y|X=x)=\sum_y y\,p_{Y|X}(y|x)$.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 3, P1c y Parcial 2025 T1, Ej.\ 1c}
+\textbf{Tabla dada}, con $P(Y>0\,|\,X>Y)$. \emph{Paso 1:} $B=\{X>Y\}$ son las celdas $(0,-1),(1,-1),(1,0),(2,-1),(2,0),(2,1)$, y $A\cap B=\{(2,1)\}$.
+\emph{Paso 4:} $P(B)=0{,}12+0{,}05+0{,}20+0{,}03+0{,}25+0{,}10=0{,}75$, así que $P=\dfrac{0{,}10}{0{,}75}=0{,}1333$.
+
+\textbf{Nodos} (5 A, 3 R, 2 D; $Y$ = en reposo). ``Al menos un activo; probabilidad de que se haya registrado un desconectado.''
+\emph{Paso 1:} solo se registra a lo sumo un no activo, así que hubo un D si y solo si se paró por un no activo ($X\le2$) que no era R ($Y=0$). \emph{Paso 2:} $P(Y=0,\,X\le2\,|\,X\ge1)$.
+\emph{Paso 4:} $\dfrac{p(1,0)+p(2,0)}{1-p_X(0)}=\dfrac{1/9+1/18}{1/2}=\dfrac13$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Dividir por 1 (el total) en lugar de dividir por $P(B)$.
+\item Traducir mal el evento, por ejemplo incluir $X=3$ cuando se pregunta por un nodo no activo.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Independencia: cómo demostrarla o refutarla}\label{p:indep}
+\begin{cuando}
+``¿Son $X$ e $Y$ independientes? Justificar con una demostración o un contraejemplo.''
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Escribir el criterio}: $X$ e $Y$ son independientes $\iff p(x,y)=p_X(x)\,p_Y(y)$ \emph{para todo} par $(x,y)$. En el caso continuo, $f(x,y)=f_X(x)f_Y(y)$.
+\item \textbf{Para refutar} (es lo más común), alcanza con \textbf{una} celda donde no se cumpla. Atajos:
+\begin{itemize}
+\item una celda con $p(x,y)=0$ cuyas marginales son positivas;
+\item si ya calculaste $\Cov(X,Y)\neq0$, entonces no son independientes;
+\item en el caso continuo, si el soporte no es un rectángulo, no son independientes.
+\end{itemize}
+\item \textbf{Para demostrar}, hay que verificar \textbf{todas} las celdas, o mostrar que la conjunta se factoriza, $f(x,y)=g(x)h(y)$, sobre un soporte rectangular.
+\item \textbf{Escribir la justificación con números}: ``$p(\cdot,\cdot)=\ldots\neq p_X(\cdot)\,p_Y(\cdot)=\ldots$''.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Modelo A, Ej.\ 1 y Temario 5, P1}
+\textbf{Cajas registradoras:} $p(2,2)=0$, pero $p_X(2)\,p_Y(2)=\frac19\cdot\frac19=\frac1{81}\neq0$. No son independientes.
+\textbf{Dos dados} ($X$ = primer dado, $Y$ = máximo): $p(6,1)=0$, pero $p_X(6)\,p_Y(1)=\frac16\cdot\frac1{36}\neq0$. No son independientes.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Concluir que son independientes porque $\Cov=0$. Es falso: covarianza cero no implica independencia.
+\item Verificar una sola celda y concluir que \emph{son} independientes. Hacen falta todas.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Esperanza, covarianza y coeficiente de correlación}\label{p:cov}
+\begin{cuando}
+``Calcular $\Cov(X,Y)$'', ``coeficiente de correlación'', ``$\E(XY)$'', ``interpretar el resultado''.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Marginales}: si no están, calculalas (procedimiento \ref{p:conjunta}).
+\item \textbf{Medias}: $\E(X)=\sum x\,p_X(x)$ y $\E(Y)=\sum y\,p_Y(y)$.
+\item \textbf{Varianzas}: $\E(X^2)=\sum x^2p_X(x)$, luego $\V(X)=\E(X^2)-\E(X)^2$. Lo mismo para $Y$. Si una variable es binomial o Bernoulli, se pueden usar las fórmulas directas: $np$ y $np(1-p)$.
+\item \textbf{$\E(XY)=\sum\sum x\,y\,p(x,y)$}: solo aportan las celdas con $x\neq0$ e $y\neq0$. Anotá cada producto.
+\item \textbf{Covarianza}: $\Cov(X,Y)=\E(XY)-\E(X)\E(Y)$.
+\item \textbf{Correlación}: $\rho=\dfrac{\Cov}{\sigma_X\sigma_Y}$. Controlá que $-1\le\rho\le1$; si no, hay un error de cuentas.
+\item \textbf{Interpretar}: el signo indica la dirección (positiva: crecen juntas). Con $|\rho|$ cerca de 1 la relación lineal es fuerte; cerca de 0, débil o nula.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 2, P1 (bolillas: $X=1$ si la primera es roja; $Y$ = rojas en 2)}
+Tabla: $p(0,0)=\frac{42}{90}$, $p(0,1)=\frac{21}{90}$, $p(1,1)=\frac{21}{90}$, $p(1,2)=\frac6{90}$.
+\emph{Pasos 2 y 3:} $\E(X)=0{,}3$, $\V(X)=0{,}21$; \ $\E(Y)=\frac{42+12}{90}=0{,}6$, $\E(Y^2)=\frac{42+24}{90}=0{,}7333$, $\V(Y)=0{,}3733$.
+\emph{Paso 4:} $\E(XY)=1\cdot1\cdot\frac{21}{90}+1\cdot2\cdot\frac{6}{90}=0{,}3667$. \
+\emph{Paso 5:} $\Cov=0{,}3667-0{,}3\cdot0{,}6=0{,}1867$.
+\emph{Paso 6:} $\rho=\dfrac{0{,}1867}{\sqrt{0{,}21\cdot0{,}3733}}=0{,}6667$. \
+\emph{Paso 7:} hay una asociación lineal positiva y moderadamente fuerte: si la primera bolilla es roja, hay más rojas en total.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Calcular $\E(XY)$ como $\E(X)\E(Y)$. Eso solo vale si son independientes.
+\item Olvidar restar $\E(X)^2$ al calcular la varianza.
+\end{itemize}
+\end{ojo}
+
+% ---------------------------------------------------------------------
+\subsection{Caso continuo: densidad conjunta}\label{p:continuo}
+\begin{cuando}
+Se da $f(x,y)$ sobre una región, y se piden independencia, una probabilidad como $P(X\le3Y)$, marginales o la varianza de una función de $X$ e $Y$.
+\end{cuando}
+\begin{pasos}
+\begin{pasolista}
+\item \textbf{Dibujar el soporte}, la región donde $f>0$. De ahí salen los límites de integración: los de $y$ pueden depender de $x$, y al revés.
+\item \textbf{Verificar} que $\iint f\,dy\,dx=1$. Sirve también como control de los límites.
+\item \textbf{Marginales}: $f_X(x)=\int f(x,y)\,dy$, integrando $y$ entre sus límites para $x$ fijo; $f_Y(y)=\int f(x,y)\,dx$, integrando $x$ entre sus límites para $y$ fijo. Al pasar de una a la otra hay que \emph{invertir} la descripción de la región.
+\item \textbf{Independencia}: si el soporte no es rectangular, no son independientes. Si lo es, comprobar si $f=f_Xf_Y$.
+\item \textbf{Probabilidad de un evento}: dibujar la región del evento intersecada con el soporte y plantear la integral doble con esos límites.
+\item \textbf{Momentos}: $\E[g(X,Y)]=\iint g\,f$. Con eso salen $\E(X)$, $\E(X^2)$, $\E(XY)$, luego $\V$ y $\Cov$, y de ahí, por ejemplo, $\V(X-Y)=\V(X)+\V(Y)-2\Cov$.
+\end{pasolista}
+\end{pasos}
+\begin{modelo}{Temario 7, P1: $f(x,y)=2xy$, $0\le x\le2$, $0\le y\le x/2$}
+\emph{Paso 2:} $\int_0^2\!\int_0^{x/2}2xy\,dy\,dx=\int_0^2\frac{x^3}{4}dx=1$ \checkmark. \
+\emph{Paso 3:} $f_X(x)=\frac{x^3}{4}$ en $[0;2]$; para $y$ fijo, $x$ va de $2y$ a 2, así que $f_Y(y)=\int_{2y}^2 2xy\,dx=4y(1-y^2)$ en $[0;1]$.
+\emph{Paso 4:} el soporte es un triángulo, no un rectángulo, así que no son independientes.
+\emph{Paso 5:} $P(X\le3Y)$ corresponde a $\frac x3\le y\le\frac x2$: $\int_0^2\!\int_{x/3}^{x/2}2xy\,dy\,dx=\frac5{36}\int_0^2x^3dx=\frac59$.
+\emph{Paso 6:} $\V(X)=\frac8{75}$, $\V(Y)=\frac{11}{225}$, $\Cov=\frac8{225}$, así que $\V(X-Y)=\frac{19}{225}=0{,}0844$.
+\end{modelo}
+\begin{ojo}
+\begin{itemize}
+\item Poner límites constantes cuando dependen de la otra variable.
+\item Calcular $f_Y$ integrando $x$ de 0 a 2: en este ejemplo, $x$ empieza en $2y$.
+\end{itemize}
+\end{ojo}

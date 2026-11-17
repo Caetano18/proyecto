@@ -1,0 +1,197 @@
+% =====================================================================
+\newpage
+\titleformat{\section}{\Large\bfseries\color{azul}}{}{0em}{}
+\section{Hoja de fórmulas completa}
+% =====================================================================
+{\small
+\begin{hoja}{A. Probabilidad y distribuciones}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{5.4cm}ll@{}}
+\toprule
+Distribución & $p(x)$ o $f(x)$ & $\E(X)$ & $\V(X)$\\\midrule
+Bernoulli$(p)$ & $p^x q^{1-x}$, \ $x\in\{0,1\}$ & $p$ & $pq$\\
+Binomial$(n;p)$ & $\binom nx p^xq^{n-x}$, \ $x=0,\dots,n$ & $np$ & $npq$\\
+Hipergeométrica $(N;M;n)$ & $\binom Mx\binom{N-M}{n-x}\big/\binom Nn$ & $n\frac MN$ & $n\frac MN\big(1-\frac MN\big)\frac{N-n}{N-1}$\\
+Poisson$(\lambda)$ & $e^{-\lambda}\lambda^x/x!$, \ $x=0,1,\dots$ & $\lambda$ & $\lambda$\\
+Geométrica$(p)$ (ensayos hasta el 1.\textsuperscript{er} éxito) & $q^{x-1}p$, \ $x=1,2,\dots$ & $1/p$ & $q/p^2$\\
+Uniforme $(a;b)$ & $\frac1{b-a}$, \ $a<x<b$ & $\frac{a+b}2$ & $\frac{(b-a)^2}{12}$\\
+Exponencial$(\lambda)$ & $\lambda e^{-\lambda x}$, \ $x\ge0$ & $1/\lambda$ & $1/\lambda^2$\\
+Normal $\Nor(\mu;\sigma^2)$ & $\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ & $\mu$ & $\sigma^2$\\
+$t_\nu$ \ / \ $\chis_\nu$ & simétrica en 0 / positiva y asimétrica & $0$ / $\nu$ & $\frac{\nu}{\nu-2}$ / $2\nu$\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+$\E(aX+b)=a\E(X)+b$; \ $\V(aX+b)=a^2\V(X)$; \ $\V(X)=\E(X^2)-\E(X)^2$; \ $\E(X^2)=\V(X)+\E(X)^2$.\\
+Estandarización: $Z=\frac{X-\mu}{\sigma}\sim\Nor(0;1)$; \ $P(a<X<b)=\Phi\big(\frac{b-\mu}{\sigma}\big)-\Phi\big(\frac{a-\mu}{\sigma}\big)$; \ $\Phi(-z)=1-\Phi(z)$; \ percentil: $x=\mu+z\sigma$.\\
+Chebyshev: $P(|X-\mu|\ge k\sigma)\le\frac1{k^2}$, \ o sea, $P(|X-\mu|<\varepsilon)\ge1-\frac{\sigma^2}{\varepsilon^2}$ (para cualquier distribución).
+\end{hoja}
+
+\begin{hoja}{B. Variables aleatorias bidimensionales}
+\setlength{\columnsep}{16pt}
+\begin{multicols}{2}\raggedright
+\textbf{Discreto}\\
+$p(x,y)=P(X=x,Y=y)\ge0$, \ $\sum\sum p=1$.\\
+$p_X(x)=\sum_y p(x,y)$; \ $p_Y(y)=\sum_x p(x,y)$.\\
+$p_{Y|X}(y|x)=\frac{p(x,y)}{p_X(x)}$; \ $\E(Y|x)=\sum_y y\,p_{Y|X}(y|x)$.\\
+$P(A|B)=\frac{P(A\cap B)}{P(B)}$.\\
+Indep.: $p(x,y)=p_X(x)p_Y(y)$ \ $\forall(x,y)$.\\
+$\E[h(X,Y)]=\sum\sum h(x,y)\,p(x,y)$.
+
+\columnbreak
+\textbf{Continuo}\\
+$f(x,y)\ge0$, \ $\iint f=1$; \ $P[(X,Y)\in A]=\iint_A f$.\\
+$f_X(x)=\int f(x,y)\,dy$; \ $f_Y(y)=\int f(x,y)\,dx$.\\
+$f_{Y|X}(y|x)=\frac{f(x,y)}{f_X(x)}$.\\
+Indep.: $f=f_Xf_Y$ (requiere soporte rectangular).\\
+$\E[h(X,Y)]=\iint h(x,y)\,f(x,y)\,dx\,dy$.
+\end{multicols}
+\vspace{-6pt}
+\textbf{Covarianza:} $\Cov(X,Y)=\E(XY)-\mu_X\mu_Y$; \ $\Cov(X,X)=\V(X)$; \ $\Cov(aX+b,cY+d)=ac\,\Cov(X,Y)$; \ $\Cov(h-X,X)=-\V(X)$.\\
+\textbf{Correlación:} $\rho=\frac{\Cov(X,Y)}{\sigma_X\sigma_Y}\in[-1;1]$; \ $|\rho|=1\iff Y=aX+b$. \ Independencia $\Rightarrow\Cov=0$; la recíproca es falsa.
+\end{hoja}
+
+\begin{hoja}{C. Combinaciones lineales, propiedad reproductiva, TCL y aproximaciones}
+\raggedright
+$W=\sum a_iX_i+b$: \ $\E(W)=\sum a_i\mu_i+b$; \ $\V(W)=\sum a_i^2\sigma_i^2+2\sum_{i<j}a_ia_j\Cov(X_i,X_j)$.\\
+$\V(aX+bY+c)=a^2\V(X)+b^2\V(Y)+2ab\Cov(X,Y)$; \ si son independientes: $\V(X\pm Y)=\V(X)+\V(Y)$.\\
+iid: $T=\sum X_i$ tiene $\E=n\mu$ y $\V=n\sigma^2$; \ $\Xb$ tiene $\E=\mu$ y $\V=\sigma^2/n$. \ Población finita: $\V(\Xb)=\frac{\sigma^2}n\cdot\frac{N-n}{N-1}$.\\
+\textbf{Reproductiva:} si las $X_i$ son normales independientes, $\sum a_iX_i+b\sim\Nor\big(\sum a_i\mu_i+b;\ \sum a_i^2\sigma_i^2\big)$ (exacto).\\
+\textbf{TCL:} si son iid con $\sigma^2$ finita y $n\ge30$: $\Xb\approx\Nor(\mu;\sigma^2/n)$ y $\sum X_i\approx\Nor(n\mu;n\sigma^2)$ (aproximado, cualquier población).\\
+\textbf{Binomial a normal} ($np\ge5$, $nq\ge5$): $X\approx\Nor(np;npq)$; \ $\hat P\approx\Nor(p;pq/n)$.\\
+\textbf{Corrección por continuidad:} $P(X\le k)\to k+0{,}5$; \ $P(X<k)\to k-0{,}5$; \ $P(X\ge k)\to k-0{,}5$; \ $P(X>k)\to k+0{,}5$.\\
+\textbf{Binomial a Poisson} (evento raro, $n$ grande): $X\approx\mathrm{Poi}(\lambda=np)$.\\
+Sumas de independientes: $\sum\mathrm{Bin}(n_i;p)=\mathrm{Bin}(\sum n_i;p)$; \ $\sum\mathrm{Poi}(\lambda_i)=\mathrm{Poi}(\sum\lambda_i)$; \ $\sum\chis_{\nu_i}=\chis_{\sum\nu_i}$.
+\end{hoja}
+
+\begin{hoja}{D. Muestreo y distribuciones muestrales}
+\raggedright
+$\xb=\frac1n\sum x_i$; \ $s^2=\frac{\sum(x_i-\xb)^2}{n-1}=\frac{\sum x_i^2-n\xb^2}{n-1}$; \ $\hat p=\frac{x}{n}$.\\[3pt]
+\renewcommand{\arraystretch}{1.7}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Estadístico & Distribución & Condición\\\midrule
+$Z=\dfrac{\Xb-\mu}{\sigma/\sqrt n}$ & $\Nor(0;1)$ & población normal (exacta) o $n\ge30$ (TCL)\\
+$T=\dfrac{\Xb-\mu}{S/\sqrt n}$ & $t_{n-1}$ & población normal, $\sigma$ desconocido\\
+$\chis=\dfrac{(n-1)S^2}{\sigma^2}$ & $\chis_{n-1}$ & población normal (no es robusto)\\
+$Z=\dfrac{\hat P-p}{\sqrt{pq/n}}$ & $\approx\Nor(0;1)$ & $np\ge5$ y $nq\ge5$\\
+$\Xb_1-\Xb_2$ & $\Nor\big(\mu_1-\mu_2;\ \frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}\big)$ & muestras independientes\\
+\bottomrule
+\end{tabular}
+\end{hoja}
+
+\begin{hoja}{E. Estimación puntual}
+\raggedright
+Sesgo $b=\E(\hat\Theta)-\theta$ (insesgado si $b=0$); \ $\mathrm{ECM}=\E[(\hat\Theta-\theta)^2]=\V(\hat\Theta)+b^2$; \ eficiencia relativa $=\V(\hat\Theta_1)/\V(\hat\Theta_2)$.\\
+Consistente: $\mathrm{ECM}\to0$ cuando $n\to\infty$. \ Entre insesgados, el mejor es el de menor varianza.\\
+Insesgados: $\Xb\to\mu$ (EE $\sigma/\sqrt n$); \ $\hat P\to p$ (EE $\sqrt{pq/n}$); \ $S^2\to\sigma^2$ ($S$ es sesgado para $\sigma$); \ $\Xb_1-\Xb_2$; \ $\hat P_1-\hat P_2$; \ $S_p^2=\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}$.\\
+Combinación óptima $a\Xb_1+(1-a)\Xb_2$: \ $a=\frac{n_1}{n_1+n_2}$.
+\end{hoja}
+
+\begin{hoja}{F. Intervalos de confianza del $(1-\alpha)100\,\%$}
+\renewcommand{\arraystretch}{1.55}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{4.6cm}l@{}}
+\toprule
+Parámetro & Condiciones & Intervalo\\\midrule
+$\mu$ & $\sigma$ conocido (normal o $n\ge30$) & $\xb\pm z_{\alpha/2}\,\sigma/\sqrt n$\\
+$\mu$ & $\sigma$ desconocido, normal & $\xb\pm t_{\alpha/2;\,n-1}\,s/\sqrt n$\\
+$\mu$ & $\sigma$ desconocido, $n\ge30$ & $\xb\pm z_{\alpha/2}\,s/\sqrt n$\\
+$\sigma^2$ & normal & $\big[\frac{(n-1)s^2}{\chis_{\alpha/2;\,n-1}}\,;\ \frac{(n-1)s^2}{\chis_{1-\alpha/2;\,n-1}}\big]$ \ ($\sigma$: raíz)\\
+$p$ & $n\hat p\ge5$, $n\hat q\ge5$ & $\hat p\pm z_{\alpha/2}\sqrt{\hat p\hat q/n}$\\
+$\mu_1-\mu_2$ & $\sigma_i$ conocidos o $n_i\ge30$ & $(\xb_1-\xb_2)\pm z_{\alpha/2}\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}$\\
+$\mu_1-\mu_2$ & normales, $\sigma_1=\sigma_2$ desconocidos & $(\xb_1-\xb_2)\pm t_{\alpha/2;\,n_1+n_2-2}\,s_p\sqrt{1/n_1+1/n_2}$\\
+$\mu_1-\mu_2$ & normales, $\sigma_1\neq\sigma_2$ (Welch) & $(\xb_1-\xb_2)\pm t_{\alpha/2;\,\nu}\sqrt{s_1^2/n_1+s_2^2/n_2}$, \ $\nu=\frac{(s_1^2/n_1+s_2^2/n_2)^2}{\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}}$\\
+$\mu_D$ & datos apareados & $\bar d\pm t_{\alpha/2;\,n-1}\,s_d/\sqrt n$\\
+$p_1-p_2$ & muestras grandes & $(\hat p_1-\hat p_2)\pm z_{\alpha/2}\sqrt{\hat p_1\hat q_1/n_1+\hat p_2\hat q_2/n_2}$\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+Error máximo $E$ = semiamplitud = (valor crítico)$\times$(error estándar). \ Cotas unilaterales: usar $\alpha$ en lugar de $\alpha/2$.\\
+Nivel de un IC dado (proporción): $\hat p$ = punto medio, $z=E/\sqrt{\hat p\hat q/n}$, \ $1-\alpha=2\Phi(z)-1$.
+\end{hoja}
+
+\begin{hoja}[unbreakable]{G. Tamaños de muestra (redondear siempre hacia arriba)}
+\raggedright
+\textbf{Estimar $\mu$:} $n=\big(z_{\alpha/2}\,\sigma/E\big)^2$ \quad (si se da la amplitud $A$: $E=A/2$).\\
+\textbf{Estimar $p$:} $n=\frac{z_{\alpha/2}^2\,\hat p\hat q}{E^2}$ \ (con estimación previa) \quad o \quad $n=\frac{z_{\alpha/2}^2}{4E^2}$ \ (sin dato, o para garantizarlo para cualquier $p$).\\
+\textbf{Cambios relativos:} $E\propto\frac{z}{\sqrt n}$, así que $\sqrt{n_2}=\sqrt{n_1}\,\frac{z_2}{z_1}\cdot\frac{E_1}{E_2}$. Error a la mitad: $n\times4$. \ ``¿Cuántos más?'': $n_2-n_1$.\\
+\textbf{Prueba para $\mu$ ($\alpha$ y $\beta$ dados):} $n=\Big[\frac{(z_\alpha+z_\beta)\,\sigma}{|\mu_0-\mu_1|}\Big]^2$ (unilateral); en una bilateral, $z_{\alpha/2}$ en lugar de $z_\alpha$.\\
+\textbf{Prueba para $p$:} $n=\Big[\frac{z_\alpha\sqrt{p_0q_0}+z_\beta\sqrt{p_1q_1}}{|p_0-p_1|}\Big]^2$. \quad \textbf{Solo $\alpha$ y una regla fija $c$:} $\frac{|c-\mu_0|}{\sigma/\sqrt n}=z_\alpha$.
+\end{hoja}
+
+\begin{hoja}{H. Pruebas de hipótesis}
+\raggedright
+$\alpha=P(\text{rechazar }H_0\,|\,H_0\text{ V})$ (tipo I); \ $\beta=P(\text{no rechazar }H_0\,|\,H_0\text{ F})$ (tipo II); \ potencia $=1-\beta$. \ Con $n$ fijo, $\downarrow\alpha\Rightarrow\uparrow\beta$; si $\uparrow n$, bajan los dos.\\[3pt]
+\renewcommand{\arraystretch}{1.75}
+\begin{tabular}{@{}lll>{\raggedright\arraybackslash}p{2.0cm}@{}}
+\toprule
+$H_0$ & Condiciones & Estadístico & Distribución\\\midrule
+$\mu=\mu_0$ & $\sigma$ conocido (normal o $n\ge30$) & $Z_0=\dfrac{\xb-\mu_0}{\sigma/\sqrt n}$ & $\Nor(0;1)$\\
+$\mu=\mu_0$ & normal, $\sigma$ desconocido & $T_0=\dfrac{\xb-\mu_0}{s/\sqrt n}$ & $t_{n-1}$\\
+$\sigma^2=\sigma_0^2$ & normal & $\chis_0=\dfrac{(n-1)s^2}{\sigma_0^2}$ & $\chis_{n-1}$\\
+$p=p_0$ & $np_0,\,nq_0\ge5$ & $Z_0=\dfrac{\hat p-p_0}{\sqrt{p_0q_0/n}}$ (¡con $p_0$!) & $\Nor(0;1)$\\
+$p=p_0$ & $n$ chico & $X$ = cantidad de éxitos & $\mathrm{Bin}(n;p_0)$\\
+$\mu_1-\mu_2=\Delta_0$ & $\sigma_i$ conocidos o $n_i\ge30$ & $Z_0=\dfrac{\xb_1-\xb_2-\Delta_0}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}}$ & $\Nor(0;1)$\\
+$\mu_1-\mu_2=\Delta_0$ & normales, $\sigma_1=\sigma_2$ & $T_0=\dfrac{\xb_1-\xb_2-\Delta_0}{s_p\sqrt{1/n_1+1/n_2}}$ & $t_{n_1+n_2-2}$\\
+$\mu_D=\Delta_0$ & apareadas & $T_0=\dfrac{\bar d-\Delta_0}{s_d/\sqrt n}$ & $t_{n-1}$\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+$H_1$ & Rechazo ($Z$; $t$ igual) & Rechazo ($\chis$, $\nu=n-1$) & Valor $P$ ($Z$) & $\beta(\mu_1)$, \ $d=\frac{(\mu_1-\mu_0)\sqrt n}{\sigma}$\\\midrule
+$\theta\neq\theta_0$ & $|z_0|>z_{\alpha/2}$ & $\chis_0>\chis_{\alpha/2}$ o $\chis_0<\chis_{1-\alpha/2}$ & $2[1-\Phi(|z_0|)]$ & $\Phi(z_{\alpha/2}-d)-\Phi(-z_{\alpha/2}-d)$\\
+$\theta>\theta_0$ & $z_0>z_\alpha$ & $\chis_0>\chis_\alpha$ & $1-\Phi(z_0)$ & $\Phi(z_\alpha-d)$\\
+$\theta<\theta_0$ & $z_0<-z_\alpha$ & $\chis_0<\chis_{1-\alpha}$ & $\Phi(z_0)$ & $1-\Phi(-z_\alpha-d)$\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\textbf{Decisión:} $P\le\alpha\Rightarrow$ se rechaza $H_0$. \quad \textbf{Región en unidades originales:} $c=\mu_0\pm z\,\sigma/\sqrt n$ \ ($p$: $c=p_0\pm z\sqrt{p_0q_0/n}$).\\
+\textbf{$\beta$ en dos pasos:} (1) región de aceptación en $\xb$ (o $\hat p$) bajo $H_0$; (2) probabilidad de caer adentro con el valor verdadero $\mu_1$ (o $p_1$, con desvío $\sqrt{p_1q_1/n}$).\\
+\textbf{Curvas:} la OC $\beta(\theta)$ vale $1-\alpha$ en $\theta_0$ y la potencia vale $\alpha$. En una prueba bilateral la OC tiene forma de campana; con $H_1:>$ es decreciente y con $H_1:<$ es creciente.\\
+\textbf{Dualidad:} una prueba bilateral rechaza $H_0:\theta=\theta_0$ si y solo si $\theta_0$ queda fuera del IC del $(1-\alpha)$. Una prueba unilateral se compara con la cota del mismo lado.
+\end{hoja}
+
+\begin{hoja}[unbreakable]{I. Valores críticos más usados y lectura de tablas}
+\raggedright
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+$\alpha$ & 0,20 & 0,10 & 0,06 & 0,05 & 0,025 & 0,02 & 0,01 & 0,005 & 0,001\\\midrule
+$z_\alpha$ & 0,8416 & 1,2816 & 1,5548 & 1,6449 & 1,9600 & 2,0537 & 2,3263 & 2,5758 & 3,0902\\\bottomrule
+\end{tabular}
+
+\smallskip
+Confianza bilateral: 90\,\% $\to$ 1,6449; \ 95\,\% $\to$ 1,96; \ 98\,\% $\to$ 2,3263; \ 99\,\% $\to$ 2,5758. \quad
+$\Phi(1)=0{,}8413$; \ $\Phi(2)=0{,}9772$; \ $\Phi(3)=0{,}9987$.\\
+\textbf{Tabla $\Phi$:} la fila da el entero y el primer decimal, y la columna el segundo decimal. Para hallar $z$ dada la probabilidad, se busca la probabilidad \emph{dentro} de la tabla.\\
+\textbf{Tabla $t$:} fila $\nu=n-1$, columna $\alpha$ (área derecha). Si $\nu$ no figura, se usa el menor más cercano. Para el valor $P$ se acota entre dos columnas (bilateral: $\times2$).\\
+\textbf{Tabla $\chis$:} fila $\nu$, columna = área derecha. Las columnas 0,995 a 0,90 dan los valores chicos (cola izquierda).
+\end{hoja}
+}
+
+\subsection*{J. Tabla de la normal estándar: \ $\Phi(z)=P(Z\le z)$}
+Para $z<0$: \ $\Phi(-z)=1-\Phi(z)$. \ Ejemplo: $\Phi(1{,}96)=0{,}9750$ (fila 1,9, columna 0,06).
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{4.2pt}\renewcommand{\arraystretch}{0.95}
+\input{tabla_z}
+\end{center}
+
+\newpage
+\subsection*{K. Tabla $t$ de Student: \ $t_{\alpha,\nu}$ con $P(T_\nu>t_{\alpha,\nu})=\alpha$}
+\begin{center}
+\small\setlength{\tabcolsep}{9pt}\renewcommand{\arraystretch}{0.98}
+\input{tabla_t}
+\end{center}
+
+\newpage
+\subsection*{L. Tabla ji-cuadrado: \ $\chis_{\alpha,\nu}$ con $P(\chis_\nu>\chis_{\alpha,\nu})=\alpha$}
+Las columnas de la izquierda ($\alpha$ grande) dan los valores \emph{chicos}, de la cola izquierda.
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{3.6pt}
+\input{tabla_chi}
+\end{center}
