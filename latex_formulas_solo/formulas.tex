@@ -1,0 +1,163 @@
+\documentclass[10pt,a4paper]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[top=1.3cm,bottom=1.2cm,left=1.3cm,right=1.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{icomma}
+\usepackage{booktabs,array,multicol,needspace}
+\usepackage[table]{xcolor}
+\pagestyle{empty}
+\definecolor{azul}{RGB}{35,85,140}
+\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{3pt}
+\setlength{\columnsep}{14pt}
+\setlength{\columnseprule}{0.3pt}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\V}{\mathrm{V}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\xb}{\bar{x}}
+\newcommand{\Xb}{\bar{X}}
+\newcommand{\sq}[1]{\sqrt{#1}}
+\newcommand{\etq}[1]{\par\vspace{5pt}\noindent\colorbox{azul}{\color{white}\strut\ $#1$\ }\par\vspace{2pt}}
+\newcommand{\fm}[1]{\par\noindent$\displaystyle #1$\par\vspace{3pt}}
+\newcommand{\fmm}[1]{\par\noindent$#1$\par\vspace{3pt}}
+
+\begin{document}
+\small
+% ============================================================ distribuciones
+\etq{p(x),\ f(x)}
+\renewcommand{\arraystretch}{1.45}
+\noindent\begin{tabular}{@{}llll@{}}
+\toprule
+ & $p(x)$ & $\E(X)$ & $\V(X)$\\\midrule
+$\mathrm{Ber}(p)$ & $p^xq^{1-x}$ & $p$ & $pq$\\
+$\mathrm{Bin}(n,p)$ & $\binom nx p^xq^{n-x}$ & $np$ & $npq$\\
+$\mathrm{H}(N,M,n)$ & $\binom Mx\binom{N-M}{n-x}\big/\binom Nn$ & $n\frac MN$ & $n\frac MN\big(1-\frac MN\big)\frac{N-n}{N-1}$\\
+$\mathrm{Poi}(\lambda)$ & $e^{-\lambda}\lambda^x/x!$ & $\lambda$ & $\lambda$\\
+$\mathrm{G}(p)$ & $q^{x-1}p$ & $1/p$ & $q/p^2$\\
+$\mathrm{U}(a,b)$ & $\frac1{b-a}$ & $\frac{a+b}2$ & $\frac{(b-a)^2}{12}$\\
+$\mathrm{Exp}(\lambda)$ & $\lambda e^{-\lambda x}$ & $1/\lambda$ & $1/\lambda^2$\\
+$\mathcal N(\mu,\sigma^2)$ & $\frac1{\sigma\sq{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}$ & $\mu$ & $\sigma^2$\\
+$t_\nu$ & & $0$ & $\frac{\nu}{\nu-2}$\\
+$\chi^2_\nu$ & & $\nu$ & $2\nu$\\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+
+\begin{multicols}{2}
+\etq{(X,Y)}
+\fm{p_X(x)=\sum_y p(x,y)\qquad p_Y(y)=\sum_x p(x,y)}
+\fm{p(y|x)=\frac{p(x,y)}{p_X(x)}\qquad \E(Y|x)=\sum_y y\,p(y|x)}
+\fm{P(A|B)=\frac{P(A\cap B)}{P(B)}}
+\fm{p(x,y)=p_X(x)\,p_Y(y)\quad\forall(x,y)}
+\fm{p(x,y)=\frac{\binom{N_1}{x}\binom{N_2}{y}\binom{N_3}{n-x-y}}{\binom Nn}}
+\fm{\E(XY)=\sum\sum xy\,p(x,y)\qquad \E[h]=\sum\sum h\,p}
+\fm{f_X=\int f\,dy\quad f_Y=\int f\,dx\quad f(y|x)=\frac{f}{f_X}}
+\fm{P=\iint_A f\qquad \E[h]=\iint h\,f\qquad f=f_Xf_Y}
+\fm{\Cov(X,Y)=\E(XY)-\mu_X\mu_Y\qquad \rho=\frac{\Cov(X,Y)}{\sigma_X\sigma_Y}}
+\fm{\Cov(aX+b,cY+d)=ac\,\Cov(X,Y)\qquad \Cov(X,X)=\V(X)}
+\fm{\Cov(h-X,X)=-\V(X)\qquad \Cov(X_i,X_j)=-np_ip_j}
+\fm{\Cov(X,Y)=\rho\,\sigma_X\sigma_Y\qquad \E(XY)=\E(X)\E(Y)\ \ (\perp)}
+
+\etq{W}
+\fm{\E(aX+b)=a\E(X)+b\qquad \V(aX+b)=a^2\V(X)}
+\fm{\V(X)=\E(X^2)-\E(X)^2}
+\fm{\E(W)=\sum a_i\mu_i+b}
+\fm{\V(W)=\sum a_i^2\sigma_i^2+2\sum_{i<j}a_ia_j\Cov(X_i,X_j)}
+\fm{\V(aX+bY+c)=a^2\V(X)+b^2\V(Y)+2ab\Cov(X,Y)}
+\fm{\sum a_iX_i+b\sim\mathcal N\Big(\sum a_i\mu_i+b,\ \sum a_i^2\sigma_i^2\Big)}
+\fm{\Xb\sim\mathcal N\Big(\mu,\frac{\sigma^2}{n}\Big)\qquad \sum X_i\sim\mathcal N(n\mu,\,n\sigma^2)}
+\fm{\E(\Xb)=\mu\qquad \V(\Xb)=\frac{\sigma^2}{n}\qquad \V(\Xb)=\frac{\sigma^2}{n}\cdot\frac{N-n}{N-1}}
+\fm{Z=\frac{X-\mu}{\sigma}\qquad \Phi(-z)=1-\Phi(z)\qquad x=\mu+z\sigma}
+\fm{P(a<X<b)=\Phi\Big(\frac{b-\mu}{\sigma}\Big)-\Phi\Big(\frac{a-\mu}{\sigma}\Big)}
+\fm{X\approx\mathcal N(np,npq)\qquad \hat P\approx\mathcal N\Big(p,\frac{pq}{n}\Big)}
+\fm{P(X\le k)\approx\Phi\Big(\frac{k+0{,}5-np}{\sq{npq}}\Big)}
+\fm{P(X\ge k)\approx1-\Phi\Big(\frac{k-0{,}5-np}{\sq{npq}}\Big)}
+\fm{\lambda=np\qquad P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!}}
+\fm{P(|X-\mu|\ge k\sigma)\le\frac1{k^2}}
+\fmm{\sum\mathrm{Bin}(n_i,p)=\mathrm{Bin}\big(\textstyle\sum n_i,p\big)\qquad \sum\mathrm{Poi}(\lambda_i)=\mathrm{Poi}\big(\textstyle\sum\lambda_i\big)}
+\fmm{\sum\chi^2_{\nu_i}=\chi^2_{\sum\nu_i}}
+
+\etq{\bar X}
+\fm{\xb=\frac{\sum x_i}{n}\qquad s^2=\frac{\sum(x_i-\xb)^2}{n-1}=\frac{\sum x_i^2-n\xb^2}{n-1}}
+\fm{\hat p=\frac xn\qquad \sum(x_i-\xb)^2=(n-1)s^2}
+\fm{Z=\frac{\Xb-\mu}{\sigma/\sq n}\sim\mathcal N(0,1)}
+\fm{T=\frac{\Xb-\mu}{S/\sq n}\sim t_{n-1}}
+\fm{\chi^2=\frac{(n-1)S^2}{\sigma^2}\sim\chi^2_{n-1}}
+\fm{Z=\frac{\hat P-p}{\sq{pq/n}}\sim\mathcal N(0,1)}
+\fm{\Xb_1-\Xb_2\sim\mathcal N\Big(\mu_1-\mu_2,\ \frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}\Big)}
+\fm{T=\frac{(\Xb_1-\Xb_2)-(\mu_1-\mu_2)}{S_p\sq{\frac1{n_1}+\frac1{n_2}}}\sim t_{n_1+n_2-2}}
+\fm{S_p^2=\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}}
+\fm{T=\frac{\bar D-\mu_D}{S_D/\sq n}\sim t_{n-1}}
+
+\etq{\hat\theta}
+\fm{b=\E(\hat\theta)-\theta}
+\fm{\mathrm{ECM}=\E\big[(\hat\theta-\theta)^2\big]=\V(\hat\theta)+b^2}
+\fm{\E(S^2)=\sigma^2\qquad \E(X^2)=\V(X)+\E(X)^2}
+\fm{a=\frac{n_1}{n_1+n_2}}
+\end{multicols}
+
+% ============================================================ IC
+\needspace{12\baselineskip}\etq{IC}
+\renewcommand{\arraystretch}{1.7}
+\noindent\begin{tabular}{@{}ll@{\hspace{14pt}}ll@{}}
+$\mu$ & $\xb\pm z_{\alpha/2}\dfrac{\sigma}{\sq n}$ & $\mu$ & $\xb\pm t_{\alpha/2;\,n-1}\dfrac{s}{\sq n}$\\
+$\mu$ & $\xb\pm z_{\alpha/2}\dfrac{s}{\sq n}$ & $p$ & $\hat p\pm z_{\alpha/2}\sq{\dfrac{\hat p\hat q}{n}}$\\
+$\sigma^2$ & $\Big[\dfrac{(n-1)s^2}{\chi^2_{\alpha/2;\,n-1}}\ ;\ \dfrac{(n-1)s^2}{\chi^2_{1-\alpha/2;\,n-1}}\Big]$ & $\sigma$ & $\Big[\sq{\dfrac{(n-1)s^2}{\chi^2_{\alpha/2;\,n-1}}}\ ;\ \sq{\dfrac{(n-1)s^2}{\chi^2_{1-\alpha/2;\,n-1}}}\Big]$\\
+$\mu_1-\mu_2$ & $(\xb_1-\xb_2)\pm z_{\alpha/2}\sq{\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}}$ & $\mu_1-\mu_2$ & $(\xb_1-\xb_2)\pm t_{\alpha/2;\,n_1+n_2-2}\,s_p\sq{\dfrac1{n_1}+\dfrac1{n_2}}$\\
+$\mu_1-\mu_2$ & $(\xb_1-\xb_2)\pm t_{\alpha/2;\,\nu}\sq{\dfrac{s_1^2}{n_1}+\dfrac{s_2^2}{n_2}}$ & $\nu$ & $\dfrac{(s_1^2/n_1+s_2^2/n_2)^2}{\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}}$\\
+$\mu_D$ & $\bar d\pm t_{\alpha/2;\,n-1}\dfrac{s_d}{\sq n}$ & $p_1-p_2$ & $(\hat p_1-\hat p_2)\pm z_{\alpha/2}\sq{\dfrac{\hat p_1\hat q_1}{n_1}+\dfrac{\hat p_2\hat q_2}{n_2}}$\\
+\end{tabular}
+
+\vspace{3pt}
+\noindent\begin{tabular}{@{}llll@{\hspace{16pt}}l@{}}
+$\mu\le\xb+z_\alpha\dfrac{\sigma}{\sq n}$ & $\mu\ge\xb-z_\alpha\dfrac{\sigma}{\sq n}$ & $\sigma^2\le\dfrac{(n-1)s^2}{\chi^2_{1-\alpha;\,n-1}}$ & $\sigma^2\ge\dfrac{(n-1)s^2}{\chi^2_{\alpha;\,n-1}}$ & $p\le\hat p+z_\alpha\sq{\dfrac{\hat p\hat q}{n}}$\\
+\end{tabular}
+
+\vspace{3pt}
+\noindent$\displaystyle E=z_{\alpha/2}\frac{\sigma}{\sq n}\qquad z=\frac{E}{\sq{\hat p\hat q/n}}\qquad 1-\alpha=2\Phi(z)-1$
+
+% ============================================================ n
+\etq{n}
+\noindent\begin{tabular}{@{}llll@{}}
+$n=\Big(\dfrac{z_{\alpha/2}\,\sigma}{E}\Big)^2$ & $n=\dfrac{z_{\alpha/2}^2\,\hat p\hat q}{E^2}$ & $n=\dfrac{z_{\alpha/2}^2}{4E^2}$ & $\sqrt{n_2}=\sqrt{n_1}\,\dfrac{z_2}{z_1}\,\dfrac{E_1}{E_2}$\\[8pt]
+$n=\Big[\dfrac{(z_\alpha+z_\beta)\,\sigma}{\mu_0-\mu_1}\Big]^2$ & $n=\Big[\dfrac{z_\alpha\sq{p_0q_0}+z_\beta\sq{p_1q_1}}{p_0-p_1}\Big]^2$ & $\dfrac{c-\mu_0}{\sigma/\sq n}=-z_\alpha$ & $\begin{cases}c=\mu_0-z_\alpha\frac{\sigma}{\sq n}\\ c=\mu_1+z_\beta\frac{\sigma}{\sq n}\end{cases}$\\
+\end{tabular}
+
+% ============================================================ H
+\needspace{16\baselineskip}\etq{H_0}
+\renewcommand{\arraystretch}{1.75}
+\noindent\begin{tabular}{@{}l@{\hspace{10pt}}l@{\hspace{10pt}}l@{}}
+$\mu=\mu_0$ & $Z_0=\dfrac{\xb-\mu_0}{\sigma/\sq n}\sim\mathcal N(0,1)$ & $T_0=\dfrac{\xb-\mu_0}{s/\sq n}\sim t_{n-1}$\\
+$\sigma^2=\sigma_0^2$ & $\chi_0^2=\dfrac{(n-1)s^2}{\sigma_0^2}\sim\chi^2_{n-1}$ & $Z_0=\dfrac{\hat p-p_0}{\sq{p_0q_0/n}}\sim\mathcal N(0,1)$\\
+$\mu_1-\mu_2=\Delta_0$ & $Z_0=\dfrac{(\xb_1-\xb_2)-\Delta_0}{\sq{\sigma_1^2/n_1+\sigma_2^2/n_2}}$ & $T_0=\dfrac{(\xb_1-\xb_2)-\Delta_0}{s_p\sq{1/n_1+1/n_2}}\sim t_{n_1+n_2-2}$\\
+ & $T_0=\dfrac{(\xb_1-\xb_2)-\Delta_0}{\sq{s_1^2/n_1+s_2^2/n_2}}\sim t_\nu$ & $T_0=\dfrac{\bar d-\Delta_0}{s_d/\sq n}\sim t_{n-1}$\\
+$p_1=p_2$ & $Z_0=\dfrac{\hat p_1-\hat p_2}{\sq{\hat p\hat q\left(\frac1{n_1}+\frac1{n_2}\right)}}$ & $\hat p=\dfrac{x_1+x_2}{n_1+n_2}$\\
+\end{tabular}
+
+\vspace{4pt}
+\renewcommand{\arraystretch}{1.6}
+\noindent\begin{tabular}{@{}c@{\hspace{12pt}}c@{\hspace{12pt}}c@{\hspace{12pt}}c@{\hspace{12pt}}c@{}}
+$H_1$ & $Z,\,T$ & $\chi^2$ & $P$ & $\beta$\\\midrule
+$\neq$ & $|z_0|>z_{\alpha/2}$ & $\chi_0^2>\chi^2_{\alpha/2}\ \vee\ \chi_0^2<\chi^2_{1-\alpha/2}$ & $2[1-\Phi(|z_0|)]$ & $\Phi(z_{\alpha/2}-d)-\Phi(-z_{\alpha/2}-d)$\\
+$>$ & $z_0>z_\alpha$ & $\chi_0^2>\chi^2_\alpha$ & $1-\Phi(z_0)$ & $\Phi(z_\alpha-d)$\\
+$<$ & $z_0<-z_\alpha$ & $\chi_0^2<\chi^2_{1-\alpha}$ & $\Phi(z_0)$ & $1-\Phi(-z_\alpha-d)$\\
+\end{tabular}
+
+\vspace{4pt}
+\fm{d=\frac{(\mu_1-\mu_0)\sq n}{\sigma}\qquad \delta=\mu_1-\mu_0\qquad P\le\alpha\ \Rightarrow\ \text{R}}
+\fm{\alpha=P(\text{R}\,|\,H_0)\qquad \beta=P(\overline{\text{R}}\,|\,H_1)\qquad \pi=1-\beta}
+\fm{c=\mu_0\pm z\frac{\sigma}{\sq n}\qquad c=p_0\pm z\sq{\frac{p_0q_0}{n}}}
+\fm{\alpha=P(\Xb\in\text{R}\,|\,\mu_0)\qquad \beta=P(\Xb\in\overline{\text{R}}\,|\,\mu_1)}
+\fm{\beta=1-\Phi\Big(\frac{p_0-p_1-z_\alpha\sq{p_0q_0/n}}{\sq{p_1q_1/n}}\Big)\qquad \beta=\Phi\Big(\frac{p_0-p_1+z_\alpha\sq{p_0q_0/n}}{\sq{p_1q_1/n}}\Big)}
+\fm{P=2\min\{P(\chi^2\ge\chi_0^2),\,P(\chi^2\le\chi_0^2)\}}
+
+\etq{z_\alpha}
+\renewcommand{\arraystretch}{1.5}
+\noindent\begin{tabular}{@{}lcccccccc@{}}
+$\alpha$ & 0,20 & 0,10 & 0,06 & 0,05 & 0,025 & 0,02 & 0,01 & 0,005\\\midrule
+$z_\alpha$ & 0,8416 & 1,2816 & 1,5548 & 1,6449 & 1,9600 & 2,0537 & 2,3263 & 2,5758\\
+\end{tabular}
+\end{document}
