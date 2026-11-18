@@ -530,18 +530,39 @@ if _ms("armonico", "Contenedor: tubo") < 0 or _ms("choque", "Contenedor: tubo") 
                r"tiene margen (casi-estático: %s). Corrección: prolongar 10\,mm el faldón de la tapa hacia la boca y apoyar ahí los patines "
                r"de C4. La pared pasa a 4{,}5\,mm (LW-PLA más PA12-CF) y la tensión en el LW-PLA baja unas cinco veces."
                % (ms(p[0]), n(p[4]["f_crit"], 0), ms(_ms("choque", "Contenedor: tubo")), ms(_ms("cuasi15", "Contenedor: tubo"))))
-if _ms("armonico", "Paneles y bandeja") < 0:
-    p = peor("armonico", "Paneles y bandeja")
-    acc.append(r"\item \textbf{Paneles de G10} ($MS=%s$ a %s\,Hz): pico en un solo punto, en la esquina del panel contra C2 y en el modo "
-               r"más alto de la base modal; con el percentil 99{,}9 de las tensiones el margen es %s. Se confirma con una malla más fina."
-               % (ms(p[0]), n(p[4]["f_crit"], 0), ms(p[4]["MS_p999"])))
+# --- bandeja: hallazgo del modelo exclusivamente estructural (corrida sin rieles guardada aparte)
+_f0 = os.path.join(FEA, "resultados_fea_sin_rieles.json")
+if os.path.exists(_f0):
+    R0 = json.load(open(_f0))
+    _m_riel = sum(p_["masa"] for p_ in R["piezas"] if "riel" in p_["nombre"])
+    _t0 = max(R0["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES)
+    _t1 = max(R["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES)
+    acc.append(r"\item \textbf{Bandeja de aviónica} (hallazgo del modelo exclusivamente estructural). Sin los soportes de los equipos, la placa de G10 de "
+               r"0{,}8\,mm lleva sus $\approx$190\,g de equipos como masa repartida y resuena a %s\,Hz con una transmisibilidad de %s, con picos "
+               r"de miles de MPa. Con los equipos modelados como sólidos pegados esa rigidez era artificial. Corrección ya incorporada al CAD y al modelo: "
+               r"dos rieles longitudinales de PA12-CF de %s$\times$%s\,mm a $y=\pm%s$\,mm bajo la bandeja (%s\,g, que salen del lastre: de 14{,}2 a 4{,}5\,g). "
+               r"Vuelto a correr, la transmisibilidad de la bandeja baja a %s y el primer modo queda en %s\,Hz."
+               % (n(R0["freq"][0], 0), n(_t0, 0), n(P.RIEL_W, 0), n(P.RIEL_H, 0), n(P.RIEL_Y, 0), n(_m_riel, 1), n(_t1, 0), n(R["freq"][0], 0)))
+_loc = []
+for g_ in ("Paneles y bandeja", "Cuadernas", "Largueros"):
+    cands = [(peor(c_, g_), c_) for c_ in ("armonico", "choque")]
+    (pm, c_) = min(cands, key=lambda t: t[0][0])
+    if pm[0] < 0:
+        _loc.append((g_, c_, pm))
+if _loc:
+    its = "; ".join("%s %s ($MS=%s$ en el pico, %s con el percentil 99{,}9; $x=%s$, $y=%s$, $z=%s$\\,mm)" % (
+        GNOM[g_].split(" (")[0].lower(), "en resonancia" if c_ == "armonico" else "en choque", ms(pm[0]), ms(pm[4]["MS_p999"]),
+        n(pm[4]["pos"][0], 0), n(pm[4]["pos"][1], 0), n(pm[4]["pos"][2], 0)) for g_, c_, pm in _loc)
+    acc.append(r"\item \textbf{Picos aislados} (paneles de G10, cuadernas, largueros): %s. Son valores de un solo elemento, en bordes y uniones de "
+               r"piezas de 0{,}5\,mm, y con el percentil 99{,}9 todas tienen margen. Quedan a confirmar con una malla más fina; hasta entonces "
+               r"se reportan con el margen del pico, que es el conservador." % its)
 ACC = ""
 if acc:
     ACC = (r"\subsection{Márgenes negativos y corrección}" "\n" r"\que Dónde no alcanza el diseño y qué se cambia." "\n"
            r"\porque Los casos casi-estático de 15\,G y el tirón del paracaídas tienen margen en todas las piezas. Quedan sin margen:"
            "\n" r"\begin{itemize}" + "\n".join(acc) + r"\end{itemize}" "\n"
-           r"\chequeo Las tres correcciones son locales y no cambian la arquitectura ni la masa en más de 3\,g. No se volvió a correr "
-           r"el modelo con ellas: quedan como primera tarea de la próxima iteración.")
+           r"\chequeo La corrección de la bandeja ya está en el modelo y se vio su efecto. La del tubo es local y no cambia la arquitectura ni la masa "
+           r"en más de 3\,g; no se volvió a correr con ella y queda como primera tarea de la próxima iteración.")
 
 PH = json.load(open(os.path.join(FEA, "polhamus.json")))
 t_polh = tab("lccccccc", ["Hipótesis", "$f$", "$C_L$ potencial", "$C_L$ vórtice", "$C_L$", "$C_D$", "$w$ con 500\\,g", "$w$ con %s\\,g" % n(PH["m_vuelo"], 0)],

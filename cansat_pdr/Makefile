@@ -6,8 +6,8 @@ PY = cd src && python3
 all: cad planos fea informe
 
 cad:
-	$(PY) figs_cad.py ../figs && $(PY) figs_layout.py ../figs
-	$(PY) -c "import cad; [cad.export_step(cad.build(c), '../cad/cansat_%s.step' % c) for c in ('lanzamiento', 'desplegado')]"
+	$(PY) figs_cad.py ../figs; python3 figs_layout.py ../figs
+	cd src && python3 -c "import cad; [cad.export_step(cad.build(c), '../cad/cansat_%s.step' % c) for c in ('lanzamiento', 'desplegado')]"
 
 planos: cad
 	$(PY) planos.py ../planos ../figs
