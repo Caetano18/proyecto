@@ -90,6 +90,58 @@ def piezas_fe():
     return parts
 
 
+def piezas_fe_estructural():
+    """Modelo exclusivamente estructural: sin baterias, placas, servos, lastre, soportes de equipos, botalon ni ala estibada.
+    La masa de esos componentes se reparte como masa no estructural (densidad adicional) sobre la pieza que la lleva:
+      bandeja (3 tramos: nariz, centro, cola)  : servo de cola, bateria, placas, servo del cerrojo, cableado y lastre
+      marcos C2 y C3                           : camaras y baliza
+      cunas de ala, C1 y C4                    : ala estibada;  guias de botalon y C4: botalon de cola
+      tapa superior                            : celdas solares;  tapa nervada: paracaidas y brida
+    El lastre de centrado cierra la masa total en M_TOT y va en el tramo de nariz de la bandeja."""
+    global LASTRE_G
+    parts = [p for p in cad.build("fe") if p["grupo"] in ("estructura", "contenedor", "mecanismo")]
+    M = P.M_EQ
+    # bandeja cortada en tres tramos para repartir la masa segun su posicion
+    b1 = next(p for p in parts if p["nombre"].startswith("B1"))
+    parts.remove(b1)
+    tramos = (("B1a bandeja tramo de nariz", P.X_C1[1], 60.0), ("B1b bandeja tramo central", 60.0, 142.0),
+              ("B1c bandeja tramo de cola", 142.0, P.X_C4[0]))
+    for nombre, x0, x1 in tramos:
+        sh = b1["shape"].intersect(cad.box(x0, x1, -60, 60, -60, 60))
+        parts.append(dict(nombre=nombre, shape=sh, mat="G10", color=b1["color"], grupo="estructura", vol=sh.Volume(),
+                          masa=sh.Volume() * P.MAT["G10"]["rho"] / 1000.0))
+    by = {p["nombre"]: p for p in parts}
+    largo = {n_: x1 - x0 for n_, x0, x1 in tramos}
+    L_tot = sum(largo.values())
+    nse = {"B1a bandeja tramo de nariz": M["servo_cola"] + 0.8, "B1b bandeja tramo central": M["bateria"] + M["porta_bateria"] + M["pcb_principal"] + 1.2,
+           "B1c bandeja tramo de cola": M["pcb_radio"] + 1.0 + M["servo_lib"]}
+    for n_, v in nse.items():
+        by[n_]["masa"] += v + (M["cableado_tornillos"] + M["cubierta_inf"]) * largo[n_] / L_tot
+    for k, frac in ((2, 0.20), (3, 0.28)):
+        for tag in ("der.", "izq."):
+            by[f"Cuna de ala C{k} {tag}"]["masa"] += M["ala_por_lado"] * frac
+    by["C1 cuaderna de nariz"]["masa"] += 2 * M["ala_por_lado"] * 0.30
+    by["C4 cuaderna de cola"]["masa"] += 2 * M["ala_por_lado"] * 0.22 + M["cola"] / 3
+    by["Guia de botalon C2"]["masa"] += M["cola"] / 3
+    by["Guia de botalon C3"]["masa"] += M["cola"] / 3
+    by["C2 cuaderna intermedia"]["masa"] += M["camaras"] / 2 + M["baliza"] / 2
+    by["C3 cuaderna intermedia"]["masa"] += M["camaras"] / 2 + M["baliza"] / 2
+    by["P3 tapa superior"]["masa"] += M["solar"]
+    by["CT2 tapa nervada"]["masa"] += M["paracaidas"] + M["brida_herrajes"]
+    tot = sum(p["masa"] for p in parts)
+    LASTRE_G = P.M_TOT - tot
+    assert LASTRE_G > 0, "la masa supera M_TOT"
+    by["B1a bandeja tramo de nariz"]["masa"] += LASTRE_G
+    for p in parts:
+        p["rho"] = p["masa"] / p["vol"] * 1e-9 * 1e3
+    orden = {"CFRP": 0, "G10": 1}
+    parts.sort(key=lambda p: orden.get(p["mat"], 2))
+    return parts
+
+
+LASTRE_G = 0.0
+
+
 def quitar_solapes(parts):
     """Corta cada pieza con las anteriores (las de mas prioridad quedan enteras)."""
     bbs = [p["shape"].BoundingBox() for p in parts]
@@ -272,9 +324,9 @@ def nodos_brida(xyz):
 def main(wd, escala=1.0, nmodes=30, tag="base", solo=None):
     os.makedirs(wd, exist_ok=True)
     t0 = time.time()
-    parts = quitar_solapes(piezas_fe())
-    print(f"piezas FE: {len(parts)}  masa total modelo = {sum(p['masa'] for p in parts):.1f} g  "
-          f"(lastre = {[p['masa'] for p in parts if p['nombre'].startswith('Lastre')][0]:.1f} g)")
+    parts = quitar_solapes(piezas_fe_estructural())
+    print(f"piezas FE (solo estructura): {len(parts)}  masa total modelo = {sum(p['masa'] for p in parts):.1f} g  "
+          f"(lastre en la nariz = {LASTRE_G:.1f} g)")
     xyz, els, epart = mallar(parts, wd, escala)
     print(f"malla: {len(xyz)} nodos, {len(els)} C3D10  ({time.time() - t0:.0f} s)")
     meta = [dict(nombre=p["nombre"], mat=p["mat"], grupo=p["grupo"], masa=p["masa"], vol=p["vol"], rho=p["rho"],

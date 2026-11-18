@@ -47,12 +47,6 @@ def grupos_de(mod):
         idx=sel(lambda p: p["mat"] == "CFRP"),
         crit=[("sigma_x fibra", "sx", M["CFRP"]["Suc"], M["CFRP"]["FS"]),
               ("corte interlaminar", "tau", 50.0, M["CFRP"]["FS"])])
-    g["PCB (FR-4)"] = dict(
-        idx=sel(lambda p: p["mat"] == "EQ_PCB"),
-        crit=[("von Mises", "vm", M["FR4"]["Sut"], M["FR4"]["FS"])])
-    g["Soportes de equipos (PA12-CF)"] = dict(
-        idx=sel(lambda p: p["mat"] == "PA12CF" and p["grupo"] == "equipo"),
-        crit=[("von Mises", "vm", M["PA12CF"]["Sut_z"], M["PA12CF"]["FS"])])
     g["Llave de bayoneta (A2-70)"] = dict(
         idx=sel(lambda p: p["mat"] == "A2-70"),
         crit=[("von Mises", "vm", M["A2-70"]["Sy"], M["A2-70"]["FS"])])
@@ -79,8 +73,8 @@ def pico_ciclo(Sc, cual, nfase=8):
 
 
 def monitores(mod):
-    pts = {"Nariz (C1)": (1, 0, 0), "Lastre": (33, 0, 7), "Bateria": (100, 0, 6.5), "PCB principal": (101, 0, -13.8),
-           "PCB radio": (170, 0, 4.8), "C4 (cola)": (203, 20, 20), "Tapa del contenedor": (212, 20, 3),
+    pts = {"Nariz (C1)": (1, 0, 0), "Bandeja nariz": (33, 0, -4.6), "Bandeja centro": (100, 0, -4.6),
+           "Bandeja cola": (170, 0, -4.6), "C4 (cola)": (203, 20, 20), "Tapa del contenedor": (212, 20, 3),
            "Tubo (media altura)": (120, 0, 44)}
     return {k: int(np.argmin(np.linalg.norm(mod.xyz - np.array(v), axis=1))) for k, v in pts.items()}
 
@@ -110,7 +104,7 @@ def main(wd, tag, out_json, out_npz, zeta=None):
           f"{len(mod.ever)} elementos con tensiones")
     chk = {}
     for d in range(3):
-        n = mon["Bateria"]
+        n = mon["Bandeja centro"]
         um = float(np.sum(-mod.pf[:, d] / wn ** 2 * mod.phi[:, n, d]))
         chk[EJES[d]] = dict(estatico=float(mod.ust[d][n, d]), suma_modal=um)
     res["control_estatico"] = chk

@@ -154,11 +154,11 @@ def peor(caso, clave_grupo, crit=None):
     return best
 
 
-GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros", "PCB", "Soportes de equipos",
+GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros",
           "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
         "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Paneles y bandeja": "Paneles y bandeja (G10)",
-        "Largueros": "Largueros (CFRP)", "PCB": "PCB (FR-4)", "Soportes de equipos": "Separadores y sillas (PA12-CF)",
+        "Largueros": "Largueros (CFRP)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": "σx entre capas", "sigma_x fibra": "σx de fibra",
         "corte interlaminar": "corte interlaminar"}
@@ -649,7 +649,7 @@ slide("Evolución del diseño guiada por el análisis", tabla(
          "La llave pasa a ser un perno pasante con arandelas: las piezas impresas trabajan a compresión."],
         ["3 (actual)", "Anillo elastomérico bajo el plato de apoyo de la llave; patines de elastómero con cara de PTFE.",
          f"Modo axial a {fx:.0f} Hz con ζ = {zm[ix] * 100:.0f} %. Amplificación en resonancia: "
-         f"{R['armonico']['x']['trans_max']['Bateria']:.1f} veces.",
+         f"{R['armonico']['x']['trans_max']['Bandeja centro']:.1f} veces.",
          "Diseño de este PDR."],
     ], [58, 190, 220, 208], fs=9.4) + nota(
     "Con unión rígida, un barrido senoidal de 15 G excita el modo axial con Q = 25: son casi 400 G sobre el planeador. "
@@ -669,8 +669,8 @@ slide("Modelo de elementos finitos", cols(
         ["Modos extraídos", f"{len(f)} (hasta {f[-1]:.0f} Hz)"],
         ["Respuesta dinámica", "Superposición modal con corrección estática"],
     ], [118, 196], fs=9.2, cls="sinhead") + ul([
-        "Baterías, servos y lastre: sólidos con su masa y envolvente. Placas: FR-4 con la masa de componentes repartida.",
-        "Ala estibada: su masa va en los cuatro apoyos reales (pivotes A y B, cunas de C2 y C3).",
+        "Modelo exclusivamente estructural: sin baterías, placas, servos, lastre ni soportes de equipos. Su masa va como masa no estructural sobre la bandeja (3 tramos) y los marcos.",
+        "Ala estibada y botalón: su masa va en las cunas, C1, C4 y las guías de botalón.",
         "Aislador y patines: elastómero con módulo de compresión aparente E(1 + 2S²).",
         f"Se descartaron {R['n_filtrados']} elementos de {R['n_ever']:,} por nodos medios fuera de equilibrio en el autovector (artefacto numérico).".replace(",", "."),
     ], "s"), w=[356, None]))

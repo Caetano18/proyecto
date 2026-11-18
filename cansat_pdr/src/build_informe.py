@@ -82,11 +82,10 @@ def peor(caso, clave, res=R):
     return best
 
 
-GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros", "PCB", "Soportes de equipos",
-          "Llave de bayoneta"]
+GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros", "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
         "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Paneles y bandeja": "Paneles y bandeja (G10)",
-        "Largueros": "Largueros (CFRP)", "PCB": "Placas (FR-4)", "Soportes de equipos": "Separadores y sillas (PA12-CF)",
+        "Largueros": "Largueros (CFRP)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": r"$\sigma_x$ entre capas", "sigma_x fibra": r"$\sigma_x$ de fibra",
         "corte interlaminar": "corte interl."}
@@ -412,8 +411,7 @@ fuera del plano pasa al tirante.
 \subsection{Modelo y verificación}
 \que Con qué modelo se calculan las tensiones y cuánto se le puede creer.
 \porque La geometría del CAD se malla con tetraedros cuadráticos en Gmsh y se resuelve en CalculiX: <<NEL>> elementos y <<NNOD>>
-nodos. Las piezas van pegadas entre sí con malla conforme. Batería, servos y lastre son sólidos con su masa; las placas, FR-4 con
-la masa de componentes repartida; el ala plegada, masa en sus cuatro apoyos. El contenedor apoya en su borde inferior y el
+nodos. Las piezas van pegadas entre sí con malla conforme. El modelo es exclusivamente estructural: batería, placas, servos, lastre, soportes de equipos, botalón y ala plegada no se modelan. Su masa se reparte como masa no estructural sobre la pieza que la lleva (bandeja en tres tramos, marcos, cunas, cuadernas y tapa), y el lastre cierra los 500\,g en la nariz. El contenedor apoya en su borde inferior y el
 fuselaje del cohete guía lateralmente el borde superior. La respuesta dinámica se arma por superposición de <<NMOD>> modos con
 corrección estática, usando las tensiones de CalculiX en los puntos de integración.
 <<FIG_MALLA>>
@@ -532,11 +530,6 @@ if _ms("armonico", "Contenedor: tubo") < 0 or _ms("choque", "Contenedor: tubo") 
                r"tiene margen (casi-estático: %s). Corrección: prolongar 10\,mm el faldón de la tapa hacia la boca y apoyar ahí los patines "
                r"de C4. La pared pasa a 4{,}5\,mm (LW-PLA más PA12-CF) y la tensión en el LW-PLA baja unas cinco veces."
                % (ms(p[0]), n(p[4]["f_crit"], 0), ms(_ms("choque", "Contenedor: tubo")), ms(_ms("cuasi15", "Contenedor: tubo"))))
-if _ms("armonico", "Soportes de equipos") < 0:
-    p = peor("armonico", "Soportes de equipos")
-    acc.append(r"\item \textbf{Sillas de la batería} ($MS=%s$ a %s\,Hz): la batería amplifica %s veces sobre sus dos sillas. "
-               r"Corrección: tercera silla al centro y almohadilla de espuma bajo la cincha; con tres apoyos la tensión baja un tercio."
-               % (ms(p[0]), n(p[4]["f_crit"], 0), n(max(R["armonico"][e]["trans_max"]["Bateria"] for e in EJES), 0)))
 if _ms("armonico", "Paneles y bandeja") < 0:
     p = peor("armonico", "Paneles y bandeja")
     acc.append(r"\item \textbf{Paneles de G10} ($MS=%s$ a %s\,Hz): pico en un solo punto, en la esquina del panel contra C2 y en el modo "
@@ -578,7 +571,7 @@ V = {
     "FIG_POLH": fig("polhamus.png", 0.95, "Izquierda: sustentación según Polhamus para alargamiento 4. Derecha: velocidad de descenso contra la fracción de vórtice."), "TEMPORADA": P.TEMPORADA, "FECHA": P.FECHA, "REV": P.REV,
     "EST_M": n(est_m, 0), "NEL": f"{R['elementos']:,}".replace(",", "\\,"), "NNOD": f"{R['nodos']:,}".replace(",", "\\,"),
     "F1": n(f[0], 0), "RIG_T": n(RIG["armonico"]["x"]["trans_max"]["Bateria"], 0), "ZAX": n(zm[ix] * 100, 0),
-    "T_AX": n(R["armonico"]["x"]["trans_max"]["Bateria"]), "MS_CE": ms(ms_ce), "MS_ARM": ms(ms_arm), "MS_CH": ms(ms_ch),
+    "T_AX": n(R["armonico"]["x"]["trans_max"]["Bandeja centro"]), "MS_CE": ms(ms_ce), "MS_ARM": ms(ms_arm), "MS_CH": ms(ms_ch),
     "TXT_NEG": txt_neg, "T_REQ": t_req.replace(r"\caption{", r"\caption{\label{tab:req}"),
     "T_CONF": t_conf.replace(r"\caption{", r"\caption{\label{tab:conf}"),
     "FIG_CONF": fig2("lan_corte_anot.png", "des_iso_anot.png", "Configuración elegida. Izquierda: lanzamiento, cortado por el plano medio. Derecha: planeador en vuelo.", 0.40, 0.58),
