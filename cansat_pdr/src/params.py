@@ -69,6 +69,7 @@ T_PANEL = 0.5
 T_COVER = 0.5         # tapa superior (lleva las celdas solares)
 T_TRAY = 0.8
 Z_TRAY = (-5.0, -4.2)
+RIEL_W, RIEL_H, RIEL_Y = 3.0, 8.0, 17.0   # rieles longitudinales bajo la bandeja (PA12-CF): rigidizan la placa de 0,8 mm
 Y_BOX = Y_PANEL - T_PANEL / 2      # 27.25 semiancho interior de la caja
 Y_OUT = Y_PANEL + T_PANEL / 2      # 27.75 cara exterior del panel
 Z_BOX = 31.0                       # semialto de la caja

@@ -72,6 +72,16 @@
   },
   {
    "sub": "Estructura del planeador",
+   "item": "Rieles longitudinales de bandeja (PA12-CF)",
+   "cant": 2,
+   "unit": 4.85904,
+   "masa": 9.71808,
+   "inc": 0.9718080000000001,
+   "fuente": "CAD",
+   "x": 103.5
+  },
+  {
+   "sub": "Estructura del planeador",
    "item": "Cunas de ala (PA12-CF)",
    "cant": 4,
    "unit": 0.9461030578916496,
@@ -364,8 +374,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 14.250138986518778,
-   "masa": 14.250138986518778,
+   "unit": 4.532058986518791,
+   "masa": 4.532058986518791,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -373,9 +383,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 136.51737252447282,
-   "inc": 4.258986935943124,
-   "x": 104.13673689310123
+   "masa": 146.2354525244728,
+   "inc": 4.368452873661132,
+   "x": 104.0944225297968
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -388,9 +398,9 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 171.88319165486075,
+   "masa": 162.16511165486077,
    "inc": 8.02869852466762,
-   "x": 116.11676731314259
+   "x": 121.09771164727053
   },
   "Contenedor": {
    "masa": 132.45353175889923,
@@ -399,17 +409,17 @@
   }
  },
  "total": 500.0,
- "inc_rss": 13.919963385375658,
- "inc_lin": 55.04100601032881,
- "lastre": 14.250138986518778,
+ "inc_rss": 13.953845041387801,
+ "inc_lin": 56.01281401032881,
+ "lastre": 4.532058986518791,
  "m_planeador": 367.5464682411008,
  "m_contenedor": 132.45353175889923,
- "x_cg_planeador_estibado": 107.71306255133258,
- "x_cg_lanzamiento": 120.02296707330298,
- "x_cg_planeador_vuelo": 117.62304017310501,
+ "x_cg_planeador_estibado": 109.57711158784946,
+ "x_cg_lanzamiento": 121.39321635330298,
+ "x_cg_planeador_vuelo": 119.48708920962189,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 127.30772162376458,
+ "x_cg_vuelo_total": 128.6779709037646,
  "carga_alar": 124.31747813749618,
  "carga_alar_planeador": 91.38490006015397,
  "w_estimado": 5.797133425017368,

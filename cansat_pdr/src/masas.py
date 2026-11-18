@@ -38,6 +38,7 @@ def main(out):
     grupo(E, "panel lateral", "Paneles laterales G10 0,5", lan, 0.05)
     grupo(E, "tapa superior", "Tapa superior G10 0,5", lan, 0.05)
     grupo(E, "bandeja", "Bandeja de avionica G10 0,8", lan, 0.05)
+    grupo(E, "riel", "Rieles longitudinales de bandeja (PA12-CF)", lan, 0.10)
     grupo(E, "Cuna de ala", "Cunas de ala (PA12-CF)", lan, 0.10)
     grupo(E, "Guia de botalon", "Guias de botalon (PA12-CF)", lan, 0.10)
     add(E, "Cubierta inferior PC 0,25", 1, M["cubierta_inf"], 0.6, "Estimado", 103.0)

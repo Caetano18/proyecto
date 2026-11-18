@@ -22,7 +22,7 @@ def explotar(parts):
             d = (0, -55, 0)
         elif "tapa superior" in n:
             d = (0, 0, 60)
-        elif "bandeja" in n:
+        elif "bandeja" in n or "riel" in n:
             d = (0, 0, -55)
         elif "Cuna" in n:
             d = (0, 75 if "der" in n else -75, 0)

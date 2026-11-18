@@ -146,6 +146,10 @@ def piezas_estructura(fe=False):
     add("P2 panel lateral izq.", box(xa, xb, -P.Y_OUT, -P.Y_BOX, -P.Z_BOX, P.Z_BOX), "G10", G10C)
     add("P3 tapa superior", box(xa, xb, -P.Y_OUT, P.Y_OUT, P.Z_BOX, P.Z_BOX + P.T_COVER), "G10", G10C)
     add("B1 bandeja de avionica", box(xa, xb, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY), "G10", (0.62, 0.74, 0.48))
+    for k, sy in ((1, 1), (2, -1)):
+        yc = sy * P.RIEL_Y
+        add(f"R{k} riel longitudinal", box(xa, xb, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]),
+            "PA12CF", GRIS)
     for k, x in ((2, P.X_C2), (3, P.X_C3)):
         add(f"Guia de botalon C{k}", guia_botalon(*x), "PA12CF", GRIS)
         for s, tag in ((1, "der."), (-1, "izq.")):
