@@ -403,7 +403,7 @@ EN = {  # nombres en ingles de los renglones del presupuesto de masa
     "Servo del cerrojo": ("Release servo (9 g class)", "C"),
     "Separadores, cableado": ("Spacers, wiring, connectors", "C"),
     "Llave de bayoneta": ("Bayonet key + bearing plate (A2-70)", "C"),
-    "Arandela de la llave": ("Key washer on C4 (Al 7075, Ø22)", "C"),
+    "Arandela de la llave": (f"Key washer on C4 (Al 7075, Ø{P.ARC4_D:g})", "C"),
     "Aislador elastomerico": ("Key elastomer isolator", "C"),
     "Patines de C1": ("C1 guide pads (elastomer + PTFE)", "C"),
     "Zapatas de patin": ("Pad shoes on C2 and C3 (PA12-CF)", "S"),
@@ -904,9 +904,12 @@ def L_fem1(sl):
 
 
 def mapas_png():
-    """Fila superior de los mapas de resonancia y de choque + barra de color, en una sola figura."""
+    """Fila superior de los mapas de 15 G en vuelo (apoyado) y de choque de 30 G + barra de color, en una figura."""
     out = os.path.join(TMP, "fea_mapas_lamina.png")
-    a = Image.open(os.path.join(FIGS, "fea_arm_mapas_en.png")).convert("RGB")
+    fa_p = os.path.join(FIGS, "vuelo", "fea_arm_mapas_en.png")
+    if not os.path.exists(fa_p):
+        fa_p = os.path.join(FIGS, "fea_arm_mapas_en.png")
+    a = Image.open(fa_p).convert("RGB")
     b = Image.open(os.path.join(FIGS, "fea_choque_mapas_en.png")).convert("RGB")
     w, h = a.size
     fa, fb = a.crop((0, 0, w, int(0.37 * h))), b.crop((0, 0, w, int(0.37 * h)))
@@ -928,12 +931,12 @@ def L_fem_mapas(sl):
     sl.shapes.add_picture(p, X0 + I(0.12) + (pic_w - int(im.width * esc)) // 2, Y0 + I(0.12), int(im.width * esc), int(im.height * esc))
     x = X0 + wi + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "How to read the maps", [
-        "**Top row:** 15 G sine sweep, envelope over all resonances, one map per excitation axis.",
+        "**Top row:** flight, 15 G sine sweep 5–1000 Hz with the CanSat resting in the bay; envelope over all "
+        "resonances, one map per excitation axis.",
         "**Bottom row:** 30 G half-sine shock, envelope in time for the worst pulse duration.",
         "**Colour:** utilisation FS·σ / σ_allow of each material (log scale). Magenta = no margin.",
-        f"Lateral sweep: the tube turns magenta (utilisation up to ≈ 5) at the {R['freq'][0]:.0f} Hz sway mode: the open item "
-        "of the next slide.",
-        "Axial sweep and shock: every part stays below 1 (positive margins).",
+        "No part reaches 1: every margin is positive (next slide). The highest values sit at the key washer on C4, "
+        "during the axial resonance of the glider on the key isolator.",
     ], sz=11, spc=300)
 
 

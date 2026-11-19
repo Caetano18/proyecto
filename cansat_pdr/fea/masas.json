@@ -64,11 +64,11 @@
    "sub": "Estructura del planeador",
    "item": "Bandeja de avionica G10 0,8",
    "cant": 1,
-   "unit": 15.073366577592706,
-   "masa": 15.073366577592706,
-   "inc": 0.7536683288796353,
+   "unit": 15.019809103256778,
+   "masa": 15.019809103256778,
+   "inc": 0.7509904551628389,
    "fuente": "CAD",
-   "x": 101.48496155937629
+   "x": 101.15418097945016
   },
   {
    "sub": "Estructura del planeador",
@@ -312,10 +312,10 @@
   },
   {
    "sub": "Avionica y equipos",
-   "item": "Arandela de la llave en C4 (Al 7075, \u00d822)",
+   "item": "Arandela de la llave en C4 (Al 7075, \u00d826)",
    "cant": 1,
-   "unit": 1.5194980457525924,
-   "masa": 1.5194980457525924,
+   "unit": 2.155105071426879,
+   "masa": 2.155105071426879,
    "inc": 0.1,
    "fuente": "CAD",
    "x": 198.0
@@ -394,8 +394,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 10.681290057258082,
-   "masa": 10.681290057258082,
+   "unit": 10.099240505919738,
+   "masa": 10.099240505919738,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -403,9 +403,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 145.96780606245144,
-   "inc": 4.321631898666026,
-   "x": 104.37921297237621
+   "masa": 145.9142485881155,
+   "inc": 4.321165697049488,
+   "x": 104.3462261159427
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -418,9 +418,9 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 168.05544459003184,
+   "masa": 168.1090020643678,
    "inc": 8.028075734570521,
-   "x": 117.22055428941906
+   "x": 117.81757478105767
   },
   "Contenedor": {
    "masa": 126.83084528574955,
@@ -429,17 +429,17 @@
   }
  },
  "total": 500.0,
- "inc_rss": 16.101301918292513,
- "inc_lin": 59.407164554109954,
- "lastre": 10.681290057258082,
+ "inc_rss": 16.101176794812222,
+ "inc_lin": 59.404486680393155,
+ "lastre": 10.099240505919738,
  "m_planeador": 373.16915471425045,
  "m_contenedor": 126.83084528574955,
- "x_cg_planeador_estibado": 108.12822555773079,
- "x_cg_lanzamiento": 120.34257235970627,
- "x_cg_planeador_vuelo": 117.88888564771037,
+ "x_cg_planeador_estibado": 108.3861220512748,
+ "x_cg_lanzamiento": 120.53505039270544,
+ "x_cg_planeador_vuelo": 118.14678214125438,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 127.62732691016787,
+ "x_cg_vuelo_total": 127.81980494316704,
  "carga_alar": 124.31747813749618,
  "carga_alar_planeador": 92.78289646555352,
  "w_estimado": 5.797133425017368,

@@ -44,7 +44,7 @@ KEY_HOLE = 6.0        # pasaje del eje en C4 y en la tapa (0,5 mm de huelgo radi
 WASH_D, WASH_T = 16.0, 1.5      # plato de apoyo sobre el aislador (inox)
 import os as _os0
 # arandela de la llave contra la cara de C4 (rev. B: Al 7075 de 22 mm; la de inox de 16 mm concentraba el apoyo sobre C4)
-ARC4_D = float(_os0.environ.get("ARC4_D", "22.0"))
+ARC4_D = float(_os0.environ.get("ARC4_D", "26.0"))   # rev. D: 22 -> 26 (apoyo del borde sobre C4 en la resonancia axial)
 ARC4_MAT = _os0.environ.get("ARC4_MAT", "AL7075")
 ISO_T = 3.0           # anillo elastomerico (aislador axial)
 CT_RIB_ANG = (30.0, 90.0, 150.0, 210.0, 270.0, 330.0)
