@@ -1,0 +1,21 @@
+{
+ "nota": "Rev. C: patines tambien en C2 y C3 (tubo LW-ASA 2 mm). El modo lateral no sube (117 -> 119 Hz): se descarto.",
+ "frecuencias_Hz": {
+  "parado (base fija)": [
+   118.7,
+   118.9,
+   148.8,
+   207.0,
+   418.3,
+   486.7
+  ],
+  "apoyado en la bahia (vuelo)": [
+   148.8,
+   209.7,
+   355.5,
+   381.9,
+   420.7,
+   587.2
+  ]
+ }
+}

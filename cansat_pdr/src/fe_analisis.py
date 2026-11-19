@@ -32,10 +32,11 @@ def grupos_de(mod):
         f = f[mod.valido[f]]
         return f[~toca[f]] if excl else f
     mt = P.CT_MAT
-    g["Contenedor: tubo (%s)" % ("LW-ASA" if mt == "ASALW" else "LW-PLA")] = dict(
-        idx=sel(lambda p: p["nombre"].startswith("CT1"), True),
-        crit=[("von Mises", "vm", M[mt]["Sut"], M[mt]["FS"]),
-              ("sigma_x entre capas", "sx", M[mt]["Sut_z"], M[mt]["FS"])])
+    nom_t = {"ASALW": "LW-ASA", "LWPLA": "LW-PLA", "GFRP": "GFRP"}.get(mt, mt)
+    crit_t = ([("sigma_x fibra", "sx", M[mt]["Sut"], M[mt]["FS"]), ("von Mises", "vm", M[mt]["Sut"], M[mt]["FS"])]
+              if mt == "GFRP" else
+              [("von Mises", "vm", M[mt]["Sut"], M[mt]["FS"]), ("sigma_x entre capas", "sx", M[mt]["Sut_z"], M[mt]["FS"])])
+    g["Contenedor: tubo (%s)" % nom_t] = dict(idx=sel(lambda p: p["nombre"].startswith("CT1"), True), crit=crit_t)
     g["Contenedor: tapa (PA12-CF)"] = dict(
         idx=sel(lambda p: p["nombre"].startswith("CT2")),
         crit=[("von Mises", "vm", M["PA12CF"]["Sut"], M["PA12CF"]["FS"]),

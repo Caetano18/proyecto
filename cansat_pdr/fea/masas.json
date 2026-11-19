@@ -4,11 +4,11 @@
    "sub": "Estructura del planeador",
    "item": "Cuaderna de nariz C1 (PA12-CF)",
    "cant": 1,
-   "unit": 19.887081929372847,
-   "masa": 19.887081929372847,
-   "inc": 1.9887081929372847,
+   "unit": 19.887081929372787,
+   "masa": 19.887081929372787,
+   "inc": 1.9887081929372787,
    "fuente": "CAD",
-   "x": 3.008074253241466
+   "x": 3.008074253241447
   },
   {
    "sub": "Estructura del planeador",
@@ -332,23 +332,13 @@
   },
   {
    "sub": "Avionica y equipos",
-   "item": "Patines de C1, C2 y C3: elastomero con cara de PTFE",
-   "cant": 12,
-   "unit": 0.2863311572940555,
-   "masa": 3.435973887528666,
+   "item": "Patines de C1: elastomero con cara de PTFE",
+   "cant": 4,
+   "unit": 0.2967947997473196,
+   "masa": 1.1871791989892784,
    "inc": 0.1,
    "fuente": "CAD",
-   "x": 68.54156017209272
-  },
-  {
-   "sub": "Estructura del planeador",
-   "item": "Zapatas de patin en C2 y C3 (PA12-CF)",
-   "cant": 8,
-   "unit": 0.62387583292908,
-   "masa": 4.99100666343264,
-   "inc": 0.499100666343264,
-   "fuente": "CAD",
-   "x": 101.0
+   "x": 4.000000000000001
   },
   {
    "sub": "Avionica y equipos",
@@ -362,23 +352,23 @@
   },
   {
    "sub": "Contenedor",
-   "item": "Tubo d90 x 242, pared 2 (LW-ASA)",
+   "item": "Tubo d90 x 242, pared 0.6 (vidrio-epoxi)",
    "cant": 1,
-   "unit": 80.20007596089081,
-   "masa": 80.20007596089081,
-   "inc": 8.020007596089082,
+   "unit": 75.36652483193554,
+   "masa": 75.36652483193554,
+   "inc": 11.30497872479033,
    "fuente": "CAD",
-   "x": 118.93844068504328
+   "x": 118.93940729497615
   },
   {
    "sub": "Contenedor",
    "item": "Tapa nervada (PA12-CF)",
    "cant": 1,
-   "unit": 26.866769232461888,
-   "masa": 26.866769232461888,
-   "inc": 2.686676923246189,
+   "unit": 28.227248478971397,
+   "masa": 28.227248478971397,
+   "inc": 2.82272484789714,
    "fuente": "CAD",
-   "x": 213.99947450743184
+   "x": 213.97569969816934
   },
   {
    "sub": "Contenedor",
@@ -404,8 +394,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 3.873599302573325,
-   "masa": 3.873599302573325,
+   "unit": 14.586472536991153,
+   "masa": 14.586472536991153,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -413,9 +403,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 149.89133809710074,
-   "inc": 4.2999569316306205,
-   "x": 104.98155991109309
+   "masa": 144.90033143366804,
+   "inc": 4.270893131270544,
+   "x": 105.11870239966098
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -428,31 +418,31 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 163.89591264777943,
+   "masa": 172.35999119365786,
    "inc": 8.028075734570521,
-   "x": 120.24250027703235
+   "x": 115.05002238161354
   },
   "Contenedor": {
-   "masa": 127.0668451933527,
-   "inc": 9.029881213572533,
-   "x": 156.59746997567393
+   "masa": 123.59377331090693,
+   "inc": 12.073537987470694,
+   "x": 158.69727504713705
   }
  },
  "total": 500.0,
- "inc_rss": 13.550616509146646,
- "inc_lin": 55.89293790799629,
- "lastre": 3.873599302573325,
- "m_planeador": 372.9331548066473,
- "m_contenedor": 127.0668451933527,
- "x_cg_planeador_estibado": 109.55754868070615,
- "x_cg_lanzamiento": 121.51197747489648,
- "x_cg_planeador_vuelo": 119.3243855207271,
+ "inc_rss": 15.735363710651274,
+ "inc_lin": 58.81485629500522,
+ "lastre": 14.586472536991153,
+ "m_planeador": 376.40622668909305,
+ "m_contenedor": 123.59377331090693,
+ "x_cg_planeador_estibado": 107.53360131147559,
+ "x_cg_lanzamiento": 120.18062429835267,
+ "x_cg_planeador_vuelo": 117.21032028413849,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 128.7967320253581,
+ "x_cg_vuelo_total": 127.46537884881427,
  "carga_alar": 124.31747813749618,
- "carga_alar_planeador": 92.72421863884571,
+ "carga_alar_planeador": 93.58774571447752,
  "w_estimado": 5.797133425017368,
- "w_planeador_solo": 5.006610334008615,
- "w_estimado_sin_cuerpo_nota": 4.315880054994927
+ "w_planeador_solo": 5.029869222443511,
+ "w_estimado_sin_cuerpo_nota": 4.335930062085682
 }

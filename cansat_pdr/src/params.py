@@ -26,7 +26,11 @@ G0 = 9.80665          # m/s2
 
 # ------------------------------------------------------------- contenedor
 CT_RO = ENV_D / 2     # 45
-CT_T = 2.0            # pared (S6)
+# rev. D: tubo de vidrio-epoxi laminado (tejido E-glass 0/90).  S6 (2 mm) rige para pared impresa; el laminado de
+# 0,6 mm es unas 5,7 veces mas rigido a flexion que el LW-ASA de 2 mm: el modo lateral del CanSat parado sobre la lijadora
+# pasa de ~118 Hz (dentro del barrido de arranque y frenado) a mas de 233 Hz.
+import os as _os0
+CT_T = float(_os0.environ.get("CT_T", "0.6"))     # pared [mm]
 CT_RI = CT_RO - CT_T  # 43
 CT_X = (-2.0, 240.0)  # borde inferior (abierto) y borde superior
 CT_TOP = (211.0, 213.5)   # placa de la tapa estructural (PA12-CF nervada)
@@ -48,13 +52,13 @@ CT_BRIDA_ANG = (90.0, 210.0, 330.0)   # nervios que llevan el anclaje de la brid
 R_BRIDA = 33.0        # radio de los anclajes de la brida
 CT_LEN = CT_X[1] - CT_X[0]
 # rev. B: tubo de LW-ASA (ASA espumado). El ensayo termico de la competencia pide 60 C durante 2 h y el LW-PLA ablanda a ~55 C.
-CT_MAT = "ASALW"
+CT_MAT = _os0.environ.get("CT_MAT", "GFRP")
 # rev. B: apoyo en el cohete. El CanSat apoya en un soporte en su base, sin restriccion lateral arriba (fuselaje de 100 mm de
 # diametro interior contra 90 mm del CanSat), y en el ensayo de vibracion va fijado a la lijadora por la base: voladizo.
 APOYO = _os0.environ.get("APOYO", "base")      # "base": voladizo (lijadora, parado); "guia": apoyado en la bahia (vuelo)
 # rev. C: patines tambien en las esquinas de C2 y C3, sobre zapatas de PA12-CF.  Acoplan el bastidor de carbono al tubo
 # (C1, C2, C3 y C4 guiados): el conjunto flexiona como una sola pieza y el modo lateral sube por encima de la lijadora.
-PAD_MEDIAS = _os0.environ.get("PAD_MEDIAS", "1") == "1"
+PAD_MEDIAS = _os0.environ.get("PAD_MEDIAS", "0") == "1"   # rev. C los agrego; no subian el modo lateral (117 -> 119 Hz)
 ZAP_R0 = 28.0        # radio interior de las zapatas de esquina (se recortan contra la caja)
 ZAP_EXT = 2.0        # las zapatas y sus patines sobresalen 2 mm a cada lado de C2/C3 (8 mm de largo, como los de C1)
 
@@ -111,7 +115,8 @@ SOC_RI, SOC_RO = 21.0, 23.5     # anillo-alojamiento de la tapa (PA12-CF, una pi
 SOC_X0 = 207.5                  # el anillo baja de la placa (x = 211) hasta 207,5
 PAD_ANG = 24.0        # grados de arco de cada patin de C1 (rev. B: 14 -> 24, reparte la carga sobre la pared junto a la boca)
 PAD_POS = (45.0, 135.0, 225.0, 315.0)
-R_C1 = 41.5           # radio de C1 (rev. B): patines de 1,5 mm, misma rigidez radial que los de 14 grados x 1 mm
+R_C1 = 41.5           # radio de C1 (rev. B): libra el ala plegada a 0 y 180 grados
+R_C1_PAD = CT_RI - 1.5   # rev. D: asientos de los patines en C1 (solo bajo los patines): patines de 1,5 mm contra la pared
 G_DESL = 0.1          # [MPa] modulo de corte del modelo para caras que deslizan (patines y manguito con cara de PTFE)
 
 # ------------------------------------------------------------------- ala
@@ -167,6 +172,8 @@ MAT = {
     "EPOXI": dict(nombre="Adhesivo epoxi estructural", rho=1.10, E=2.0e3, nu=0.38, tau=18.0, FS=2.0),
     "LWPLA": dict(nombre="LW-PLA espumado impreso (contenedor)", rho=0.65, E=1.2e3, nu=0.35,
                   Sut=14.0, Sut_z=8.0, FS=2.0),
+    "GFRP": dict(nombre="Vidrio-epoxi laminado (tejido E-glass 0/90)", rho=1.85, E=17.0e3, E_r=8.0e3, G_ip=3.5e3,
+                 G_t=3.0e3, nu=0.13, Sut=200.0, Sut_z=25.0, FS=1.5),
     "ASALW": dict(nombre="ASA-LW espumado impreso", rho=0.60, E=0.97e3, nu=0.35, Sut=9.0, Sut_z=6.0, FS=2.0),
     "PC": dict(nombre="Policarbonato en lamina 0,25 mm", rho=1.20, E=2.3e3, nu=0.37, Sut=60.0, FS=1.5),
     "RIPSTOP": dict(nombre="Nailon ripstop 40 g/m2", rho_a=40.0, T_rot=4000.0),

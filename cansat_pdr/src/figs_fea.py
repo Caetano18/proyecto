@@ -26,7 +26,7 @@ COL = [AZUL, ROJO, VERDE, NAR, VIOL, "#008b8b", "#8d6e63", "#222222"]
 EJES = "xyz"
 NOM_EJE = {"x": "X (axial)", "y": "Y (lateral)", "z": "Z (lateral)"}
 TUBO = P.CT_MAT
-TUBO_N = {"LWPLA": "LW-PLA", "ASALW": "LW-ASA"}.get(TUBO, TUBO)
+TUBO_N = {"LWPLA": "LW-PLA", "ASALW": "LW-ASA", "GFRP": "GFRP"}.get(TUBO, TUBO)
 ADM_MAT = {TUBO: P.MAT[TUBO]["Sut"] / P.MAT[TUBO]["FS"], "PA12CF": 65.0 / 2, "G10": 280.0 / 1.5, "CFRP": 900.0 / 1.5, "EQ_PCB": 280.0 / 1.5,
            "A2-70": 450.0 / 1.25}
 MATS = [(TUBO, f"{TUBO_N} (tubo)", (0.93, 0.93, 0.86)), ("PA12CF", "PA12-CF (cuadernas, tapa)", (0.36, 0.38, 0.42)),

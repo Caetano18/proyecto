@@ -83,7 +83,8 @@ def main(out):
     m_plan_sin = sum(f["masa"] for f in filas)
     # ---------------- contenedor
     K = "Contenedor"
-    grupo(K, "CT1", "Tubo d90 x 242, pared 2 (%s)" % ("LW-ASA" if P.CT_MAT == "ASALW" else "LW-PLA"), lan, 0.10)
+    nom_t = {"ASALW": "LW-ASA", "LWPLA": "LW-PLA", "GFRP": "vidrio-epoxi"}.get(P.CT_MAT, P.CT_MAT)
+    grupo(K, "CT1", "Tubo d90 x %g, pared %g (%s)" % (P.CT_LEN, P.CT_T, nom_t), lan, 0.15 if P.CT_MAT == "GFRP" else 0.10)
     grupo(K, "CT2", "Tapa nervada (PA12-CF)", lan, 0.10)
     add(K, "Paracaidas de 15 m/s", 1, M["paracaidas"], 3.0, "Asignacion", 230.0)
     add(K, "Brida de 3 puntos + eslabon giratorio", 1, M["brida_herrajes"], 1.0, "Estimado", 232.0)

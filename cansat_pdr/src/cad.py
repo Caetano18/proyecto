@@ -84,6 +84,9 @@ def cuaderna_extrema(tail=False, fe=False):
     yo = P.Y_OUT
     ztop = P.Z_BOX + P.T_COVER
     parts = [web, rim]
+    if not tail and P.R_C1_PAD > R + 0.05:          # rev. D: asientos de los patines (tubo de pared fina, interior mayor)
+        for ang in P.PAD_POS:
+            parts.append(sector(x0, x1, R - P.RIM_T, P.R_C1_PAD, ang, P.PAD_ANG))
     for s in (1, -1):
         y_in, y_out = sorted((s * (yo - P.RIB_T), s * yo))
         parts.append(box(x0, x1, y_in, y_out, -P.Z_BOX, ztop))                # nervio lateral
@@ -386,7 +389,7 @@ def piezas_patines(fe=False):
                        ((P.X_C3[0] - P.ZAP_EXT, P.X_C3[1] + P.ZAP_EXT), "C3")]
     for xr, tag in estaciones:
         for ang in P.PAD_POS:
-            sh = sector(xr[0], xr[1], P.R_C1, P.CT_RI, ang, P.PAD_ANG)
+            sh = sector(xr[0], xr[1], P.R_C1_PAD, P.CT_RI, ang, P.PAD_ANG)
             if tag != "C1":
                 sh = sh.cut(envolvente_caja(*xr)).clean()
             mat = "PAD_A" if ang in (45.0, 225.0) else "PAD_B"

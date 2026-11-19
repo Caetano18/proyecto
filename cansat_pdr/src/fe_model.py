@@ -26,6 +26,8 @@ def h_de(p, escala=1.0):
         h = 1.4
     elif n.startswith("Manguito"):
         h = 1.1
+    elif n.startswith("CT1") and P.CT_T < 1.0:
+        h = 2.0          # rev. D: laminado de 0,6 mm (relacion de aspecto ~3, como las placas de G10)
     elif n.startswith("CT"):
         h = 4.2
     elif m == "EQ_PCB":
@@ -46,6 +48,11 @@ def elastico(mat):
         c = M["CFRP"]
         return "ortho", dict(E1=c["E"], E2=c["E2"], E3=c["E2"], nu12=c["nu"], nu13=c["nu"], nu23=c["nu23"],
                              G12=c["G12"], G13=c["G12"], G23=c["G23"], ori=None)
+    if mat == "GFRP":
+        # laminado 0/90 en coordenadas cilindricas (ORC): 1 radial (espesor), 2 tangencial, 3 axial
+        c = M["GFRP"]
+        return "ortho", dict(E1=c["E_r"], E2=c["E"], E3=c["E"], nu12=0.3, nu13=0.3, nu23=c["nu"], G12=c["G_t"],
+                             G13=c["G_t"], G23=c["G_ip"], ori=None)
     if mat in ("PAD_A", "PAD_B", "ELAST_X", "ELAST_C"):
         # elastomero pegado entre caras rigidas: modulo de compresion aparente Ec = E (1 + 2 S^2), S = factor de forma
         el = M["ELAST"]
@@ -59,7 +66,7 @@ def elastico(mat):
         else:
             w = 2 * math.tan(math.radians(P.PAD_ANG / 2)) * P.CT_RI
             L = P.T_END
-            S = w * L / (2 * (w + L) * (P.CT_RI - P.R_C1))
+            S = w * L / (2 * (w + L) * (P.CT_RI - P.R_C1_PAD))
         Ec = el["E"] * (1 + 2 * S ** 2)
         if mat == "ELAST_X":
             return "ortho", dict(E1=Ec, E2=el["E"], E3=el["E"], nu12=0.0, nu13=0.0, nu23=0.0, G12=el["G"], G13=el["G"],
@@ -286,7 +293,7 @@ def escribir_inp(path, xyz, els, epart, parts, pasos, bcs, nmodes=30):
                 ori = ", ORIENTATION=ORA"
             elif p["mat"] == "PAD_B":
                 ori = ", ORIENTATION=ORB"
-            elif p["mat"] == "ELAST_C":
+            elif p["mat"] in ("ELAST_C", "GFRP"):
                 ori = ", ORIENTATION=ORC"
             f.write(f"*SOLID SECTION, ELSET=E{pi}, MATERIAL=M{pi}{ori}\n")
         f.write("*BOUNDARY\n")

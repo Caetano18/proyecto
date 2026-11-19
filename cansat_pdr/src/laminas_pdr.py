@@ -362,6 +362,7 @@ def fila(clave):
 
 
 m_plan, m_cont = MAS["m_planeador"], MAS["m_contenedor"]
+TUBO_EN = {"GFRP": "glass-epoxy", "ASALW": "LW-ASA", "LWPLA": "LW-PLA"}.get(P.CT_MAT, P.CT_MAT)
 lastre = MAS["lastre"]
 mtot = MAS["total"]
 
@@ -399,10 +400,10 @@ EN = {  # nombres en ingles de los renglones del presupuesto de masa
     "Llave de bayoneta": ("Bayonet key + bearing plate (A2-70)", "C"),
     "Arandela de la llave": ("Key washer on C4 (Al 7075, Ø22)", "C"),
     "Aislador elastomerico": ("Key elastomer isolator", "C"),
-    "Patines de C1": ("Guide pads C1–C3 (elastomer + PTFE)", "C"),
+    "Patines de C1": ("C1 guide pads (elastomer + PTFE)", "C"),
     "Zapatas de patin": ("Pad shoes on C2 and C3 (PA12-CF)", "S"),
     "Manguito elastomerico del centrador": ("Tail centring sleeve (elastomer)", "C"),
-    "Tubo d90": ("Container tube Ø90 × 242, 2 mm wall (LW-ASA)", "S"),
+    "Tubo d90": (f"Container tube Ø90 × {P.CT_LEN:g}, {P.CT_T:g} mm wall ({TUBO_EN})", "S"),
     "Tapa nervada": ("Ribbed container cap (PA12-CF)", "S"),
     "Paracaidas de 15": ("Container parachute (15 m/s)", "C"),
     "Brida de 3 puntos": ("3-point bridle + swivel", "C"),
@@ -451,7 +452,7 @@ def L18_configB(sl):
     panel(sl, X0, Y0, wi, Y1 - Y0, [("lan_corte.png", 0.8), ("des_iso.png", 1.25)],
           "Left: launch configuration (cutaway). Right: payload after release, wing deployed.")
     tarjeta(sl, X0 + wi + GAP, Y0, W_UTIL - wi - GAP, Y1 - Y0, "B · Container + delta-wing glider (payload)", [
-        f"**Container:** closed LW-ASA tube Ø90 × {P.CT_LEN:g} mm with a 2 mm wall and a ribbed PA12-CF cap; "
+        f"**Container:** closed {TUBO_EN} tube Ø90 × {P.CT_LEN:g} mm with a {P.CT_T:g} mm wall and a ribbed PA12-CF cap; "
         "the 15 m/s parachute is packed above the cap.",
         f"**Payload:** {P.L_G:g} mm glider. CFRP corner angles, G10 panels and four PA12-CF bulkheads; the membrane "
         "delta wing is folded flat in the two side bays.",
@@ -465,7 +466,7 @@ def L18_configB(sl):
 
 def L19_seleccion(sl):
     filas = [
-        ["Exterior wall ≥ 2 mm that does not flex (S6)", "High", "Partial: wall split by the slots", "Meets: closed tube"],
+        ["Rigid exterior wall that does not flex (S6)", "High", "Partial: wall split by the slots", "Meets: closed tube"],
         ["Slides freely out of the rocket (S7)", "High", "Risk: rods against the airframe", "Meets: smooth outer wall"],
         ["Small access holes only (E5)", "Medium", "Two 200 mm slots", "Switch and LED holes ≤ 8 mm"],
         ["Wing deployment", "High", "Active: latches + actuator", "Passive: springs; the wall holds the wing"],
@@ -492,8 +493,8 @@ def L20_dimensiones(sl):
     panel(sl, X0, Y0, wa, hf, [("lam_dimensiones.png", 1)])
     y = Y0 + hf + I(0.17)
     tabla(sl, X0, y, wa, [1, 1, 1, 1, 1, 1],
-          ["Wall (S6)", "Radial clearance", "Pivots A–B", "Avionics box", "Payload mass", "CanSat mass (S1)"],
-          [[ "2.0 mm", "1.0 mm", f"{n(P.D_AB)} mm", f"{n(2 * P.Y_OUT)} × {n(2 * P.Z_BOX + P.T_COVER)}", f"{m_plan:.0f} g", f"{mtot:.0f} g"]],
+          ["Tube wall", "Tube bore", "Pivots A–B", "Avionics box", "Payload mass", "CanSat mass (S1)"],
+          [[ f"{P.CT_T:g} mm", f"Ø{2 * P.CT_RI:g} mm", f"{n(P.D_AB)} mm", f"{n(2 * P.Y_OUT)} × {n(2 * P.Z_BOX + P.T_COVER)}", f"{m_plan:.0f} g", f"{mtot:.0f} g"]],
           sz=11.5, sz_cab=11, alto=I(0.4), alto_cab=I(0.4), alin=["c"] * 6, negrita_col0=False)
     x = X0 + wa + GAP
     panel(sl, x, Y0, X1 - x, Y1 - Y0, [("lam_planta.png", 1)],
@@ -525,8 +526,8 @@ def L22_lanzamiento(sl):
         "**Tail boom:** stowed on the top cover, guided in C2–C4.",
         f"**Parachute:** packed above the cap ({P.CT_X[1] - P.CT_TOP[0] - P.CT_CAP_H:g} mm space).",
         "**Retention:** bayonet key through the cap; geometric lock (M2).",
-        "**Guidance:** C1, C2 and C3 on four PTFE-faced pads each; C4 collar centred in the cap.",
-        "**S7:** smooth outer wall, 1 mm radial clearance inside.",
+        "**Guidance:** C1 on four 1.5 mm PTFE-faced pads; C4 collar centred in the cap.",
+        "**S7:** smooth outer wall; nothing protrudes from the cylinder.",
     ], sz=11.5, spc=350)
 
 
@@ -723,7 +724,8 @@ def L50_mecanico(sl):
     x = X0 + wi + GAP
     sb = lambda *k: sum(f["masa"] for f in FILAS if any(s in f["item"] for s in k))
     tabla(sl, x, Y0, X1 - x, [1.25, 2.6, 1.9, 0.85], ["Assembly", "Parts", "Material", "Mass [g]"], [
-        ["Container", f"Tube Ø90 × {P.CT_LEN:g}, 2 mm wall", "LW-ASA, printed", n(fila("Tubo")["masa"])],
+        ["Container", f"Tube Ø90 × {P.CT_LEN:g}, {P.CT_T:g} mm wall", "Glass-epoxy laminate" if P.CT_MAT == "GFRP"
+         else "LW-ASA, printed", n(fila("Tubo")["masa"])],
         ["", "Ribbed cap (bridle + key seat)", "PA12-CF, printed", n(fila("Tapa nervada")["masa"])],
         ["", "Cross parachute + 3-point bridle", "Ripstop, Kevlar", n(sb("Paracaidas", "Brida"))],
         ["Payload frame", "Bulkheads C1–C4", "PA12-CF, printed", n(sb("Cuaderna"))],
@@ -736,8 +738,8 @@ def L50_mecanico(sl):
     y = Y0 + I(0.34) + 9 * I(0.305) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, None, [
         f"**Total 500 g:** container {m_cont:.0f} g + payload {m_plan:.0f} g (including {lastre:.0f} g of trim ballast).",
-        "**Load path:** cap → bayonet key → C4 → corner angles and panels. Laterally, pads at C1, C2 and C3 tie the "
-        "CFRP frame to the tube, so both bend as one piece.",
+        "**Load path:** cap → bayonet key → C4 → corner angles and panels; laterally, the C1 pads and the C4 collar "
+        "centre the glider; the laminated tube carries the CanSat to the rocket support.",
         "**One actuator** releases the glider; the wing opens by itself.",
     ], sz=11.5, spc=300)
 
@@ -813,22 +815,21 @@ def L54_seleccion_mec(sl):
          "Geometric lock (M2), no heat (M1), servo sees friction only, re-armable"],
         ["Wing stowage", "One-piece rod; joint at 190 mm; hinge at mid-length", "Hinge at mid-length",
          "Folds flat in a 14 mm bay; single degree of freedom"],
-        ["Container tube", "PETG; LW-PLA; LW-ASA; fibreglass; kraft", "LW-ASA, 2 mm",
-         "S6 sets 2 mm, so density decides (80 g); withstands the 60 °C thermal test"],
+        ["Container tube", "Printed PETG, LW-PLA, LW-ASA (2 mm); glass-epoxy laminate", f"Glass-epoxy, {P.CT_T:g} mm",
+         "Printed walls fail the sander test (lateral mode 117 Hz); laminate: mode above 233 Hz, lighter"],
         ["Bulkheads, cap", "PLA+; PETG; PA12-CF", "PA12-CF, 100 % infill", "Best stiffness and strength per gram; 150 °C"],
         ["Joints", "Screws; epoxy; both", "Epoxy + M2/M2.5 with inserts", "S8; screwed parts can be removed"],
-        ["Lateral guidance", "Pads at C1 + collar at C4; pads also at C2 and C3", "Pads at C1, C2, C3 + C4 collar",
-         "Ties the CFRP frame to the tube: lateral mode above the sander band (vibration test)"],
-    ], sz=10.5, sz_cab=11, alto=I(0.46), alto_cab=I(0.36), alin=["l"] * 4, ml=80000)
-    y = Y0 + I(0.36) + 7 * I(0.46) + I(0.17)
+    ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.36), alin=["l"] * 4, ml=80000)
+    y = Y0 + I(0.36) + 6 * I(0.5) + I(0.17)
     tarjeta(sl, X0, y, W_UTIL, Y1 - y, None, [
-        "**Why LW-ASA and not LW-PLA:** the thermal test holds the CanSat at 60 °C for 2 h; LW-PLA softens near 55 °C. "
-        "Printed-material strengths are datasheet values and will be confirmed with our own coupons before CDR.",
+        "**Why a laminated tube:** standing on the sander, a printed 2 mm tube gives a 117 Hz lateral mode that the "
+        "start/stop sweep crosses (MS −0.66). A 0.6 mm glass-epoxy laminate is 5.7 times stiffer in bending, so the mode moves "
+        "above 233 Hz. S6's 2 mm applies to printed walls; the epoxy is post-cured above 60 °C for the thermal test.",
     ], sz=11.5, spc=200)
 
 
 # ---------------------------------------------------------------- verificacion estructural
-GRUPOS = [("Contenedor: tubo", "Container tube (LW-ASA)"), ("Contenedor: tapa", "Container cap (PA12-CF)"),
+GRUPOS = [("Contenedor: tubo", f"Container tube ({TUBO_EN})"), ("Contenedor: tapa", "Container cap (PA12-CF)"),
           ("Cuadernas", "Bulkheads, cradles, guides (PA12-CF)"), ("Rieles de bandeja", "Tray rails (PA12-CF)"),
           ("Paneles y bandeja", "Panels and tray (G10)"), ("Largueros", "Corner angles (CFRP)"),
           ("Arandela de C4", "Key washer on C4 (Al 7075)"), ("Llave de bayoneta", "Bayonet key (A2-70)")]
@@ -945,7 +946,8 @@ def L_fem2(sl):
     nombres = dict(GRUPOS)
     if not neg:
         res = [f"**All margins are positive.** Minimum {ms(mn[0])}: {nombres[mn[1]]}, {mn[2]}.",
-               "Rev. C: pads at C2 and C3 tie the CFRP frame to the tube, so the lateral mode moves above the sander band."]
+               f"Rev. D: the printed 2 mm tube (lateral mode 117 Hz, MS −0.66 on the sander) became a {P.CT_T:g} mm "
+               f"glass-epoxy laminate; first mode now {R['freq'][0]:.0f} Hz."]
     else:
         res = [f"{len(neg)} negative: " + "; ".join(f"{nombres[g]} in {c} ({ms(m)})" for m, g, c in sorted(neg)[:3]) + "."]
     tarjeta(sl, X0 + w2 + GAP, y, w2, Y1 - y, "Result", res, sz=11, spc=250)

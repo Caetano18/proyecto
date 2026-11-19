@@ -205,5 +205,7 @@
  "re:([\\d,\\.]+) tetraedros cuadráticos · ([\\d,\\.]+) nodos": "\\1 quadratic tetrahedra · \\2 nodes",
  "re:Tirón del paracaídas: 30 G × 1,8, colgado de la brida\nmáx\\. ([\\d,]+) · (.*)": "Parachute snatch: 30 G × 1.8, hanging from the bridle\nmax. \\1",
  "re:Excitación en ([^\\n]+)": "Excitation in \\1",
- "re:Choque en ([^\\n]+)": "Shock in \\1"
+ "re:Choque en ([^\\n]+)": "Shock in \\1",
+ "Tubo vidrio-epoxi": "Glass-epoxy tube",
+ "re:pared ([\\d,]+) mm": "\\1 mm wall"
 }
