@@ -4,11 +4,11 @@
    "sub": "Estructura del planeador",
    "item": "Cuaderna de nariz C1 (PA12-CF)",
    "cant": 1,
-   "unit": 19.887081929372787,
-   "masa": 19.887081929372787,
-   "inc": 1.9887081929372787,
+   "unit": 20.954556558156188,
+   "masa": 20.954556558156188,
+   "inc": 2.095455655815619,
    "fuente": "CAD",
-   "x": 3.008074253241447
+   "x": 3.058605294801001
   },
   {
    "sub": "Estructura del planeador",
@@ -334,11 +334,11 @@
    "sub": "Avionica y equipos",
    "item": "Patines de C1: elastomero con cara de PTFE",
    "cant": 4,
-   "unit": 0.2967947997473196,
-   "masa": 1.1871791989892784,
+   "unit": 0.19695376877407889,
+   "masa": 0.7878150750963155,
    "inc": 0.1,
    "fuente": "CAD",
-   "x": 4.000000000000001
+   "x": 4.0
   },
   {
    "sub": "Avionica y equipos",
@@ -352,13 +352,13 @@
   },
   {
    "sub": "Contenedor",
-   "item": "Tubo d90 x 242, pared 0.6 (vidrio-epoxi)",
-   "cant": 1,
-   "unit": 75.36652483193554,
-   "masa": 75.36652483193554,
-   "inc": 11.30497872479033,
+   "item": "Tubo d90 x 242: carbono 0.8 (inferior) + vidrio 0.6 (superior)",
+   "cant": 2,
+   "unit": 39.30179840338908,
+   "masa": 78.60359680677816,
+   "inc": 11.790539521016724,
    "fuente": "CAD",
-   "x": 118.93940729497615
+   "x": 116.67687963981403
   },
   {
    "sub": "Contenedor",
@@ -394,8 +394,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 14.586472536991153,
-   "masa": 14.586472536991153,
+   "unit": 10.681290057258082,
+   "masa": 10.681290057258082,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -403,9 +403,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 144.90033143366804,
-   "inc": 4.270893131270544,
-   "x": 105.11870239966098
+   "masa": 145.96780606245144,
+   "inc": 4.321631898666026,
+   "x": 104.37921297237621
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -418,31 +418,31 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 172.35999119365786,
+   "masa": 168.05544459003184,
    "inc": 8.028075734570521,
-   "x": 115.05002238161354
+   "x": 117.22055428941906
   },
   "Contenedor": {
-   "masa": 123.59377331090693,
-   "inc": 12.073537987470694,
-   "x": 158.69727504713705
+   "masa": 126.83084528574955,
+   "inc": 12.529349454923556,
+   "x": 156.28034018905953
   }
  },
  "total": 500.0,
- "inc_rss": 15.735363710651274,
- "inc_lin": 58.81485629500522,
- "lastre": 14.586472536991153,
- "m_planeador": 376.40622668909305,
- "m_contenedor": 123.59377331090693,
- "x_cg_planeador_estibado": 107.53360131147559,
- "x_cg_lanzamiento": 120.18062429835267,
- "x_cg_planeador_vuelo": 117.21032028413849,
+ "inc_rss": 16.101301918292513,
+ "inc_lin": 59.407164554109954,
+ "lastre": 10.681290057258082,
+ "m_planeador": 373.16915471425045,
+ "m_contenedor": 126.83084528574955,
+ "x_cg_planeador_estibado": 108.12822555773079,
+ "x_cg_lanzamiento": 120.34257235970627,
+ "x_cg_planeador_vuelo": 117.88888564771037,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 127.46537884881427,
+ "x_cg_vuelo_total": 127.62732691016787,
  "carga_alar": 124.31747813749618,
- "carga_alar_planeador": 93.58774571447752,
+ "carga_alar_planeador": 92.78289646555352,
  "w_estimado": 5.797133425017368,
- "w_planeador_solo": 5.029869222443511,
- "w_estimado_sin_cuerpo_nota": 4.335930062085682
+ "w_planeador_solo": 5.0081942273836315,
+ "w_estimado_sin_cuerpo_nota": 4.317245428645047
 }

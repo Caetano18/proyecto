@@ -12,7 +12,7 @@ import math
 EQUIPO = "Equipo CanSat Universitario Argentina"
 TEMPORADA = "2026/2027"
 PRESENTADOR = "Subsistema mecánico"
-REV = "C"
+REV = "D"
 FECHA = "19/11/2026"
 
 # -------------------------------------------------------------- envolvente
@@ -116,7 +116,10 @@ SOC_X0 = 207.5                  # el anillo baja de la placa (x = 211) hasta 207
 PAD_ANG = 24.0        # grados de arco de cada patin de C1 (rev. B: 14 -> 24, reparte la carga sobre la pared junto a la boca)
 PAD_POS = (45.0, 135.0, 225.0, 315.0)
 R_C1 = 41.5           # radio de C1 (rev. B): libra el ala plegada a 0 y 180 grados
-R_C1_PAD = CT_RI - 1.5   # rev. D: asientos de los patines en C1 (solo bajo los patines): patines de 1,5 mm contra la pared
+PAD_T = float(_os0.environ.get("PAD_T", "1.0"))     # espesor de los patines de C1
+CT_T_INF = float(_os0.environ.get("CT_T_INF", "0.8"))   # pared del tramo inferior (rev. D: carbono mas grueso)
+CT_RI_INF = CT_RO - CT_T_INF
+R_C1_PAD = CT_RI_INF - PAD_T   # rev. D: asientos de los patines en C1 (solo bajo los patines): patines de 1,5 mm contra la pared
 G_DESL = 0.1          # [MPa] modulo de corte del modelo para caras que deslizan (patines y manguito con cara de PTFE)
 
 # ------------------------------------------------------------------- ala
@@ -155,6 +158,18 @@ NOTA = dict(c=198.6, L=280.9, S=394.0, AR=4.0, p_vuelo=122.0, p_choque=367.0,
 # ------------------------------------------------------------- materiales
 # E en MPa, rho en g/cm3, resistencias en MPa.  Valores tipicos de hoja de
 # datos; los de piezas impresas hay que confirmarlos con probetas del lote.
+# laminados del tubo (propiedades en el plano; E axial y tangencial iguales: tejidos balanceados).  Telas tejidas, epoxi,
+# laminado manual (Vf ~45 %).  +-45: la misma tela girada; aporta rigidez al corte, que en un tubo corto pesa tanto como la flexion.
+LAMINADOS = {
+    "V090": dict(nombre="Vidrio-epoxi 0/90", rho=1.85, E=17.0e3, G_ip=3.5e3, nu=0.13, Sut=200.0),
+    "VQ": dict(nombre="Vidrio-epoxi [0/90, +-45, 0/90]", rho=1.85, E=14.8e3, G_ip=4.8e3, nu=0.25, Sut=180.0),
+    "CQ": dict(nombre="Carbono-epoxi [0/90, +-45, 0/90]", rho=1.50, E=39.0e3, G_ip=5.6e3, nu=0.25, Sut=330.0),
+}
+CT_LAM = _os0.environ.get("CT_LAM", "V090")          # tramo superior (o todo el tubo)
+CT_LAM_INF = _os0.environ.get("CT_LAM_INF", "CQ")  # tramo inferior (carbono: lejos de radio y GNSS, en la cola)
+CT_X_H = float(_os0.environ.get("CT_X_H", "130"))    # union de los dos tramos
+ELAST_SH = int(_os0.environ.get("ELAST_SH", "70"))
+ELAST_E = {55: 3.0, 65: 4.5, 70: 5.5, 80: 8.5}[ELAST_SH]   # MPa, modulo de Young del elastomero segun dureza
 MAT = {
     "CFRP": dict(nombre="Carbono pultruido UD (tubo)", rho=1.60, E=130e3, nu=0.28,
                  E2=8.0e3, G12=4.5e3, G23=2.9e3, nu23=0.40,
@@ -172,13 +187,14 @@ MAT = {
     "EPOXI": dict(nombre="Adhesivo epoxi estructural", rho=1.10, E=2.0e3, nu=0.38, tau=18.0, FS=2.0),
     "LWPLA": dict(nombre="LW-PLA espumado impreso (contenedor)", rho=0.65, E=1.2e3, nu=0.35,
                   Sut=14.0, Sut_z=8.0, FS=2.0),
-    "GFRP": dict(nombre="Vidrio-epoxi laminado (tejido E-glass 0/90)", rho=1.85, E=17.0e3, E_r=8.0e3, G_ip=3.5e3,
-                 G_t=3.0e3, nu=0.13, Sut=200.0, Sut_z=25.0, FS=1.5),
+    "GFRP": dict(LAMINADOS[CT_LAM], E_r=8.0e3, G_t=3.0e3, Sut_z=25.0, FS=1.5),
+    "GFRP_INF": dict(LAMINADOS[CT_LAM_INF], E_r=8.0e3, G_t=3.0e3, Sut_z=25.0, FS=1.5),
     "ASALW": dict(nombre="ASA-LW espumado impreso", rho=0.60, E=0.97e3, nu=0.35, Sut=9.0, Sut_z=6.0, FS=2.0),
     "PC": dict(nombre="Policarbonato en lamina 0,25 mm", rho=1.20, E=2.3e3, nu=0.37, Sut=60.0, FS=1.5),
     "RIPSTOP": dict(nombre="Nailon ripstop 40 g/m2", rho_a=40.0, T_rot=4000.0),
     # elastomero de los aisladores (caucho butilo / poliuretano viscoelastico, 55 Shore A)
-    "ELAST": dict(nombre="Elastomero 55 Shore A (butilo)", rho=1.20, E=3.0, G=1.0, eta=0.30, eps_adm=0.20),
+    "ELAST": dict(nombre="Elastomero %s Shore A (butilo)" % ELAST_SH, rho=1.20, E=ELAST_E, G=ELAST_E / 3, eta=0.30,
+                  eps_adm=0.20),
     "PTFE": dict(nombre="PTFE", rho=2.2, E=500.0, nu=0.4),
 }
 

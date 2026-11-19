@@ -370,8 +370,16 @@ def piezas_contenedor(fe=False):
     if not fe:
         tubo = tubo.cut(rod((175, 0, -40), (175, 0, -48), 8.0))     # interruptor (E4, E5)
         tubo = tubo.cut(rod((185, 0, -40), (185, 0, -48), 5.0))     # indicador LED (E6)
-    out.append(dict(nombre="CT1 tubo del contenedor", shape=tubo, mat=P.CT_MAT, color=BLANCO, grupo="contenedor",
-                    masa=None))
+    if P.CT_MAT == "GFRP" and (P.CT_LAM_INF != P.CT_LAM or P.CT_T_INF != P.CT_T):   # dos tramos (carbono abajo)
+        inf = disc(x0, P.CT_X_H, P.CT_RO).cut(disc(x0 - 1, P.CT_X_H + 1, P.CT_RI_INF))
+        sup = tubo.intersect(box(P.CT_X_H, x1 + 1, -60, 60, -60, 60))
+        out.append(dict(nombre="CT1a tubo del contenedor, tramo inferior", shape=inf, mat="GFRP_INF", color=(0.25, 0.25, 0.27),
+                        grupo="contenedor", masa=None))
+        out.append(dict(nombre="CT1b tubo del contenedor, tramo superior", shape=sup, mat="GFRP", color=BLANCO,
+                        grupo="contenedor", masa=None))
+    else:
+        out.append(dict(nombre="CT1 tubo del contenedor", shape=tubo, mat=P.CT_MAT, color=BLANCO, grupo="contenedor",
+                        masa=None))
     out.append(dict(nombre="CT2 tapa nervada", shape=tapa_contenedor(fe), mat="PA12CF", color=GRIS,
                     grupo="contenedor", masa=None))
     xc = P.CT_TOP[0] + P.CT_CAP_H
@@ -390,7 +398,7 @@ def piezas_patines(fe=False):
                        ((P.X_C3[0] - P.ZAP_EXT, P.X_C3[1] + P.ZAP_EXT), "C3")]
     for xr, tag in estaciones:
         for ang in P.PAD_POS:
-            sh = sector(xr[0], xr[1], P.R_C1_PAD, P.CT_RI, ang, P.PAD_ANG)
+            sh = sector(xr[0], xr[1], P.R_C1_PAD, P.CT_RI_INF if tag == "C1" else P.CT_RI, ang, P.PAD_ANG)
             if tag != "C1":
                 sh = sh.cut(envolvente_caja(*xr)).clean()
             mat = "PAD_A" if ang in (45.0, 225.0) else "PAD_B"

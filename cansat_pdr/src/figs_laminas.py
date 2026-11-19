@@ -120,7 +120,7 @@ def lanzamiento(out, lan):
     L((P.CT_TOP[0] + 5, 0, 32), (xR, T((214, 0, 0))[1] - 3), "Ribbed cap (PA12-CF)")
     L((P.CT_TOP[0] - 2, 0, 3), (xL, T((222, 0, 0))[1]), "Bayonet key", ha="right")
     L((209, 0, -19), (xL, T((198, 0, 0))[1]), "C4 collar + sleeve", ha="right")
-    L((120, 0, -44.5), (xL, T((120, 0, 0))[1]), "GFRP tube, %g mm" % P.CT_T if P.CT_MAT == "GFRP" else "LW-ASA tube, 2 mm", ha="right")
+    L((120, 0, -44.5), (xL, T((120, 0, 0))[1]), ("CFRP / GFRP tube" if P.CT_LAM_INF != P.CT_LAM else "GFRP tube, %g mm" % P.CT_T) if P.CT_MAT == "GFRP" else "LW-ASA tube, 2 mm", ha="right")
     L((100, 0, 31), (xR, T((110, 0, 0))[1]), "Glider frame")
     L((4, 0, 34), (xR, T((18, 0, 0))[1]), "C1 on 4 PTFE pads")
     L((x0, 0, -20), (xL, T((-8, 0, 0))[1] + 2), "Open end (exit)", ha="right")

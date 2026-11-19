@@ -207,5 +207,7 @@
  "re:Excitación en ([^\\n]+)": "Excitation in \\1",
  "re:Choque en ([^\\n]+)": "Shock in \\1",
  "Tubo vidrio-epoxi": "Glass-epoxy tube",
- "re:pared ([\\d,]+) mm": "\\1 mm wall"
+ "re:pared ([\\d,]+) mm": "\\1 mm wall",
+ "Tubo carbono / vidrio": "Carbon / glass tube",
+ "laminado": "laminated"
 }
