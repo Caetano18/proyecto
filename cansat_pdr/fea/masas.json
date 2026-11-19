@@ -24,11 +24,11 @@
    "sub": "Estructura del planeador",
    "item": "Cuaderna de cola C4 (PA12-CF)",
    "cant": 1,
-   "unit": 23.07481622213627,
-   "masa": 23.07481622213627,
-   "inc": 2.307481622213627,
+   "unit": 26.47304386790255,
+   "masa": 26.47304386790255,
+   "inc": 2.647304386790255,
    "fuente": "CAD",
-   "x": 204.13397194629889
+   "x": 203.88571651459097
   },
   {
    "sub": "Estructura del planeador",
@@ -394,8 +394,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 10.099240505919738,
-   "masa": 10.099240505919738,
+   "unit": 6.701012860153469,
+   "masa": 6.701012860153469,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -403,9 +403,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 145.9142485881155,
-   "inc": 4.321165697049488,
-   "x": 104.3462261159427
+   "masa": 149.31247623388177,
+   "inc": 4.511787014124502,
+   "x": 106.57329653927755
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -418,9 +418,9 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 168.1090020643678,
+   "masa": 164.71077441860152,
    "inc": 8.028075734570521,
-   "x": 117.81757478105767
+   "x": 119.56748718651649
   },
   "Contenedor": {
    "masa": 126.83084528574955,
@@ -429,17 +429,17 @@
   }
  },
  "total": 500.0,
- "inc_rss": 16.101176794812222,
- "inc_lin": 59.404486680393155,
- "lastre": 10.099240505919738,
+ "inc_rss": 16.153378694789055,
+ "inc_lin": 59.74430944496979,
+ "lastre": 6.701012860153469,
  "m_planeador": 373.16915471425045,
  "m_contenedor": 126.83084528574955,
- "x_cg_planeador_estibado": 108.3861220512748,
- "x_cg_lanzamiento": 120.53505039270544,
- "x_cg_planeador_vuelo": 118.14678214125438,
+ "x_cg_planeador_estibado": 109.92692495633791,
+ "x_cg_lanzamiento": 121.68501062803276,
+ "x_cg_planeador_vuelo": 119.6875850463175,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 127.81980494316704,
+ "x_cg_vuelo_total": 128.96976517849436,
  "carga_alar": 124.31747813749618,
  "carga_alar_planeador": 92.78289646555352,
  "w_estimado": 5.797133425017368,

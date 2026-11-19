@@ -94,6 +94,7 @@ def cuaderna_extrema(tail=False, fe=False):
     parts.append(box(x0, x1, -yo, yo, P.Z_TRAY[0] - 1.2, P.Z_TRAY[1] + 1.2))  # asiento de bandeja
     if tail:
         parts.append(disc(x0, x1, 9.0))                       # buje del cerrojo de bayoneta
+        parts.append(disc(x0, x1, P.ARC4_D / 2 + 3.0))        # rev. D: asiento macizo de la arandela (el alma de 1,6 flexaba)
         parts.append(disc(x0, x1, 5.0, 0, P.Z_BOOM))          # buje del botalon de cola
     body = fuse(*parts).intersect(full)
     if not tail and P.R_C1_PAD > R + 0.05:          # rev. D: asientos de los patines (despues del recorte a R)
