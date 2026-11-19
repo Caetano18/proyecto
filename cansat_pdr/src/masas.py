@@ -69,6 +69,9 @@ def main(out):
     add(V, "Separadores, cableado y conectores", 1, M["cableado_tornillos"] - 8.0 + 3.0, 2.6, "Estimado", 103.0)
     add(V, "Llave de bayoneta + plato de apoyo (inox)", 1,
         sum(p["masa"] for p in lan if "Llave" in p["nombre"] or "Plato" in p["nombre"]), 0.4, "CAD", 210.0)
+    if any(p["nombre"].startswith("Arandela de C4") for p in lan):
+        add(V, "Arandela de la llave en C4 (Al 7075, Ø%g)" % P.ARC4_D, 1,
+            sum(p["masa"] for p in lan if p["nombre"].startswith("Arandela de C4")), 0.1, "CAD", 198.0)
     add(V, "Aislador elastomerico de la llave", 1, [p["masa"] for p in lan if "Aislador" in p["nombre"]][0], 0.1, "CAD", 217.0)
     add(V, "Patines de C1: elastomero con cara de PTFE", 4, sum(p["masa"] for p in lan if p["nombre"].startswith("Patin")), 0.1, "CAD", 4.0)
     add(V, "Manguito elastomerico del centrador de cola", 1, [p["masa"] for p in lan if "Manguito del centrador" in p["nombre"]][0],

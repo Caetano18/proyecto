@@ -1,0 +1,74 @@
+{
+ "caso": "tiron del paracaidas (30 G x 1,8), sigma_x entre capas en C4, admisible 35 MPa / FS 2",
+ "variantes": {
+  "tope": {
+   "nombre": "A tope contra C4 (escote r 10)",
+   "pico": 16.03426170349121,
+   "prom_r1": 5.67722156471543,
+   "pos": [
+    199.22565907237538,
+    10.504781233369009,
+    -4.3291224166680955
+   ],
+   "MS": 0.09141289593581026
+  },
+  "solape": {
+   "nombre": "A solape sobre asiento 8 x 2",
+   "pico": 37.82830047607422,
+   "prom_r1": 6.10794965322581,
+   "pos": [
+    198.5058792950993,
+    -9.49239656203593,
+    -5.254288195483474
+   ],
+   "MS": -0.5373833933917157
+  },
+  "cartela": {
+   "nombre": "A solape con cartela",
+   "pico": 35.52035140991211,
+   "prom_r1": 5.976013005717495,
+   "pos": [
+    198.52460764776256,
+    -9.464163549309543,
+    -5.2898249629040475
+   ],
+   "MS": -0.5073246940029836
+  },
+  "libre": {
+   "nombre": "Libre + arandela inox \u00d816",
+   "pico": 14.469908714294434,
+   "prom_r1": 3.431473216935977,
+   "pos": [
+    199.40450416745955,
+    7.676943961524856,
+    -2.556814845176045
+   ],
+   "MS": 0.2094063857301478
+  },
+  "al22": {
+   "nombre": "Libre + arandela Al 7075 \u00d822",
+   "pico": 12.467849731445312,
+   "prom_r1": 3.3832624281223587,
+   "pos": [
+    199.31316002140306,
+    -10.254000516516403,
+    -4.979202934632992
+   ],
+   "MS": 0.40361011537242386,
+   "traccion_max": 9.26346206665039
+  },
+  "st22": {
+   "nombre": "Libre + arandela inox \u00d822",
+   "pico": 17.65654754638672,
+   "prom_r1": 4.620275429321731,
+   "pos": [
+    199.2484929219974,
+    -10.647602400831962,
+    -3.9861266702093063
+   ],
+   "MS": -0.008866260291002126,
+   "traccion_max": 9.50346565246582
+  }
+ },
+ "nota": "El pico de las variantes libres es compresion de apoyo en el borde de la arandela; la traccion maxima entre capas en C4 es menor."
+}

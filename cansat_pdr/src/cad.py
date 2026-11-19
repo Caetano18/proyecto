@@ -98,6 +98,18 @@ def cuaderna_extrema(tail=False, fe=False):
     body = fuse(*parts).intersect(full)
     if tail:                                                  # collar del centrador de cola (rev. B)
         body = body.fuse(disc(x1, P.CEN_X1, P.CEN_RO).cut(disc(x1 - 1, P.CEN_X1 + 1, P.CEN_RI))).clean()
+        # asiento saliente para la union a solape de la bandeja (rev. B)
+        led = box(x0 - P.SOL_L, x0, -P.Y_BOX, P.Y_BOX, P.Z_TRAY[0] - P.SOL_T, P.Z_TRAY[0])
+        if P.UNION_BANDEJA == "solape_cartela":                # asiento con cartela de 45 grados en la raiz
+            g = cq.Workplane("XZ").polyline([(x0 - P.SOL_T * 1.5, P.Z_TRAY[0] - P.SOL_T), (x0, P.Z_TRAY[0] - P.SOL_T),
+                                             (x0, P.Z_TRAY[0] - P.SOL_T - 3.0)]).close().extrude(P.Y_BOX).val()
+            led = led.fuse(g.translate(V(0, P.Y_BOX, 0))).fuse(g.mirror("XZ").translate(V(0, -P.Y_BOX, 0)))
+        led = led.cut(disc(x0 - P.SOL_L - 1, x0 + 1, P.R_ESCOTE))
+        for sy in (1, -1):
+            yc = sy * P.RIEL_Y
+            led = led.cut(box(x0 - P.SOL_L - 1, x0 + 1, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.SOL_T - 1, P.Z_TRAY[0]))
+        if P.UNION_BANDEJA.startswith("solape"):
+            body = body.fuse(led).clean()
     for sy in (1, -1):
         for sz in (1, -1):                                    # alojamientos en L de los angulares (5 mm)
             xa, xb = (x0, P.LON_X[1]) if tail else (P.LON_X[0], x1)
@@ -164,11 +176,14 @@ def piezas_estructura(fe=False):
     add("P2 panel lateral izq.", box(xa, xb, -P.Y_OUT, -P.Y_BOX, -P.Z_BOX, P.Z_BOX), "G10", G10C)
     add("P3 tapa superior", box(xa, xb, -P.Y_OUT, P.Y_OUT, P.Z_BOX, P.Z_BOX + P.T_COVER), "G10", G10C)
     # escote de la bandeja frente a la llave (rev. B): r = 14 deja 6 mm entre la arandela y el apoyo de la bandeja en C4
-    bandeja = box(xa, xb, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY).cut(disc(xb - P.R_ESCOTE - 1.0, xb + 1, P.R_ESCOTE))
+    xbb = xb - P.HUELGO_B                                    # la bandeja y los rieles no tocan la cara de C4: apoyan en su asiento
+    if P.UNION_BANDEJA == "tope":
+        xbb = xb
+    bandeja = box(xa, xbb, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY).cut(disc(xb - P.SOL_L - 1.0, xb + 1, P.R_ESCOTE))
     add("B1 bandeja de avionica", bandeja, "G10", (0.62, 0.74, 0.48))
     for k, sy in ((1, 1), (2, -1)):
         yc = sy * P.RIEL_Y
-        add(f"R{k} riel longitudinal", box(xa, xb, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]),
+        add(f"R{k} riel longitudinal", box(xa, xbb, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]),
             "PA12CF", GRIS)
     for k, x in ((2, P.X_C2), (3, P.X_C3)):
         add(f"Guia de botalon C{k}", guia_botalon(*x), "PA12CF", GRIS)
@@ -281,15 +296,20 @@ def piezas_cerrojo(fe=False):
     xi = xf + P.ISO_T                               # cara superior del aislador
     xpl = xi + P.WASH_T                             # cara superior del plato de apoyo
     eje = rod((xa, 0, 0), (xpl + (0.0 if fe else 3.2), 0, 0), P.KEY_D)
-    arandela = disc(xa, P.X_C4[0], P.WASH_D / 2)
+    arandela = disc(xa, P.X_C4[0], P.ARC4_D / 2)
     plato = disc(xi, xpl, P.WASH_D / 2)
     aislador = disc(xf, xi, P.WASH_D / 2).cut(disc(xf - 1, xi + 1, P.KEY_HOLE / 2))
+    aparte = P.ARC4_MAT != "A2-70"                     # arandela de otro material: pieza aparte, pegada al eje
+    if aparte:
+        out.append(dict(nombre="Arandela de C4", shape=arandela.cut(disc(xa - 1, P.X_C4[0] + 1, P.KEY_D / 2)), mat=P.ARC4_MAT,
+                        color=(0.75, 0.77, 0.80), grupo="mecanismo", masa=None))
     if fe:
-        llave = fuse(eje, arandela, plato)
+        llave = fuse(eje, plato) if aparte else fuse(eje, arandela, plato)
     else:
         plato = plato.cut(disc(xi - 1, xpl + 1, 2.8)).cut(box(xi - 1, xpl + 1, -1.8, 1.8, -7.4, 7.4))
         aislador = aislador.cut(box(xf - 1, xi + 1, -1.8, 1.8, -7.6, 7.6))
-        llave = fuse(eje, arandela, rod((xpl + 1.6, 0, -7), (xpl + 1.6, 0, 7), 3.0))
+        partes_llave = [eje, rod((xpl + 1.6, 0, -7), (xpl + 1.6, 0, 7), 3.0)] + ([] if aparte else [arandela])
+        llave = fuse(*partes_llave)
         out.append(dict(nombre="Plato de apoyo", shape=plato, mat="A2-70", color=acero, grupo="mecanismo", masa=None))
     out.append(dict(nombre="Llave de bayoneta", shape=llave, mat="A2-70", color=acero, grupo="mecanismo", masa=None))
     mang = disc(P.CEN_EX[0], P.CEN_EX[1], P.CEN_RO + P.CEN_ELT).cut(disc(P.CEN_EX[0] - 1, P.CEN_EX[1] + 1, P.CEN_RO))

@@ -13,7 +13,7 @@ EQUIPO = "Equipo CanSat Universitario Argentina"
 TEMPORADA = "2026/2027"
 PRESENTADOR = "Subsistema mecánico"
 REV = "B"
-FECHA = "18/11/2026"
+FECHA = "19/11/2026"
 
 # -------------------------------------------------------------- envolvente
 # Requisitos del Apendice A (CanSat Argentina Universitario - CONAE)
@@ -37,7 +37,11 @@ CT_CAP_BOSS = 11.5    # radio exterior del cubo central (donde nacen los nervios
 CT_CAP_FLOOR = 4.0    # espesor del fondo del cubo (asiento del aislador)
 KEY_D = 5.0           # eje de la llave de bayoneta
 KEY_HOLE = 6.0        # pasaje del eje en C4 y en la tapa (0,5 mm de huelgo radial)
-WASH_D, WASH_T = 16.0, 1.5      # arandelas / plato de apoyo (inox)
+WASH_D, WASH_T = 16.0, 1.5      # plato de apoyo sobre el aislador (inox)
+import os as _os0
+# arandela de la llave contra la cara de C4 (rev. B: Al 7075 de 22 mm; la de inox de 16 mm concentraba el apoyo sobre C4)
+ARC4_D = float(_os0.environ.get("ARC4_D", "22.0"))
+ARC4_MAT = _os0.environ.get("ARC4_MAT", "AL7075")
 ISO_T = 3.0           # anillo elastomerico (aislador axial)
 CT_RIB_ANG = (30.0, 90.0, 150.0, 210.0, 270.0, 330.0)
 CT_BRIDA_ANG = (90.0, 210.0, 330.0)   # nervios que llevan el anclaje de la brida
@@ -71,7 +75,13 @@ T_PANEL = 0.5
 T_COVER = 0.5         # tapa superior (lleva las celdas solares)
 T_TRAY = 0.8
 Z_TRAY = (-5.0, -4.2)
-R_ESCOTE = 14.0      # radio del escote de la bandeja frente a la llave (rev. B; antes 8,6: la bandeja apoyaba a 0,6 mm de la arandela)
+R_ESCOTE = max(10.0, ARC4_D / 2 + 1.5)   # escote de la bandeja frente a la llave: 1,5 mm de luz a la arandela (rev. B)
+# union bandeja - C4 (rev. B): la bandeja y los rieles terminan 0,5 mm antes de C4 ("libre").  Su carga axial va por los marcos
+# C1-C3 y los paneles, repartida; C4 solo recibe la de la caja por sus nervios.  Se compararon, en el tiron del paracaidas:
+# a tope contra C4, a solape sobre un asiento de 8 x 2 (con y sin cartela) y libre; libre da la menor tension entre capas en C4.
+SOL_L, SOL_T, HUELGO_B = 8.0, 2.0, 0.5
+import os as _os
+UNION_BANDEJA = _os.environ.get("UNION_BANDEJA", "libre")    # "tope" | "solape" | "solape_cartela" | "libre"
 RIEL_W, RIEL_H, RIEL_Y = 3.0, 8.0, 17.0   # rieles longitudinales bajo la bandeja (PA12-CF): rigidizan la placa de 0,8 mm
 Y_BOX = Y_PANEL - T_PANEL / 2      # 27.25 semiancho interior de la caja
 Y_OUT = Y_PANEL + T_PANEL / 2      # 27.75 cara exterior del panel

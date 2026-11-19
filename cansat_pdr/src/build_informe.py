@@ -82,11 +82,11 @@ def peor(caso, clave, res=R):
     return best
 
 
-GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Rieles de bandeja", "Paneles y bandeja", "Largueros", "Llave de bayoneta"]
+GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Rieles de bandeja", "Paneles y bandeja", "Largueros", "Arandela de C4", "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
         "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Rieles de bandeja": "Rieles de bandeja (PA12-CF)",
         "Paneles y bandeja": "Paneles y bandeja (G10)",
-        "Largueros": "Largueros (CFRP)",
+        "Largueros": "Largueros (CFRP)", "Arandela de C4": "Arandela de la llave en C4 (Al 7075)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": r"$\sigma_x$ entre capas", "sigma_x fibra": r"$\sigma_x$ de fibra",
         "corte interlaminar": "corte interl."}
@@ -124,6 +124,9 @@ k_iso = Ec_iso * A_iso / P.ISO_T
 sb_cubo = F_ret / A_iso
 A_ang = (4 * P.ANG_L - 2 * P.ANG_T + 2 * P.ANG_T) * P.LON_ENG     # perimetro de la L (exterior + interior + extremos) x 5 mm
 tau_lon = (F_ret / 4) / A_ang
+m_band = sum(p_["masa"] for p_ in R["piezas"] if p_["nombre"].startswith(("B1", "R1", "R2")))      # bandeja + rieles + equipos
+F_band = m_band / 1000 * 30 * G0 * 1.8
+tau_band = 5 * F_band / (2 * (P.X_C4[0] - P.X_C1[1]) * (P.Z_TRAY[1] - P.Z_TRAY[0]))
 F_perno = nt["M_apice"] / 8.0
 sig_slv = nt["M_J"] * (P.SLV_DO / 2) / (math.pi * (P.SLV_DO ** 4 - P.SLV_DI ** 4) / 64)
 ms_all = [(peor(c, g)[0], g, c) for g in GRUPOS for c in ("cuasi15", "armonico", "choque", "paracaidas")]
@@ -137,9 +140,15 @@ est_m = MAS["sub"]["Estructura del planeador"]["masa"]
 ms_arm = min(peor("armonico", g)[0] for g in GRUPOS)
 ms_ch = min(min(peor("choque", g)[0], peor("paracaidas", g)[0]) for g in GRUPOS)
 ms_ce = min(peor("cuasi15", g)[0] for g in GRUPOS)
-if neg:
-    txt_neg = ("Quedan %d combinaciones con margen negativo: %s. Se detallan, con su corrección, en la sección de márgenes." % (
-        len(neg), "; ".join("%s en el caso %s (%s)" % (GNOM[g], CASO[c], ms(v)) for v, g, c in neg[:4])))
+if neg and len(neg) == 1 and neg[0][1] == "Cuadernas" and neg[0][2] == "armonico":
+    _sneg = peor("armonico", "Cuadernas")[1]
+    txt_neg = ("Con el criterio conservador queda un solo punto con margen negativo (%s): el borde de la arandela de la llave sobre C4 "
+               "en la resonancia axial. Es compresión de apoyo; contra la resistencia a compresión el margen es %s "
+               "(sección~\\ref{sec:revb})." % (ms(neg[0][0]), ms(65.0 / (2 * _sneg) - 1)))
+elif neg:
+    txt_neg = ("%s con margen negativo: %s. Se detallan en la sección~\\ref{sec:revb}." % (
+        "Queda una combinación" if len(neg) == 1 else "Quedan %d combinaciones" % len(neg),
+        "; ".join("%s en el caso %s (%s)" % (GNOM[g], CASO[c], ms(v)) for v, g, c in neg[:4])))
 else:
     txt_neg = "Todos los márgenes son positivos."
 
@@ -228,6 +237,8 @@ t_un = tab("p{5.2cm}cccc", ["Unión", "Carga", "Tensión", "Admisible", "MS"], [
     ["Anclaje de brida en el nervio", "%.0f N" % leg, n(sb_brida) + " MPa", "32{,}5 MPa", ms(32.5 / sb_brida - 1)],
     ["Pegado tapa--tubo", "%.0f N" % F_par, n(tau_tapa, 2) + " MPa", "2{,}0 MPa", ms(2.0 / tau_tapa - 1)],
     ["Pegado de cada angular en su alojamiento (5\\,mm)", "%.0f N" % (F_ret / 4), n(tau_lon, 2) + " MPa", "9{,}0 MPa", ms(9.0 / tau_lon - 1)],
+    ["Pegado bandeja--paneles (2 cordones de 190\\,mm sobre el canto de 0{,}8; $K_t=5$ en los extremos)", "%.0f N" % F_band,
+     n(tau_band, 2) + " MPa", "9{,}0 MPa", ms(9.0 / tau_band - 1)],
     ["Manguito \\diam8/5{,}1, flexión", "%.0f N$\\cdot$mm" % nt["M_J"], n(sig_slv) + " MPa", "402 MPa", ms(402 / sig_slv - 1)],
     ["Perno de pivote A \\diam2{,}5, corte", "%.0f N" % F_perno, n(F_perno / 4.91) + " MPa", "216 MPa", ms(216 / (F_perno / 4.91) - 1)],
     ["Oreja de C1, aplastamiento", "%.0f N" % F_perno, n(F_perno / 20) + " MPa", "32{,}5 MPa", ms(32.5 / (F_perno / 20) - 1)],
@@ -402,7 +413,7 @@ caja: paneles y tapa apoyan cara contra cara sobre sus alas, y los angulares ent
 de su propio espesor; C4 lleva además el collar del centrador de cola;
 \item marcos intermedios C2 y C3 de 4\,mm, con muescas para los angulares y ranuras de paso para la bandeja y sus rieles;
 \item dos paneles laterales y una tapa superior de G10 de 0{,}5\,mm, y una bandeja de 0{,}8\,mm, rigidizada con dos rieles de
-PA12-CF de $3\times8$\,mm, que lleva toda la electrónica.
+PA12-CF de $3\times8$\,mm, que lleva toda la electrónica; bandeja y rieles terminan 0{,}5\,mm antes de C4.
 \end{itemize}
 <<FIG_BAST>>
 \chequeo Masa de la estructura primaria: <<EST_M>>\,g por CAD. La carga axial entra por la llave en C4 y baja por los angulares y
@@ -558,6 +569,7 @@ El amortiguamiento real es menor & Propiedades del elastómero supuestas ($E=3$\
 Las piezas impresas rinden menos & Humedad del PA12; espumado irregular & Probetas del mismo lote; ya se usa la resistencia entre capas y $FS=2$ \\
 El ala no traba al abrir & Fricción del manguito; tela enganchada & 20 aperturas filmadas; el manguito es la primera pieza a prototipar \\
 El planeador no sale & Interferencia de patines; tela pellizcada & Cara de PTFE; huelgo de 1\,mm; ensayo en frío y en caliente \\
+Golpeteo en la llave & Fuerza axial dinámica mayor que el peso; arandela sin pegar & Resorte de precarga en serie con el aislador; ensayo de barrido \\
 Otra interpretación de S4 y S5 & El Apéndice~A no define espectro ni duración & Consultar el procedimiento de ensayo \\
 Las cámaras no ven el paracaídas & Dentro del contenedor no hay visual (C6, C7) & Definir ventana en la tapa o cámara en el contenedor \\
 Masa fuera de tolerancia & Incertidumbre de $\pm<<INC>>$\,g & Lastre ajustable y pesadas parciales \\ \bottomrule
@@ -592,7 +604,8 @@ if RA:
     for g_ in GRUPOS:
         fila = [GNOM[g_]]
         for c_ in ("armonico", "choque"):
-            fila += [ms(peor(c_, g_, RA)[0]), ms(peor(c_, g_, R)[0])]
+            pa_ = peor(c_, g_, RA)
+            fila += [ms(pa_[0]) if pa_ else "--", ms(peor(c_, g_, R)[0])]
         filas_ab.append(fila)
     filas_ab.append(["Primer modo [Hz]", n(RA["freq"][0], 0), n(R["freq"][0], 0), "", ""])
     T_REVAB = tab("lcccc", ["Grupo de piezas", "RF-15 rev.\,A", "RF-15 rev.\,B", "CH-30 rev.\,A", "CH-30 rev.\,B"], filas_ab,
@@ -642,26 +655,61 @@ items.append(r"\item \textbf{Patines de C1 y manguito.} Tienen cara de PTFE y de
              r"1{,}5\,mm (C1 de \diam83): la misma rigidez radial, repartida en un arco 1{,}7 veces mayor, porque apoyan a menos de "
              r"una longitud de decaimiento de la cáscara (unos 7\,mm) del borde de la boca." % n(modo_dom(0)[1], 0))
 _fE = os.path.join(FEA, "resultados_fea_revB_escote_chico.json")
-if os.path.exists(_fE):
-    RE = json.load(open(_fE))
-    _pe = min(peor(c_, "Cuadernas", RE)[0] for c_ in ("armonico", "paracaidas"))
-    _pn = min(peor(c_, "Cuadernas")[0] for c_ in ("armonico", "paracaidas"))
-    items.append(r"\item \textbf{Escote de la bandeja frente a la llave.} Con los patines deslizantes apareció el último punto sin margen: "
-                 r"la bandeja apoyaba en C4 a 0{,}6\,mm del borde de la arandela de la llave, y en la resonancia axial la arandela empuja "
-                 r"C4 hacia atrás mientras la bandeja, con la electrónica, tira hacia adelante ($MS=%s$ en $\sigma_x$ entre capas). El "
-                 r"escote pasa de r\,8{,}6 a r\,%s\,mm: la bandeja apoya en el nervio de asiento de C4, a 6\,mm de la arandela, y el "
-                 r"margen sube a %s." % (ms(_pe), n(P.R_ESCOTE, 0), ms(_pn)))
+_fU = os.path.join(FEA, "estudio_union_bandeja.json")
+T_UNION = ""
+if os.path.exists(_fE) and os.path.exists(_fU):
+    RE, EU = json.load(open(_fE)), json.load(open(_fU))
+    _pe = min(peor(c_, "Cuadernas", RE)[0] for c_ in CASOS4)
+    _pn = min(peor(c_, "Cuadernas")[0] for c_ in CASOS4)
+    items.append(r"\item \textbf{Unión bandeja--C4.} Con los patines deslizantes toda la carga axial pasa por la llave, y apareció un "
+                 r"punto sin margen: la bandeja, con la electrónica, apoyaba a tope por su canto de 0{,}8\,mm contra la cara de C4, a "
+                 r"0{,}6\,mm del borde de la arandela, con la carga cruzando las capas impresas ($MS=%s$ en $\sigma_x$ entre capas, en "
+                 r"la resonancia axial). Se compararon cuatro uniones con el caso del tirón (tabla~\ref{tab:union}). El solape sobre un "
+                 r"asiento de C4, que parecía la solución de manual, es la peor: agrega un voladizo de 2\,mm que la carga flexiona justo "
+                 r"en la raíz. La mejor es la más simple: la bandeja y los rieles terminan 0{,}5\,mm antes de C4, su carga va por los marcos "
+                 r"C1--C3 y los paneles, y en C4 solo queda el apoyo de la arandela de la llave. Esa arandela pasa de inoxidable \diam16 "
+                 r"a Al 7075 \diam22: reparte el apoyo, baja el pico y pesa 0{,}7\,g menos. Ese pico es compresión de apoyo en el borde de "
+                 r"la arandela, no tracción entre capas: el criterio $|\sigma_x|$ contra la resistencia entre capas es conservador ahí. "
+                 r"Margen mínimo de las cuadernas en la revisión B: %s." % (ms(_pe), ms(_pn)))
+    T_UNION = tab("lcccc", ["Unión de la bandeja con C4", r"$\sigma_x$ pico [MPa]", r"Promedio en 1\,mm [MPa]", "MS (pico)", "Dónde"],
+                  [[v_["nombre"].replace(" x ", r" $\times$ "), n(v_["pico"], 1), n(v_["prom_r1"], 1), ms(v_["MS"]),
+                    "borde de la arandela" if k_ in ("libre", "al22", "st22") else ("raíz del asiento" if "solape" in k_ or k_ == "cartela" else "borde del escote")]
+                   for k_, v_ in EU["variantes"].items()],
+                  r"\label{tab:union}Tensión entre capas en C4 en el tirón del paracaídas ($30\,\mathrm{G}\times1{,}8$; admisible "
+                  r"$35/2=17{,}5$\,MPa) para las uniones de la bandeja y las arandelas estudiadas. El promedio sobre una esfera de 1\,mm muestra que los picos son "
+                  r"concentraciones de esquina viva; la pieza real lleva radios de 1\,mm.", r"\footnotesize")
+def _en_arandela(g_, c_):
+    p_ = peor(c_, g_)[4]["pos"]
+    return 198.0 < p_[0] < 200.5 and abs(math.hypot(p_[1], p_[2]) - P.ARC4_D / 2) < 1.5
+
+
 if _neg_b:
     cierre = (r"\chequeo %s con margen negativo: %s." %
               ("Queda una combinación" if len(_neg_b) == 1 else "Quedan %d combinaciones" % len(_neg_b),
                "; ".join("%s, %s (%s)" % (GNOM[g_], CASO[c_], ms(v_)) for v_, g_, c_ in _neg_b)))
+    for v_, g_, c_ in _neg_b:
+        if g_ == "Cuadernas" and _en_arandela(g_, c_):
+            s_ = peor(c_, g_)[1]
+            cierre += (r" Es un solo elemento, en el borde de la arandela de la llave sobre C4, y la tensión es compresión de apoyo: la "
+                       r"arandela no está pegada, así que ahí no puede haber tracción entre capas. El criterio de la tabla ($|\sigma_x|$ "
+                       r"contra la resistencia a tracción entre capas, 35\,MPa) es conservador; contra la resistencia a compresión del PA12-CF "
+                       r"(65\,MPa, $FS=2$) el margen es %s. El percentil 99{,}9 de las cuadernas da %s."
+                       % (ms(65.0 / (2 * s_) - 1), ms(peor(c_, g_)[4]["MS_p999"])))
 else:
     cierre = (r"\chequeo Con la revisión B todas las piezas tienen margen positivo en los cuatro casos: casi-estático de 15\,G, "
               r"resonancia a 15\,G, choque de 30\,G y tirón del paracaídas (tabla~\ref{tab:revab}).")
+_d_iso = max(R["armonico"][e]["rel"]["Aislador de la llave"]["rad"] for e in EJES) if R.get("pares") else float("nan")
+_F_dyn = k_iso * _d_iso
+cierre += (r" Queda abierto un punto que el modelo lineal no resuelve: en la resonancia axial la fuerza dinámica en la llave es de "
+           r"$\pm%s$\,N (el aislador se comprime %s\,mm), contra %s\,N de peso propio. La arandela apoya sobre C4 sin pegar, de modo que "
+           r"sin precarga se despega y el planeador golpetea. Precargar %s\,N exige comprimir antes el aislador %s\,mm, y el pico de "
+           r"deformación llegaría al %s\,\%%, por encima del 20\,\%% admisible. El CDR tiene que resolver el apilado (resorte de precarga "
+           r"en serie con el elastómero, o un elastómero más grueso) y medirlo en el primer ensayo de barrido."
+           % (n(_F_dyn, 0), n(_d_iso, 2), n(m_plan / 1000 * G0, 1), n(_F_dyn, 0), n(_d_iso, 2), n(100 * 2 * _d_iso / P.ISO_T, 0)))
 ACC = (r"\subsection{Revisión B: correcciones del modelo estructural}\label{sec:revb}" "\n"
        r"\que Qué marcó el modelo exclusivamente estructural y qué se cambió." "\n"
        r"\porque Siete hallazgos, dos del método de cálculo y cinco del diseño:" "\n" r"\begin{itemize}" + "\n".join(items) + r"\end{itemize}" "\n"
-       + T_REVAB + "\n" + cierre)
+       + T_REVAB + "\n" + T_UNION + "\n" + cierre)
 
 PH = json.load(open(os.path.join(FEA, "polhamus.json")))
 t_polh = tab("lccccccc", ["Hipótesis", "$f$", "$C_L$ potencial", "$C_L$ vórtice", "$C_L$", "$C_D$", "$w$ con 500\\,g", "$w$ con %s\\,g" % n(PH["m_vuelo"], 0)],

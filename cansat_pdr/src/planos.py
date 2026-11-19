@@ -100,7 +100,7 @@ def hoja1(pdf, out, R):
     T3 = h.vista(todo, "frontal", (352, 222), 1.0, titulo="VISTA DESDE LA BOCA (nariz)")
     h.cota_h(T3((0, -45, 0)), T3((0, 45, 0)), T3((0, 0, 45))[1] + 6, txt="Ø90")
     lista = [(1, "Tubo del contenedor", "LW-PLA 2,0 mm", "1"), (2, "Tapa nervada", "PA12-CF", "1"),
-             (3, "Paracaídas + brida 3 puntos", "Ripstop / Kevlar", "1"), (4, "Llave de bayoneta Ø5", "Inox A2-70", "1"),
+             (3, "Paracaídas + brida 3 puntos", "Ripstop / Kevlar", "1"), (4, "Llave Ø5 + arandela Ø22 en C4", "Inox A2-70 / Al 7075", "1"),
              (5, "Cuaderna de cola C4", "PA12-CF", "1"), (6, "Cuaderna de nariz C1", "PA12-CF", "1"),
              (7, "Batería 18650 + sillas", "-", "1"), (8, "PCB principal", "FR-4", "1"),
              (9, "Lastre de centrado", "Asignación", "1"), (10, "Patín de guía (C1)", "Elastómero + PTFE", "4"),
@@ -186,8 +186,8 @@ def hoja4(pdf, out, R):
              notas=("Largueros: angulares CFRP 6 × 6 × 1 en las 4 aristas interiores; paneles y tapa pegan cara contra cara sobre sus alas.",
                     "Los angulares entran 5 mm en alojamientos en L de C1 y C4 (epoxi estructural) y pasan por muescas de C2 y C3.",
                     "Paneles de G10 atornillados (M2 × 6 + inserto térmico) y pegados sobre los nervios de las cuadernas.",
-                    "Cuadernas impresas en PA12-CF, 100 % de relleno, capas en el plano y-z (carga axial perpendicular a las capas: ver margenes).",
-                    "Masas calculadas con el volumen CAD y la densidad nominal."))
+                    "Bandeja y rieles terminan 0,5 mm antes de C4: su carga va por C1, C2, C3 y los paneles (cordón de epoxi en los cantos).",
+                    "Cuadernas en PA12-CF, 100 % de relleno, capas en el plano y-z; rieles impresos acostados.  Masas: volumen CAD × densidad."))
     st = [p for p in est if p["grupo"] == "estructura"]
     shapes = [p["shape"] for p in st]
     T = h.vista(shapes, "lateral", (38, 226), 1.0, ocultas=True, titulo="VISTA LATERAL (líneas ocultas)", titulo_dy=19)
@@ -231,7 +231,7 @@ def hoja5(pdf, out, R):
     h = Hoja("CS-MEC-05", "Cuadernas C1, C2/C3 y C4", "2:1 / 1:1", "PA12-CF impreso",
              notas=("C1 (Ø83) y C4 (Ø84): alma de 1,6, aro de 2,2, nervios de 2,8 y 4 alojamientos en L (6 × 6 × 1, prof. 5) para los angulares.",
                     "Ranura de herraje: C1 en z = 0 (varilla de borde de ataque), C4 en z = -7 (tirante).  Perno de pivote Ø2,5.",
-                    "C4: buje central Ø18 con pasaje Ø6 (llave), paso Ø6 del botalón y collar del centrador Ø40/Ø34 × 3,5 en la cara trasera.",
+                    "C4: buje Ø18 con pasaje Ø6 (llave; arandela Al 7075 Ø22 × 1,5), paso Ø6 del botalón y collar del centrador Ø40/Ø34 × 3,5 atrás.",
                     "C2 / C3: muescas en L para los angulares y ranuras de paso de la bandeja (0,8) y de los rieles (3 × 8).",
                     "Radios de acuerdo de 1 mm en todos los encuentros de nervios (no dibujados)."))
     c1 = cad.cuaderna_extrema(False)

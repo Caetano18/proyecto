@@ -51,6 +51,9 @@ def grupos_de(mod):
         idx=sel(lambda p: p["mat"] == "CFRP"),
         crit=[("sigma_x fibra", "sx", M["CFRP"]["Suc"], M["CFRP"]["FS"]),
               ("corte interlaminar", "tau", 50.0, M["CFRP"]["FS"])])
+    g["Arandela de C4 (Al 7075)"] = dict(
+        idx=sel(lambda p: p["nombre"].startswith("Arandela de C4")),
+        crit=[("von Mises", "vm", M["AL7075"]["Sy"], M["AL7075"]["FS"])])
     g["Llave de bayoneta (A2-70)"] = dict(
         idx=sel(lambda p: p["mat"] == "A2-70"),
         crit=[("von Mises", "vm", M["A2-70"]["Sy"], M["A2-70"]["FS"])])

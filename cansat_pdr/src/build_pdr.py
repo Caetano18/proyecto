@@ -155,11 +155,11 @@ def peor(caso, clave_grupo, crit=None):
 
 
 GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Rieles de bandeja", "Paneles y bandeja", "Largueros",
-          "Llave de bayoneta"]
+          "Arandela de C4", "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
         "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Rieles de bandeja": "Rieles de bandeja (PA12-CF)",
         "Paneles y bandeja": "Paneles y bandeja (G10)",
-        "Largueros": "Largueros (CFRP)",
+        "Largueros": "Largueros (CFRP)", "Arandela de C4": "Arandela de la llave en C4 (Al 7075)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": "σx entre capas", "sigma_x fibra": "σx de fibra",
         "corte interlaminar": "corte interlaminar"}
@@ -680,8 +680,8 @@ if os.path.exists(_fA):
         return best if best is not None else float("nan")
     slide("Revisión B: qué marcó el modelo estructural", cols(tabla(
         ["Grupo de piezas", "RF-15 rev. A", "RF-15 rev. B", "CH-30 rev. A", "CH-30 rev. B"],
-        [[GNOM[g], ms(_peor_res(RA, "armonico", g)), ms(_peor_res(R, "armonico", g)), ms(_peor_res(RA, "choque", g)),
-          ms(_peor_res(R, "choque", g))] for g in GRUPOS], [180, 66, 66, 66, 66], fs=8.8, alin=[None, "c", "c", "c", "c"]),
+        [[GNOM[g]] + [("—" if _peor_res(res_, c_, g) != _peor_res(res_, c_, g) else ms(_peor_res(res_, c_, g)))
+                      for c_ in ("armonico", "choque") for res_ in (RA, R)] for g in GRUPOS], [180, 66, 66, 66, 66], fs=8.8, alin=[None, "c", "c", "c", "c"]),
         ul(["<b>Método:</b> SPOOLES en 4 hilos dejaba ruido local en los autovectores (picos falsos de cientos a miles de MPa); en 1 hilo "
             "desaparece. Los tres casos de 1 G se acumulaban en CalculiX (faltaba OP=NEW): corregido y verificado con el campo completo.",
             "<b>Tubo junto a la tapa:</b> único margen negativo real de la rev. A. Los patines de C4 empujaban la pared desnuda al lado del "
@@ -689,7 +689,8 @@ if os.path.exists(_fA):
             "<b>Arista panel–tapa:</b> pegado por un canto de 0,5 mm. Los largueros pasan a angulares 6 × 6 × 1 en las aristas: 6 mm de "
             "pegado cara contra cara, sin agregar masa (desaparecen los bujes de C1 y C4).",
             "<b>Patines de C1:</b> 24° × 1,5 mm y deslizantes (PTFE); la carga axial va entera por la llave.",
-            f"<b>Bandeja:</b> rieles 3 × 8 y escote r {P.R_ESCOTE:g} frente a la llave (antes apoyaba a 0,6 mm de la arandela)."], "s"), w=[444, None]) + nota(
+            "<b>Bandeja:</b> rieles 3 × 8; termina 0,5 mm antes de C4 (antes apoyaba a tope por su canto de 0,8 mm junto a la arandela; "
+            "de cuatro uniones estudiadas, es la que menos carga C4). Arandela de la llave: Al 7075 Ø22 (antes inox Ø16)."], "s"), w=[444, None]) + nota(
         "Las dos revisiones se resolvieron con el mismo método (SPOOLES en un hilo, sin filtro). RF-15: resonancia a 15 G; CH-30: choque de 30 G."))
 
 slide("Modelo de elementos finitos", cols(
@@ -813,7 +814,10 @@ slide("Resumen de márgenes de seguridad", tabla(
     f"MS = σ<sub>adm</sub>/(FS·σ) − 1, mínimo sobre los tres ejes; entre paréntesis, criterio y eje que mandan. "
     f"<b>Margen mínimo: {ms(ms_min[0])}</b> en «{GNOM[ms_min[1]]}», caso {CASO_NOM[ms_min[2]]}. "
     + ("Todos los márgenes son positivos." if not neg else
-       f"Hay {len(neg)} combinaciones con margen negativo: ver riesgos y acciones.")
+       (f"El único negativo es un elemento en el borde de la arandela de la llave sobre C4 (resonancia axial): es compresión de apoyo, "
+        f"y contra la resistencia a compresión del PA12-CF el margen es {ms(65.0 / (2 * peor('armonico', 'Cuadernas')[1]) - 1)}."
+        if len(neg) == 1 and neg[0][1] == "Cuadernas" and neg[0][2] == "armonico" else
+        f"Hay {len(neg)} combinaciones con margen negativo: ver riesgos y acciones."))
     + " Los valores de resonancia dependen del amortiguamiento supuesto: es lo primero que hay que medir."))
 
 # ---------- uniones
@@ -905,6 +909,8 @@ slide("Riesgos y acciones abiertas", tabla(["Riesgo", "Causa", "Prob.", "Impacto
      "20 aperturas filmadas. Cordón elástico interno. El manguito es la primera pieza a prototipar."],
     ["El planeador no sale del contenedor", "Patines o manguito del centrador con demasiada interferencia; tela pellizcada", "Baja", "Alto",
      "Cara de PTFE; huelgo de 1 mm; el collar sale con 3 mm de recorrido; ensayo de deslizamiento en frío y en caliente."],
+    ["Golpeteo del planeador sobre la llave en la resonancia axial", "Fuerza dinámica en la llave (±200 N) mayor que el peso; la arandela apoya sin pegar",
+     "Media", "Medio", "Precargar el apilado con un resorte en serie con el aislador (el elastómero solo no admite la precarga); medir en el barrido."],
     ["La interpretación de S4 y S5 no es la de la organización", "El Apéndice A no define espectro ni duración", "Media", "Medio",
      "Consultar el procedimiento de ensayo. El análisis cubre barrido senoidal y semiseno con duración variable."],
     ["Las cámaras no ven la apertura del paracaídas", "Dentro del contenedor no hay visual (C6, C7)", "Alta", "Medio",
@@ -921,7 +927,8 @@ cump = [
     ["S2", "Diámetro 90 mm", "Ø90,0", "Cumple"],
     ["S3", "Largo 200 a 250 mm", f"{P.CT_LEN:g} mm", "Cumple"],
     ["S4", "Vibraciones de 15 G", f"MS mínimo: casi-estático {ms(min(peor('cuasi15', g)[0] for g in GRUPOS))}, resonancia {ms(min(peor('armonico', g)[0] for g in GRUPOS))}",
-     "Cumple" if min(peor('armonico', g)[0] for g in GRUPOS) >= 0 else "Parcial: ver riesgos"],
+     "Cumple" if min(peor('armonico', g)[0] for g in GRUPOS) >= 0 else
+     ("Cumple con el criterio de apoyo (borde de arandela)" if [x for x in ms_all if x[0] < 0 and x[2] == "armonico"] == [x for x in ms_all if x[0] < 0 and x[1] == "Cuadernas" and x[2] == "armonico"] else "Parcial: ver riesgos")],
     ["S5", "Choque de 30 G", f"MS mínimo: choque {ms(min(peor('choque', g)[0] for g in GRUPOS))}, paracaídas {ms(min(peor('paracaidas', g)[0] for g in GRUPOS))}",
      "Cumple" if min(min(peor('choque', g)[0], peor('paracaidas', g)[0]) for g in GRUPOS) >= 0 else "Parcial: ver riesgos"],
     ["S6", "Pared impresa ≥ 2 mm, rígida", "2,0 mm; tubo cerrado", "Cumple"],

@@ -37,6 +37,8 @@ Cambiar una medida o un material es editar `src/params.py` y volver a correr.
 - Centrador de cola en la tapa (collar de C4 + manguito de elastómero + anillo-alojamiento); se sacaron los patines de C4,
   que cargaban la pared del tubo junto al empotramiento de la tapa (único margen negativo real de la revisión A).
 - Largueros: angulares CFRP 6 × 6 × 1 en las aristas interiores de la caja (antes, tubos Ø5 interiores y unión panel–tapa por canto).
-- Patines de C1 de 24° × 1,5 mm (C1 Ø83) y rieles bajo la bandeja.
+- Patines de C1 de 24° × 1,5 mm (C1 Ø83), rieles bajo la bandeja, y bandeja que termina 0,5 mm antes de C4
+  (de cuatro uniones estudiadas, `fea/estudio_union_bandeja.json`, es la que menos carga C4).
+- Casos estáticos unitarios con `*DLOAD, OP=NEW`: antes CalculiX acumulaba la gravedad de un paso al siguiente.
 - CalculiX con SPOOLES en un hilo (`CCX_SPOOLES=1`, fijado en el `Makefile`): en varios hilos dejaba ruido local en los autovectores
   que aparecía como picos falsos de cientos a miles de MPa.
