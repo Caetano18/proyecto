@@ -9,6 +9,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import params as P
 import polhamus as ph
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 G = 9.80665
 S = P.S_TRI * 1e-4                    # m2, area de planta del ala (dos triangulos)

@@ -1,0 +1,67 @@
+{
+ "rho": 1.15,
+ "m_total_g": 500.0,
+ "m_contenedor_g": 127.0668451933527,
+ "v_obj": 15.0,
+ "disenos": [
+  {
+   "clave": "plano",
+   "nombre": "Flat circular (hexagonal, 15 % spill hole)",
+   "cd": 0.75,
+   "osc": "\u00b110 to 40\u00b0",
+   "fab": "6 gores, spill hole",
+   "S0_cm2": 505.3346215780998,
+   "geo": {
+    "D0_mm": 253.65567675828103
+   },
+   "geo_txt": "D0 = 254 mm",
+   "m_tela_g": 2.627740032206119,
+   "v_rango": [
+    14.301938838683885,
+    15.811388300841896
+   ],
+   "v_contenedor": 7.561751142229472
+  },
+  {
+   "clave": "cruz",
+   "nombre": "Cross (cruciform, 5 squares)",
+   "cd": 0.7,
+   "osc": "0 to \u00b13\u00b0",
+   "fab": "flat cloth, no gores",
+   "S0_cm2": 541.4299516908212,
+   "geo": {
+    "brazo_mm": 104.06055464880257,
+    "envergadura_mm": 312.1816639464077
+   },
+   "geo_txt": "arm width 104 mm, span 312 mm",
+   "m_tela_g": 2.8154357487922703,
+   "v_rango": [
+    14.301938838683885,
+    15.811388300841898
+   ],
+   "v_contenedor": 7.561751142229473
+  },
+  {
+   "clave": "hemi",
+   "nombre": "Hemispherical",
+   "cd": 0.7,
+   "osc": "\u00b110 to 15\u00b0",
+   "fab": "8 to 12 shaped gores",
+   "S0_cm2": 541.4299516908212,
+   "geo": {
+    "D_proyectado_mm": 185.65694508916204
+   },
+   "geo_txt": "projected D = 186 mm",
+   "m_tela_g": 2.8154357487922703,
+   "v_rango": [
+    14.301938838683885,
+    15.811388300841898
+   ],
+   "v_contenedor": 7.561751142229473
+  }
+ ],
+ "plano_45cm": {
+  "S0_cm2": 1590.431280879833,
+  "v": 8.455189225276033
+ }
+}

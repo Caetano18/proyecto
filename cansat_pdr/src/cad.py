@@ -351,7 +351,7 @@ def piezas_contenedor(fe=False):
     if not fe:
         tubo = tubo.cut(rod((175, 0, -40), (175, 0, -48), 8.0))     # interruptor (E4, E5)
         tubo = tubo.cut(rod((185, 0, -40), (185, 0, -48), 5.0))     # indicador LED (E6)
-    out.append(dict(nombre="CT1 tubo del contenedor", shape=tubo, mat="LWPLA", color=BLANCO, grupo="contenedor",
+    out.append(dict(nombre="CT1 tubo del contenedor", shape=tubo, mat=P.CT_MAT, color=BLANCO, grupo="contenedor",
                     masa=None))
     out.append(dict(nombre="CT2 tapa nervada", shape=tapa_contenedor(fe), mat="PA12CF", color=GRIS,
                     grupo="contenedor", masa=None))

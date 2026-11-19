@@ -47,6 +47,11 @@ CT_RIB_ANG = (30.0, 90.0, 150.0, 210.0, 270.0, 330.0)
 CT_BRIDA_ANG = (90.0, 210.0, 330.0)   # nervios que llevan el anclaje de la brida
 R_BRIDA = 33.0        # radio de los anclajes de la brida
 CT_LEN = CT_X[1] - CT_X[0]
+# rev. B: tubo de LW-ASA (ASA espumado). El ensayo termico de la competencia pide 60 C durante 2 h y el LW-PLA ablanda a ~55 C.
+CT_MAT = "ASALW"
+# rev. B: apoyo en el cohete. El CanSat apoya en un soporte en su base, sin restriccion lateral arriba (fuselaje de 100 mm de
+# diametro interior contra 90 mm del CanSat), y en el ensayo de vibracion va fijado a la lijadora por la base: voladizo.
+APOYO = "base"
 
 # ------------------------------------------------------- planeador: estructura
 L_G = 207.0           # largo del planeador

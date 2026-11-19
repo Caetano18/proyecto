@@ -18,6 +18,7 @@ import params as P
 import vlm
 import planeo as pl
 import polhamus as ph
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FIGS, FEA = os.path.join(BASE, "figs"), os.path.join(BASE, "fea")

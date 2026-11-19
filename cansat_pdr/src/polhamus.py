@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import params as P
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 AR_KP = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0]
 KP = [0.0, 0.75, 1.33, 1.80, 2.20, 2.85, 3.35]        # figura 6

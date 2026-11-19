@@ -13,6 +13,9 @@ from fe_post import von_mises, G_MM
 
 EJES = "xyz"
 F_BARRIDO = (5.0, 1000.0)
+# ensayo de vibracion de la competencia: lijadora orbital de 12 000 a 14 000 opm (200 a 233 Hz), 20 a 29 G.  La orbita tiene
+# radio fijo, asi que a(f) = 29 G (f / 233 Hz)^2: da 21 G a 200 Hz y 29 G a 233 Hz, el rango que indica el documento.
+LIJ_G, F_LIJ = 29.0, 233.0
 FAD_PARAC = 1.8          # factor de amplificacion dinamica del tiron (maximo del SRS de un semiseno)
 
 
@@ -28,10 +31,11 @@ def grupos_de(mod):
         f = mod.filas(pred)
         f = f[mod.valido[f]]
         return f[~toca[f]] if excl else f
-    g["Contenedor: tubo (LW-PLA)"] = dict(
+    mt = P.CT_MAT
+    g["Contenedor: tubo (%s)" % ("LW-ASA" if mt == "ASALW" else "LW-PLA")] = dict(
         idx=sel(lambda p: p["nombre"].startswith("CT1"), True),
-        crit=[("von Mises", "vm", M["LWPLA"]["Sut"], M["LWPLA"]["FS"]),
-              ("sigma_x entre capas", "sx", M["LWPLA"]["Sut_z"], M["LWPLA"]["FS"])])
+        crit=[("von Mises", "vm", M[mt]["Sut"], M[mt]["FS"]),
+              ("sigma_x entre capas", "sx", M[mt]["Sut_z"], M[mt]["FS"])])
     g["Contenedor: tapa (PA12-CF)"] = dict(
         idx=sel(lambda p: p["nombre"].startswith("CT2")),
         crit=[("von Mises", "vm", M["PA12CF"]["Sut"], M["PA12CF"]["FS"]),
@@ -269,6 +273,67 @@ def main(wd, tag, out_json, out_npz, zeta=None):
                                     trans_max={mn: float(arr[f"trans_{eje}_{mn}"].max()) for mn in mon},
                                     f_trans_max={mn: float(fgrid[np.argmax(arr[f"trans_{eje}_{mn}"])]) for mn in mon})
         print(f"armonico {eje} listo ({time.time() - t0:.0f} s)")
+
+    # ============================================================ ensayo de la competencia: lijadora orbital (0 a 233 Hz)
+    res["lijadora"] = {}
+    A_L = LIJ_G * G_MM
+
+    def amp(f):
+        return A_L * (f / F_LIJ) ** 2
+    fgl = np.unique(np.concatenate([np.geomspace(5.0, F_LIJ, 260)] +
+                                   [f * (1 + z_ * np.linspace(-4, 4, 17)) for f, z_ in zip(mod.freq, zeta) if f < F_LIJ]))
+    fgl = fgl[(fgl >= 5.0) & (fgl <= F_LIJ)]
+    arr["lij_fgrid"] = fgl
+    for d in range(3):
+        eje = EJES[d]
+        gam = mod.pf[:, d]
+        top = {k: set() for k in medidas}
+        for f in [f for f in mod.freq if f <= F_LIJ] + [F_LIJ]:
+            q, qst = post.q_armonico(mod.freq, gam, f, amp(f), zeta)
+            Sc = amp(f) * mod.s_st[d].astype(np.complex64) + np.tensordot((q - qst).astype(np.complex64), mod.s_phi, axes=1)
+            for (gn, cual) in medidas:
+                idx = G[gn]["idx"]
+                v = pico_ciclo(Sc[idx], cual, 6)
+                top[(gn, cual)].update(idx[np.argsort(v)[-120:]].tolist())
+        marg = {}
+        for nombre, gd in G.items():
+            for (cn, cual, adm, fs) in gd["crit"]:
+                sub = np.array(sorted(top[(nombre, cual)]))
+                sst, sph = mod.s_st[d][sub].astype(np.complex64), mod.s_phi[:, sub]
+                cur = np.zeros(len(fgl))
+                for k, f in enumerate(fgl):
+                    q, qst = post.q_armonico(mod.freq, gam, f, amp(f), zeta)
+                    cur[k] = pico_ciclo(amp(f) * sst + np.tensordot((q - qst).astype(np.complex64), sph, axes=1), cual, 6).max()
+                arr[f"lij_{eje}_{nombre}|{cual}"] = cur
+                fc = float(fgl[np.argmax(cur)])
+                q, qst = post.q_armonico(mod.freq, gam, fc, amp(fc), zeta)
+                Sc = amp(fc) * mod.s_st[d].astype(np.complex64) + np.tensordot((q - qst).astype(np.complex64), mod.s_phi, axes=1)
+                idx = gd["idx"]
+                v = pico_ciclo(Sc[idx], cual, 12)
+                e = idx[np.argmax(v)]
+                marg[f"{nombre} | {cn}"] = dict(sigma=float(v.max()), p999=float(np.percentile(v, 99.9)), adm=adm, FS=fs,
+                                                MS=adm / (fs * float(v.max())) - 1,
+                                                MS_p999=adm / (fs * float(np.percentile(v, 99.9))) - 1, f_crit=fc,
+                                                pos=[float(c) for c in cen[e]])
+        acc = {}
+        for mn, node in mon.items():
+            g_ = np.zeros(len(fgl))
+            for k, f in enumerate(fgl):
+                q, qst = post.q_armonico(mod.freq, gam, f, amp(f), zeta)
+                u = amp(f) * mod.ust[d][node, d] + np.sum((q - qst) * mod.phi[:, node, d])
+                g_[k] = abs(amp(f) - (2 * np.pi * f) ** 2 * u) / G_MM
+            acc[mn] = float(g_.max())
+        rel = {}
+        for k_, (na, nb, ref, tipo, eje_) in pares.items():
+            nrm = eje_ / np.linalg.norm(eje_)
+            mr = 0.0
+            for f in fgl:
+                q, qst = post.q_armonico(mod.freq, gam, f, amp(f), zeta)
+                du = amp(f) * (mod.ust[d][na] - mod.ust[d][nb]) + np.tensordot(q - qst, mod.phi[:, na] - mod.phi[:, nb], axes=1)
+                mr = max(mr, float(abs(np.dot(du, nrm))))
+            rel[k_] = dict(rad=mr)
+        res["lijadora"][eje] = dict(margenes=marg, acc_max_g=acc, rel=rel)
+        print(f"lijadora {eje} lista ({time.time() - t0:.0f} s)")
 
     # ============================================================ choque
     res["choque"] = {}

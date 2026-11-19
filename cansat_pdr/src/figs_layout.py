@@ -10,6 +10,7 @@ import params as P
 import cad, viz
 from hlr import Lienzo
 from planos import medio, f1
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 AZ, VD, NAR, GR = "#2f3192", "#1a8a55", "#e67e22", "#555555"
 FS = 8.5

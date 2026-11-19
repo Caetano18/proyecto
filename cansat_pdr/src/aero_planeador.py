@@ -13,6 +13,7 @@ from PIL import Image
 import params as P
 import polhamus as ph
 import planeo as pl
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FIGS, FEA, BUILD = (os.path.join(BASE, d) for d in ("figs", "fea", "build"))

@@ -360,11 +360,14 @@ def main(wd, escala=1.0, nmodes=30, tag="base", solo=None):
     json.dump(meta, open(os.path.join(wd, f"partes_{tag}.json"), "w"), indent=1)
     base, guia, brida = nodos_base(xyz), nodos_guia(xyz), nodos_brida(xyz)
     print(f"nodos: base {len(base)}, guia superior {len(guia)}, brida {len(brida)}")
-    bc_lanz = [(base, 1, 3), (guia, 2, 3)]
+    bc_guia = [(base, 1, 3), (guia, 2, 3)]
+    bc_lanz = [(base, 1, 3)] if P.APOYO == "base" else bc_guia
     escribir_inp(os.path.join(wd, f"modal_{tag}.inp"), xyz, els, epart, parts, "modal", bc_lanz, nmodes)
     escribir_inp(os.path.join(wd, f"estat_{tag}.inp"), xyz, els, epart, parts, "estat3", bc_lanz)
     escribir_inp(os.path.join(wd, f"parac_{tag}.inp"), xyz, els, epart, parts, "estat1", [(brida, 1, 3)])
-    escribir_inp(os.path.join(wd, f"libre_{tag}.inp"), xyz, els, epart, parts, "modal", [(base, 1, 3)], 6)
+    # corrida de comparacion: la otra condicion de apoyo (si el caso base es voladizo, aqui el borde superior va guiado)
+    escribir_inp(os.path.join(wd, f"libre_{tag}.inp"), xyz, els, epart, parts, "modal",
+                 bc_guia if P.APOYO == "base" else [(base, 1, 3)], 6)
     solo = solo or [x for x in os.environ.get("FE_SOLO", "").split(",") if x]      # FE_SOLO=malla: solo malla y mazos
     for job in (f"estat_{tag}", f"parac_{tag}", f"modal_{tag}", f"libre_{tag}"):
         if solo and not any(job.startswith(x) for x in solo):

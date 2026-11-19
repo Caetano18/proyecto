@@ -3,6 +3,7 @@ import os, sys, json
 import cadquery as cq
 import cad, viz
 import params as P
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 V = cq.Vector
 
@@ -71,7 +72,7 @@ def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5):
 def anotar_todo(out, M):
     anotar(out, M, "lan_corte", "lan", izq=[("paracaidas", "Paracaídas (15 m/s)"), ("llave", "Llave de bayoneta\ny aislador"),
                                             ("bateria", "Batería 18650"), ("lastre", "Lastre de centrado"), ("boca", "Boca abierta\n(salida del planeador)")],
-           der=[("tapa", "Tapa nervada\nPA12-CF"), ("tubo", "Tubo LW-PLA\npared 2 mm"), ("pcb", "PCB principal"), ("ala", "Ala plegada"),
+           der=[("tapa", "Tapa nervada\nPA12-CF"), ("tubo", "Tubo LW-ASA\npared 2 mm"), ("pcb", "PCB principal"), ("ala", "Ala plegada"),
                 ("c1", "Cuaderna C1")], ancho=6.2, col=0.31)
     anotar(out, M, "equipos", "equipos", izq=[("c1", "Cuaderna C1\n(pivotes A)"), ("lastre", "Lastre de centrado"), ("servo_cola", "Servo de cola"),
                                               ("bandeja", "Bandeja de aviónica\nG10 0,8"), ("pcb", "PCB principal")],

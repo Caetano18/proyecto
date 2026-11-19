@@ -48,7 +48,7 @@ def main(out):
     grupo(A, "Varilla BA", "Varillas de borde de ataque (4 tramos)", lan)
     grupo(A, "Tirante", "Tirantes de borde de fuga", lan)
     grupo(A, "Varilla de raiz", "Varillas de raiz", lan)
-    grupo(A, "Manguito", "Manguitos de traba Al 7075", lan)
+    grupo(A, "Manguito de traba", "Manguitos de traba Al 7075", lan)
     grupo(A, "Herraje", "Herrajes A, B y T (Al 7075)", lan, 0.10)
     add(A, "Membrana ripstop con costuras", 2, 2.1, 0.4, "Nota de membrana", 136.0)
     add(A, "Articulaciones, resortes, cordon elastico", 2, 4.0, 0.8, "Estimado", 140.0)
@@ -79,7 +79,7 @@ def main(out):
     m_plan_sin = sum(f["masa"] for f in filas)
     # ---------------- contenedor
     K = "Contenedor"
-    grupo(K, "CT1", "Tubo d90 x 242, pared 2 (LW-PLA)", lan, 0.10)
+    grupo(K, "CT1", "Tubo d90 x 242, pared 2 (%s)" % ("LW-ASA" if P.CT_MAT == "ASALW" else "LW-PLA"), lan, 0.10)
     grupo(K, "CT2", "Tapa nervada (PA12-CF)", lan, 0.10)
     add(K, "Paracaidas de 15 m/s", 1, M["paracaidas"], 3.0, "Asignacion", 230.0)
     add(K, "Brida de 3 puntos + eslabon giratorio", 1, M["brida_herrajes"], 1.0, "Estimado", 232.0)

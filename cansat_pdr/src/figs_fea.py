@@ -14,6 +14,7 @@ from matplotlib.patches import Patch
 import pyvista as pv
 import params as P
 from viz import recortar
+import idioma  # noqa: F401  (FIG_LANG=en guarda tambien la version en ingles)
 
 pv.OFF_SCREEN = True
 plt.rcParams.update({"font.family": "Inter", "font.size": 11, "axes.spines.top": False, "axes.spines.right": False,
@@ -24,9 +25,11 @@ AZUL, ROJO, VERDE, NAR, VIOL, GRIS = "#2f3192", "#c0392b", "#1a8a55", "#e67e22",
 COL = [AZUL, ROJO, VERDE, NAR, VIOL, "#008b8b", "#8d6e63", "#222222"]
 EJES = "xyz"
 NOM_EJE = {"x": "X (axial)", "y": "Y (lateral)", "z": "Z (lateral)"}
-ADM_MAT = {"LWPLA": 14.0 / 2, "PA12CF": 65.0 / 2, "G10": 280.0 / 1.5, "CFRP": 900.0 / 1.5, "EQ_PCB": 280.0 / 1.5,
+TUBO = P.CT_MAT
+TUBO_N = {"LWPLA": "LW-PLA", "ASALW": "LW-ASA"}.get(TUBO, TUBO)
+ADM_MAT = {TUBO: P.MAT[TUBO]["Sut"] / P.MAT[TUBO]["FS"], "PA12CF": 65.0 / 2, "G10": 280.0 / 1.5, "CFRP": 900.0 / 1.5, "EQ_PCB": 280.0 / 1.5,
            "A2-70": 450.0 / 1.25}
-MATS = [("LWPLA", "LW-PLA (tubo)", (0.93, 0.93, 0.86)), ("PA12CF", "PA12-CF (cuadernas, tapa)", (0.36, 0.38, 0.42)),
+MATS = [(TUBO, f"{TUBO_N} (tubo)", (0.93, 0.93, 0.86)), ("PA12CF", "PA12-CF (cuadernas, tapa)", (0.36, 0.38, 0.42)),
         ("G10", "G10 (paneles, bandeja)", (0.55, 0.70, 0.42)), ("CFRP", "CFRP (largueros)", (0.12, 0.12, 0.14)),
         ("EQ_PCB", "FR-4 (placas)", (0.05, 0.47, 0.27)), ("A2-70", "Inox (llave)", (0.78, 0.78, 0.82)),
         ("EQ_BAT", "Batería", (0.16, 0.38, 0.78)), ("EQ_BLK", "Masas de equipo", (0.90, 0.55, 0.18)),
@@ -161,7 +164,7 @@ def main(wd, tag, fjson, fnpz, fala, out):
         k = int(np.argmax(u))
         return cen_all[idx_v[k]].copy(), float(u[k]), mat[idx_v[k]], int(epart[idx_v[k]])
 
-    NOMB = {"LWPLA": "tubo de LW-PLA", "PA12CF": "PA12-CF", "G10": "G10", "CFRP": "larguero", "EQ_PCB": "placa", "A2-70": "llave"}
+    NOMB = {TUBO: f"tubo de {TUBO_N}", "PA12CF": "PA12-CF", "G10": "G10", "CFRP": "larguero", "EQ_PCB": "placa", "A2-70": "llave"}
 
     def nc(x, d=2):
         return f"{x:.{d}f}".replace(".", ",")
