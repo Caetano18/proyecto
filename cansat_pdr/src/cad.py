@@ -59,12 +59,28 @@ def sector(x0, x1, r0, r1, ang, width):
 # -------------------------------------------------------- cuadernas
 
 
+def angular(sy, sz, x0=None, x1=None, holgura=0.0):
+    """Angular de arista (CFRP 6 x 6 x 1): esquina exterior en la arista interior de la caja (y = sy*Y_BOX, z = sz*Z_BOX)."""
+    x0 = P.LON_X[0] if x0 is None else x0
+    x1 = P.LON_X[1] if x1 is None else x1
+    yc, zc = sy * P.Y_BOX, sz * P.Z_BOX
+    t, L = P.ANG_T + holgura, P.ANG_L + holgura
+    y_a, y_b = sorted((yc, yc - sy * t))
+    z_a, z_b = sorted((zc, zc - sz * L))
+    ala1 = box(x0, x1, y_a, y_b, z_a, z_b)                 # contra el panel lateral
+    y_a, y_b = sorted((yc, yc - sy * L))
+    z_a, z_b = sorted((zc, zc - sz * t))
+    ala2 = box(x0, x1, y_a, y_b, z_a, z_b)                 # contra la tapa (arriba) o la cubierta (abajo)
+    return ala1.fuse(ala2).clean()
+
+
 def cuaderna_extrema(tail=False, fe=False):
-    """C1 (nariz) o C4 (cola): alma + aro + nervios + bujes de larguero + orejas de pivote."""
+    """C1 (nariz) o C4 (cola): alma + aro + nervios + alojamientos de los angulares + orejas de pivote (+ collar en C4)."""
     x0, x1 = P.X_C4 if tail else P.X_C1
-    full = disc(x0, x1)
-    web = disc(x1 - P.WEB_T, x1) if tail else disc(x0, x0 + P.WEB_T)
-    rim = full.cut(disc(x0, x1, P.RB - P.RIM_T))
+    R = P.RB if tail else P.R_C1
+    full = disc(x0, x1, R)
+    web = disc(x1 - P.WEB_T, x1, R) if tail else disc(x0, x0 + P.WEB_T, R)
+    rim = full.cut(disc(x0, x1, R - P.RIM_T))
     yo = P.Y_OUT
     ztop = P.Z_BOX + P.T_COVER
     parts = [web, rim]
@@ -76,17 +92,16 @@ def cuaderna_extrema(tail=False, fe=False):
     parts.append(box(x0, x1, -yo, yo, ztop - P.RIB_T, ztop))                  # nervio superior
     parts.append(box(x0, x1, -yo, yo, -P.Z_BOX, -P.Z_BOX + P.RIB_T))          # nervio inferior
     parts.append(box(x0, x1, -yo, yo, P.Z_TRAY[0] - 1.2, P.Z_TRAY[1] + 1.2))  # asiento de bandeja
-    for sy in (1, -1):
-        for sz in (1, -1):
-            parts.append(disc(x0, x1, P.BOSS_D / 2, sy * P.LON_Y, sz * P.LON_Z))
     if tail:
         parts.append(disc(x0, x1, 9.0))                       # buje del cerrojo de bayoneta
         parts.append(disc(x0, x1, 5.0, 0, P.Z_BOOM))          # buje del botalon de cola
     body = fuse(*parts).intersect(full)
+    if tail:                                                  # collar del centrador de cola (rev. B)
+        body = body.fuse(disc(x1, P.CEN_X1, P.CEN_RO).cut(disc(x1 - 1, P.CEN_X1 + 1, P.CEN_RI))).clean()
     for sy in (1, -1):
-        for sz in (1, -1):
+        for sz in (1, -1):                                    # alojamientos en L de los angulares (5 mm)
             xa, xb = (x0, P.LON_X[1]) if tail else (P.LON_X[0], x1)
-            body = body.cut(disc(xa, xb, P.LON_DO / 2, sy * P.LON_Y, sz * P.LON_Z))
+            body = body.cut(angular(sy, sz, xa, xb))
         zc = P.Z_TE if tail else 0.0
         ya, yb2 = sorted((sy * 31.0, sy * 50.0))
         body = body.cut(box(x0 - 1, x1 + 1, ya, yb2, zc - 4.0, zc + 4.0))     # ranura del herraje
@@ -106,7 +121,11 @@ def cuaderna_media(x0, x1):
     body = body.cut(box(x0 - 1, x1 + 1, -16.5, 16.5, -24.0, -7.2))
     for sy in (1, -1):
         for sz in (1, -1):
-            body = body.cut(disc(x0 - 1, x1 + 1, P.LON_DO / 2, sy * P.LON_Y, sz * P.LON_Z))
+            body = body.cut(angular(sy, sz, x0 - 1, x1 + 1))     # muescas de paso de los angulares
+    body = body.cut(box(x0 - 1, x1 + 1, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY))  # ranura de paso de la bandeja
+    for sy in (1, -1):                                            # muescas de los rieles
+        yc = sy * P.RIEL_Y
+        body = body.cut(box(x0 - 1, x1 + 1, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]))
     return body.clean()
 
 
@@ -138,14 +157,15 @@ def piezas_estructura(fe=False):
     k = 1
     for sy in (1, -1):
         for sz in (1, -1):
-            add(f"L{k} larguero", rod((P.LON_X[0], sy * P.LON_Y, sz * P.LON_Z),
-                                      (P.LON_X[1], sy * P.LON_Y, sz * P.LON_Z), P.LON_DO, P.LON_DI), "CFRP", CF)
+            add(f"L{k} larguero angular", angular(sy, sz), "CFRP", CF)
             k += 1
     xa, xb = P.X_C1[1], P.X_C4[0]
     add("P1 panel lateral der.", box(xa, xb, P.Y_BOX, P.Y_OUT, -P.Z_BOX, P.Z_BOX), "G10", G10C)
     add("P2 panel lateral izq.", box(xa, xb, -P.Y_OUT, -P.Y_BOX, -P.Z_BOX, P.Z_BOX), "G10", G10C)
     add("P3 tapa superior", box(xa, xb, -P.Y_OUT, P.Y_OUT, P.Z_BOX, P.Z_BOX + P.T_COVER), "G10", G10C)
-    add("B1 bandeja de avionica", box(xa, xb, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY), "G10", (0.62, 0.74, 0.48))
+    # escote de la bandeja frente a la llave (rev. B): r = 14 deja 6 mm entre la arandela y el apoyo de la bandeja en C4
+    bandeja = box(xa, xb, -P.Y_BOX, P.Y_BOX, *P.Z_TRAY).cut(disc(xb - P.R_ESCOTE - 1.0, xb + 1, P.R_ESCOTE))
+    add("B1 bandeja de avionica", bandeja, "G10", (0.62, 0.74, 0.48))
     for k, sy in ((1, 1), (2, -1)):
         yc = sy * P.RIEL_Y
         add(f"R{k} riel longitudinal", box(xa, xb, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]),
@@ -272,6 +292,9 @@ def piezas_cerrojo(fe=False):
         llave = fuse(eje, arandela, rod((xpl + 1.6, 0, -7), (xpl + 1.6, 0, 7), 3.0))
         out.append(dict(nombre="Plato de apoyo", shape=plato, mat="A2-70", color=acero, grupo="mecanismo", masa=None))
     out.append(dict(nombre="Llave de bayoneta", shape=llave, mat="A2-70", color=acero, grupo="mecanismo", masa=None))
+    mang = disc(P.CEN_EX[0], P.CEN_EX[1], P.CEN_RO + P.CEN_ELT).cut(disc(P.CEN_EX[0] - 1, P.CEN_EX[1] + 1, P.CEN_RO))
+    out.append(dict(nombre="Manguito del centrador", shape=mang, mat="ELAST_C" if fe else "ELAST", color=(0.15, 0.15, 0.6),
+                    grupo="mecanismo", masa=mang.Volume() * 1.2e-3))
     out.append(dict(nombre="Aislador elastomerico", shape=aislador, mat="ELAST_X" if fe else "ELAST",
                     color=(0.15, 0.15, 0.6), grupo="mecanismo", masa=aislador.Volume() * 1.2e-3))
     return out
@@ -289,6 +312,7 @@ def tapa_contenedor(fe=False):
         n = box(xp - 0.5, x1, P.CT_CAP_BOSS - 1, P.CT_RI - 1, -P.CT_CAP_RIB / 2, P.CT_CAP_RIB / 2)
         partes.append(n.rotate(V(0, 0, 0), V(1, 0, 0), ang))
     tapa = fuse(*partes).intersect(disc(x0, x1, P.CT_RI))
+    tapa = tapa.fuse(disc(P.SOC_X0, x0, P.SOC_RO).cut(disc(P.SOC_X0 - 1, x0 + 1, P.SOC_RI))).clean()   # alojamiento del centrador
     tapa = tapa.cut(disc(x0 - 1, x1 + 1, P.KEY_HOLE / 2))                              # pasaje del eje
     if not fe:
         tapa = tapa.cut(box(x0 - 1, x1 + 1, -1.8, 1.8, -7.6, 7.6))                    # ojo de cerradura
@@ -321,12 +345,12 @@ def piezas_contenedor(fe=False):
 
 def piezas_patines(fe=False):
     out = []
-    for xr, tag in ((P.X_C1, "C1"), (P.X_C4, "C4")):
+    for xr, tag in ((P.X_C1, "C1"),):          # rev. B: la cola se centra en la tapa (sin patines en C4)
         for ang in P.PAD_POS:
-            sh = sector(xr[0], xr[1], P.RB, P.CT_RI, ang, P.PAD_ANG)
+            sh = sector(xr[0], xr[1], P.R_C1, P.CT_RI, ang, P.PAD_ANG)
             mat = "PAD_A" if ang in (45.0, 225.0) else "PAD_B"
             out.append(dict(nombre=f"Patin {tag} {int(ang)}", shape=sh, mat=mat if fe else "ELAST",
-                            color=(0.95, 0.95, 0.6), grupo="mecanismo", masa=0.11))
+                            color=(0.95, 0.95, 0.6), grupo="mecanismo", masa=sh.Volume() * 1.3e-3))
     return out
 
 

@@ -34,7 +34,7 @@ def main(out):
     grupo(E, "C1 cuaderna", "Cuaderna de nariz C1 (PA12-CF)", lan, 0.10)
     grupo(E, "cuaderna intermedia", "Cuadernas C2 y C3 (PA12-CF)", lan, 0.10)
     grupo(E, "C4 cuaderna", "Cuaderna de cola C4 (PA12-CF)", lan, 0.10)
-    grupo(E, "larguero", "Largueros CFRP d5/3,5 x 201", lan, 0.05)
+    grupo(E, "larguero", "Largueros angulares CFRP 6x6x1 x 201", lan, 0.05)
     grupo(E, "panel lateral", "Paneles laterales G10 0,5", lan, 0.05)
     grupo(E, "tapa superior", "Tapa superior G10 0,5", lan, 0.05)
     grupo(E, "bandeja", "Bandeja de avionica G10 0,8", lan, 0.05)
@@ -70,7 +70,9 @@ def main(out):
     add(V, "Llave de bayoneta + plato de apoyo (inox)", 1,
         sum(p["masa"] for p in lan if "Llave" in p["nombre"] or "Plato" in p["nombre"]), 0.4, "CAD", 210.0)
     add(V, "Aislador elastomerico de la llave", 1, [p["masa"] for p in lan if "Aislador" in p["nombre"]][0], 0.1, "CAD", 217.0)
-    add(V, "Patines de elastomero con cara de PTFE", 8, 8 * 0.11, 0.2, "CAD", 103.0)
+    add(V, "Patines de C1: elastomero con cara de PTFE", 4, sum(p["masa"] for p in lan if p["nombre"].startswith("Patin")), 0.1, "CAD", 4.0)
+    add(V, "Manguito elastomerico del centrador de cola", 1, [p["masa"] for p in lan if "Manguito del centrador" in p["nombre"]][0],
+        0.1, "CAD", 209.0)
     m_plan_sin = sum(f["masa"] for f in filas)
     # ---------------- contenedor
     K = "Contenedor"

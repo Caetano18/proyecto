@@ -66,7 +66,7 @@ def hoja1(pdf, out, R):
     h = Hoja("CS-MEC-01", "Conjunto de lanzamiento", "1:1", "Ver lista",
              notas=("Contenedor Ø90 × 242 (S2, S3): pared exterior de 2,0 mm impresa (S6), boca inferior abierta.",
                     "El planeador sale por la boca al girar 90° la llave de bayoneta (ítem 4).",
-                    "La pared retiene las alas plegadas (S7); 1 mm de huelgo radial tomado por 8 patines de elastómero con cara de PTFE.",
+                    "La pared retiene las alas plegadas (S7). La nariz apoya en 4 patines de elastómero de 24° × 1,5 con cara de PTFE (C1 Ø83); la cola se centra en la tapa (ítem 12).",
                     "Orificios en la pared: interruptor Ø8 e indicador Ø5 (E5: ≤ 10 mm).  La brida ancla en tres nervios de la tapa."))
     todo = [p["shape"] for p in lan if p["grupo"] != "carenado"]
     x0 = P.CT_X[0]
@@ -87,7 +87,8 @@ def hoja1(pdf, out, R):
     for n, p3, q in ((1, (120, 0, 44), (150, 280)), (2, (P.CT_TOP[0] + 1.5, 0, 30), (262, 280)),
                      (3, (P.CT_TOP[0] + P.CT_CAP_H + 9, 0, 20), (285, 262)), (4, (P.L_G + 2, 0, 0), (290, 222)), (11, (P.CT_TOP[0] + 5.5, 0, 6), (290, 240)),
                      (5, (P.L_G - 4, 0, -20), (290, 200)), (6, (4, 0, 20), (30, 262)), (7, (100, 0, 6.5), (120, 250)),
-                     (8, (100, 0, -14), (120, 192)), (9, (30, 0, 8), (64, 250)), (10, (175, 0, -44), (215, 168))):
+                     (8, (100, 0, -14), (120, 192)), (9, (30, 0, 8), (64, 250)), (10, (4, 0, -42.5), (30, 168)),
+                     (12, (P.CEN_EX[0] + 1.5, 0, P.CEN_RO + 0.5), (262, 186))):
         h.globo(T(p3), q, n)
     # vista exterior
     ext = [p["shape"] for p in lan if p["grupo"] == "contenedor"]
@@ -102,8 +103,8 @@ def hoja1(pdf, out, R):
              (3, "Paracaídas + brida 3 puntos", "Ripstop / Kevlar", "1"), (4, "Llave de bayoneta Ø5", "Inox A2-70", "1"),
              (5, "Cuaderna de cola C4", "PA12-CF", "1"), (6, "Cuaderna de nariz C1", "PA12-CF", "1"),
              (7, "Batería 18650 + sillas", "-", "1"), (8, "PCB principal", "FR-4", "1"),
-             (9, "Lastre de centrado", "Asignación", "1"), (10, "Patín de guia", "Elastómero + PTFE", "8"),
-             (11, "Aislador + plato de apoyo", "Elastómero / inox", "1")]
+             (9, "Lastre de centrado", "Asignación", "1"), (10, "Patín de guía (C1)", "Elastómero + PTFE", "4"),
+             (11, "Aislador + plato de apoyo", "Elastómero / inox", "1"), (12, "Centrador de cola: collar + manguito", "PA12-CF / elastómero", "1")]
     h.tabla(300, 160, ["N.", "Denominación", "Material", "Cant."], lista, [8, 46, 36, 12], titulo="LISTA DE PARTES")
     h.guardar(pdf, os.path.join(out, "CS-MEC-01.png"))
 
@@ -182,7 +183,8 @@ def hoja3(pdf, out, R):
 def hoja4(pdf, out, R):
     est = cad.build("estibado")
     h = Hoja("CS-MEC-04", "Estructura primaria (bastidor)", "1:1", "Ver lista",
-             notas=("Largueros pegados con epoxi estructural en los bujes de C1 y C4 (5 mm) y pasantes en C2 y C3.",
+             notas=("Largueros: angulares CFRP 6 × 6 × 1 en las 4 aristas interiores; paneles y tapa pegan cara contra cara sobre sus alas.",
+                    "Los angulares entran 5 mm en alojamientos en L de C1 y C4 (epoxi estructural) y pasan por muescas de C2 y C3.",
                     "Paneles de G10 atornillados (M2 × 6 + inserto térmico) y pegados sobre los nervios de las cuadernas.",
                     "Cuadernas impresas en PA12-CF, 100 % de relleno, capas en el plano y-z (carga axial perpendicular a las capas: ver margenes).",
                     "Masas calculadas con el volumen CAD y la densidad nominal."))
@@ -190,34 +192,36 @@ def hoja4(pdf, out, R):
     shapes = [p["shape"] for p in st]
     T = h.vista(shapes, "lateral", (38, 226), 1.0, ocultas=True, titulo="VISTA LATERAL (líneas ocultas)", titulo_dy=19)
     yb = T((0, 0, -P.RB))[1]
-    h.cota_h(T((P.LON_X[0], 0, -P.RB)), T((P.LON_X[1], 0, -P.RB)), yb - 5, txt=f"{P.LON_X[1] - P.LON_X[0]:g}  (largueros)")
+    h.cota_h(T((P.LON_X[0], 0, -P.RB)), T((P.LON_X[1], 0, -P.RB)), yb - 5, txt=f"{P.LON_X[1] - P.LON_X[0]:g}  (angulares)")
     h.cota_h(T((P.X_C1[1], 0, -P.RB)), T((P.X_C4[0], 0, -P.RB)), yb - 11, txt=f"{P.X_C4[0] - P.X_C1[1]:g}  (paneles)")
     xr = T((P.L_G, 0, 0))[0]
-    h.cota_v(T((P.L_G, 0, -P.LON_Z)), T((P.L_G, 0, P.LON_Z)), xr + 7, txt=f"{2 * P.LON_Z:g}", dx=1.2)
+    h.cota_v(T((P.L_G, 0, -P.Z_BOX)), T((P.L_G, 0, P.Z_BOX)), xr + 7, txt=f"{2 * P.Z_BOX:g}", dx=1.2)
     h.cota_v(T((P.L_G, 0, P.Z_TRAY[0])), T((P.L_G, 0, P.Z_BOX)), xr + 15, txt=f"{P.Z_BOX - P.Z_TRAY[0]:g}", dx=1.2)
     sup = [p["shape"] for p in st if "tapa" not in p["nombre"]]
     T2 = h.vista(sup, "superior", (38, 112), 1.0, ocultas=False, titulo="VISTA SUPERIOR (sin tapa P3)")
     xl = T2((0, 0, 0))[0]
-    h.cota_v(T2((0, -P.LON_Y, 0)), T2((0, P.LON_Y, 0)), xl - 6, txt=f"{2 * P.LON_Y:g}")
+    h.cota_v(T2((0, -P.Y_BOX, 0)), T2((0, P.Y_BOX, 0)), xl - 6, txt=f1(2 * P.Y_BOX))
     for n, p3, q in ((1, (4, 0, 38), (30, 280)), (2, (62, 0, 20), (88, 280)), (3, (140, 0, 20), (166, 280)),
-                     (4, (203, 0, 38), (230, 280)), (5, (100, 0, P.LON_Z), (122, 280)), (6, (110, 0, -15), (150, 172)),
-                     (7, (90, 0, P.Z_BOX), (62, 280)), (8, (80, 0, -4.6), (100, 172))):
+                     (4, (203, 0, 38), (230, 280)), (5, (100, 0, P.Z_BOX - 3), (122, 280)), (6, (110, 0, -15), (150, 172)),
+                     (7, (90, 0, P.Z_BOX), (62, 280)), (8, (80, 0, -4.6), (100, 172)), (11, (60, 0, -9), (76, 172))):
         h.globo(T(p3), q, n)
     filas = []
     orden = [("C1 cuaderna de nariz", 1, "PA12-CF"), ("C2 cuaderna intermedia", 2, "PA12-CF"),
              ("C3 cuaderna intermedia", 3, "PA12-CF"), ("C4 cuaderna de cola", 4, "PA12-CF"),
-             ("larguero", 5, "CFRP Ø5/3,5 × 201"), ("panel lateral", 6, "G10 0,5 mm"), ("tapa superior", 7, "G10 0,5 mm"),
-             ("bandeja", 8, "G10 0,8 mm"), ("Cuna de ala", 9, "PA12-CF"), ("Guia de botalon", 10, "PA12-CF")]
+             ("larguero", 5, "CFRP 6×6×1 × 201"), ("panel lateral", 6, "G10 0,5 mm"), ("tapa superior", 7, "G10 0,5 mm"),
+             ("bandeja", 8, "G10 0,8 mm"), ("Cuna de ala", 9, "PA12-CF"), ("Guia de botalon", 10, "PA12-CF"),
+             ("riel", 11, "PA12-CF 3 × 8")]
     tot = 0.0
     for key, n, mat in orden:
         ps = [p for p in st if key in p["nombre"]]
         m = sum(p["masa"] for p in ps)
         tot += m
-        nombre = {"larguero": "Larguero L1-L4", "panel lateral": "Panel lateral P1/P2", "tapa superior": "Tapa superior P3",
-                  "bandeja": "Bandeja de aviónica B1", "Guia de botalon": "Guía de botalón"}.get(key, key)
+        nombre = {"larguero": "Larguero angular L1-L4", "panel lateral": "Panel lateral P1/P2", "tapa superior": "Tapa superior P3",
+                  "bandeja": "Bandeja de aviónica B1", "Guia de botalon": "Guía de botalón",
+                  "riel": "Riel de bandeja R1/R2"}.get(key, key)
         filas.append((n, nombre, mat, len(ps), f1(m / len(ps)), f1(m)))
     filas.append(("", "TOTAL estructura primaria", "", "", "", f1(tot)))
-    h.tabla(262, 275, ["N.", "Denominación", "Material", "Cant.", "g c/u", "g"], filas, [7, 45, 38, 11, 13, 13],
+    h.tabla(272, 275, ["N.", "Denominación", "Material", "Cant.", "g c/u", "g"], filas, [7, 45, 36, 10, 12, 12],
             titulo="LISTA DE MATERIALES")
     img(h, R and os.path.join(R, "bastidor_explotado.png"), 262, 52, 142)
     h.guardar(pdf, os.path.join(out, "CS-MEC-04.png"))
@@ -225,9 +229,10 @@ def hoja4(pdf, out, R):
 
 def hoja5(pdf, out, R):
     h = Hoja("CS-MEC-05", "Cuadernas C1, C2/C3 y C4", "2:1 / 1:1", "PA12-CF impreso",
-             notas=("C1 y C4: alma de 1,6, aro de 2,2, nervios de 2,8 y bujes Ø9,5 para los largueros (alojamiento Ø5 × 5).",
+             notas=("C1 (Ø83) y C4 (Ø84): alma de 1,6, aro de 2,2, nervios de 2,8 y 4 alojamientos en L (6 × 6 × 1, prof. 5) para los angulares.",
                     "Ranura de herraje: C1 en z = 0 (varilla de borde de ataque), C4 en z = -7 (tirante).  Perno de pivote Ø2,5.",
-                    "C4 lleva el buje central Ø18 con pasaje Ø6 para el eje de la llave de bayoneta y el paso Ø6 del botalón de cola.",
+                    "C4: buje central Ø18 con pasaje Ø6 (llave), paso Ø6 del botalón y collar del centrador Ø40/Ø34 × 3,5 en la cara trasera.",
+                    "C2 / C3: muescas en L para los angulares y ranuras de paso de la bandeja (0,8) y de los rieles (3 × 8).",
                     "Radios de acuerdo de 1 mm en todos los encuentros de nervios (no dibujados)."))
     c1 = cad.cuaderna_extrema(False)
     c4 = cad.cuaderna_extrema(True)
@@ -238,13 +243,12 @@ def hoja5(pdf, out, R):
     h.texto(100, cy - 2 * P.RB - 14, "C1 - VISTA DESDE ADENTRO (2:1)", fs=6.5, weight="bold", ha="center")
     yt = T((0, 0, P.RB))[1]
     yb = T((0, 0, -P.RB))[1]
-    h.cota_h(T((0, P.RB, 0)), T((0, -P.RB, 0)), yb - 5, txt=f"Ø{2 * P.RB:g}", dy=-1.4)
+    h.cota_h(T((0, P.R_C1, 0)), T((0, -P.R_C1, 0)), yb - 5, txt=f"Ø{2 * P.R_C1:g}", dy=-1.4)
     h.cota_h(T((0, P.Y_OUT, P.Z_BOX)), T((0, -P.Y_OUT, P.Z_BOX)), yt + 5, txt=f1(2 * P.Y_OUT))
-    h.cota_h(T((0, P.LON_Y, -P.LON_Z)), T((0, -P.LON_Y, -P.LON_Z)), T((0, 0, -P.LON_Z))[1] + 16, txt=f"{2 * P.LON_Y:g}")
-    h.cota_v(T((0, -P.LON_Y, -P.LON_Z)), T((0, -P.LON_Y, P.LON_Z)), T((0, -P.LON_Y, 0))[0] - 16, txt=f"{2 * P.LON_Z:g}")
+    h.cota_v(T((0, -P.Y_BOX, -P.Z_BOX)), T((0, -P.Y_BOX, P.Z_BOX)), T((0, -P.Y_BOX, 0))[0] - 12, txt=f"{2 * P.Z_BOX:g}")
     xr = T((0, -P.RB, 0))[0]
     h.cota_v(T((0, -P.RB, -4)), T((0, -P.RB, 4)), xr + 5, txt="8", dx=1.2)
-    h.llamada(T((0, P.LON_Y, P.LON_Z)), (40, cy + 2 * P.RB + 9), "4 × buje Ø9,5 con alojamiento Ø5 × 5", ha="left")
+    h.llamada(T((0, P.Y_BOX - 2, -(P.Z_BOX - 0.5))), (40, cy + 2 * P.RB + 9), "4 × alojamiento en L para angular 6 × 6 × 1 (prof. 5)", ha="left")
     h.llamada(T((0, P.Y_PIV, 0)), (16, 62), "Perno de pivote A Ø2,5 (eje vertical, y = ±34)", ha="left")
     h.llamada(T((0, 6, P.Z_TRAY[0])), (16, 70), "Asiento de la bandeja (z = -5)", ha="left")
     h.llamada(T((0, 0, 12)), (16, 78), "Alma de 1,6 (cara de nariz cerrada)", ha="left")
@@ -253,6 +257,7 @@ def hoja5(pdf, out, R):
     h.llamada(T4((0, 0, 0)), (330, 70), "Buje Ø18, pasaje Ø6: eje de la llave Ø5")
     h.llamada(T4((0, 0, P.Z_BOOM)), (330, 78), "Paso del botalón de cola Ø6")
     h.llamada(T4((0, P.Y_PIV, P.Z_TE)), (330, 62), "Perno de pivote B Ø2,5 (ranura en z = -7)")
+    h.llamada(T4((0, 0, -0.5 * (P.CEN_RI + P.CEN_RO))), (330, 54), "Collar del centrador Ø40 / Ø34 × 3,5 (cara trasera)")
     h.cota_v(T4((0, P.RB, P.Z_TE - 4)), T4((0, P.RB, P.Z_TE + 4)), T4((0, P.RB, 0))[0] + 5, txt="8", dx=1.2)
     T5 = h.vista(medio([c1], "y", 1), "lateral", (195, cy), e)
     h.texto(203, cy - 2 * P.RB - 14, "C1 - CORTE (2:1)", fs=6.5, weight="bold", ha="center")
@@ -366,8 +371,9 @@ def hoja7(pdf, out, R):
     h = Hoja("CS-MEC-07", "Contenedor: tubo y tapa nervada", "1:1", "LW-PLA / PA12-CF",
              notas=("Tubo: pieza única de LW-PLA impresa de pie (eje x vertical), 3 perímetros; pared exterior 2,0 mm (S6).",
                     "Tapa: PA12-CF, placa de 2,5 + faldón + 6 nervios de 2,5; pegada al tubo y con 3 tornillos radiales M2,5.",
+                    "Bajo la placa: anillo-alojamiento del centrador de cola Ø47 / Ø42 × 3,5 (recibe el collar de C4 con su manguito).",
                     "Cubo central: asiento del aislador (fondo de 4) con ojo de cerradura Ø6 + ranura de 3,6 × 15,2.",
-                    "Superficie interior lisa para los patines; exterior sin salientes (S7).  Sin metales pesados (S9)."))
+                    "Superficie interior lisa para los patines de C1; exterior sin salientes (S7).  Sin metales pesados (S9)."))
     x0 = P.CT_X[0]
     xc = P.CT_TOP[0] + P.CT_CAP_H
     T = h.vista(medio(ct, "y", 1), "lateral", (40, 215), 1.0, titulo="CORTE A-A (plano y = 0)", ref=(x0, 0, 0), titulo_dy=19)
@@ -385,6 +391,8 @@ def hoja7(pdf, out, R):
     h.llamada(T((120, 0, 44)), (T((120, 0, 0))[0], yt + 14), "Pared 2,0 mm")
     h.llamada(T((P.CT_TOP[0] + 1.2, 0, 25)), (T((180, 0, 0))[0], T((0, 0, 20))[1]), "Placa de 2,5", ha="right")
     h.llamada(T((P.CT_TOP[0] + 2, 0, 4)), (T((180, 0, 0))[0], T((0, 0, 6))[1]), "Fondo del cubo: 4", ha="right")
+    h.llamada(T((P.SOC_X0 + 1, 0, -0.5 * (P.SOC_RI + P.SOC_RO))), (T((180, 0, 0))[0], T((0, 0, -12))[1]),
+              "Alojamiento del centrador Ø47/Ø42", ha="right")
     h.llamada(T((xc - 3.5, 0, P.R_BRIDA)), (T((180, 0, 0))[0], T((0, 0, 34))[1]), "Anclaje de brida Ø3", ha="right")
     h.llamada(T((175, 0, -44)), (T((150, 0, 0))[0], T((0, 0, -30))[1]), "Ø8: interruptor (E4)", ha="right")
     h.llamada(T((185, 0, -44)), (T((150, 0, 0))[0], T((0, 0, -22))[1]), "Ø5: indicador LED (E6)", ha="right")

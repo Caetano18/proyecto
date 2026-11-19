@@ -21,9 +21,11 @@ def h_de(p, escala=1.0):
     if m == "CFRP":
         h = 1.7
     elif m == "G10":
-        h = 2.6
+        h = 1.8          # rev. B: laminas de 0,5 mm con relacion de aspecto <= 4 (antes 2,6: aspecto ~7)
     elif n.startswith("Patin") or n.startswith("Aislador"):
         h = 1.4
+    elif n.startswith("Manguito"):
+        h = 1.1
     elif n.startswith("CT"):
         h = 4.2
     elif m == "EQ_PCB":
@@ -44,18 +46,27 @@ def elastico(mat):
         c = M["CFRP"]
         return "ortho", dict(E1=c["E"], E2=c["E2"], E3=c["E2"], nu12=c["nu"], nu13=c["nu"], nu23=c["nu23"],
                              G12=c["G12"], G13=c["G12"], G23=c["G23"], ori=None)
-    if mat in ("PAD_A", "PAD_B", "ELAST_X"):
+    if mat in ("PAD_A", "PAD_B", "ELAST_X", "ELAST_C"):
         # elastomero pegado entre caras rigidas: modulo de compresion aparente Ec = E (1 + 2 S^2), S = factor de forma
         el = M["ELAST"]
         if mat == "ELAST_X":
             S = (P.WASH_D - P.KEY_HOLE) / (4 * P.ISO_T)
+        elif mat == "ELAST_C":
+            # manguito bajo carga radial: zona comprimida de +-45 grados (ancho w) por el largo de enganche L
+            w = 0.5 * math.pi * (P.CEN_RO + P.CEN_ELT / 2)
+            L = P.CEN_EX[1] - P.CEN_EX[0]
+            S = w * L / (2 * (w + L) * P.CEN_ELT)
         else:
             w = 2 * math.tan(math.radians(P.PAD_ANG / 2)) * P.CT_RI
             L = P.T_END
-            S = w * L / (2 * (w + L) * (P.CT_RI - P.RB))
+            S = w * L / (2 * (w + L) * (P.CT_RI - P.R_C1))
         Ec = el["E"] * (1 + 2 * S ** 2)
-        return "ortho", dict(E1=Ec, E2=el["E"], E3=el["E"], nu12=0.0, nu13=0.0, nu23=0.0, G12=el["G"], G13=el["G"],
-                             G23=el["G"], ori=None, S=S)
+        if mat == "ELAST_X":
+            return "ortho", dict(E1=Ec, E2=el["E"], E3=el["E"], nu12=0.0, nu13=0.0, nu23=0.0, G12=el["G"], G13=el["G"],
+                                 G23=el["G"], ori=None, S=S)
+        # patines y manguito: la cara de PTFE desliza; solo transmiten compresion radial (eje local 1)
+        g = P.G_DESL
+        return "ortho", dict(E1=Ec, E2=el["E"], E3=el["E"], nu12=0.0, nu13=0.0, nu23=0.0, G12=g, G13=g, G23=g, ori=None, S=S)
     iso = {"EQ_BAT": (5.0e3, 0.30), "EQ_PCB": (M["FR4"]["E"], M["FR4"]["nu"]), "EQ_BLK": (2.0e3, 0.35),
            "EQ_BOOM": (100e3, 0.30), "EQ_SOFT": (50.0, 0.30)}
     if mat in iso:
@@ -258,6 +269,7 @@ def escribir_inp(path, xyz, els, epart, parts, pasos, bcs, nmodes=30):
             f.write(",".join(f"E{pi}" for pi in ver[k:k + 10]) + "\n")
         f.write("*ORIENTATION, NAME=ORA, SYSTEM=RECTANGULAR\n0.,0.70710678,0.70710678,0.,-0.70710678,0.70710678\n")
         f.write("*ORIENTATION, NAME=ORB, SYSTEM=RECTANGULAR\n0.,-0.70710678,0.70710678,0.,-0.70710678,-0.70710678\n")
+        f.write("*ORIENTATION, NAME=ORC, SYSTEM=CYLINDRICAL\n0.,0.,0.,1.,0.,0.\n")     # 1 radial, 2 tangencial, 3 = x
         for pi in act:
             p = parts[pi]
             tipo, c = elastico(p["mat"])
@@ -274,6 +286,8 @@ def escribir_inp(path, xyz, els, epart, parts, pasos, bcs, nmodes=30):
                 ori = ", ORIENTATION=ORA"
             elif p["mat"] == "PAD_B":
                 ori = ", ORIENTATION=ORB"
+            elif p["mat"] == "ELAST_C":
+                ori = ", ORIENTATION=ORC"
             f.write(f"*SOLID SECTION, ELSET=E{pi}, MATERIAL=M{pi}{ori}\n")
         f.write("*BOUNDARY\n")
         for k, (nodos, d0, d1) in enumerate(bcs):
@@ -284,12 +298,15 @@ def escribir_inp(path, xyz, els, epart, parts, pasos, bcs, nmodes=30):
         else:
             dirs = ((-1, 0, 0), (0, -1, 0), (0, 0, -1)) if pasos == "estat3" else ((-1, 0, 0),)
             for d in dirs:
-                f.write("*STEP\n*STATIC\n*DLOAD\n")
+                f.write("*STEP\n*STATIC\n*DLOAD, OP=NEW\n")      # OP=NEW: sin esto CalculiX acumula la gravedad de los pasos previos
                 f.write(f"EALL,GRAV,{G_MM:.3f},{d[0]}.,{d[1]}.,{d[2]}.\n" + salida)
 
 
-def correr_ccx(job, wd, nthreads=4):
-    env = dict(os.environ, OMP_NUM_THREADS=str(nthreads), CCX_NPROC_EQUATION_SOLVER=str(nthreads))
+def correr_ccx(job, wd, nthreads=None):
+    # CCX_HILOS: hilos de CalculiX.  SPOOLES multihilo puede dejar ruido local en los autovectores (ver informe)
+    nthreads = int(os.environ.get("CCX_HILOS", "4")) if nthreads is None else nthreads
+    nsolver = os.environ.get("CCX_SPOOLES", str(nthreads))          # hilos del resolvedor SPOOLES
+    env = dict(os.environ, OMP_NUM_THREADS=str(nthreads), CCX_NPROC_EQUATION_SOLVER=nsolver)
     t0 = time.time()
     r = subprocess.run(["ccx", job], cwd=wd, env=env, capture_output=True, text=True)
     open(os.path.join(wd, job + ".log"), "w").write(r.stdout + r.stderr)
@@ -321,6 +338,14 @@ def nodos_brida(xyz):
     return np.where(sel)[0]
 
 
+def solo_correr(wd, tag):
+    """Corre los cuatro trabajos de CalculiX sobre mazos ya escritos."""
+    t0 = time.time()
+    for job in (f"estat_{tag}", f"parac_{tag}", f"modal_{tag}", f"libre_{tag}"):
+        correr_ccx(job, wd)
+    print(f"total {time.time() - t0:.0f} s")
+
+
 def main(wd, escala=1.0, nmodes=30, tag="base", solo=None):
     os.makedirs(wd, exist_ok=True)
     t0 = time.time()
@@ -340,6 +365,7 @@ def main(wd, escala=1.0, nmodes=30, tag="base", solo=None):
     escribir_inp(os.path.join(wd, f"estat_{tag}.inp"), xyz, els, epart, parts, "estat3", bc_lanz)
     escribir_inp(os.path.join(wd, f"parac_{tag}.inp"), xyz, els, epart, parts, "estat1", [(brida, 1, 3)])
     escribir_inp(os.path.join(wd, f"libre_{tag}.inp"), xyz, els, epart, parts, "modal", [(base, 1, 3)], 6)
+    solo = solo or [x for x in os.environ.get("FE_SOLO", "").split(",") if x]      # FE_SOLO=malla: solo malla y mazos
     for job in (f"estat_{tag}", f"parac_{tag}", f"modal_{tag}", f"libre_{tag}"):
         if solo and not any(job.startswith(x) for x in solo):
             continue
@@ -348,6 +374,9 @@ def main(wd, escala=1.0, nmodes=30, tag="base", solo=None):
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "--correr":
+        solo_correr(sys.argv[2], sys.argv[3])
+        sys.exit(0)
     wd = sys.argv[1]
     escala = float(sys.argv[2]) if len(sys.argv) > 2 else 1.0
     tag = sys.argv[3] if len(sys.argv) > 3 else "base"

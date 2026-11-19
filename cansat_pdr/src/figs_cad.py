@@ -75,13 +75,14 @@ def anotar_todo(out, M):
                 ("c1", "Cuaderna C1")], ancho=6.2, col=0.31)
     anotar(out, M, "equipos", "equipos", izq=[("c1", "Cuaderna C1\n(pivotes A)"), ("lastre", "Lastre de centrado"), ("servo_cola", "Servo de cola"),
                                               ("bandeja", "Bandeja de aviónica\nG10 0,8"), ("pcb", "PCB principal")],
-           der=[("larguero", "Larguero CFRP Ø5/3,5"), ("bateria", "Batería 18650\nsobre sillas"), ("pcb_radio", "PCB radio / GNSS"),
+           der=[("larguero", "Larguero angular\nCFRP 6×6×1"), ("bateria", "Batería 18650\nsobre sillas"), ("pcb_radio", "PCB radio / GNSS"),
                 ("c4", "Cuaderna C4\n(pivotes B)"), ("servo_cerrojo", "Servo del cerrojo"), ("llave", "Llave de bayoneta")], ancho=9.0, col=0.22)
     anotar(out, M, "bastidor_explotado", "bastidor", izq=[("tapa", "Tapa superior G10 0,5"), ("c1", "C1 (nariz)"), ("p_lat", "Panel lateral G10 0,5"),
                                                           ("bandeja", "Bandeja G10 0,8"), ("c2", "C2")],
-           der=[("guia", "Guía de botalón"), ("c4", "C4 (cola)"), ("larguero", "Larguero CFRP"), ("c3", "C3"), ("cuna", "Cuna de ala")],
+           der=[("guia", "Guía de botalón"), ("c4", "C4 (cola)"), ("larguero", "Larguero angular CFRP"), ("c3", "C3"), ("cuna", "Cuna de ala")],
            ancho=9.0, col=0.20)
-    anotar(out, M, "cerrojo", "cerrojo", izq=[("brida", "Anclaje de brida\n(Ø3 en el nervio)"), ("tapa", "Tapa nervada"), ("c4", "Cuaderna C4")],
+    anotar(out, M, "cerrojo", "cerrojo", izq=[("brida", "Anclaje de brida\n(Ø3 en el nervio)"), ("tapa", "Tapa nervada"),
+                                              ("centrador", "Centrador de cola:\ncollar C4 + manguito"), ("c4", "Cuaderna C4")],
            der=[("pasador", "Pasador Ø3 y plato"), ("llave", "Eje de la llave Ø5"), ("servo", "Servo del cerrojo"), ("nervio", "Nervio radial")],
            ancho=8.0, col=0.24)
     anotar(out, M, "est_iso", "est", izq=[("c1", "Cuaderna C1"), ("membrana", "Membrana plegada"), ("varilla_ext", "Tramo exterior\ndel borde de ataque"),
@@ -125,18 +126,19 @@ def main(out):
     r(c1, f"{out}/c1.png", ((1.0, -0.8, 0.6), (0, 0, 1)), (1400, 1200), 1.3)
     r(c4, f"{out}/c4.png", ((-1.0, -0.8, 0.6), (0, 0, 1)), (1400, 1200), 1.3)
     r(c2, f"{out}/c2.png", ((1.0, -0.8, 0.6), (0, 0, 1)), (1400, 1200), 1.3)
-    cola = [p for p in lan if p["nombre"].startswith(("C4", "Llave", "CT2", "Servo del cerrojo"))]
+    cola = [p for p in lan if p["nombre"].startswith(("C4", "Llave", "CT2", "Servo del cerrojo", "Manguito del centrador"))]
     M = {}
     M["cerrojo"] = r(cola, f"{out}/cerrojo.png", ((-0.35, -1.0, 0.3), (1, 0, 0)), (1700, 1300), 1.3,
                      clip=((0, -1, 0), (0, 0, 0)),
                      marcas={"llave": (216, 0, 0), "pasador": (222.6, 0, 5), "tapa": (216, 0, 28), "c4": (203, 0, -30),
-                             "servo": (176, 0, -16), "nervio": (218, 0, -25), "brida": (217.5, 0, 33)})
+                             "servo": (176, 0, -16), "nervio": (218, 0, -25), "brida": (217.5, 0, 33),
+                             "centrador": (209.0, 0, -20.5)})
     hide_eq = ("panel lateral izq", "tapa superior", "Cuna", "Guia", "Patin")
     M["equipos"] = r(eq, f"{out}/equipos.png", "iso", big, 1.35, hide=hide_eq,
                      marcas={"lastre": (33, -10, 14), "bateria": (100, 0, 15.5), "pcb_radio": (170, 0, 5.6),
                              "servo_cola": (23, -6, -16), "pcb": (110, -25, -14), "servo_cerrojo": (176, -6, -16),
                              "llave": (212, 0, 0), "c1": (4, 30, 30), "c4": (203, 0, 38), "bandeja": (50, -27, -4.5),
-                             "larguero": (150, 20.5, 26), "panel": (120, 27.5, 20)})
+                             "larguero": (150, P.Y_BOX - 2.0, P.Z_BOX - 2.0), "panel": (120, 27.5, 20)})
     M["est"] = r(est, f"{out}/est_iso.png", "iso", big, 1.35, hide=("carenado",),
                  marcas={"c1": (0, 0, 25), "tapa": (100, 0, 31.5), "botalon": (60, 0, 39.5), "panel": (150, 27.75, -20),
                          "membrana": (90, 29.6, 9), "varilla_int": (60, 34, 2.5), "varilla_ext": (40, 39.4, 2.5),
@@ -154,7 +156,7 @@ def main(out):
                          "boca": (-2, 0, 44), "lastre": (33, 0, 7), "ala": (100, 0, -38)})
     M["bastidor"] = r(explotar(st), f"{out}/bastidor_explotado.png", "iso", big, 1.3,
                       marcas={"c1": (-45, 0, 30), "c2": (62, 0, 28), "c3": (140, 0, 28), "c4": (252, 0, 30),
-                              "larguero": (100, -20.5, 26), "p_lat": (100, -82.5, 0), "tapa": (100, 0, 91),
+                              "larguero": (100, -(P.Y_BOX - 2.0), P.Z_BOX - 2.0), "p_lat": (100, -82.5, 0), "tapa": (100, 0, 91),
                               "bandeja": (100, 0, -59.5), "cuna": (62, -108, 0), "guia": (140, 0, 122)})
     json.dump(M, open(f"{out}/marcas.json", "w"), indent=1)
     anotar_todo(out, M)

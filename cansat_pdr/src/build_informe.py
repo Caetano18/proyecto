@@ -82,9 +82,10 @@ def peor(caso, clave, res=R):
     return best
 
 
-GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros", "Llave de bayoneta"]
+GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Rieles de bandeja", "Paneles y bandeja", "Largueros", "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
-        "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Paneles y bandeja": "Paneles y bandeja (G10)",
+        "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Rieles de bandeja": "Rieles de bandeja (PA12-CF)",
+        "Paneles y bandeja": "Paneles y bandeja (G10)",
         "Largueros": "Largueros (CFRP)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": r"$\sigma_x$ entre capas", "sigma_x fibra": r"$\sigma_x$ de fibra",
@@ -121,7 +122,8 @@ A_iso = math.pi * (P.WASH_D ** 2 - P.KEY_HOLE ** 2) / 4
 Ec_iso = F.elastico("ELAST_X")[1]["E1"]
 k_iso = Ec_iso * A_iso / P.ISO_T
 sb_cubo = F_ret / A_iso
-tau_lon = (F_ret / 4) / (math.pi * P.LON_DO * 5.0)
+A_ang = (4 * P.ANG_L - 2 * P.ANG_T + 2 * P.ANG_T) * P.LON_ENG     # perimetro de la L (exterior + interior + extremos) x 5 mm
+tau_lon = (F_ret / 4) / A_ang
 F_perno = nt["M_apice"] / 8.0
 sig_slv = nt["M_J"] * (P.SLV_DO / 2) / (math.pi * (P.SLV_DO ** 4 - P.SLV_DI ** 4) / 64)
 ms_all = [(peor(c, g)[0], g, c) for g in GRUPOS for c in ("cuasi15", "armonico", "choque", "paracaidas")]
@@ -225,11 +227,49 @@ t_un = tab("p{5.2cm}cccc", ["Unión", "Carga", "Tensión", "Admisible", "MS"], [
     ["Asiento del aislador en la tapa", "%.0f N" % F_ret, n(sb_cubo, 2) + " MPa", "17{,}5 MPa", ms(17.5 / sb_cubo - 1)],
     ["Anclaje de brida en el nervio", "%.0f N" % leg, n(sb_brida) + " MPa", "32{,}5 MPa", ms(32.5 / sb_brida - 1)],
     ["Pegado tapa--tubo", "%.0f N" % F_par, n(tau_tapa, 2) + " MPa", "2{,}0 MPa", ms(2.0 / tau_tapa - 1)],
-    ["Pegado de cada larguero en su buje", "%.0f N" % (F_ret / 4), n(tau_lon, 2) + " MPa", "9{,}0 MPa", ms(9.0 / tau_lon - 1)],
+    ["Pegado de cada angular en su alojamiento (5\\,mm)", "%.0f N" % (F_ret / 4), n(tau_lon, 2) + " MPa", "9{,}0 MPa", ms(9.0 / tau_lon - 1)],
     ["Manguito \\diam8/5{,}1, flexión", "%.0f N$\\cdot$mm" % nt["M_J"], n(sig_slv) + " MPa", "402 MPa", ms(402 / sig_slv - 1)],
     ["Perno de pivote A \\diam2{,}5, corte", "%.0f N" % F_perno, n(F_perno / 4.91) + " MPa", "216 MPa", ms(216 / (F_perno / 4.91) - 1)],
     ["Oreja de C1, aplastamiento", "%.0f N" % F_perno, n(F_perno / 20) + " MPa", "32{,}5 MPa", ms(32.5 / (F_perno / 20) - 1)],
 ], "Verificación manual de uniones con la carga de diseño ($30\,\\mathrm{G}\\times1{,}8$).")
+
+# ---- elastomeros y huelgos: desplazamientos relativos del modelo
+def _rel(caso, k):
+    """Maximo sobre los ejes de la componente radial (compresion del elastomero o cierre del huelgo)."""
+    v = []
+    for e in ([None] if caso == "paracaidas" else EJES):
+        d = (R[caso] if e is None else R[caso][e]).get("rel", {}).get(k)
+        if d is not None:
+            v.append(d["rad"] if isinstance(d, dict) else d)
+    return max(v) if v else float("nan")
+
+
+t_rel = ""
+if R.get("pares"):
+    grupos_rel = {}
+    for k, d in R["pares"].items():
+        grupos_rel.setdefault(k.split(" (")[0], []).append((k, d))
+    filas_rel = []
+    NOM_REL = {"Patin C1 a 45 grados": "Patín de C1 (45°)", "Huelgo aro C4 - tubo": "Huelgo aro de C4 -- tubo",
+               "Manguito del centrador": "Manguito del centrador", "Aislador de la llave": "Aislador de la llave"}
+    for nom, lst in grupos_rel.items():
+        ref, tipo = lst[0][1]["ref"], lst[0][1]["tipo"]
+        nom = NOM_REL.get(nom, nom)
+        dl = {c: max(_rel(c, k) for k, _ in lst) for c in ("cuasi30", "armonico", "choque", "paracaidas")}
+        if tipo == "deformacion":
+            filas_rel.append([nom] + ["%s\\,\\%%" % n(100 * dl[c] / ref, 0) for c in ("cuasi30", "armonico", "choque", "paracaidas")]
+                             + ["20 / 30\\,\\%",
+                                ms(min(0.20 / max(dl["armonico"] / ref, 1e-9),
+                                       0.30 / max(dl["choque"] / ref, dl["cuasi30"] / ref, dl["paracaidas"] / ref, 1e-9)) - 1)])
+        else:
+            filas_rel.append([nom] + ["%s\\,mm" % n(dl[c], 2) for c in ("cuasi30", "armonico", "choque", "paracaidas")]
+                             + ["%s\\,mm" % n(ref, 1), ms(ref / max(max(dl.values()), 1e-9) - 1)])
+    t_rel = tab("lcccccc", ["Elemento", "CE-30", "RF-15", "CH-30", "PA-30", "Admisible", "MS"], filas_rel,
+                "Compresión de los elastómeros y cierre del huelgo libre de C4, del modelo de elementos finitos (desplazamiento "
+                "relativo radial entre caras; compresión = desplazamiento / espesor). Patines y manguito tienen cara de PTFE y deslizan: "
+                "el desplazamiento tangencial y axial es deslizamiento, no deformación. Admisible del elastómero: 20\\,\\% en "
+                "vibración y 30\\,\\% en choque.",
+                r"\footnotesize")
 
 filas_m = []
 for s_ in MAS["sub"]:
@@ -292,7 +332,7 @@ TEX = r"""\documentclass[10pt,a4paper]{article}
 Se diseña la estructura de un CanSat de 500\,g y \diam90\,mm cuyo segundo sistema de descenso es un planeador de ala delta de
 membrana. La configuración elegida es un contenedor cilíndrico cerrado, de pared de 2\,mm, del que el planeador sale por la boca
 inferior al 80\,\% de la altitud; la pared retiene las alas plegadas y el despliegue es pasivo. El planeador es un bastidor de
-cuatro largueros de carbono, cuatro cuadernas impresas y paneles de G10 (<<EST_M>>\,g); el ala es un cuadrilátero articulado que
+cuatro largueros angulares de carbono en las aristas, cuatro cuadernas impresas y paneles de G10 (<<EST_M>>\,g); el ala es un cuadrilátero articulado que
 pliega plano y conserva la cuerda de raíz de 198{,}6\,mm de la nota de membrana. Un modelo de elementos finitos de
 <<NEL>>~tetraedros cuadráticos da el primer modo en <<F1>>\,Hz. La primera versión, con la llave de retención unida rígidamente,
 amplificaba <<RIG_T>>~veces el modo axial y dejaba la tapa sin margen en resonancia; con un anillo elastomérico bajo la llave el
@@ -356,16 +396,20 @@ G10, que es rígido en lámina fina y transparente a la radiofrecuencia.
 \porque El ala necesita los dos gajos laterales del cilindro abiertos. Un monocasco impreso habría que ranurarlo; varillas
 roscadas con discos dan poca rigidez. Se elige una caja de paneles finos con largueros en las aristas (figura~\ref{fig:bast}):
 \begin{itemize}
-\item cuatro largueros de tubo de carbono \diam5/3{,}5, el mismo material de compra que el borde de ataque;
+\item cuatro largueros angulares de carbono pultruido de $6\times6\times1$\,mm, pegados en las cuatro aristas interiores de la
+caja: paneles y tapa apoyan cara contra cara sobre sus alas, y los angulares entran 5\,mm en alojamientos en L de C1 y C4;
 \item cuadernas extremas C1 y C4 de 8\,mm, con alma de 1{,}6\,mm, aro y nervios, que alojan los pernos de pivote del ala dentro
-de su propio espesor;
-\item marcos intermedios C2 y C3 de 4\,mm;
-\item dos paneles laterales y una tapa superior de G10 de 0{,}5\,mm, y una bandeja de 0{,}8\,mm que lleva toda la electrónica.
+de su propio espesor; C4 lleva además el collar del centrador de cola;
+\item marcos intermedios C2 y C3 de 4\,mm, con muescas para los angulares y ranuras de paso para la bandeja y sus rieles;
+\item dos paneles laterales y una tapa superior de G10 de 0{,}5\,mm, y una bandeja de 0{,}8\,mm, rigidizada con dos rieles de
+PA12-CF de $3\times8$\,mm, que lleva toda la electrónica.
 \end{itemize}
 <<FIG_BAST>>
-\chequeo Masa de la estructura primaria: <<EST_M>>\,g por CAD. Las cuadernas extremas pesan 22\,g cada una y son el primer lugar
-donde aligerar. La carga axial entra por la llave en C4 y baja por largueros y paneles; la lateral sale por los patines de C1 y C4
-contra la pared del contenedor.
+\chequeo Masa de la estructura primaria: <<EST_M>>\,g por CAD. La carga axial entra por la llave en C4 y baja por los angulares y
+los paneles. La lateral sale por dos lados: en la nariz, por cuatro patines de C1 contra la pared; en la cola, por el centrador
+de la tapa (sección siguiente). La revisión A tenía los largueros como tubos \diam5 dentro de la caja, a 7\,mm de los paneles, y
+los paneles pegados a la tapa por un canto de 0{,}5\,mm; el modelo estructural marcó esa unión, y los angulares la reemplazan sin
+agregar masa, porque desaparecen los cuatro bujes de C1 y C4.
 
 \section{Contenedor, anclaje y liberación}
 \que El tubo, la tapa, cómo cuelga del paracaídas y cómo suelta al planeador.
@@ -376,6 +420,12 @@ nervios, de modo que el tirón pasa de la tapa a la llave sin cargar el tubo.
 La retención es una llave de bayoneta: un eje de acero inoxidable de \diam5 atraviesa C4 y la tapa; un pasador transversal apoya
 sobre un plato, y el plato sobre un anillo de elastómero asentado en el cubo de la tapa (figura~\ref{fig:cerr}). Un microservo en
 el planeador gira el eje 90° y el pasador pasa por el ojo de cerradura.
+
+La cola se centra en la tapa, no en la pared. Un collar de \diam40/34 en la cara trasera de C4 entra 3\,mm en un anillo-alojamiento
+de \diam42 que baja de la placa de la tapa, con un manguito de elastómero de 1\,mm entre ambos. La carga lateral de la cola llega a
+la placa en su plano y pasa al tubo repartida en todo el perímetro del faldón pegado. En la revisión A esa carga entraba por cuatro
+patines de C4 que empujaban la pared desnuda de LW-PLA a 4\,mm del borde de la tapa, y ahí estaba el peor margen del tubo. El aro
+de C4 queda ahora con 1\,mm de huelgo libre. Al girar la llave el planeador baja 3\,mm y el collar sale del alojamiento.
 <<FIG_CERR>>
 \begin{resultado}Carga de retención: $<<MPLAN>>\,\mathrm{g}\times30\,\mathrm{G}\times1{,}8=<<FRET>>$\,N. Tirón en la brida:
 <<FPAR>>\,N. Par para girar la llave colgando a 1\,G: 0{,}06\,kg$\cdot$cm contra 1{,}8\,kg$\cdot$cm del servo. Rigidez del
@@ -412,7 +462,9 @@ fuera del plano pasa al tirante.
 \que Con qué modelo se calculan las tensiones y cuánto se le puede creer.
 \porque La geometría del CAD se malla con tetraedros cuadráticos en Gmsh y se resuelve en CalculiX: <<NEL>> elementos y <<NNOD>>
 nodos. Las piezas van pegadas entre sí con malla conforme. El modelo es exclusivamente estructural: batería, placas, servos, lastre, soportes de equipos, botalón y ala plegada no se modelan. Su masa se reparte como masa no estructural sobre la pieza que la lleva (bandeja en tres tramos, marcos, cunas, cuadernas y tapa), y el lastre cierra los 500\,g en la nariz. El contenedor apoya en su borde inferior y el
-fuselaje del cohete guía lateralmente el borde superior. La respuesta dinámica se arma por superposición de <<NMOD>> modos con
+fuselaje del cohete guía lateralmente el borde superior. El borde inferior se empotra, que es la condición más exigente para la
+pared junto a la boca. Patines y manguito tienen cara de PTFE y deslizan: en el modelo solo transmiten compresión radial (módulo de
+corte de 0{,}1\,MPa), y la carga axial pasa entera por la llave. La respuesta dinámica se arma por superposición de <<NMOD>> modos con
 corrección estática, usando las tensiones de CalculiX en los puntos de integración.
 <<FIG_MALLA>>
 El amortiguamiento de cada modo sale de la energía de deformación: $\zeta_i=\zeta_0(1-f_i)+\tfrac{\eta}{2}f_i$, con
@@ -420,9 +472,9 @@ $\zeta_0=2\,\%$ para la estructura, $\eta=<<ETA>>$ para el elastómero y $f_i$ l
 elastómero.
 <<T_VER>>
 \chequeo La misma cadena reproduce una viga en voladizo dentro del 3\,\%. En el modelo del CanSat la suma modal recupera el
-desplazamiento estático y los <<NMOD>> modos reúnen el <<MEFX>>/<<MEFY>>/<<MEFZ>>\,\% de la masa en $x/y/z$. Se descartaron
-<<NFILT>> elementos de <<NEVER>> por nodos medios fuera de equilibrio en el autovector, un artefacto numérico. Las tensiones de
-pico en aristas pegadas dependen de la malla; falta un segundo nivel de malla para confirmarlas.
+desplazamiento estático y los <<NMOD>> modos reúnen el <<MEFX>>/<<MEFY>>/<<MEFZ>>\,\% de la masa en $x/y/z$. No se descarta
+ningún elemento: los modos se resuelven con SPOOLES en un hilo, porque en cuatro hilos dejaba ruido local en los autovectores
+(sección~\ref{sec:revb}).
 
 \subsection{Modos propios}
 <<T_MODAL>>
@@ -432,10 +484,13 @@ Laterales principales: <<FY>>\,Hz ($y$) y <<FZ>>\,Hz ($z$). <<TXT_LIBRE>>\end{re
 
 \subsection{Evolución del diseño}
 \que Qué cambió el análisis en el diseño.
-\porque Tres iteraciones. (1)~Tapa de LW-PLA de 3\,mm y contenedor en voladizo: primer modo a 140\,Hz y tapa sin margen; se pasó a
+\porque Cinco iteraciones. (1)~Tapa de LW-PLA de 3\,mm y contenedor en voladizo: primer modo a 140\,Hz y tapa sin margen; se pasó a
 una tapa nervada de PA12-CF. (2)~Llave unida rígidamente: modo axial a <<RIG_F>>\,Hz con el <<RIG_M>>\,\% de la masa, amplificación
 de <<RIG_T>> en resonancia y $\sigma_x=<<RIG_S>>$\,MPa en la tapa ($MS=<<RIG_MS>>$). (3)~Llave como perno pasante con arandelas y
-anillo elastomérico, y patines de elastómero con cara de PTFE.
+anillo elastomérico, y patines de elastómero con cara de PTFE. (4)~Modelo exclusivamente estructural: sin los bloques de equipos
+la bandeja resonaba a <<F_SINRIEL>>\,Hz con transmisibilidad <<T_SINRIEL>>; se agregaron dos rieles bajo la bandeja. (5)~Revisión B:
+largueros angulares en las aristas, centrador de cola en la tapa, patines de C1 más anchos y deslizantes, y escote de la bandeja
+frente a la llave (sección~\ref{sec:revb}, tabla~\ref{tab:revab}).
 \chequeo Con unión rígida un barrido de 15\,G excita el modo axial con $Q=25$: casi 400\,G sobre el planeador. Ninguna pieza
 impresa liviana aguanta eso con margen. La salida no es reforzar sino aislar el único punto por donde pasa la carga axial.
 
@@ -468,7 +523,10 @@ máximo del espectro de respuesta de un semiseno.
 \subsection{Uniones}
 \que Las uniones que el modelo pegado no representa.
 <<T_UN>>
-\chequeo Deformación del aislador: <<EPS15>>\,\% a 15\,G y <<EPSCH>>\,\% en el tirón (admisible 20\,\% y 30\,\%). La varilla
+<<T_REL>>
+\chequeo A mano, la compresión del aislador es de <<EPS15>>\,\% con 15\,G estáticos y <<EPSCH>>\,\% con la carga de diseño del
+tirón. El modelo da más en la resonancia axial, donde el planeador amplifica la entrada (tabla anterior): <<EPSRES>>\,\%, dentro
+del 20\,\% admisible. El aro de C4 no toca el tubo: el huelgo de 1\,mm se cierra como mucho <<HUELGO>>\,mm. La varilla
 plegada entre apoyos tiene su primer modo local cerca de 1{,}2\,kHz y 2\,MPa a 30\,G.
 
 \section{Masa y centro de gravedad}\label{sec:masa}
@@ -522,47 +580,88 @@ def _ms(caso, g):
     return peor(caso, g)[0]
 
 
-acc = []
-if _ms("armonico", "Contenedor: tubo") < 0 or _ms("choque", "Contenedor: tubo") < 0:
-    p = peor("armonico", "Contenedor: tubo")
-    acc.append(r"\item \textbf{Tubo del contenedor} ($MS=%s$ en resonancia lateral a %s\,Hz y %s en choque lateral). Es flexión local de la "
-               r"pared de 2\,mm entre los patines de C4 y la tapa, donde la pared pasa de libre a empotrada en 4\,mm; el resto del tubo "
-               r"tiene margen (casi-estático: %s). Corrección: prolongar 10\,mm el faldón de la tapa hacia la boca y apoyar ahí los patines "
-               r"de C4. La pared pasa a 4{,}5\,mm (LW-PLA más PA12-CF) y la tensión en el LW-PLA baja unas cinco veces."
-               % (ms(p[0]), n(p[4]["f_crit"], 0), ms(_ms("choque", "Contenedor: tubo")), ms(_ms("cuasi15", "Contenedor: tubo"))))
-# --- bandeja: hallazgo del modelo exclusivamente estructural (corrida sin rieles guardada aparte)
+# ------------------------------------------------------------ revision B: que marco el modelo estructural y que se cambio
+CASOS4 = ("cuasi15", "armonico", "choque", "paracaidas")
+_fA = os.path.join(FEA, "resultados_fea_revA.json")
+RA = json.load(open(_fA)) if os.path.exists(_fA) else None
 _f0 = os.path.join(FEA, "resultados_fea_sin_rieles.json")
-if os.path.exists(_f0):
-    R0 = json.load(open(_f0))
-    _m_riel = sum(p_["masa"] for p_ in R["piezas"] if "riel" in p_["nombre"])
+R0 = json.load(open(_f0)) if os.path.exists(_f0) else None
+T_REVAB = ""
+if RA:
+    filas_ab = []
+    for g_ in GRUPOS:
+        fila = [GNOM[g_]]
+        for c_ in ("armonico", "choque"):
+            fila += [ms(peor(c_, g_, RA)[0]), ms(peor(c_, g_, R)[0])]
+        filas_ab.append(fila)
+    filas_ab.append(["Primer modo [Hz]", n(RA["freq"][0], 0), n(R["freq"][0], 0), "", ""])
+    T_REVAB = tab("lcccc", ["Grupo de piezas", "RF-15 rev.\,A", "RF-15 rev.\,B", "CH-30 rev.\,A", "CH-30 rev.\,B"], filas_ab,
+                  r"\label{tab:revab}Márgenes mínimos de la revisión A (con rieles, patines en C4 y largueros \diam5 interiores) y de la "
+                  r"revisión B, las dos resueltas con SPOOLES en un hilo y sin descartar elementos.", r"\footnotesize")
+_neg_b = sorted((peor(c_, g_)[0], g_, c_) for g_ in GRUPOS for c_ in CASOS4 if peor(c_, g_)[0] < 0)
+_tA_arm = peor("armonico", "Contenedor: tubo", RA) if RA else None
+_tA_ch = peor("choque", "Contenedor: tubo", RA) if RA else None
+items = []
+items.append(r"\item \textbf{Casos estáticos unitarios.} Los tres casos de 1\,G (en $x$, $y$ y $z$) que alimentan el casi-estático y la "
+             r"corrección estática de la respuesta dinámica se escribían como tres pasos de CalculiX sin \texttt{OP=NEW}, y CalculiX "
+             r"acumula la gravedad de un paso al siguiente: el caso $y$ era en realidad $x+y$ y el $z$, $x+y+z$. El control anterior "
+             r"comparaba solo la componente del eje y no lo veía. Ahora el mazo usa \texttt{OP=NEW} (y los mazos viejos se corrigen restando "
+             r"pasos, que es exacto por linealidad), y el control compara el campo completo: la suma modal reproduce el estático con un "
+             r"error de %s / %s / %s\,\%% en $x/y/z$. Los márgenes casi-estáticos y de choque de las revisiones anteriores eran "
+             r"conservadores por este error; el de resonancia del tubo no cambia."
+             % tuple(n(100 * R["control_estatico"][e]["error_relativo_campo"], 1) for e in EJES))
+items.append(r"\item \textbf{Resolvedor.} Las corridas anteriores resolvían los modos con SPOOLES en cuatro hilos. Ese resolvedor dejó ruido "
+             r"local en algunos autovectores: nodos medios desplazados hasta un 19\,\% de la amplitud del modo en zonas libres (un larguero "
+             r"lejos de toda unión, el borde de un panel), que daban picos de cientos a miles de MPa en un puñado de elementos. Con el "
+             r"resolvedor en un hilo el mismo nodo se desvía un 0{,}02\,\%, las frecuencias cambian menos de 0{,}2\,\% y los picos desaparecen; "
+             r"el tiempo de cálculo sube de 7 a 9 minutos. El filtro de elementos que se usaba para tapar ese ruido también descartaba "
+             r"curvatura legítima y se eliminó. Todas las corridas de este informe usan un hilo y no descartan ningún elemento.")
+if R0:
     _t0 = max(R0["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES)
-    _t1 = max(R["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES)
-    acc.append(r"\item \textbf{Bandeja de aviónica} (hallazgo del modelo exclusivamente estructural). Sin los soportes de los equipos, la placa de G10 de "
-               r"0{,}8\,mm lleva sus $\approx$190\,g de equipos como masa repartida y resuena a %s\,Hz con una transmisibilidad de %s, con picos "
-               r"de miles de MPa. Con los equipos modelados como sólidos pegados esa rigidez era artificial. Corrección ya incorporada al CAD y al modelo: "
-               r"dos rieles longitudinales de PA12-CF de %s$\times$%s\,mm a $y=\pm%s$\,mm bajo la bandeja (%s\,g, que salen del lastre: de 14{,}2 a 4{,}5\,g). "
-               r"Vuelto a correr, la transmisibilidad de la bandeja baja a %s y el primer modo queda en %s\,Hz."
-               % (n(R0["freq"][0], 0), n(_t0, 0), n(P.RIEL_W, 0), n(P.RIEL_H, 0), n(P.RIEL_Y, 0), n(_m_riel, 1), n(_t1, 0), n(R["freq"][0], 0)))
-_loc = []
-for g_ in ("Paneles y bandeja", "Cuadernas", "Largueros"):
-    cands = [(peor(c_, g_), c_) for c_ in ("armonico", "choque")]
-    (pm, c_) = min(cands, key=lambda t: t[0][0])
-    if pm[0] < 0:
-        _loc.append((g_, c_, pm))
-if _loc:
-    its = "; ".join("%s %s ($MS=%s$ en el pico, %s con el percentil 99{,}9; $x=%s$, $y=%s$, $z=%s$\\,mm)" % (
-        GNOM[g_].split(" (")[0].lower(), "en resonancia" if c_ == "armonico" else "en choque", ms(pm[0]), ms(pm[4]["MS_p999"]),
-        n(pm[4]["pos"][0], 0), n(pm[4]["pos"][1], 0), n(pm[4]["pos"][2], 0)) for g_, c_, pm in _loc)
-    acc.append(r"\item \textbf{Picos aislados} (paneles de G10, cuadernas, largueros): %s. Son valores de un solo elemento, en bordes y uniones de "
-               r"piezas de 0{,}5\,mm, y con el percentil 99{,}9 todas tienen margen. Quedan a confirmar con una malla más fina; hasta entonces "
-               r"se reportan con el margen del pico, que es el conservador." % its)
-ACC = ""
-if acc:
-    ACC = (r"\subsection{Márgenes negativos y corrección}" "\n" r"\que Dónde no alcanza el diseño y qué se cambia." "\n"
-           r"\porque Los casos casi-estático de 15\,G y el tirón del paracaídas tienen margen en todas las piezas. Quedan sin margen:"
-           "\n" r"\begin{itemize}" + "\n".join(acc) + r"\end{itemize}" "\n"
-           r"\chequeo La corrección de la bandeja ya está en el modelo y se vio su efecto. La del tubo es local y no cambia la arquitectura ni la masa "
-           r"en más de 3\,g; no se volvió a correr con ella y queda como primera tarea de la próxima iteración.")
+    _t1 = max((RA or R)["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES)    # efecto de los rieles solos (rev. A)
+    _m_riel = sum(p_["masa"] for p_ in R["piezas"] if "riel" in p_["nombre"])
+    items.append(r"\item \textbf{Bandeja.} Sin los bloques de equipos que la rigidizaban artificialmente, la placa de G10 de 0{,}8\,mm lleva "
+                 r"$\approx$190\,g y resuena a %s\,Hz con una transmisibilidad de %s: una placa empotrada con esa masa amplificada trabaja "
+                 r"cerca de 1000\,MPa. Dos rieles de PA12-CF de $%s\times%s$\,mm bajo la bandeja (%s\,g) bajan la transmisibilidad a %s."
+                 % (n(R0["freq"][0], 0), n(_t0, 0), n(P.RIEL_W, 0), n(P.RIEL_H, 0), n(_m_riel, 1), n(_t1, 0)))
+if _tA_arm:
+    items.append(r"\item \textbf{Tubo junto a la tapa.} Era el único margen negativo real de la revisión A: $MS=%s$ en resonancia y %s en "
+                 r"choque, por $\sigma_x$ entre capas del LW-PLA. Los patines de C4 empujaban la pared desnuda a 4\,mm del faldón de la "
+                 r"tapa, donde la pared pasa de libre a empotrada; lejos de ahí el tubo trabaja a menos de 1\,MPa. Se sacaron los patines "
+                 r"de C4 y la cola se centra en la tapa con un collar y un manguito de elastómero: en la revisión B el tubo queda con "
+                 r"$MS=%s$ en resonancia y %s en choque."
+                 % (ms(_tA_arm[0]), ms(_tA_ch[0]), ms(peor("armonico", "Contenedor: tubo")[0]), ms(peor("choque", "Contenedor: tubo")[0])))
+items.append(r"\item \textbf{Unión panel--tapa.} Los paneles laterales pegaban contra la tapa por un canto de 0{,}5\,mm, y los cuatro largueros "
+             r"eran tubos \diam5 dentro de la caja, a 7\,mm de los paneles, sin tocarlos. Los picos que el modelo mostraba en esa arista "
+             r"resultaron ser ruido del resolvedor, pero el detalle no se puede fabricar bien: una línea de pegado de 0{,}5\,mm. Los "
+             r"angulares de $6\times6\times1$ dan a cada panel y a la tapa 6\,mm de pegado cara contra cara, cierran el borde libre "
+             r"inferior de los paneles y cuestan lo mismo en masa, porque desaparecen los bujes de C1 y C4.")
+items.append(r"\item \textbf{Patines de C1 y manguito.} Tienen cara de PTFE y deslizan, así que en el modelo solo transmiten "
+             r"compresión radial; la carga axial pasa entera por la llave y el modo axial queda en %s\,Hz (antes los patines pegados "
+             r"sumaban rigidez axial que en la realidad no existe). Los patines de C1 pasan de 14° $\times$ 1\,mm a 24° $\times$ "
+             r"1{,}5\,mm (C1 de \diam83): la misma rigidez radial, repartida en un arco 1{,}7 veces mayor, porque apoyan a menos de "
+             r"una longitud de decaimiento de la cáscara (unos 7\,mm) del borde de la boca." % n(modo_dom(0)[1], 0))
+_fE = os.path.join(FEA, "resultados_fea_revB_escote_chico.json")
+if os.path.exists(_fE):
+    RE = json.load(open(_fE))
+    _pe = min(peor(c_, "Cuadernas", RE)[0] for c_ in ("armonico", "paracaidas"))
+    _pn = min(peor(c_, "Cuadernas")[0] for c_ in ("armonico", "paracaidas"))
+    items.append(r"\item \textbf{Escote de la bandeja frente a la llave.} Con los patines deslizantes apareció el último punto sin margen: "
+                 r"la bandeja apoyaba en C4 a 0{,}6\,mm del borde de la arandela de la llave, y en la resonancia axial la arandela empuja "
+                 r"C4 hacia atrás mientras la bandeja, con la electrónica, tira hacia adelante ($MS=%s$ en $\sigma_x$ entre capas). El "
+                 r"escote pasa de r\,8{,}6 a r\,%s\,mm: la bandeja apoya en el nervio de asiento de C4, a 6\,mm de la arandela, y el "
+                 r"margen sube a %s." % (ms(_pe), n(P.R_ESCOTE, 0), ms(_pn)))
+if _neg_b:
+    cierre = (r"\chequeo %s con margen negativo: %s." %
+              ("Queda una combinación" if len(_neg_b) == 1 else "Quedan %d combinaciones" % len(_neg_b),
+               "; ".join("%s, %s (%s)" % (GNOM[g_], CASO[c_], ms(v_)) for v_, g_, c_ in _neg_b)))
+else:
+    cierre = (r"\chequeo Con la revisión B todas las piezas tienen margen positivo en los cuatro casos: casi-estático de 15\,G, "
+              r"resonancia a 15\,G, choque de 30\,G y tirón del paracaídas (tabla~\ref{tab:revab}).")
+ACC = (r"\subsection{Revisión B: correcciones del modelo estructural}\label{sec:revb}" "\n"
+       r"\que Qué marcó el modelo exclusivamente estructural y qué se cambió." "\n"
+       r"\porque Siete hallazgos, dos del método de cálculo y cinco del diseño:" "\n" r"\begin{itemize}" + "\n".join(items) + r"\end{itemize}" "\n"
+       + T_REVAB + "\n" + cierre)
 
 PH = json.load(open(os.path.join(FEA, "polhamus.json")))
 t_polh = tab("lccccccc", ["Hipótesis", "$f$", "$C_L$ potencial", "$C_L$ vórtice", "$C_L$", "$C_D$", "$w$ con 500\\,g", "$w$ con %s\\,g" % n(PH["m_vuelo"], 0)],
@@ -631,6 +730,11 @@ V = {
     "W": n(MAS["w_estimado"]), "W368": n(MAS["w_planeador_solo"]), "XLAN": n(MAS["x_cg_lanzamiento"], 0), "XEST": n(MAS["x_cg_planeador_estibado"], 0),
     "XVUE": n(MAS["x_cg_vuelo_total"], 0), "XALA": n(MAS["x_centroide_ala"], 0), "FRET15": n(1.5 * F_ret, 0),
     "PLANOS": os.path.join(PLANOS, "Planos_CanSat_AlaDelta.pdf"),
+    "F_SINRIEL": n(R0["freq"][0], 0) if R0 else "--", "T_REL": t_rel,
+    "EPSRES": n(100 * _rel("armonico", "Aislador de la llave") / P.ISO_T, 0),
+    "HUELGO": n(max(_rel(c_, k_) for c_ in ("cuasi30", "armonico", "choque", "paracaidas")
+                    for k_ in ("Huelgo aro C4 - tubo (y)", "Huelgo aro C4 - tubo (z)")), 2),
+    "T_SINRIEL": n(max(R0["armonico"][e]["trans_max"]["Bandeja centro"] for e in EJES), 0) if R0 else "--",
 }
 for _ in range(2):
     for k, v in V.items():

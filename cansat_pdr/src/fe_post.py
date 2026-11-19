@@ -269,11 +269,31 @@ def energia_elastomero(S, vol, c, ejes=None):
     T[..., 1, 2] = T[..., 2, 1] = S[..., 4]
     T[..., 0, 2] = T[..., 2, 0] = S[..., 5]
     if ejes is not None:
-        Rm = np.array(ejes).T                       # columnas = ejes locales en coordenadas globales
-        T = np.einsum("ia,egij,jb->egab", Rm, T, Rm)
+        ejes = np.asarray(ejes, dtype=float)
+        if ejes.ndim == 2:
+            Rm = ejes.T                             # columnas = ejes locales en coordenadas globales
+            T = np.einsum("ia,egij,jb->egab", Rm, T, Rm)
+        else:                                       # ejes por elemento [E, 3 ejes, 3 componentes]
+            Rm = np.transpose(ejes, (0, 2, 1))
+            T = np.einsum("eia,egij,ejb->egab", Rm, T, Rm)
     u = 0.5 * (T[..., 0, 0] ** 2 / c["E1"] + T[..., 1, 1] ** 2 / c["E2"] + T[..., 2, 2] ** 2 / c["E3"]
                + T[..., 0, 1] ** 2 / c["G12"] + T[..., 1, 2] ** 2 / c["G23"] + T[..., 0, 2] ** 2 / c["G13"])
     return float(np.sum(u * vol[:, None] / 4.0))
+
+
+def leer_ortotropos(path):
+    """Constantes ortotropas (E1..G23) de cada material M<i> del mazo de CalculiX: {i: dict}."""
+    out = {}
+    if not os.path.exists(path):
+        return out
+    lines = open(path).read().split("\n")
+    for k, ln in enumerate(lines):
+        if ln.startswith("*MATERIAL, NAME=M") and k + 3 < len(lines) and "ENGINEERING CONSTANTS" in lines[k + 1]:
+            i = int(ln.split("=M")[1])
+            a = [float(x) for x in lines[k + 2].split(",") if x.strip()]
+            b = [float(x) for x in lines[k + 3].split(",") if x.strip()]
+            out[i] = dict(E1=a[0], E2=a[1], E3=a[2], nu12=a[3], nu13=a[4], nu23=a[5], G12=a[6], G13=a[7], G23=b[0])
+    return out
 
 
 class Modelo:
@@ -294,6 +314,12 @@ class Modelo:
         ev2, sst = leer_dat_S(os.path.join(wd, f"estat_{tag}.dat"))
         assert np.array_equal(ev2, self.ever)
         self.s_st = sst / G_MM
+        # Mazos escritos sin "*DLOAD, OP=NEW": CalculiX acumula la gravedad de un paso al siguiente (paso 2 = x + y,
+        # paso 3 = x + y + z).  El problema es lineal: la respuesta a cada eje es la diferencia entre pasos consecutivos.
+        self.estat_acumulado = "OP=NEW" not in open(os.path.join(wd, f"estat_{tag}.inp")).read()
+        if self.estat_acumulado:
+            self.ust = np.array([self.ust[0], self.ust[1] - self.ust[0], self.ust[2] - self.ust[1]])
+            self.s_st = np.array([self.s_st[0], self.s_st[1] - self.s_st[0], self.s_st[2] - self.s_st[1]])
         self.upar = leer_frd_U(os.path.join(wd, f"parac_{tag}.frd"), nn)[0] / G_MM
         ev3, spar = leer_dat_S(os.path.join(wd, f"parac_{tag}.dat"))
         assert np.array_equal(ev3, self.ever)
@@ -304,14 +330,19 @@ class Modelo:
         libre = os.path.join(wd, f"libre_{tag}.dat")
         self.freq_libre = leer_dat_modal(libre)[0] if os.path.exists(libre) and os.path.getsize(libre) > 0 else None
         # --- filtro de nodos medios no equilibrados (se excluyen sus elementos de la verificacion)
-        es_elast = np.array([p["mat"] in ("PAD_A", "PAD_B", "ELAST_X") for p in self.partes])
+        es_elast = np.array([p["mat"] in ("PAD_A", "PAD_B", "ELAST_X", "ELAST_C") for p in self.partes])
         rig = ~es_elast[self.epart]
         self.anom = nodos_anomalos(self.phi, self.els[rig])
         marca = np.zeros(nn, bool)
         marca[self.anom] = True
         self.valido = ~marca[self.els[self.ever]].any(axis=1)
+        # Rev. B: el ruido de nodos medios venia de SPOOLES multihilo; con el resolvedor en un hilo el autovector es limpio y
+        # el criterio marca curvatura legitima de elementos cuadraticos.  El filtro queda apagado (FILTRO_ANOM=1 lo activa).
+        if os.environ.get("FILTRO_ANOM", "0") == "0":
+            self.valido[:] = True
         self.s_phi[:, ~self.valido] = 0.0
         # --- amortiguamiento modal por energia de deformacion en los elastomeros
+        self.mat_inp = leer_ortotropos(os.path.join(wd, f"modal_{tag}.inp"))
         import fe_model as F
         import params as P
         self.vol_ever = gradientes(self.xyz, self.els[self.ever], CENTRO)[1]
@@ -322,12 +353,19 @@ class Modelo:
                 continue
             filas = self.fila[np.where(self.epart == i)[0]]
             filas = filas[filas >= 0]
-            _, c = F.elastico(p["mat"])
+            c = self.mat_inp.get(i) or F.elastico(p["mat"])[1]     # constantes escritas en el mazo de esta corrida
             ejes = None
             if p["mat"] == "PAD_A":
                 ejes = [(0.0, 0.70710678, 0.70710678), (0.0, -0.70710678, 0.70710678), (1.0, 0.0, 0.0)]
             elif p["mat"] == "PAD_B":
                 ejes = [(0.0, -0.70710678, 0.70710678), (0.0, -0.70710678, -0.70710678), (1.0, 0.0, 0.0)]
+            elif p["mat"] == "ELAST_C":                # cilindrico: radial, tangencial, axial por elemento
+                c_ = self.xyz[self.els[self.ever[filas]][:, :4]].mean(axis=1)
+                r_ = np.hypot(c_[:, 1], c_[:, 2])
+                er = np.stack([np.zeros_like(r_), c_[:, 1] / r_, c_[:, 2] / r_], axis=1)
+                et = np.stack([np.zeros_like(r_), -c_[:, 2] / r_, c_[:, 1] / r_], axis=1)
+                ex = np.tile([1.0, 0.0, 0.0], (len(r_), 1))
+                ejes = np.stack([er, et, ex], axis=1)
             for k in range(nm):
                 U_el[k] += energia_elastomero(self.s_phi[k][filas].astype(np.float64), self.vol_ever[filas], c, ejes)
         self.f_elast = np.clip(U_el / (0.5 * wn2), 0.0, 1.0)

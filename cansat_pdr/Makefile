@@ -1,6 +1,8 @@
 # Regenera todo el PDR mecanico a partir de src/params.py
 # Requiere: python3 (numpy, scipy, matplotlib, cadquery, gmsh, pyvista, pillow), CalculiX (ccx), pdflatex y node+playwright (laminas)
 FEA_TMP ?= /tmp/cansat_fea
+# SPOOLES en un hilo: en varios hilos deja ruido local en los autovectores (ver informe, revision B)
+export CCX_SPOOLES = 1
 PY = cd src && python3
 
 all: cad planos fea informe
@@ -14,12 +16,12 @@ planos: cad
 
 fea:
 	$(PY) fe_bench.py $(FEA_TMP)/bench ../fea/verificacion_viga.json
-	$(PY) fe_model.py $(FEA_TMP) 1.6 e
-	$(PY) fe_analisis.py $(FEA_TMP) e ../fea/resultados_fea.json $(FEA_TMP)/res.npz
+	$(PY) fe_model.py $(FEA_TMP) 1.6 b
+	$(PY) fe_analisis.py $(FEA_TMP) b ../fea/resultados_fea.json $(FEA_TMP)/res.npz
 	$(PY) wing_frame.py ../fea/ala_desplegada.json ../fea/ala_desplegada.npz
 	$(PY) masas.py ../fea/masas.json
 	$(PY) polhamus.py ../fea/polhamus.json ../figs/polhamus.png
-	$(PY) figs_fea.py $(FEA_TMP) e ../fea/resultados_fea.json $(FEA_TMP)/res.npz ../fea/ala_desplegada.npz ../figs
+	$(PY) figs_fea.py $(FEA_TMP) b ../fea/resultados_fea.json $(FEA_TMP)/res.npz ../fea/ala_desplegada.npz ../figs
 
 informe:
 	$(PY) build_informe.py

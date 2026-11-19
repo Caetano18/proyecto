@@ -37,9 +37,13 @@ def grupos_de(mod):
         crit=[("von Mises", "vm", M["PA12CF"]["Sut"], M["PA12CF"]["FS"]),
               ("sigma_x entre capas", "sx", M["PA12CF"]["Sut_z"], M["PA12CF"]["FS"])])
     g["Cuadernas (PA12-CF)"] = dict(
-        idx=sel(lambda p: p["mat"] == "PA12CF" and p["grupo"] == "estructura"),
+        idx=sel(lambda p: p["mat"] == "PA12CF" and p["grupo"] == "estructura" and "riel" not in p["nombre"]),
         crit=[("von Mises", "vm", M["PA12CF"]["Sut"], M["PA12CF"]["FS"]),
               ("sigma_x entre capas", "sx", M["PA12CF"]["Sut_z"], M["PA12CF"]["FS"])])
+    # rieles impresos acostados (capas paralelas a x): sigma_x queda en el plano de las capas
+    g["Rieles de bandeja (PA12-CF)"] = dict(
+        idx=sel(lambda p: "riel" in p["nombre"]),
+        crit=[("von Mises", "vm", M["PA12CF"]["Sut"], M["PA12CF"]["FS"])])
     g["Paneles y bandeja (G10)"] = dict(
         idx=sel(lambda p: p["mat"] == "G10"),
         crit=[("von Mises", "vm", M["G10"]["Sut"], M["G10"]["FS"])])
@@ -79,6 +83,40 @@ def monitores(mod):
     return {k: int(np.argmin(np.linalg.norm(mod.xyz - np.array(v), axis=1))) for k, v in pts.items()}
 
 
+# pares de puntos para desplazamientos relativos: (punto A, pieza A, punto B, pieza B, referencia [mm], que se verifica)
+_xf = P.CT_TOP[0] + P.CT_CAP_FLOOR
+PARES = {
+    "Manguito del centrador (y)": ((209.0, 20.0, 0.0), "C4", (209.0, 21.0, 0.0), "CT2", P.CEN_ELT, "deformacion"),
+    "Manguito del centrador (z)": ((209.0, 0.0, 20.0), "C4", (209.0, 0.0, 21.0), "CT2", P.CEN_ELT, "deformacion"),
+    "Patin C1 a 45 grados": ((4.0, P.R_C1 * 0.70711, P.R_C1 * 0.70711), "C1", (4.0, P.CT_RI * 0.70711, P.CT_RI * 0.70711), "CT1",
+                             P.CT_RI - P.R_C1, "deformacion"),
+    "Aislador de la llave": ((_xf, 0.0, 5.5), "CT2", (_xf + P.ISO_T, 0.0, 5.5), "Llave", P.ISO_T, "deformacion"),
+    "Huelgo aro C4 - tubo (y)": ((203.0, P.RB, 0.0), "C4", (203.0, P.CT_RI, 0.0), "CT1", P.CT_RI - P.RB, "huelgo"),
+    "Huelgo aro C4 - tubo (z)": ((203.0, 0.0, P.RB), "C4", (203.0, 0.0, P.CT_RI), "CT1", P.CT_RI - P.RB, "huelgo"),
+}
+
+
+def rel_estatico(du, eje, A):
+    n_ = eje / np.linalg.norm(eje)
+    r_ = abs(float(np.dot(du, n_))) * A
+    m_ = float(np.linalg.norm(du)) * A
+    return dict(max=m_, rad=r_, cort=float(np.sqrt(max(m_ ** 2 - r_ ** 2, 0.0))))
+
+
+def nodos_pares(mod):
+    """Nodo de la pieza A mas cercano al punto A y de la pieza B mas cercano al punto B.  La direccion de referencia
+    (compresion o cierre) es la de A hacia B en coordenadas nominales."""
+    out = {}
+    for k, (a, pa, b, pb, ref, tipo) in PARES.items():
+        sel = []
+        for pt, pref in ((a, pa), (b, pb)):
+            ids = [i for i, p in enumerate(mod.partes) if p["nombre"].startswith(pref)]
+            nod = np.unique(mod.els[np.isin(mod.epart, ids)])
+            sel.append(int(nod[np.argmin(np.linalg.norm(mod.xyz[nod] - np.array(pt), axis=1))]))
+        out[k] = (sel[0], sel[1], ref, tipo, np.array(b, float) - np.array(a, float))
+    return out
+
+
 def main(wd, tag, out_json, out_npz, zeta=None):
     t0 = time.time()
     mod = post.Modelo(wd, tag)
@@ -89,6 +127,7 @@ def main(wd, tag, out_json, out_npz, zeta=None):
     zeta = mod.zeta if zeta is None else np.full(nm, float(zeta))
     G = grupos_de(mod)
     mon = monitores(mod)
+    pares = nodos_pares(mod)
     cen = mod.xyz[mod.els[mod.ever][:, :4]].mean(axis=1)
     res = dict(nodos=int(len(mod.xyz)), elementos=int(len(mod.els)), masa_g=mod.masa, zeta=P.ZETA,
                zeta_modal=[float(x) for x in zeta], f_elast=[float(x) for x in mod.f_elast],
@@ -106,8 +145,12 @@ def main(wd, tag, out_json, out_npz, zeta=None):
     for d in range(3):
         n = mon["Bandeja centro"]
         um = float(np.sum(-mod.pf[:, d] / wn ** 2 * mod.phi[:, n, d]))
-        chk[EJES[d]] = dict(estatico=float(mod.ust[d][n, d]), suma_modal=um)
+        # control completo: norma del vector desplazamiento en todos los nodos, no solo la componente del eje
+        uf = -np.tensordot(mod.pf[:, d] / wn ** 2, mod.phi, axes=1)
+        err = float(np.linalg.norm(uf - mod.ust[d]) / np.linalg.norm(mod.ust[d]))
+        chk[EJES[d]] = dict(estatico=float(mod.ust[d][n, d]), suma_modal=um, error_relativo_campo=err)
     res["control_estatico"] = chk
+    res["estat_acumulado_corregido"] = bool(mod.estat_acumulado)
     print("control estatico (bateria):", {k: (f"{v['estatico']:.3e}", f"{v['suma_modal']:.3e}") for k, v in chk.items()})
     arr = dict(ever=mod.ever)
 
@@ -129,7 +172,9 @@ def main(wd, tag, out_json, out_npz, zeta=None):
         comb = np.zeros(3)
         comb[d] = A_s
         S = mod.S(np.zeros(nm), comb)
-        res["cuasi30"][EJES[d]] = dict(margenes=margenes(S), umax=float(np.linalg.norm(mod.ust[d], axis=1).max() * A_s))
+        res["cuasi30"][EJES[d]] = dict(margenes=margenes(S), umax=float(np.linalg.norm(mod.ust[d], axis=1).max() * A_s),
+                                       rel={k: rel_estatico(mod.ust[d][na] - mod.ust[d][nb], eje_, A_s)
+                                            for k, (na, nb, ref, tipo, eje_) in pares.items()})
         res["cuasi15"][EJES[d]] = dict(margenes=margenes(S * (A_v / A_s)),
                                        umax=float(np.linalg.norm(mod.ust[d], axis=1).max() * A_v))
         arr[f"cuasi_vm_{EJES[d]}"] = von_mises(S).max(axis=1)
@@ -138,6 +183,8 @@ def main(wd, tag, out_json, out_npz, zeta=None):
     toca = np.array([any(n in nb for n in e) for e in mod.els[mod.ever]])
     Sp[toca] = 0.0
     res["paracaidas"] = dict(margenes=margenes(Sp), umax=float(np.linalg.norm(mod.upar, axis=1).max() * A_s * FAD_PARAC),
+                             rel={k: rel_estatico(mod.upar[na] - mod.upar[nb], eje_, A_s * FAD_PARAC)
+                                  for k, (na, nb, ref, tipo, eje_) in pares.items()},
                              FAD=FAD_PARAC)
     arr["parac_vm"] = von_mises(Sp).max(axis=1)
     arr["parac_U"] = (mod.upar * A_s * FAD_PARAC).astype(np.float32)
@@ -181,6 +228,18 @@ def main(wd, tag, out_json, out_npz, zeta=None):
                 u = A_v * mod.ust[d][node, d] + np.sum((q - qst) * mod.phi[:, node, d])
                 Tm[k] = abs(A_v - (2 * np.pi * f) ** 2 * u) / A_v
             arr[f"trans_{eje}_{mn}"] = Tm
+        rel = {}
+        for k, (na, nb, ref, tipo, eje_) in pares.items():
+            nrm = eje_ / np.linalg.norm(eje_)
+            cur, cur_r = np.zeros(len(fgrid)), np.zeros(len(fgrid))
+            for kk, f in enumerate(fgrid):
+                q, qst = post.q_armonico(mod.freq, gam, f, A_v, zeta)
+                du = A_v * (mod.ust[d][na] - mod.ust[d][nb]) + np.tensordot(q - qst, mod.phi[:, na] - mod.phi[:, nb], axes=1)
+                cur[kk] = float(np.sqrt(np.sum(np.abs(du) ** 2)))
+                cur_r[kk] = float(abs(np.dot(du, nrm)))
+            cur_t = np.sqrt(np.maximum(cur ** 2 - cur_r ** 2, 0.0))
+            rel[k] = dict(max=float(cur.max()), rad=float(cur_r.max()), cort=float(cur_t.max()), f=float(fgrid[np.argmax(cur_r)]))
+            arr[f"rel_{eje}_{k}"] = cur_r
         marg = {}
         env = np.zeros(len(mod.ever), np.float32)        # envolvente de von Mises en las frecuencias criticas
         for nombre, gd in G.items():
@@ -203,7 +262,7 @@ def main(wd, tag, out_json, out_npz, zeta=None):
         q, qst = post.q_armonico(mod.freq, gam, mod.freq[i0], A_v, zeta)
         dq = (q - qst) * np.exp(-1j * np.angle((q - qst)[i0]))
         arr[f"arm_U_{eje}"] = mod.U(dq.real.astype(np.float32), np.eye(3)[d] * 0.0).astype(np.float32)
-        res["armonico"][eje] = dict(margenes=marg, f_modo_principal=float(mod.freq[i0]),
+        res["armonico"][eje] = dict(margenes=marg, f_modo_principal=float(mod.freq[i0]), rel=rel,
                                     trans_max={mn: float(arr[f"trans_{eje}_{mn}"].max()) for mn in mon},
                                     f_trans_max={mn: float(fgrid[np.argmax(arr[f"trans_{eje}_{mn}"])]) for mn in mon})
         print(f"armonico {eje} listo ({time.time() - t0:.0f} s)")
@@ -265,6 +324,18 @@ def main(wd, tag, out_json, out_npz, zeta=None):
                                                 tau_crit=best[2], sigma_11ms=vnom, MS_11ms=adm / (fs * vnom) - 1,
                                                 pos=[float(c) for c in cen[e]])
         arr[f"choque_vm_{eje}"] = env
+        rel = {}
+        for k, (na, nb, ref, tipo, eje_) in pares.items():
+            nrm = eje_ / np.linalg.norm(eje_)
+            mx, mr, mt = 0.0, 0.0, 0.0
+            for tau in taus:
+                tt, aa, dd = historia(tau)
+                du = aa[:, None] * (mod.ust[d][na] - mod.ust[d][nb])[None, :] + dd @ (mod.phi[:, na] - mod.phi[:, nb])
+                r_ = np.abs(du @ nrm)
+                t_ = np.sqrt(np.maximum(np.sum(du ** 2, axis=1) - r_ ** 2, 0.0))
+                mx = max(mx, float(np.linalg.norm(du, axis=1).max()))
+                mr, mt = max(mr, float(r_.max())), max(mt, float(t_.max()))
+            rel[k] = dict(max=mx, rad=mr, cort=mt)
         t, ab, dq = historia(P.TAU_SHOCK, 2400)
         acc = {}
         for mn, node in mon.items():
@@ -273,7 +344,7 @@ def main(wd, tag, out_json, out_npz, zeta=None):
             acc[mn] = float(np.max(np.abs(a_abs)) / G_MM)
             arr[f"choque_acc_{eje}_{mn}"] = (a_abs / G_MM).astype(np.float32)
         arr[f"choque_tacc_{eje}"] = t
-        res["choque"][eje] = dict(margenes=marg, duraciones=dur, taus=taus, acc_max_g=acc)
+        res["choque"][eje] = dict(margenes=marg, duraciones=dur, taus=taus, acc_max_g=acc, rel=rel)
         print(f"choque {eje} listo ({time.time() - t0:.0f} s)")
     fn = np.geomspace(10, 2000, 110)
     arr["srs_f"] = fn
@@ -282,6 +353,7 @@ def main(wd, tag, out_json, out_npz, zeta=None):
     for i in range(min(nm, 8)):
         arr[f"modo_{i}"] = mod.phi[i]
         arr[f"modo_vm_{i}"] = von_mises(mod.s_phi[i]).max(axis=1)
+    res["pares"] = {k: dict(ref=v[2], tipo=v[3], a=PARES[k][0], b=PARES[k][2]) for k, v in pares.items()}
     json.dump(res, open(out_json, "w"), indent=1)
     np.savez_compressed(out_npz, **arr)
     print(f"total {time.time() - t0:.0f} s")

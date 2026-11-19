@@ -154,10 +154,11 @@ def peor(caso, clave_grupo, crit=None):
     return best
 
 
-GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Paneles y bandeja", "Largueros",
+GRUPOS = ["Contenedor: tubo", "Contenedor: tapa", "Cuadernas", "Rieles de bandeja", "Paneles y bandeja", "Largueros",
           "Llave de bayoneta"]
 GNOM = {"Contenedor: tubo": "Tubo del contenedor (LW-PLA)", "Contenedor: tapa": "Tapa nervada (PA12-CF)",
-        "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Paneles y bandeja": "Paneles y bandeja (G10)",
+        "Cuadernas": "Cuadernas, cunas y guías (PA12-CF)", "Rieles de bandeja": "Rieles de bandeja (PA12-CF)",
+        "Paneles y bandeja": "Paneles y bandeja (G10)",
         "Largueros": "Largueros (CFRP)",
         "Llave de bayoneta": "Llave de bayoneta (A2-70)"}
 CNOM = {"von Mises": "von Mises", "sigma_x entre capas": "σx entre capas", "sigma_x fibra": "σx de fibra",
@@ -290,7 +291,7 @@ slide("Resumen del subsistema mecánico", cols(
         ["Contenedor", "Tubo Ø90 × 242, pared 2", "LW-PLA impreso", n(next(x["masa"] for x in MAS["filas"] if "Tubo" in x["item"]))],
         ["", "Tapa nervada", "PA12-CF impreso", n(next(x["masa"] for x in MAS["filas"] if "Tapa nervada" in x["item"]))],
         ["Bastidor", "4 cuadernas C1–C4", "PA12-CF impreso", n(sum(x["masa"] for x in MAS["filas"] if "Cuaderna" in x["item"]))],
-        ["", "4 largueros Ø5/3,5", "CFRP pultruido", n(next(x["masa"] for x in MAS["filas"] if "Largueros" in x["item"]))],
+        ["", "4 largueros angulares 6×6×1", "CFRP pultruido", n(next(x["masa"] for x in MAS["filas"] if "Largueros" in x["item"]))],
         ["", "Paneles, tapa y bandeja", "G10 0,5 / 0,8", n(sum(x["masa"] for x in MAS["filas"] if "G10" in x["item"]))],
         ["Ala", "Varillas, tirantes, herrajes", "CFRP / Al 7075", n(MAS["sub"]["Ala de membrana"]["masa"])],
         ["", "Membrana", "Ripstop 40 g/m²", "incl."],
@@ -339,7 +340,8 @@ slide("Configuración del sistema: selección", tabla(
 slide("Layout físico (1/3): configuración de lanzamiento", img("lay_lanzamiento.png", w=676) + cols(
     ul([f"Diámetro exterior <b>90,0 mm</b> (S2) y largo total <b>{P.CT_LEN:g} mm</b>, con el paracaídas adentro (S3: 200 a 250).",
         "Pared exterior de <b>2,0 mm</b> (S6). Diámetro interior 86 mm.",
-        f"El planeador mide {P.L_G:g} mm y Ø{2 * P.RB:g}: queda 1 mm de huelgo radial, que toman 8 patines de PTFE."], "s"),
+        f"El planeador mide {P.L_G:g} mm y Ø{2 * P.RB:g}: queda 1 mm de huelgo radial. La nariz (C1, Ø{2 * P.R_C1:g}) apoya en 4 patines de elastómero de 24° × 1,5 mm con cara de PTFE; "
+        "la cola se centra en la tapa (collar de C4 + manguito de elastómero)."], "s"),
     ul([f"La nariz queda {abs(P.CT_X[0]):g} mm adentro de la boca: en el lanzamiento no apoya contra el cohete.",
         f"Tapa nervada de {P.CT_CAP_H:g} mm a {P.CT_TOP[0] - P.CT_X[0]:g} mm de la boca; arriba quedan "
         f"{P.CT_X[1] - P.CT_TOP[0] - P.CT_CAP_H:g} mm para el paracaídas plegado.",
@@ -365,7 +367,7 @@ slide("Layout físico (3/3): planeador desplegado", cols(img("lay_desplegado.png
 slide("Ubicación de componentes", anot("equipos.png", "equipos", 430,
       izq=[("c1", "Cuaderna C1\n(pivotes A)"), ("lastre", "Lastre de centrado\n(asignación)"), ("servo_cola", "Servo de cola"),
            ("bandeja", "Bandeja de aviónica\nG10 0,8"), ("pcb", "PCB principal\n(bajo la bandeja)")],
-      der=[("larguero", "Larguero CFRP\nØ5/3,5"), ("bateria", "Batería 18650\nsobre sillas"), ("pcb_radio", "PCB radio / GNSS"),
+      der=[("larguero", "Larguero angular\nCFRP 6×6×1"), ("bateria", "Batería 18650\nsobre sillas"), ("pcb_radio", "PCB radio / GNSS"),
            ("c4", "Cuaderna C4\n(pivotes B)"), ("servo_cerrojo", "Servo del cerrojo"), ("llave", "Llave de bayoneta")], lw=120)
       + nota("Se ocultaron el panel lateral izquierdo, la tapa superior y las alas. Las masas y envolventes de la electrónica son "
              "asignaciones; el montaje se ajusta cuando el subsistema eléctrico congele las placas."))
@@ -425,14 +427,15 @@ slide("Materiales: comparación", tabla(
 slide("Materiales: selección por pieza", tabla(["Pieza", "Material", "Por qué"], [
     ["Tubo del contenedor", "LW-PLA, pared 2,0 mm", "S6 fija el espesor: con 2 mm manda la densidad. 87 g contra 173 g en PETG. Base biológica (S9)."],
     ["Tapa del contenedor", "PA12-CF, nervada", "Recibe la brida del paracaídas y la llave: es el punto de mayor carga concentrada."],
-    ["Cuadernas C1–C4, cunas", "PA12-CF, 100 % de relleno", "Llevan los pivotes del ala y los bujes de los largueros; necesitan resistencia local."],
-    ["Largueros", "Tubo CFRP Ø5/3,5", "El mismo tubo que el borde de ataque: una sola compra. Dan la rigidez axial y de flexión."],
+    ["Cuadernas C1–C4, cunas", "PA12-CF, 100 % de relleno", "Llevan los pivotes del ala y los alojamientos de los largueros; C4 lleva el collar del centrador."],
+    ["Largueros", "Angular CFRP 6 × 6 × 1", "En las aristas de la caja: paneles y tapa pegan cara contra cara sobre sus alas (6 mm de pegado)."],
     ["Paneles laterales y tapa", "G10 0,5 mm", "Almas de corte de la caja. Transparentes a RF: no tapan el GNSS ni la radio."],
     ["Bandeja de aviónica", "G10 0,8 mm", "Plano de montaje de toda la electrónica y alma horizontal."],
     ["Varillas del ala", "Tubo CFRP Ø5/3,5 y Ø3/2", "Dimensionadas por rigidez en la nota de membrana."],
     ["Manguito y herrajes del ala", "Aluminio 7075-T6", "Piezas chicas con ajuste deslizante y cargas de contacto."],
     ["Llave de bayoneta, pernos", "Inoxidable A2-70", "Corte y aplastamiento con sección mínima."],
-    ["Patines de guía", "PTFE 1 mm", "Deslizamiento del planeador dentro del tubo."],
+    ["Patines de guía (C1)", "Elastómero + cara de PTFE", "Deslizamiento de la nariz dentro del tubo."],
+    ["Manguito del centrador", "Elastómero 55 Sh A, 1 mm", "Centra la cola en la tapa y amortigua el modo lateral."],
     ["Membrana", "Nailon ripstop 40 g/m²", "Rompe a ~4000 N/m contra 152 N/m de trabajo (nota de membrana)."],
     ["Uniones", "Epoxi estructural + M2 / M2,5 con inserto", "S8: adhesivo de alto rendimiento y tornillos."],
 ], [140, 150, 386], fs=9.3))
@@ -441,7 +444,7 @@ slide("Materiales: selección por pieza", tabla(["Pieza", "Material", "Por qué"
 separador("4. Estructura y mecanismos", "Bastidor, contenedor, liberación y ala")
 slide("Estructura del planeador: comparación", tabla(
     ["", "A · Monocasco impreso", "B · Varillas roscadas + discos", "C · Bastidor CFRP + G10 <span class='sel'>Seleccionada</span>"], [
-        ["Descripción", "Tubo Ø84 de PETG de 2 mm con cuadernas pegadas", "4 varillas M3 de acero y 5 discos impresos", "4 largueros de carbono, 4 cuadernas PA12-CF, paneles de G10"],
+        ["Descripción", "Tubo Ø84 de PETG de 2 mm con cuadernas pegadas", "4 varillas M3 de acero y 5 discos impresos", "4 angulares de carbono en las aristas, 4 cuadernas PA12-CF, paneles de G10"],
         ["Masa estimada", "≈ 135 g", "≈ 140 g", f"{MAS['sub']['Estructura del planeador']['masa']:.0f} g (CAD)"],
         ["Salida de las alas", "Hay que ranurar el tubo: pierde rigidez", "Libre", "Libre: gajos laterales abiertos"],
         ["Rigidez", "Buena cerrado, pobre ranurado", "Baja a flexión y torsión", "Alta: caja cerrada por paneles"],
@@ -454,18 +457,19 @@ slide("Estructura del planeador: comparación", tabla(
 slide("Estructura primaria del planeador", cols(
     anot("bastidor_explotado.png", "bastidor", 330,
          izq=[("tapa", "Tapa superior\nG10 0,5"), ("c1", "C1 (nariz)"), ("p_lat", "Panel lateral\nG10 0,5"), ("bandeja", "Bandeja G10 0,8")],
-         der=[("guia", "Guía de botalón"), ("c4", "C4 (cola)"), ("larguero", "Larguero CFRP"), ("c3", "C3"), ("cuna", "Cuna de ala")], lw=84, fs=7.6),
-    ul(["<b>Largueros:</b> 4 tubos de carbono Ø5/3,5 × 201 mm. Pegados 5 mm en los bujes de C1 y C4 y pasantes en C2 y C3.",
+         der=[("guia", "Guía de botalón"), ("c4", "C4 (cola)"), ("larguero", "Larguero angular"), ("c3", "C3"), ("cuna", "Cuna de ala")], lw=84, fs=7.6),
+    ul(["<b>Largueros:</b> 4 angulares de carbono 6 × 6 × 1 × 201 mm en las aristas interiores. Paneles y tapa pegan sobre sus alas; "
+        "entran 5 mm en alojamientos en L de C1 y C4 y pasan por muescas de C2 y C3.",
         "<b>Cuadernas extremas C1 y C4:</b> 8 mm, alma de 1,6, aro y nervios. Llevan los pernos de pivote del ala dentro de su espesor.",
         "<b>Cuadernas C2 y C3:</b> marcos de 4 mm con aberturas de paso. Sostienen los paneles y las cunas del ala plegada.",
         "<b>Paneles:</b> dos laterales y la tapa cierran una caja en U; la bandeja la cierra por abajo a media altura.",
-        "<b>Camino de carga axial:</b> llave → C4 → largueros y paneles → resto.",
-        "<b>Camino lateral:</b> patines de C1 y C4 contra la pared del contenedor."], "s"), w=[505, None]))
+        "<b>Camino de carga axial:</b> llave → C4 → angulares y paneles → resto.",
+        "<b>Camino lateral:</b> patines de C1 contra la pared en la nariz; centrador de cola en la tapa."], "s"), w=[505, None]))
 slide("Cuadernas", cols(
     cols(img("c1.png", h=150, cap="C1 · nariz"), img("c4.png", h=150, cap="C4 · cola"), img("c2.png", h=150, cap="C2 / C3"), gap=2),
     "", w=[676, 0]) + cols(
     tabla(["", "C1", "C2 / C3", "C4"], [
-        ["Espesor", "8 mm", "4 mm", "8 mm"], ["Forma", f"Disco Ø{2 * P.RB:g}", "Marco 54,5 × 62", f"Disco Ø{2 * P.RB:g}"],
+        ["Espesor", "8 mm", "4 mm", "8 mm"], ["Forma", f"Disco Ø{2 * P.R_C1:g}", "Marco 54,5 × 62", f"Disco Ø{2 * P.RB:g}"],
         ["Masa", n(next(x["masa"] for x in MAS["filas"] if "nariz C1" in x["item"])) + " g",
          n(next(x["masa"] for x in MAS["filas"] if "C2 y C3" in x["item"]) / 2) + " g c/u",
          n(next(x["masa"] for x in MAS["filas"] if "cola C4" in x["item"])) + " g"],
@@ -647,14 +651,46 @@ slide("Evolución del diseño guiada por el análisis", tabla(
          f"Modo axial a {RIG['freq'][0]:.0f} Hz con el {RIG['m_eff'][0][0] / 5:.0f} % de la masa. En resonancia amplifica "
          f"{RIG['armonico']['x']['trans_max']['Bateria']:.0f} veces: σx de {peor_rig('Contenedor: tapa')} MPa en la tapa. Margen negativo en tapa, C4 y tubo.",
          "La llave pasa a ser un perno pasante con arandelas: las piezas impresas trabajan a compresión."],
-        ["3 (actual)", "Anillo elastomérico bajo el plato de apoyo de la llave; patines de elastómero con cara de PTFE.",
-         f"Modo axial a {fx:.0f} Hz con ζ = {zm[ix] * 100:.0f} %. Amplificación en resonancia: "
-         f"{R['armonico']['x']['trans_max']['Bandeja centro']:.1f} veces.",
+        ["3", "Anillo elastomérico bajo el plato de apoyo de la llave; patines de elastómero con cara de PTFE.",
+         "Modo axial aislado y amortiguado (ζ ≈ 12 %).", "Revisión A."],
+        ["4", "Modelo exclusivamente estructural (sin bloques de equipos).",
+         "La bandeja de 0,8 mm resuena a 229 Hz con transmisibilidad 45; el tubo queda sin margen junto a la tapa, donde apoyan los patines de C4.",
+         "Rieles bajo la bandeja."],
+        ["5 (actual)", "Revisión B: centrador de cola en la tapa (sin patines en C4) y largueros angulares en las aristas.",
+         f"Modo axial a {fx:.0f} Hz con ζ = {zm[ix] * 100:.0f} %. Amplificación de la bandeja: "
+         f"{max(R['armonico'][e]['trans_max']['Bandeja centro'] for e in EJES):.0f} veces. Margen mínimo en resonancia: {ms(min(peor('armonico', g)[0] for g in GRUPOS))}.",
          "Diseño de este PDR."],
-    ], [58, 190, 220, 208], fs=9.4) + nota(
+    ], [58, 190, 238, 190], fs=8.8) + nota(
     "Con unión rígida, un barrido senoidal de 15 G excita el modo axial con Q = 25: son casi 400 G sobre el planeador. "
     "Ninguna pieza impresa liviana aguanta eso con margen. La solución no es reforzar sino <b>aislar</b>: un anillo de elastómero "
     "en el único punto por donde pasa la carga axial baja la frecuencia y, sobre todo, disipa."), )
+
+# ---------- revision B
+_fA = os.path.join(FEA, "resultados_fea_revA.json")
+if os.path.exists(_fA):
+    RA = json.load(open(_fA))
+
+    def _peor_res(res, caso, g):
+        best = None
+        for e in ([None] if caso == "paracaidas" else list(EJES)):
+            d = (res[caso] if e is None else res[caso][e])["margenes"]
+            for k, v in d.items():
+                if k.split("|")[0].strip().startswith(g) and (best is None or v["MS"] < best):
+                    best = v["MS"]
+        return best if best is not None else float("nan")
+    slide("Revisión B: qué marcó el modelo estructural", cols(tabla(
+        ["Grupo de piezas", "RF-15 rev. A", "RF-15 rev. B", "CH-30 rev. A", "CH-30 rev. B"],
+        [[GNOM[g], ms(_peor_res(RA, "armonico", g)), ms(_peor_res(R, "armonico", g)), ms(_peor_res(RA, "choque", g)),
+          ms(_peor_res(R, "choque", g))] for g in GRUPOS], [180, 66, 66, 66, 66], fs=8.8, alin=[None, "c", "c", "c", "c"]),
+        ul(["<b>Método:</b> SPOOLES en 4 hilos dejaba ruido local en los autovectores (picos falsos de cientos a miles de MPa); en 1 hilo "
+            "desaparece. Los tres casos de 1 G se acumulaban en CalculiX (faltaba OP=NEW): corregido y verificado con el campo completo.",
+            "<b>Tubo junto a la tapa:</b> único margen negativo real de la rev. A. Los patines de C4 empujaban la pared desnuda al lado del "
+            "empotramiento de la tapa. Ahora la cola se centra en la tapa: collar de C4 + manguito de elastómero + alojamiento.",
+            "<b>Arista panel–tapa:</b> pegado por un canto de 0,5 mm. Los largueros pasan a angulares 6 × 6 × 1 en las aristas: 6 mm de "
+            "pegado cara contra cara, sin agregar masa (desaparecen los bujes de C1 y C4).",
+            "<b>Patines de C1:</b> 24° × 1,5 mm y deslizantes (PTFE); la carga axial va entera por la llave.",
+            f"<b>Bandeja:</b> rieles 3 × 8 y escote r {P.R_ESCOTE:g} frente a la llave (antes apoyaba a 0,6 mm de la arandela)."], "s"), w=[444, None]) + nota(
+        "Las dos revisiones se resolvieron con el mismo método (SPOOLES en un hilo, sin filtro). RF-15: resonancia a 15 G; CH-30: choque de 30 G."))
 
 slide("Modelo de elementos finitos", cols(
     img("fea_malla.png", w=350, cap="Malla cortada por el plano y = 0, coloreada por material"),
@@ -671,8 +707,8 @@ slide("Modelo de elementos finitos", cols(
     ], [118, 196], fs=9.2, cls="sinhead") + ul([
         "Modelo exclusivamente estructural: sin baterías, placas, servos, lastre ni soportes de equipos. Su masa va como masa no estructural sobre la bandeja (3 tramos) y los marcos.",
         "Ala estibada y botalón: su masa va en las cunas, C1, C4 y las guías de botalón.",
-        "Aislador y patines: elastómero con módulo de compresión aparente E(1 + 2S²).",
-        f"Se descartaron {R['n_filtrados']} elementos de {R['n_ever']:,} por nodos medios fuera de equilibrio en el autovector (artefacto numérico).".replace(",", "."),
+        "Aislador, patines y manguito del centrador: elastómero con módulo de compresión aparente E(1 + 2S²).",
+        "Modos con SPOOLES en un hilo: en cuatro hilos dejaba ruido local en los autovectores (picos falsos de cientos de MPa). No se descarta ningún elemento.",
     ], "s"), w=[356, None]))
 e1 = lambda a, b: f"{100 * (a / b - 1):+.1f} %".replace(".", ",")
 slide("Verificación del método de cálculo", cols(
@@ -721,7 +757,7 @@ slide("Respuesta en frecuencia a 15 G: aceleraciones", cols(img("fea_respuesta_g
 slide("Respuesta en frecuencia a 15 G: tensiones", cols(img("fea_util_frecuencia.png", h=410), ul([
     "Índice de utilización = FS·σ/σ<sub>adm</sub> de cada grupo de piezas, contra la frecuencia de excitación. Por debajo de 1 hay margen.",
     "Cada pico es una resonancia. La curva se calcula con el campo completo de tensiones en los puntos de integración de CalculiX.",
-    f"Los picos del eje X quedan achatados por el aislador (ζ = {zm[ix] * 100:.0f} % en el modo axial). En Y y Z mandan los modos del planeador sobre los patines.",
+    f"Los picos del eje X quedan achatados por el aislador (ζ = {zm[ix] * 100:.0f} % en el modo axial). En Y y Z mandan los modos laterales del planeador sobre los patines de C1 y el centrador de cola.",
 ], "s"), w=[390, None]))
 slide("Respuesta en frecuencia a 15 G: mapas", img("fea_arm_mapas.png", h=412))
 slide("Choque de 30 G: pulso y respuesta", img("fea_choque_pulso.png", w=676) + cols(
@@ -781,7 +817,7 @@ slide("Resumen de márgenes de seguridad", tabla(
     + " Los valores de resonancia dependen del amortiguamiento supuesto: es lo primero que hay que medir."))
 
 # ---------- uniones
-A_bond_lon = math.pi * P.LON_DO * 5.0
+A_bond_lon = (4 * P.ANG_L - 2 * P.ANG_T + 2 * P.ANG_T) * P.LON_ENG
 tau_lon = (F_ret / 4) / A_bond_lon
 A_iso = math.pi * (P.WASH_D ** 2 - P.KEY_HOLE ** 2) / 4
 sig_iso15 = m_plan / 1000 * 15 * G0 / A_iso
@@ -799,7 +835,7 @@ slide("Verificación de uniones (cálculo manual)", tabla(
          f"{100 * sig_iso15 / Ec_iso:.0f} % / {100 * sig_isoch / Ec_iso:.0f} %", "20 % / 30 %", "cumple", f"k = {k_iso:.0f} N/mm"],
         ["Anclaje de brida en el nervio", f"{leg:.0f} N", f"{n(sb_brida)} MPa", "32,5 MPa", ms(32.5 / sb_brida - 1), "3 ramales a 35°"],
         ["Pegado tapa–tubo", f"{F_par:.0f} N", f"{n(tau_tapa, 2)} MPa", "2,0 MPa", ms(2.0 / tau_tapa - 1), "+ 3 tornillos M2,5 de respaldo"],
-        ["Pegado de cada larguero en su buje", f"{F_ret / 4:.0f} N", f"{n(tau_lon, 2)} MPa", "9,0 MPa", ms(9.0 / tau_lon - 1), "Cota superior: sin contar los paneles"],
+        ["Pegado de cada angular en su alojamiento", f"{F_ret / 4:.0f} N", f"{n(tau_lon, 2)} MPa", "9,0 MPa", ms(9.0 / tau_lon - 1), "Cota superior: sin contar los paneles"],
         ["Cincha de batería", f"{0.046 * 30 * G0 * 1.8:.0f} N", "—", "> 100 N", "cumple", "Cinta de 20 mm con hebilla"],
         ["Tornillos M2,5 de la PCB principal", f"{0.025 * 30 * G0 * 1.8 / 4:.1f} N c/u".replace(".", ","), "—", "> 300 N", "cumple", "4 tornillos"],
         ["Varilla plegada entre apoyos (134 mm)", "30 G × 1,8", "2 MPa", "400 MPa", "> 10", "1.er modo local ≈ 1,2 kHz"],
@@ -867,8 +903,8 @@ slide("Riesgos y acciones abiertas", tabla(["Riesgo", "Causa", "Prob.", "Impacto
      "Probetas del mismo lote. Los márgenes ya usan la resistencia entre capas y FS = 2."],
     ["El ala no traba al abrir", "Fricción del manguito; tela enganchada", "Media", "Alto",
      "20 aperturas filmadas. Cordón elástico interno. El manguito es la primera pieza a prototipar."],
-    ["El planeador no sale del contenedor", "Patines con demasiada interferencia; tela pellizcada", "Baja", "Alto",
-     "Cara de PTFE; huelgo de 1 mm; ensayo de deslizamiento en frío y en caliente."],
+    ["El planeador no sale del contenedor", "Patines o manguito del centrador con demasiada interferencia; tela pellizcada", "Baja", "Alto",
+     "Cara de PTFE; huelgo de 1 mm; el collar sale con 3 mm de recorrido; ensayo de deslizamiento en frío y en caliente."],
     ["La interpretación de S4 y S5 no es la de la organización", "El Apéndice A no define espectro ni duración", "Media", "Medio",
      "Consultar el procedimiento de ensayo. El análisis cubre barrido senoidal y semiseno con duración variable."],
     ["Las cámaras no ven la apertura del paracaídas", "Dentro del contenedor no hay visual (C6, C7)", "Alta", "Medio",
@@ -878,8 +914,8 @@ slide("Riesgos y acciones abiertas", tabla(["Riesgo", "Causa", "Prob.", "Impacto
     ["Masa fuera de tolerancia", f"Incertidumbre ±{n(MAS['inc_rss'], 0)} g contra ±10 g", "Media", "Medio",
      f"Lastre ajustable de {n(MAS['lastre'], 0)} g; pesadas parciales por subsistema."],
 ], [150, 150, 40, 44, 292], fs=8.6) + nota(
-    "Pendientes para el CDR: nota de cola (botalón y mecanismo), resorte de torsión del ala, detalle de bujes e insertos de las "
-    "cuadernas, modelo de membrana 3D, y un segundo nivel de malla para confirmar la convergencia de las tensiones de pico."))
+    "Pendientes para el CDR: nota de cola (botalón y mecanismo), resorte de torsión del ala, detalle de alojamientos e insertos de las "
+    "cuadernas, modelo de membrana 3D, contacto unilateral del manguito del centrador, y un segundo nivel de malla para confirmar la convergencia."))
 cump = [
     ["S1", "Masa 500 ± 10 g", f"500 g con {n(MAS['lastre'], 0)} g de lastre", "Cumple (análisis)"],
     ["S2", "Diámetro 90 mm", "Ø90,0", "Cumple"],

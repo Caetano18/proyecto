@@ -12,8 +12,8 @@ import math
 EQUIPO = "Equipo CanSat Universitario Argentina"
 TEMPORADA = "2026/2027"
 PRESENTADOR = "Subsistema mecánico"
-REV = "A"
-FECHA = "12/11/2026"
+REV = "B"
+FECHA = "18/11/2026"
 
 # -------------------------------------------------------------- envolvente
 # Requisitos del Apendice A (CanSat Argentina Universitario - CONAE)
@@ -57,11 +57,13 @@ WEB_T = 1.6           # alma de C1 / C4
 RIM_T = 2.2           # aro perimetral de C1 / C4
 RIB_T = 2.8           # nervios de C1 / C4
 
-# largueros: mismo tubo de carbono que el borde de ataque (un solo material de compra)
-LON_DO, LON_DI = 5.0, 3.5
-LON_Y, LON_Z = 20.5, 26.0
+# largueros (rev. B): angulares de CFRP pultruido pegados en las 4 aristas interiores de la caja.
+# Los paneles y la tapa pegan cara contra cara sobre las alas del angular (no canto contra cara).
+# Entran 5 mm en alojamientos en L de C1 y C4 y pasan por muescas de C2 y C3.
+ANG_L = 6.0           # ala del angular [mm]
+ANG_T = 1.0           # espesor
 LON_X = (3.0, L_G - 3.0)
-BOSS_D = 9.5
+LON_ENG = 5.0         # largo pegado en C1 y C4
 
 # paneles de G10
 Y_PANEL = 27.5        # plano medio del panel lateral
@@ -69,6 +71,7 @@ T_PANEL = 0.5
 T_COVER = 0.5         # tapa superior (lleva las celdas solares)
 T_TRAY = 0.8
 Z_TRAY = (-5.0, -4.2)
+R_ESCOTE = 14.0      # radio del escote de la bandeja frente a la llave (rev. B; antes 8,6: la bandeja apoyaba a 0,6 mm de la arandela)
 RIEL_W, RIEL_H, RIEL_Y = 3.0, 8.0, 17.0   # rieles longitudinales bajo la bandeja (PA12-CF): rigidizan la placa de 0,8 mm
 Y_BOX = Y_PANEL - T_PANEL / 2      # 27.25 semiancho interior de la caja
 Y_OUT = Y_PANEL + T_PANEL / 2      # 27.75 cara exterior del panel
@@ -77,8 +80,19 @@ Z_BOOM = 36.5                      # eje del botalon de cola (sobre la tapa)
 
 # cerrojo de bayoneta (C4 - tapa del contenedor) y patines de guia
 LATCH_D = 6.0
-PAD_ANG = 14.0        # grados de arco de cada patin
+# centrador de cola (rev. B): collar en la cara trasera de C4 que entra en un anillo-alojamiento bajo la placa de la tapa,
+# con un manguito de elastomero entre ambos.  Toma la carga lateral de la cola y la entrega a la tapa en su plano;
+# reemplaza a los patines de C4, que cargaban la pared desnuda del tubo junto al empotramiento de la tapa.
+CEN_RI, CEN_RO = 17.0, 20.0     # collar de C4 (PA12-CF, una pieza con C4)
+CEN_X1 = 210.5                  # extremo del collar (C4 termina en L_G = 207)
+CEN_ELT = 1.0                   # espesor del manguito de elastomero (r 20 a 21)
+CEN_EX = (207.5, 210.5)         # largo del manguito: 3 mm de enganche
+SOC_RI, SOC_RO = 21.0, 23.5     # anillo-alojamiento de la tapa (PA12-CF, una pieza con la tapa)
+SOC_X0 = 207.5                  # el anillo baja de la placa (x = 211) hasta 207,5
+PAD_ANG = 24.0        # grados de arco de cada patin de C1 (rev. B: 14 -> 24, reparte la carga sobre la pared junto a la boca)
 PAD_POS = (45.0, 135.0, 225.0, 315.0)
+R_C1 = 41.5           # radio de C1 (rev. B): patines de 1,5 mm, misma rigidez radial que los de 14 grados x 1 mm
+G_DESL = 0.1          # [MPa] modulo de corte del modelo para caras que deslizan (patines y manguito con cara de PTFE)
 
 # ------------------------------------------------------------------- ala
 Y_PIV = 34.0          # linea de pivotes A y B

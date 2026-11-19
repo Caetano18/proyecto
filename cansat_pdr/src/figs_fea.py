@@ -32,7 +32,7 @@ MATS = [("LWPLA", "LW-PLA (tubo)", (0.93, 0.93, 0.86)), ("PA12CF", "PA12-CF (cua
         ("EQ_BAT", "Batería", (0.16, 0.38, 0.78)), ("EQ_BLK", "Masas de equipo", (0.90, 0.55, 0.18)),
         ("EQ_BOOM", "Botalón", (0.25, 0.20, 0.20)), ("ELAST", "Elastómero", (0.95, 0.85, 0.25))]
 COL_MAT = {k: c for k, _, c in MATS}
-COL_MAT.update({"PAD_A": COL_MAT["ELAST"], "PAD_B": COL_MAT["ELAST"], "ELAST_X": COL_MAT["ELAST"]})
+COL_MAT.update({"PAD_A": COL_MAT["ELAST"], "PAD_B": COL_MAT["ELAST"], "ELAST_X": COL_MAT["ELAST"], "ELAST_C": COL_MAT["ELAST"]})
 CAM = ((-1.0, -1.35, 0.8), (0, 0, 1))
 NB = 12
 CM_U = ListedColormap(plt.get_cmap("turbo")(np.linspace(0.03, 0.93, NB)))
@@ -257,7 +257,7 @@ def main(wd, tag, fjson, fnpz, fala, out):
     panel(fig.add_axes([0.0, 0.17, 0.60, 0.77]), f"{tmp}/malla.png", f"{len(els):,} tetraedros cuadráticos · {len(xyz):,} nodos".replace(",", "."))
     panel(fig.add_axes([0.61, 0.17, 0.38, 0.77]), f"{tmp}/malla_zoom.png", "Detalle: tapa, llave y aislador")
     fig.subplots_adjust(bottom=0.2)
-    pres = [m_ for m_ in MATS if (mat == m_[0]).any() or (m_[0] == "ELAST" and np.isin(mat, ["PAD_A", "PAD_B", "ELAST_X"]).any())]
+    pres = [m_ for m_ in MATS if (mat == m_[0]).any() or (m_[0] == "ELAST" and np.isin(mat, ["PAD_A", "PAD_B", "ELAST_X", "ELAST_C"]).any())]
     fig.legend(handles=[Patch(fc=c, ec="0.3", label=nm) for _, nm, c in pres], loc="lower center", ncol=5, fontsize=9.5,
                handlelength=1.2, columnspacing=1.4)
     fig.savefig(f"{out}/fea_malla.png")
