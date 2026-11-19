@@ -84,9 +84,6 @@ def cuaderna_extrema(tail=False, fe=False):
     yo = P.Y_OUT
     ztop = P.Z_BOX + P.T_COVER
     parts = [web, rim]
-    if not tail and P.R_C1_PAD > R + 0.05:          # rev. D: asientos de los patines (tubo de pared fina, interior mayor)
-        for ang in P.PAD_POS:
-            parts.append(sector(x0, x1, R - P.RIM_T, P.R_C1_PAD, ang, P.PAD_ANG))
     for s in (1, -1):
         y_in, y_out = sorted((s * (yo - P.RIB_T), s * yo))
         parts.append(box(x0, x1, y_in, y_out, -P.Z_BOX, ztop))                # nervio lateral
@@ -99,6 +96,10 @@ def cuaderna_extrema(tail=False, fe=False):
         parts.append(disc(x0, x1, 9.0))                       # buje del cerrojo de bayoneta
         parts.append(disc(x0, x1, 5.0, 0, P.Z_BOOM))          # buje del botalon de cola
     body = fuse(*parts).intersect(full)
+    if not tail and P.R_C1_PAD > R + 0.05:          # rev. D: asientos de los patines (despues del recorte a R)
+        for ang in P.PAD_POS:
+            body = body.fuse(sector(x0, x1, R - P.RIM_T, P.R_C1_PAD, ang, P.PAD_ANG))
+        body = body.clean()
     if tail:                                                  # collar del centrador de cola (rev. B)
         body = body.fuse(disc(x1, P.CEN_X1, P.CEN_RO).cut(disc(x1 - 1, P.CEN_X1 + 1, P.CEN_RI))).clean()
         # asiento saliente para la union a solape de la bandeja (rev. B)
