@@ -166,8 +166,6 @@
  "Masas de equipo": "Equipment masses",
  "Elastómero": "Elastomer",
  "Índice de utilización  FS·σ / σ$_{adm}$   (escala logarítmica; magenta: sin margen)": "Utilisation  FS·σ / σ$_{allow}$   (log scale; magenta: no margin)",
- "re:Excitación en (.+)": "Excitation in \\1",
- "re:Choque en (.+)": "Shock in \\1",
  "re:máx\\. ([\\d,]+) · tubo de LW-ASA": "max. \\1 · LW-ASA tube",
  "re:máx\\. ([\\d,]+) · tubo de LW-PLA": "max. \\1 · LW-PLA tube",
  "re:máx\\. ([\\d,]+) · larguero": "max. \\1 · corner angle",
@@ -205,5 +203,7 @@
  "Tapa, llave, aislador y C4": "Cap, key, isolator and C4",
  "Detalle: tapa, llave y aislador": "Detail: cap, key and isolator",
  "re:([\\d,\\.]+) tetraedros cuadráticos · ([\\d,\\.]+) nodos": "\\1 quadratic tetrahedra · \\2 nodes",
- "re:Tirón del paracaídas: 30 G × 1,8, colgado de la brida\nmáx\\. ([\\d,]+) · (.*)": "Parachute snatch: 30 G × 1.8, hanging from the bridle\nmax. \\1"
+ "re:Tirón del paracaídas: 30 G × 1,8, colgado de la brida\nmáx\\. ([\\d,]+) · (.*)": "Parachute snatch: 30 G × 1.8, hanging from the bridle\nmax. \\1",
+ "re:Excitación en ([^\\n]+)": "Excitation in \\1",
+ "re:Choque en ([^\\n]+)": "Shock in \\1"
 }

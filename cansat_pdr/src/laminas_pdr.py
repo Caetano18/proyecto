@@ -33,7 +33,7 @@ os.makedirs(TMP, exist_ok=True)
 A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 EMU_IN = 914400
 NAVY, TEAL, CARD, BORDE, GRIS, ROJO, BLANCO = "242C4F", "138A8A", "F1F4F9", "D5DAE5", "5B6478", "B23A2E", "FFFFFF"
-SEL = "E2F1F1"            # fondo de la opcion seleccionada (teal muy claro)
+SEL = "FBE9E9"            # fondo de la opcion seleccionada (rojo muy claro, como en los PDR de referencia)
 FONT = "Montserrat"
 X0, X1, Y0, Y1 = 368560, 11823440, 2150000, 6450000
 W_UTIL = X1 - X0
@@ -224,7 +224,7 @@ def tabla(sl, x, y, w, anchos, cab, filas, sz=11, sz_cab=12, alto=None, alto_cab
             for p in txb.findall(qn("a:p")):
                 txb.remove(p)
             if es_cab:
-                fill, color, bold, s = (TEAL if c == col_sel else NAVY), BLANCO, True, sz_cab
+                fill, color, bold, s = ("C00000" if c == col_sel else NAVY), BLANCO, True, sz_cab
             else:
                 sel = (rf in resaltar) or (col_sel is not None and c == col_sel)
                 es_sub = rf in sub
@@ -855,35 +855,58 @@ def celda(caso, g):
 
 def L_fem1(sl):
     f, mf, zm = R["freq"], R["m_eff_frac"], R["zeta_modal"]
-    filas, prev = [], [0.0, 0.0, 0.0]
-    for k in range(6):
-        inc = [100 * (mf[k][e] - (mf[k - 1][e] if k else 0.0)) for e in range(3)]
-        e = max(range(3), key=lambda i: inc[i])
-        tipo = "local" if inc[e] < 2 else ["axial X", "lateral Y", "lateral Z"][e]
-        filas.append([str(k + 1), f"{f[k]:.0f}", tipo, f"{inc[e]:.0f} %" if inc[e] >= 2 else "< 2 %", f"{100 * zm[k]:.1f} %"])
-    wi = I(5.2)
-    tabla(sl, X0, Y0, wi, [0.95, 1.0, 1.4, 1.4, 0.9], ["Mode", "f [Hz]", "Type", "Eff. mass", "ζ"], filas,
-          sz=11, sz_cab=11, alto=I(0.36), alto_cab=I(0.36), alin=["c", "c", "l", "c", "c"])
-    y = Y0 + I(0.36) * 7 + I(0.17)
-    tarjeta(sl, X0, y, wi, Y1 - y, None, [
-        "Cantilever from the rocket support: the first two modes are the whole CanSat swaying laterally.",
-        "ζ above 2 % comes from the elastomer pads and sleeve (strain-energy weighted).",
-    ], sz=11, spc=250)
+    wi = I(6.3)
+    fig = "fea_modos_en.png" if os.path.exists(os.path.join(FIGS, "fea_modos_en.png")) else "fea_modos.png"
+    panel(sl, X0, Y0, wi, Y1 - Y0, [(fig, 1)], "First four mode shapes of the complete CanSat (cantilever from the rocket support)")
     x = X0 + wi + GAP
-    tabla(sl, x, Y0, X1 - x, [1.2, 2.9, 1.5], ["Case", "Load", "Requirement"], [
+    tabla(sl, x, Y0, X1 - x, [1.1, 3.0, 1.4], ["Case", "Load", "Requirement"], [
         ["CE-15", "Quasi-static 15 G, x, y, z", "S4"],
         ["RF-15", "Sine sweep 15 G, 5–1000 Hz", "S4"],
-        ["Sander", "Orbital sander up to 233 Hz, 29 G (start/stop sweep)", "Vibration test"],
+        ["Sander", "Orbital sander up to 233 Hz, 29 G", "Vibration test"],
         ["CH-30", "Half-sine 30 G, 1–20 ms, x, y, z", "S5, drop test"],
-        ["PA-30", "Parachute snatch 30 G × 1.8 on the bridle", "S5, C3"],
-    ], sz=10.5, sz_cab=11, alto=I(0.4), alto_cab=I(0.34), alin=["l", "l", "l"], ml=80000)
-    y = Y0 + I(0.34) + 5 * I(0.4) + I(0.17)
-    tarjeta(sl, x, y, X1 - x, Y1 - y, "Finite element model", [
-        f"CalculiX, {R['elementos'] / 1000:.0f} k quadratic tetrahedra, {R['nodos'] / 1000:.0f} k nodes, 32 parts, "
-        f"{R['masa_g']:.0f} g (components as distributed mass).",
+        ["PA-30", "Parachute snatch 30 G × 1.8", "S5, C3"],
+    ], sz=10.5, sz_cab=11, alto=I(0.36), alto_cab=I(0.34), alin=["l", "l", "l"], ml=80000)
+    y = Y0 + I(0.34) + 5 * I(0.36) + I(0.17)
+    tarjeta(sl, x, y, X1 - x, Y1 - y, "Finite element model (CalculiX)", [
+        f"{R['elementos'] / 1000:.0f} k quadratic tetrahedra, {R['nodos'] / 1000:.0f} k nodes, 32 parts, {R['masa_g']:.0f} g.",
         "Supported only at the base, as in the rocket; nothing restrains the top.",
-        "Checked: modal vs. static stress field (< 1 %), mesh, hand calculations of the joints.",
-    ], sz=11, spc=250)
+        f"Modes: {f[0]:.0f} Hz and {f[1]:.0f} Hz lateral (72 % of the mass each), {f[2]:.0f} Hz axial (79 %).",
+        "Checked: modal vs. static stress field (< 1 %), mesh, hand calculations of joints.",
+    ], sz=10.5, spc=200)
+
+
+def mapas_png():
+    """Fila superior de los mapas de resonancia y de choque + barra de color, en una sola figura."""
+    out = os.path.join(TMP, "fea_mapas_lamina.png")
+    a = Image.open(os.path.join(FIGS, "fea_arm_mapas_en.png")).convert("RGB")
+    b = Image.open(os.path.join(FIGS, "fea_choque_mapas_en.png")).convert("RGB")
+    w, h = a.size
+    fa, fb = a.crop((0, 0, w, int(0.37 * h))), b.crop((0, 0, w, int(0.37 * h)))
+    cb = a.crop((int(0.08 * w), int(0.885 * h), int(0.95 * w), h))
+    lienzo = Image.new("RGB", (w, fa.height + fb.height + cb.height + 20), "white")
+    lienzo.paste(fa, (0, 0)); lienzo.paste(fb, (0, fa.height + 10))
+    lienzo.paste(cb, ((w - cb.width) // 2, fa.height + fb.height + 20))
+    lienzo.save(out)
+    return out
+
+
+def L_fem_mapas(sl):
+    wi = I(8.3)
+    p = mapas_png()
+    tarjeta(sl, X0, Y0, wi, Y1 - Y0, nombre="Figure panel")
+    pic_w = wi - I(0.24)
+    im = Image.open(p)
+    esc = min(pic_w / im.width, (Y1 - Y0 - I(0.24)) / im.height)
+    sl.shapes.add_picture(p, X0 + I(0.12) + (pic_w - int(im.width * esc)) // 2, Y0 + I(0.12), int(im.width * esc), int(im.height * esc))
+    x = X0 + wi + GAP
+    tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "How to read the maps", [
+        "**Top row:** 15 G sine sweep, envelope over all resonances, one map per excitation axis.",
+        "**Bottom row:** 30 G half-sine shock, envelope in time for the worst pulse duration.",
+        "**Colour:** utilisation FS·σ / σ_allow of each material (log scale). Magenta = no margin.",
+        f"Lateral sweep: the tube turns magenta (utilisation up to ≈ 5) at the {R['freq'][0]:.0f} Hz sway mode: the open item "
+        "of the next slide.",
+        "Axial sweep and shock: every part stays below 1 (positive margins).",
+    ], sz=11, spc=300)
 
 
 def L_fem2(sl):
@@ -1039,7 +1062,7 @@ def L58_total(sl):
         f"**S1: 500 ± 10 g.** The design closes at {mtot:.0f} g with ±{n(MAS['inc_rss'])} g (RSS).",
         f"CG x (stowed) from the glider nose (face of C1), {abs(P.CT_X[0]):g} mm above the open end of the container.",
         f"Payload CG in flight (wing and tail deployed): {MAS['x_cg_planeador_vuelo']:.0f} mm; it has to move forward "
-        "for pitch stability (slide 49).",
+        "for pitch stability (page 52).",
         f"Container alone: {m_cont:.0f} g, descends at {n(next(d for d in PAR['disenos'] if d['clave'] == 'cruz')['v_contenedor'])} m/s.",
     ], sz=11.5, spc=300)
 
@@ -1102,8 +1125,9 @@ def main(entrada, salida):
         fn(slides[k])
     # dos laminas de verificacion estructural despues de la 57
     nuevas = []
-    for pos, (fn, sub) in enumerate([(L_fem1, "Structural Verification (1/2): Model and Load Cases"),
-                                     (L_fem2, "Structural Verification (2/2): Margins of Safety")]):
+    for pos, (fn, sub) in enumerate([(L_fem1, "Structural Verification (1/3): FE Model, Modes and Load Cases"),
+                                     (L_fem_mapas, "Structural Verification (2/3): Stress Maps"),
+                                     (L_fem2, "Structural Verification (3/3): Margins of Safety")]):
         s = duplicar(prs, 56, 57 + pos)
         limpiar(s)
         poner_texto_run(subtitulo(s), sub)
@@ -1124,11 +1148,11 @@ def main(entrada, salida):
                 c = r.cells[0]
                 t = c.text_frame.text.strip()
                 if t.isdigit() and int(t) > 54:
-                    c.text_frame.paragraphs[0].runs[0].text = str(int(t) + 2)
-    import tema_hermes
-    n = tema_hermes.aplicar(prs)
+                    c.text_frame.paragraphs[0].runs[0].text = str(int(t) + len(nuevas))
+    import formato_cansat
+    formato_cansat.aplicar(prs)
     prs.save(salida)
-    print("ok:", salida, len(prs.slides), "laminas;", n, "colores cambiados al tema Hermes")
+    print("ok:", salida, len(prs.slides), "laminas (formato CanSat clasico)")
 
 
 if __name__ == "__main__":
