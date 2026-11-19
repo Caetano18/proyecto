@@ -826,7 +826,7 @@ def L54_seleccion_mec(sl):
          "Folds flat in a 14 mm bay; single degree of freedom"],
         ["Container tube", "Printed LW-ASA 2 mm; glass-epoxy 0.6 mm; carbon (lower) + glass (upper)",
          f"Carbon {P.CT_T_INF:g} mm + glass {P.CT_T:g} mm" if HIBRIDO else f"Glass-epoxy, {P.CT_T:g} mm",
-         "Lateral mode standing on the sander: 117 / 228 / 310 Hz; only the hybrid clears 233 Hz"],
+         f"Lateral mode standing on the sander: 117 / 228 / {modos(R)[0]:.0f} Hz; only the hybrid clears 233 Hz"],
         ["Bulkheads, cap", "PLA+; PETG; PA12-CF", "PA12-CF, 100 % infill", "Best stiffness and strength per gram; 150 °C"],
         ["Joints", "Screws; epoxy; both", "Epoxy + M2/M2.5 with inserts", "S8; screwed parts can be removed"],
     ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.36), alin=["l"] * 4, ml=80000)
@@ -834,7 +834,7 @@ def L54_seleccion_mec(sl):
     tarjeta(sl, X0, y, W_UTIL, Y1 - y, None, [
         "**Why a hybrid laminated tube:** standing on the sander, the printed 2 mm tube had a 117 Hz lateral mode (MS −0.66). "
         "All-glass 0.6 mm reached 228 Hz, inside the 200–233 Hz sander band. Carbon in the lower 132 mm, where the bending moment "
-        "is largest, takes it to 310 Hz; the upper part stays glass so the radio and GNSS see out. S6's 2 mm applies to "
+        f"is largest, takes it to {modos(R)[0]:.0f} Hz; the upper part stays glass so the radio and GNSS see out. S6's 2 mm applies to "
         "printed walls; the epoxy is post-cured above 60 °C.",
     ], sz=11.5, spc=200)
 
@@ -858,7 +858,7 @@ def peor(caso, g, RR=None):
         for k, v in d.items():
             gg = k.split("|")[0].strip()
             if gg.startswith(g) and (best is None or v["MS"] < best[0]):
-                best = (v["MS"], v["sigma"], e or "x", k.split("|")[1].strip())
+                best = (v["MS"], v["sigma"], e or "x", k.split("|")[1].strip(), v.get("MS_p999", v["MS"]))
     return best
 
 
@@ -874,7 +874,7 @@ def modos(RR):
     """(f_lateral, f_axial) por masa efectiva: primer modo con mas del 30 % de la masa en y o z, y en x."""
     f, mf = RR["freq"], RR["m_eff_frac"]
     inc = [[mf[k][e] - (mf[k - 1][e] if k else 0.0) for e in range(3)] for k in range(len(f))]
-    lat = next((f[k] for k in range(len(f)) if max(inc[k][1], inc[k][2]) > 0.3), None)
+    lat = next((f[k] for k in range(len(f)) if max(inc[k][1], inc[k][2]) > 0.1), None)
     ax = next((f[k] for k in range(len(f)) if inc[k][0] > 0.3), None)
     return lat, ax
 
@@ -898,7 +898,7 @@ def L_fem1(sl):
         f"{R['elementos'] / 1000:.0f} k quadratic tetrahedra, {R['nodos'] / 1000:.0f} k nodes, {R['masa_g']:.0f} g.",
         f"Standing on the sander (fixed base): lateral mode {modos(R)[0]:.0f} Hz, above the 233 Hz of the sander; "
         f"axial mode (glider on the key isolator) {modos(R)[1]:.0f} Hz.",
-        (f"Resting in the bay (top guided by the wall): lateral mode {modos(RV)[0]:.0f} Hz." if RV else ""),
+        (f"Resting in the bay (top guided by the wall): first lateral mode {modos(RV)[0]:.0f} Hz." if RV else ""),
         "Checked: modal vs. static stress field (< 1 %), mesh, hand calculations of joints.",
     ], sz=10.5, spc=200)
 
@@ -935,8 +935,8 @@ def L_fem_mapas(sl):
         "resonances, one map per excitation axis.",
         "**Bottom row:** 30 G half-sine shock, envelope in time for the worst pulse duration.",
         "**Colour:** utilisation FS·σ / σ_allow of each material (log scale). Magenta = no margin.",
-        "No part reaches 1: every margin is positive (next slide). The highest values sit at the key washer on C4, "
-        "during the axial resonance of the glider on the key isolator.",
+        "No part reaches 1: every margin is positive (next slide). The highest values are local peaks at the joint of C4 "
+        "with the side panels and where the tray rails pass C3.",
     ], sz=11, spc=300)
 
 
@@ -957,7 +957,7 @@ def L_fem2(sl):
     tabla(sl, X0, Y0, W_UTIL, [3.4] + [1.25] * nc, ["Part group (material)"] + [c for _, c, _ in casos], filas,
           sz=11, sz_cab=11.5, alto=I(0.33), alto_cab=I(0.36), alin=["l"] + ["c"] * nc)
     y = Y0 + I(0.36) + len(GRUPOS) * I(0.33) + I(0.17)
-    todos = [(peor(c, g, RR)[0], g, nom) for g, _ in GRUPOS for c, nom, RR in casos if peor(c, g, RR)]
+    todos = [(peor(c, g, RR)[0], g, nom, peor(c, g, RR)[4]) for g, _ in GRUPOS for c, nom, RR in casos if peor(c, g, RR)]
     neg = [t for t in todos if t[0] < 0]
     mn = min(todos)
     w2 = (W_UTIL - GAP) // 2
@@ -968,11 +968,12 @@ def L_fem2(sl):
     ], sz=11, spc=250)
     nombres = dict(GRUPOS)
     if not neg:
-        res = [f"**All margins are positive.** Minimum {ms(mn[0])}: {nombres[mn[1]]}, {mn[2]}.",
+        res = [f"**All margins are positive.** Minimum {ms(mn[0])}: {nombres[mn[1]]}, {mn[2]}"
+               + (f" (one element; {ms(mn[3])} at the 99.9th percentile)." if mn[3] > mn[0] + 0.5 else "."),
                f"Rev. D: printed 2 mm tube (lateral mode 117 Hz) → hybrid laminate (carbon lower, glass upper) and "
                f"stiffer C1 pads; lateral mode standing on the sander now {modos(R)[0]:.0f} Hz."]
     else:
-        res = [f"{len(neg)} negative: " + "; ".join(f"{nombres[g]} in {c} ({ms(m)})" for m, g, c in sorted(neg)[:3]) + "."]
+        res = [f"{len(neg)} negative: " + "; ".join(f"{nombres[g]} in {c} ({ms(m)})" for m, g, c, _ in sorted(neg)[:3]) + "."]
     tarjeta(sl, X0 + w2 + GAP, y, w2, Y1 - y, "Result", res, sz=11, spc=250)
 
 
