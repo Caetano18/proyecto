@@ -147,6 +147,17 @@ def cuna_ala(x0, x1, side):
     return box(x0, x1, ya, yb, -10.0, 6.0).intersect(disc(x0, x1))
 
 
+def zapata(x0, x1, ang):
+    """Zapata de esquina (rev. C): lleva el patin de C2/C3; pegada sobre paneles, tapa y angular de la arista."""
+    sh = sector(x0, x1, P.ZAP_R0, P.R_C1, ang, P.PAD_ANG)
+    return sh.cut(envolvente_caja(x0, x1)).clean()
+
+
+def envolvente_caja(x0, x1):
+    """Caja del planeador con paneles, tapa superior y cubierta inferior (lo que no pueden invadir zapatas ni patines)."""
+    return box(x0 - 1, x1 + 1, -P.Y_OUT, P.Y_OUT, -P.Z_BOX - 0.25, P.Z_BOX + P.T_COVER)
+
+
 def guia_botalon(x0, x1):
     zt = P.Z_BOX + P.T_COVER
     g = box(x0, x1, -6.5, 6.5, zt, 45.0).intersect(disc(x0, x1))
@@ -185,6 +196,10 @@ def piezas_estructura(fe=False):
         yc = sy * P.RIEL_Y
         add(f"R{k} riel longitudinal", box(xa, xbb, yc - P.RIEL_W / 2, yc + P.RIEL_W / 2, P.Z_TRAY[0] - P.RIEL_H, P.Z_TRAY[0]),
             "PA12CF", GRIS)
+    if P.PAD_MEDIAS:
+        for k, x in ((2, P.X_C2), (3, P.X_C3)):
+            for ang in P.PAD_POS:
+                add(f"Zapata C{k} {int(ang)}", zapata(x[0] - P.ZAP_EXT, x[1] + P.ZAP_EXT, ang), "PA12CF", GRIS)
     for k, x in ((2, P.X_C2), (3, P.X_C3)):
         add(f"Guia de botalon C{k}", guia_botalon(*x), "PA12CF", GRIS)
         for s, tag in ((1, "der."), (-1, "izq.")):
@@ -365,9 +380,15 @@ def piezas_contenedor(fe=False):
 
 def piezas_patines(fe=False):
     out = []
-    for xr, tag in ((P.X_C1, "C1"),):          # rev. B: la cola se centra en la tapa (sin patines en C4)
+    estaciones = [(P.X_C1, "C1")]               # rev. B: la cola se centra en la tapa (sin patines en C4)
+    if P.PAD_MEDIAS:                            # rev. C: tambien en C2 y C3
+        estaciones += [((P.X_C2[0] - P.ZAP_EXT, P.X_C2[1] + P.ZAP_EXT), "C2"),
+                       ((P.X_C3[0] - P.ZAP_EXT, P.X_C3[1] + P.ZAP_EXT), "C3")]
+    for xr, tag in estaciones:
         for ang in P.PAD_POS:
             sh = sector(xr[0], xr[1], P.R_C1, P.CT_RI, ang, P.PAD_ANG)
+            if tag != "C1":
+                sh = sh.cut(envolvente_caja(*xr)).clean()
             mat = "PAD_A" if ang in (45.0, 225.0) else "PAD_B"
             out.append(dict(nombre=f"Patin {tag} {int(ang)}", shape=sh, mat=mat if fe else "ELAST",
                             color=(0.95, 0.95, 0.6), grupo="mecanismo", masa=sh.Volume() * 1.3e-3))

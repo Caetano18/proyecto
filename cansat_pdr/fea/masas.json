@@ -332,13 +332,23 @@
   },
   {
    "sub": "Avionica y equipos",
-   "item": "Patines de C1: elastomero con cara de PTFE",
-   "cant": 4,
-   "unit": 0.28743905071806664,
-   "masa": 1.1497562028722665,
+   "item": "Patines de C1, C2 y C3: elastomero con cara de PTFE",
+   "cant": 12,
+   "unit": 0.2863311572940555,
+   "masa": 3.435973887528666,
    "inc": 0.1,
    "fuente": "CAD",
-   "x": 4.0
+   "x": 68.54156017209272
+  },
+  {
+   "sub": "Estructura del planeador",
+   "item": "Zapatas de patin en C2 y C3 (PA12-CF)",
+   "cant": 8,
+   "unit": 0.62387583292908,
+   "masa": 4.99100666343264,
+   "inc": 0.499100666343264,
+   "fuente": "CAD",
+   "x": 101.0
   },
   {
    "sub": "Avionica y equipos",
@@ -394,8 +404,8 @@
    "sub": "Avionica y equipos",
    "item": "Lastre de centrado / margen",
    "cant": 1,
-   "unit": 11.150823650662346,
-   "masa": 11.150823650662346,
+   "unit": 3.873599302573325,
+   "masa": 3.873599302573325,
    "inc": 0.0,
    "fuente": "Ajuste",
    "x": 33.0
@@ -403,9 +413,9 @@
  ],
  "sub": {
   "Estructura del planeador": {
-   "masa": 144.9003314336681,
-   "inc": 4.2708931312705465,
-   "x": 105.11870239966095
+   "masa": 149.89133809710074,
+   "inc": 4.2999569316306205,
+   "x": 104.98155991109309
   },
   "Ala de membrana": {
    "masa": 29.14590406176718,
@@ -418,9 +428,9 @@
    "x": 84.05
   },
   "Avionica y equipos": {
-   "masa": 168.88691931121204,
+   "masa": 163.89591264777943,
    "inc": 8.028075734570521,
-   "x": 116.74376452423569
+   "x": 120.24250027703235
   },
   "Contenedor": {
    "masa": 127.0668451933527,
@@ -429,17 +439,17 @@
   }
  },
  "total": 500.0,
- "inc_rss": 13.5414218715323,
- "inc_lin": 55.393837241653024,
- "lastre": 11.150823650662346,
+ "inc_rss": 13.550616509146646,
+ "inc_lin": 55.89293790799629,
+ "lastre": 3.873599302573325,
  "m_planeador": 372.9331548066473,
  "m_contenedor": 127.0668451933527,
- "x_cg_planeador_estibado": 108.23063191481383,
- "x_cg_lanzamiento": 120.52227496355637,
- "x_cg_planeador_vuelo": 117.99746875483478,
+ "x_cg_planeador_estibado": 109.55754868070615,
+ "x_cg_lanzamiento": 121.51197747489648,
+ "x_cg_planeador_vuelo": 119.3243855207271,
  "x_centroide_ala": 136.6,
  "m_vuelo": 500.0,
- "x_cg_vuelo_total": 127.80702951401797,
+ "x_cg_vuelo_total": 128.7967320253581,
  "carga_alar": 124.31747813749618,
  "carga_alar_planeador": 92.72421863884571,
  "w_estimado": 5.797133425017368,

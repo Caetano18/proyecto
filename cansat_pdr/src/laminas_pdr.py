@@ -52,7 +52,8 @@ MAS = j("masas.json")
 PAR = j("paracaidas.json")
 PL = j("planeo.json")
 AE = j("aero.json")
-R = j("resultados_fea.json")
+R = j("resultados_fea.json")                     # CanSat parado y fijo en la base (ensayo de la lijadora)
+RV = j("resultados_fea_vuelo.json") if os.path.exists(os.path.join(FEA, "resultados_fea_vuelo.json")) else None  # vuelo
 
 
 def n(x, d=1):
@@ -398,7 +399,8 @@ EN = {  # nombres en ingles de los renglones del presupuesto de masa
     "Llave de bayoneta": ("Bayonet key + bearing plate (A2-70)", "C"),
     "Arandela de la llave": ("Key washer on C4 (Al 7075, Ø22)", "C"),
     "Aislador elastomerico": ("Key elastomer isolator", "C"),
-    "Patines de C1": ("C1 guide pads (elastomer + PTFE)", "C"),
+    "Patines de C1": ("Guide pads C1–C3 (elastomer + PTFE)", "C"),
+    "Zapatas de patin": ("Pad shoes on C2 and C3 (PA12-CF)", "S"),
     "Manguito elastomerico del centrador": ("Tail centring sleeve (elastomer)", "C"),
     "Tubo d90": ("Container tube Ø90 × 242, 2 mm wall (LW-ASA)", "S"),
     "Tapa nervada": ("Ribbed container cap (PA12-CF)", "S"),
@@ -523,7 +525,7 @@ def L22_lanzamiento(sl):
         "**Tail boom:** stowed on the top cover, guided in C2–C4.",
         f"**Parachute:** packed above the cap ({P.CT_X[1] - P.CT_TOP[0] - P.CT_CAP_H:g} mm space).",
         "**Retention:** bayonet key through the cap; geometric lock (M2).",
-        "**Guidance:** C1 on four PTFE-faced pads; C4 collar centred in the cap.",
+        "**Guidance:** C1, C2 and C3 on four PTFE-faced pads each; C4 collar centred in the cap.",
         "**S7:** smooth outer wall, 1 mm radial clearance inside.",
     ], sz=11.5, spc=350)
 
@@ -734,7 +736,8 @@ def L50_mecanico(sl):
     y = Y0 + I(0.34) + 9 * I(0.305) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, None, [
         f"**Total 500 g:** container {m_cont:.0f} g + payload {m_plan:.0f} g (including {lastre:.0f} g of trim ballast).",
-        "**Load path:** cap → bayonet key → C4 → corner angles and panels; the tube carries the CanSat to the rocket support.",
+        "**Load path:** cap → bayonet key → C4 → corner angles and panels. Laterally, pads at C1, C2 and C3 tie the "
+        "CFRP frame to the tube, so both bend as one piece.",
         "**One actuator** releases the glider; the wing opens by itself.",
     ], sz=11.5, spc=300)
 
@@ -814,8 +817,10 @@ def L54_seleccion_mec(sl):
          "S6 sets 2 mm, so density decides (80 g); withstands the 60 °C thermal test"],
         ["Bulkheads, cap", "PLA+; PETG; PA12-CF", "PA12-CF, 100 % infill", "Best stiffness and strength per gram; 150 °C"],
         ["Joints", "Screws; epoxy; both", "Epoxy + M2/M2.5 with inserts", "S8; screwed parts can be removed"],
-    ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.36), alin=["l"] * 4, ml=80000)
-    y = Y0 + I(0.36) + 6 * I(0.5) + I(0.17)
+        ["Lateral guidance", "Pads at C1 + collar at C4; pads also at C2 and C3", "Pads at C1, C2, C3 + C4 collar",
+         "Ties the CFRP frame to the tube: lateral mode above the sander band (vibration test)"],
+    ], sz=10.5, sz_cab=11, alto=I(0.46), alto_cab=I(0.36), alin=["l"] * 4, ml=80000)
+    y = Y0 + I(0.36) + 7 * I(0.46) + I(0.17)
     tarjeta(sl, X0, y, W_UTIL, Y1 - y, None, [
         "**Why LW-ASA and not LW-PLA:** the thermal test holds the CanSat at 60 °C for 2 h; LW-PLA softens near 55 °C. "
         "Printed-material strengths are datasheet values and will be confirmed with our own coupons before CDR.",
@@ -830,9 +835,9 @@ GRUPOS = [("Contenedor: tubo", "Container tube (LW-ASA)"), ("Contenedor: tapa", 
 EJES = ("x", "y", "z")
 
 
-def peor(caso, g):
+def peor(caso, g, RR=None):
     best = None
-    blk = R.get(caso)
+    blk = (R if RR is None else RR).get(caso)
     if blk is None:
         return None
     ejes = [None] if "margenes" in blk else list(EJES)
@@ -845,8 +850,8 @@ def peor(caso, g):
     return best
 
 
-def celda(caso, g):
-    p = peor(caso, g)
+def celda(caso, g, RR=None):
+    p = peor(caso, g, RR)
     if p is None:
         return "—"
     s = ms(p[0])
@@ -859,18 +864,20 @@ def L_fem1(sl):
     fig = "fea_modos_en.png" if os.path.exists(os.path.join(FIGS, "fea_modos_en.png")) else "fea_modos.png"
     panel(sl, X0, Y0, wi, Y1 - Y0, [(fig, 1)], "First four mode shapes of the complete CanSat (cantilever from the rocket support)")
     x = X0 + wi + GAP
-    tabla(sl, x, Y0, X1 - x, [1.1, 3.0, 1.4], ["Case", "Load", "Requirement"], [
+    tabla(sl, x, Y0, X1 - x, [1.25, 3.05, 1.2], ["Case", "Load and support", "Requirement"], [
         ["CE-15", "Quasi-static 15 G, x, y, z", "S4"],
-        ["RF-15", "Sine sweep 15 G, 5–1000 Hz", "S4"],
-        ["Sander", "Orbital sander up to 233 Hz, 29 G", "Vibration test"],
+        ["Sander test", "Standing, fixed at the base: orbital sander up to 233 Hz, 29 G, start/stop", "Vibration test"],
+        ["Flight 15 G", "Sine sweep 15 G, 5–1000 Hz; resting in the bay, wall guides the top", "S4"],
         ["CH-30", "Half-sine 30 G, 1–20 ms, x, y, z", "S5, drop test"],
         ["PA-30", "Parachute snatch 30 G × 1.8", "S5, C3"],
-    ], sz=10.5, sz_cab=11, alto=I(0.36), alto_cab=I(0.34), alin=["l", "l", "l"], ml=80000)
-    y = Y0 + I(0.34) + 5 * I(0.36) + I(0.17)
+    ], sz=10.5, sz_cab=11, alto=I(0.44), alto_cab=I(0.34), alin=["l", "l", "l"], ml=80000)
+    y = Y0 + I(0.34) + 5 * I(0.44) + I(0.17)
+    fv = RV["freq"] if RV else None
     tarjeta(sl, x, y, X1 - x, Y1 - y, "Finite element model (CalculiX)", [
-        f"{R['elementos'] / 1000:.0f} k quadratic tetrahedra, {R['nodos'] / 1000:.0f} k nodes, 32 parts, {R['masa_g']:.0f} g.",
-        "Supported only at the base, as in the rocket; nothing restrains the top.",
-        f"Modes: {f[0]:.0f} Hz and {f[1]:.0f} Hz lateral (72 % of the mass each), {f[2]:.0f} Hz axial (79 %).",
+        f"{R['elementos'] / 1000:.0f} k quadratic tetrahedra, {R['nodos'] / 1000:.0f} k nodes, {R['masa_g']:.0f} g.",
+        f"Standing on the sander (fixed base): first modes {f[0]:.0f} and {f[1]:.0f} Hz, above the 233 Hz of the sander."
+        if f[0] > 240 else f"Standing on the sander (fixed base): first modes {f[0]:.0f} and {f[1]:.0f} Hz.",
+        (f"Resting in the bay (top guided by the wall): first mode {fv[0]:.0f} Hz." if fv else ""),
         "Checked: modal vs. static stress field (< 1 %), mesh, hand calculations of joints.",
     ], sz=10.5, spc=200)
 
@@ -909,15 +916,24 @@ def L_fem_mapas(sl):
     ], sz=11, spc=300)
 
 
+def casos_fem():
+    c = [("cuasi15", "CE-15", R)]
+    if "lijadora" in R:
+        c.append(("lijadora", "Sander test", R))
+    if RV is not None:
+        c.append(("armonico", "Flight 15 G", RV))
+    c += [("choque", "CH-30", R), ("paracaidas", "PA-30", R)]
+    return c
+
+
 def L_fem2(sl):
-    casos = [("cuasi15", "CE-15"), ("armonico", "RF-15")] + ([("lijadora", "Sander")] if "lijadora" in R else []) + \
-            [("choque", "CH-30"), ("paracaidas", "PA-30")]
-    filas = [[nom] + [celda(c, g) for c, _ in casos] for g, nom in GRUPOS]
+    casos = casos_fem()
+    filas = [[nom] + [celda(c, g, RR) for c, _, RR in casos] for g, nom in GRUPOS]
     nc = len(casos)
-    tabla(sl, X0, Y0, W_UTIL, [3.4] + [1.25] * nc, ["Part group (material)"] + [c for _, c in casos], filas,
+    tabla(sl, X0, Y0, W_UTIL, [3.4] + [1.25] * nc, ["Part group (material)"] + [c for _, c, _ in casos], filas,
           sz=11, sz_cab=11.5, alto=I(0.33), alto_cab=I(0.36), alin=["l"] + ["c"] * nc)
     y = Y0 + I(0.36) + len(GRUPOS) * I(0.33) + I(0.17)
-    todos = [(peor(c, g)[0], g, c) for g, _ in GRUPOS for c, _ in casos if peor(c, g)]
+    todos = [(peor(c, g, RR)[0], g, nom) for g, _ in GRUPOS for c, nom, RR in casos if peor(c, g, RR)]
     neg = [t for t in todos if t[0] < 0]
     mn = min(todos)
     w2 = (W_UTIL - GAP) // 2
@@ -927,15 +943,11 @@ def L_fem2(sl):
         "Resonant cases depend on the damping assumed: to be measured in a sine test.",
     ], sz=11, spc=250)
     nombres = dict(GRUPOS)
-    casos_n = dict(casos)
     if not neg:
-        res = [f"All margins are positive. Minimum {ms(mn[0])}: {nombres[mn[1]]}, {casos_n[mn[2]]}."]
+        res = [f"**All margins are positive.** Minimum {ms(mn[0])}: {nombres[mn[1]]}, {mn[2]}.",
+               "Rev. C: pads at C2 and C3 tie the CFRP frame to the tube, so the lateral mode moves above the sander band."]
     else:
-        tubo = [m for m, g, c in neg if g == "Contenedor: tubo"]
-        res = [f"[[{ROJO}:Open item:]] the tube fails at the {R['freq'][0]:.0f} Hz lateral mode (RF-15 and sander). "
-               "Panels and bulkheads are negative only at single-element peaks (positive at the 99.9th percentile).",
-               "Action before CDR: centre the top of the CanSat in the Ø100 bay (foam ring) or stiffen the tube; re-run."] if tubo else \
-              [f"{len(neg)} negative: " + "; ".join(f"{nombres[g]} in {casos_n[c]} ({ms(m)})" for m, g, c in neg[:3]) + "."]
+        res = [f"{len(neg)} negative: " + "; ".join(f"{nombres[g]} in {c} ({ms(m)})" for m, g, c in sorted(neg)[:3]) + "."]
     tarjeta(sl, X0 + w2 + GAP, y, w2, Y1 - y, "Result", res, sz=11, spc=250)
 
 

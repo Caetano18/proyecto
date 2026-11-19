@@ -73,7 +73,11 @@ def main(out):
         add(V, "Arandela de la llave en C4 (Al 7075, Ø%g)" % P.ARC4_D, 1,
             sum(p["masa"] for p in lan if p["nombre"].startswith("Arandela de C4")), 0.1, "CAD", 198.0)
     add(V, "Aislador elastomerico de la llave", 1, [p["masa"] for p in lan if "Aislador" in p["nombre"]][0], 0.1, "CAD", 217.0)
-    add(V, "Patines de C1: elastomero con cara de PTFE", 4, sum(p["masa"] for p in lan if p["nombre"].startswith("Patin")), 0.1, "CAD", 4.0)
+    pats = [p for p in lan if p["nombre"].startswith("Patin")]
+    add(V, "Patines de C1, C2 y C3: elastomero con cara de PTFE" if P.PAD_MEDIAS else "Patines de C1: elastomero con cara de PTFE",
+        len(pats), sum(p["masa"] for p in pats), 0.1, "CAD", sum(p["masa"] * centro(p)[0] for p in pats) / sum(p["masa"] for p in pats))
+    if P.PAD_MEDIAS:
+        grupo(E, "Zapata", "Zapatas de patin en C2 y C3 (PA12-CF)", lan, 0.10)
     add(V, "Manguito elastomerico del centrador de cola", 1, [p["masa"] for p in lan if "Manguito del centrador" in p["nombre"]][0],
         0.1, "CAD", 209.0)
     m_plan_sin = sum(f["masa"] for f in filas)

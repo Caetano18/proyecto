@@ -122,7 +122,7 @@ def lanzamiento(out, lan):
     L((209, 0, -19), (xL, T((198, 0, 0))[1]), "C4 collar + sleeve", ha="right")
     L((120, 0, -44), (xL, T((120, 0, 0))[1]), "LW-ASA tube, 2 mm", ha="right")
     L((100, 0, 31), (xR, T((110, 0, 0))[1]), "Glider frame")
-    L((4, 0, 34), (xR, T((18, 0, 0))[1]), "C1 on 4 PTFE pads")
+    L((4, 0, 34), (xR, T((18, 0, 0))[1]), "C1–C3 on PTFE pads")
     L((x0, 0, -20), (xL, T((-8, 0, 0))[1] + 2), "Open end (exit)", ha="right")
     ys = T((x0, 0, 0))[1]
     h.ax.fill_between([T((0, 0, -47))[0], T((0, 0, 47))[0]], ys - 3.2, ys - 0.4, color="0.75", lw=0)

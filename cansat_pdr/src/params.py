@@ -12,7 +12,7 @@ import math
 EQUIPO = "Equipo CanSat Universitario Argentina"
 TEMPORADA = "2026/2027"
 PRESENTADOR = "Subsistema mecánico"
-REV = "B"
+REV = "C"
 FECHA = "19/11/2026"
 
 # -------------------------------------------------------------- envolvente
@@ -51,7 +51,12 @@ CT_LEN = CT_X[1] - CT_X[0]
 CT_MAT = "ASALW"
 # rev. B: apoyo en el cohete. El CanSat apoya en un soporte en su base, sin restriccion lateral arriba (fuselaje de 100 mm de
 # diametro interior contra 90 mm del CanSat), y en el ensayo de vibracion va fijado a la lijadora por la base: voladizo.
-APOYO = "base"
+APOYO = _os0.environ.get("APOYO", "base")      # "base": voladizo (lijadora, parado); "guia": apoyado en la bahia (vuelo)
+# rev. C: patines tambien en las esquinas de C2 y C3, sobre zapatas de PA12-CF.  Acoplan el bastidor de carbono al tubo
+# (C1, C2, C3 y C4 guiados): el conjunto flexiona como una sola pieza y el modo lateral sube por encima de la lijadora.
+PAD_MEDIAS = _os0.environ.get("PAD_MEDIAS", "1") == "1"
+ZAP_R0 = 28.0        # radio interior de las zapatas de esquina (se recortan contra la caja)
+ZAP_EXT = 2.0        # las zapatas y sus patines sobresalen 2 mm a cada lado de C2/C3 (8 mm de largo, como los de C1)
 
 # ------------------------------------------------------- planeador: estructura
 L_G = 207.0           # largo del planeador
