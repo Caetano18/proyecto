@@ -327,6 +327,13 @@ def duplicar(prs, idx_src, pos):
     for rid, rel in src.part.rels.items():
         if rel.reltype.endswith("/image"):
             mapa[rid] = new.part.relate_to(rel._target, rel.reltype)
+    bg = src._element.find(qn("p:cSld")).find(qn("p:bg"))
+    if bg is not None:                      # el fondo (barras y logo) vive fuera de las formas
+        bg2 = copy.deepcopy(bg)
+        for bl in bg2.iter(qn("a:blip")):
+            if bl.get(qn("r:embed")) in mapa:
+                bl.set(qn("r:embed"), mapa[bl.get(qn("r:embed"))])
+        new._element.find(qn("p:cSld")).insert(0, bg2)
     for el in src.shapes._spTree.iterchildren():
         if el.tag in (qn("p:nvGrpSpPr"), qn("p:grpSpPr")):
             continue
@@ -1118,8 +1125,10 @@ def main(entrada, salida):
                 t = c.text_frame.text.strip()
                 if t.isdigit() and int(t) > 54:
                     c.text_frame.paragraphs[0].runs[0].text = str(int(t) + 2)
+    import tema_hermes
+    n = tema_hermes.aplicar(prs)
     prs.save(salida)
-    print("ok:", salida, len(prs.slides), "laminas")
+    print("ok:", salida, len(prs.slides), "laminas;", n, "colores cambiados al tema Hermes")
 
 
 if __name__ == "__main__":

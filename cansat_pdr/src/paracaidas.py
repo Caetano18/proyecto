@@ -65,9 +65,9 @@ def main(out_json, out_fig):
                          "axes.spines.right": False})
     fig, ax = plt.subplots(figsize=(7.2, 3.9), dpi=230)
     s = np.linspace(150, 2000, 400) * 1e-4
-    ax.axhspan(V_MIN, V_MAX, color="#138A8A", alpha=0.10, lw=0)
-    ax.text(1960, 17.6, "C3: 15 ± 3 m/s", ha="right", va="top", color="#138A8A", fontsize=10, weight="bold")
-    cols = {"plano": "#242C4F", "cruz": "#138A8A", "hemi": "#138A8A"}
+    ax.axhspan(V_MIN, V_MAX, color="#E0A526", alpha=0.14, lw=0)
+    ax.text(1960, 17.6, "C3: 15 ± 3 m/s", ha="right", va="top", color="#A8730C", fontsize=10, weight="bold")
+    cols = {"plano": "#0E2148", "cruz": "#1F5FA8", "hemi": "#1F5FA8"}
     vistos = set()
     for f in filas:
         if f["cd"] in vistos and f["clave"] == "hemi":

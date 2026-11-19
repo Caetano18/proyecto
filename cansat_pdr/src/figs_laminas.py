@@ -14,7 +14,7 @@ from hlr import Lienzo
 from planos import medio, f1
 
 FS = 11.0
-AZ, NAV, TEAL = "#2f3192", "#242C4F", "#138A8A"
+AZ, NAV, TEAL = "#1F5FA8", "#0E2148", "#A8730C"
 
 
 def en(x):
@@ -136,7 +136,7 @@ def ala(out):
     import numpy as np
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle, Polygon, Circle
-    AZL, VDL = "#2f3192", "#1a8a55"
+    AZL, VDL = "#0E2148", "#D49A1F"
     fig = plt.figure(figsize=(8.0, 3.05))
     a = fig.add_axes([0, 0, 1, 1])
     a.set_xlim(0, 380)
