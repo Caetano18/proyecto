@@ -275,5 +275,20 @@
  "CanSat: 15 m/s,\nala todavía plegada": "CanSat: 15 m/s,\nwing still stowed",
  "1. Lanzamiento: Ø90 × 240,\nala y paracaídas guardados": "1. Launch: Ø90 × 240,\nwing and parachute stowed",
  "2. Fase 1: paracaídas,\n15 m/s": "2. Phase 1: parachute,\n15 m/s",
- "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, 5 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, 5 m/s"
+ "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, 5 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, 5 m/s",
+ "Monocasco de PETG 2 mm\nimpreso (es la estructura)": "Printed PETG 2 mm monocoque\n(it is the structure)",
+ "Carena de PETG 2 mm\n(se desliza sobre el esqueleto)": "PETG 2 mm fairing\n(slides over the skeleton)",
+ "Panel solar 50 × 30": "Solar panel 50 × 30",
+ "Ranura 6 × 192 con el\nlarguero CF Ø4": "6 × 192 slot with the\nCF spar Ø4",
+ "Pivote del larguero": "Spar pivot",
+ "Tornillos de la carena\n(3 arriba y 3 abajo)": "Fairing screws\n(3 top, 3 bottom)",
+ "Paracaídas Ø226 plegado\n(copa, bahía 5)": "Ø226 parachute, packed\n(cup, bay 5)",
+ "Resorte expulsor": "Ejection spring",
+ "Baliza con batería propia": "Beacon with its own battery",
+ "Vela Rogallo plegada\nbajo la cubierta": "Rogallo sail folded\nunder the cover",
+ "Larguero CF Ø4\n(ala estibada)": "CF spar Ø4\n(wing stowed)",
+ "Pared de PETG 2 mm\n(recortada para ver adentro)": "PETG 2 mm wall\n(cut away to show the inside)",
+ "Cordón de adhesivo\nmamparo-carcasa": "Adhesive bead\nbulkhead to shell",
+ "Cáncamos M3 en M4:\nanclaje de la brida": "M3 eyebolts in M4:\nbridle anchor",
+ "Varillas M3 de Al 6061 (×4):\nllevan la carga y la brida": "M3 Al 6061 rods (×4):\ncarry the load and the bridle"
 }

@@ -49,6 +49,27 @@ C_CUB = (0.90, 0.90, 0.86)
 
 YL, ZL = R_LAR * math.cos(math.radians(RAN_ANG)), R_LAR * math.sin(math.radians(RAN_ANG))
 
+# variante: "E" = rev. E (laminado + esqueleto con lastre); "A" = v2 diseno A (monocasco PETG 2 mm, mamparos pegados);
+# "B" = v2 diseno B (esqueleto de 4 varillas M3 + mamparos + carena PETG 2 mm)
+VAR = "E"
+T_PETG = 2.0
+C_PETGC = (0.80, 0.84, 0.90)
+C_ADH = (0.86, 0.62, 0.18)
+D_PARA = 233.0
+
+
+def variante(v):
+    global VAR, D_PARA
+    VAR = v
+    D_PARA = 233.0 if v == "E" else 226.0
+
+
+def t_en(x):
+    """Espesor de la pared en la estacion x."""
+    if VAR == "E":
+        return TC if x < XH else TV
+    return T_PETG
+
 
 def _ang(w, r=RO):
     return math.degrees(2 * math.asin(w / 2 / r))
@@ -65,8 +86,11 @@ def carcasa(ventana_cenit=True):
     wr = math.degrees(RAN_W / RO)
     ran = fuse(*[sector(RAN_X[0], RAN_X[1], R_LAR - 3.5, RO + 1, a, wr) for a in (RAN_ANG, 180 - RAN_ANG)])
     out = []
-    for nombre, x0, x1, t, col in (("CT1a carcasa carbono-epoxi 0,8", 0.0, XH, TC, C_CARB),
-                                   ("CT1b carcasa vidrio-epoxi 0,6", XH, L - 4.0, TV, C_VID)):
+    if VAR == "E":
+        tramos = (("CT1a carcasa carbono-epoxi 0,8", 0.0, XH, TC, C_CARB), ("CT1b carcasa vidrio-epoxi 0,6", XH, L - 4.0, TV, C_VID))
+    else:
+        tramos = (("CT1 " + ("monocasco PETG 2 mm" if VAR == "A" else "carena PETG 2 mm"), 0.0, L - 4.0, T_PETG, C_PETGC),)
+    for nombre, x0, x1, t, col in tramos:
         ext = disc(x0, x1, RO).cut(sector(QUILLA[0], RAN_X[1], RO - CANAL_P, RO + 1, 90, _ang(CANAL_W)))
         cw = _ang(CANAL_W + 2 * t, RO - CANAL_P)
         inn = disc(x0 - 1, x1 + 1, RO - t).cut(sector(QUILLA[0] - t, RAN_X[1] + t, RO - CANAL_P - t, RO + 1, 90, cw))
@@ -77,11 +101,23 @@ def carcasa(ventana_cenit=True):
             inn = inn.cut(b.mirror("XZ") if s < 0 else b)
         sh = ext.cut(inn).cut(ran)
         sh = sh.intersect(box(x0, x1, -60, 60, -60, 60))
-        if x0 == 0.0:
+        if x0 < 22 < x1:
             sh = sh.cut(rod((22, 30, 0), (22, 50, 0), 8.0))                    # orificio de la baliza
-        elif ventana_cenit:
+        if ventana_cenit and x0 < 212 < x1:
             sh = sh.cut(rod((212, 30, 0), (212, 50, 0), 10.0))                 # ventana de la camara de cenit
         out.append(_pz(nombre, sh.clean(), col, "carcasa"))
+    return out
+
+
+def tornillos_carena():
+    """Diseno B: la carena se atornilla a M1 y M4 (al sacar los tornillos, el esqueleto sale entero)."""
+    out = []
+    for xc in (2.0, 218.0):
+        for a in (0.0, 180.0, 270.0):
+            c, s_ = math.cos(math.radians(a)), math.sin(math.radians(a))
+            out.append(_pz("Tornillo de la carena", rod((xc, (RO - 0.9) * c, (RO - 0.9) * s_), (xc, (RO + 0.05) * c,
+                                                                                          (RO + 0.05) * s_), 4.6),
+                           C_ACERO, "tornillos"))
     return out
 
 
@@ -95,6 +131,14 @@ def cubierta():
 # ------------------------------------------------------------------ esqueleto
 def varillas():
     out = []
+    if VAR == "A":                       # sin varillas: la brida va a 4 cancamos M3 roscados en M4 (pegado a la carcasa)
+        for k, a in enumerate(VAR_ANG):
+            y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
+            sh = fuse(disc(214.0, 226.0, 1.25, y, z), disc(220.0, 222.4, 2.75, y, z), disc(212.6, 216.0, 2.75, y, z))
+            out.append(_pz(f"Cancamo M3 {k + 1}", sh, C_ACERO, "esqueleto"))
+            out.append(_pz(f"Ojal de brida {k + 1}", cq.Solid.makeTorus(2.2, 0.7, V(226.5, y, z), V(0, -z, y)), C_ACERO,
+                           "esqueleto"))
+        return out
     for k, a in enumerate(VAR_ANG):
         y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
         v = disc(0.4, 226.0, 1.25, y, z)
@@ -103,8 +147,9 @@ def varillas():
         out.append(_pz(f"Varilla M3 {k + 1}", v, C_AL, "esqueleto"))
         out.append(_pz(f"Tuercas varilla {k + 1}", tu, C_ACERO, "esqueleto"))
         out.append(_pz(f"Ojal de brida {k + 1}", ojo, C_ACERO, "esqueleto"))
-        out.append(_pz(f"Lastre arandelas {k + 1}", disc(68.0, 83.0, 5.5, y, z).cut(disc(67, 84, 1.6, y, z)),
-                       C_ACERO, "esqueleto"))
+        if VAR == "E":                  # v2 no lleva lastre: ya pasa los 500 g
+            out.append(_pz(f"Lastre arandelas {k + 1}", disc(68.0, 83.0, 5.5, y, z).cut(disc(67, 84, 1.6, y, z)),
+                           C_ACERO, "esqueleto"))
     return out
 
 
@@ -119,30 +164,47 @@ def mamparos(con_tapa=True):
     for n, (x0, x1) in MAMP.items():
         if n == "M5" and not con_tapa:
             continue
-        r = RO - (TC if x1 <= XH else TV) - 0.05
+        t = t_en(x0)
+        r = RO - t - (0.8 if VAR == "A" else 0.05)
         if n == "M5":
-            sh = disc(x0, x1, RO - 0.2).fuse(disc(x0 - 4, x0 + 0.5, RO - TV - 0.2).cut(disc(x0 - 5, x0 + 1, RO - 3.5)))
+            sh = disc(x0, x1, RO - 0.2).fuse(disc(x0 - 4, x0 + 0.5, RO - t - 0.2).cut(disc(x0 - 5, x0 + 1, RO - t - 3.0)))
             out.append(_pz("M5 tapa de la copa", sh.clean(), C_PETG, "tapa"))
             continue
         sh = disc(x0, x1, r)
         if n in ("M2", "M3"):
-            sh = sh.cut(sector(x0 - 1, x1 + 1, RO - CANAL_P - TV - 0.2, RO + 1, 90, _ang(CANAL_W + 2.0, RO - CANAL_P)))
+            sh = sh.cut(sector(x0 - 1, x1 + 1, RO - CANAL_P - t - 0.2, RO + 1, 90, _ang(CANAL_W + 2 * t + 0.8, RO - CANAL_P)))
             sh = sh.cut(disc(x0 - 1, x1 + 1, 5.0, 0, -28.0))                    # paso de cables
             for a in (RAN_ANG, 180 - RAN_ANG):                                   # paso de los largueros
                 sh = sh.cut(sector(x0 - 1, x1 + 1, 33.8, RO + 1, a, 11.0))
             if PANEL_X[0] < x1 and x0 < PANEL_X[1]:                              # planos de los paneles
                 for yy in (1, -1):
-                    b = box(x0 - 1, x1 + 1, Y_FLAT - TV - 0.1, 60, -15.8, 15.8)
+                    b = box(x0 - 1, x1 + 1, Y_FLAT - t - 0.1, 60, -15 - t - 0.8, 15 + t + 0.8)
                     sh = sh.cut(b if yy > 0 else b.mirror("XZ"))
         if n == "M1":
             sh = sh.cut(disc(x0 - 1, x1 + 1, 7.0, 0.0, -20.0))                  # ventana de nadir
-            for a in VAR_ANG:
+            for a in (VAR_ANG if VAR != "A" else ()):
                 y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
                 sh = sh.cut(disc(x0 - 1, 2.8, 3.0, y, z))                       # tuercas embutidas
         if n == "M4":
             sh = sh.cut(disc(x0 - 1, x1 + 1, 3.0))                              # paso del lazo
-        sh = _agujeros_varillas(sh, x0, x1)
+        if VAR != "A":
+            sh = _agujeros_varillas(sh, x0, x1)
         out.append(_pz(f"{n}", sh.clean(), C_PETG, "esqueleto"))
+        if VAR == "A":                   # cordon de adhesivo entre el mamparo y la carcasa (las dos caras)
+            ra = RO - t
+            cord = disc(x0, x1, ra).cut(disc(x0 - 1, x1 + 1, r))
+            if x0 > 0.5:                                   # M1: el filete de abajo quedaria fuera del cuerpo
+                cord = cord.fuse(disc(x0 - 1.2, x0, ra).cut(disc(x0 - 2, x0 + 1, ra - 1.2)))
+            cord = cord.fuse(disc(x1, x1 + 1.2, ra).cut(disc(x1 - 1, x1 + 2, ra - 1.2)))
+            if QUILLA[0] < x1 and x0 < RAN_X[1]:          # el cordon no entra en el canal ni en las ranuras
+                cord = cord.cut(sector(x0 - 2, x1 + 2, RO - CANAL_P - t - 0.3, RO + 1, 90, _ang(CANAL_W + 2 * t + 2, RO - CANAL_P)))
+                for a_ in (RAN_ANG, 180 - RAN_ANG):
+                    cord = cord.cut(sector(x0 - 2, x1 + 2, 33.8, RO + 1, a_, 12.0))
+            if PANEL_X[0] < x1 + 1.2 and x0 - 1.2 < PANEL_X[1]:
+                for yy in (1, -1):
+                    bx = box(x0 - 2, x1 + 2, Y_FLAT - t - 0.1, 60, -15 - t - 0.8, 15 + t + 0.8)
+                    cord = cord.cut(bx if yy > 0 else bx.mirror("XZ"))
+            out.append(_pz(f"Adhesivo {n}", cord.clean(), C_ADH, "adhesivo"))
     return out
 
 
@@ -150,7 +212,7 @@ def mamparos(con_tapa=True):
 def pivotes(desplegada):
     out = []
     for s in (1, -1):
-        blk = sector(4.0, 26.0, 34.6, RO - TC - 0.05, RAN_ANG, 24.0)
+        blk = sector(4.0, 26.0, 34.6, RO - t_en(10.0) - 0.05, RAN_ANG, 24.0)
         blk = blk.cut(rod((3, YL, ZL), (27, YL, ZL), 4.4)).cut(rod((14, YL, ZL - 9), (14, YL, ZL + 9), 4.0))
         perno = rod((14, YL, ZL - 8.0), (14, YL, ZL + 5.0), 4.0)
         res = fuse(cq.Solid.makeTorus(3.6, 0.8, V(14, YL, ZL - 3.4), V(0, 0, 1)),
@@ -230,7 +292,7 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
     for xc in (50.0, 70.0):
         E.append(_pz("Celda 18650", rod((xc, -32.5, -4), (xc, 32.5, -4), 18.6), C_BAT, "equipo"))
     E.append(_pz("Lenguetas soldadas", fuse(box(45, 75, 32.5, 33.3, -9, 1), box(45, 75, -33.3, -32.5, -9, 1)), C_AL, "equipo"))
-    cuna = box(40.0, 80.0, -30, 30, -16.6, -13.6)
+    cuna = box(4.0, 83.0, -30, 30, -16.6, -13.6)
     for xc in (50.0, 70.0):
         cuna = cuna.fuse(box(xc - 7, xc + 7, -30, 30, -14.5, -10.0).cut(rod((xc, -31, -4), (xc, 31, -4), 18.8)))
     E.append(_pz("Cuna de las celdas", cuna.clean(), C_PETG, "esqueleto"))
@@ -255,7 +317,7 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
         sh = sh.rotate(V(0, 0, 0), V(0, 0, 1), ang).translate(V(202.0, 28.0, 0.0))
         E.append(_pz(nom, sh, col, "equipo"))
     E.append(_pz("Soporte de la camara de cenit", box(196.0, 216.0, 16, 40, -12, -9).cut(disc(190, 220, 60).cut(
-        disc(190, 220, RO - TV - 0.2))).fuse(box(210, 216, 20, 36, -12, 12)).clean(), C_PETG, "esqueleto"))
+        disc(190, 220, RO - t_en(200.0) - 0.2))).fuse(box(210, 216, 20, 36, -12, 12)).clean(), C_PETG, "esqueleto"))
     # copa: paracaidas, horquilla y pasador, resorte expulsor
     if pasador:
         E.append(_pz("Horquilla del pasador", box(220.0, 228.0, -4, 4, -5, 5).cut(box(221.5, 229, -1.6, 1.6, -6, 6)),
@@ -350,7 +412,8 @@ def larguero_punto(s_sign, l):
 # ------------------------------------------------------------------
 def build(config="estibado"):
     if config == "estibado":
-        return (carcasa() + cubierta() + varillas() + mamparos() + pivotes(False) + largueros(False) + equipos())
+        return (carcasa() + cubierta() + varillas() + mamparos() + pivotes(False) + largueros(False) + equipos()
+                + (tornillos_carena() if VAR == "B" else []))
     if config == "desplegado":
         return (carcasa() + varillas() + mamparos(con_tapa=False) + pivotes(True) + largueros(True) + vela_desplegada()
                 + equipos(con_paracaidas=False, lazo=False))

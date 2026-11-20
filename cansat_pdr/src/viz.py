@@ -41,7 +41,7 @@ def recortar(path, marcas=None, margen=24):
 
 
 def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hide=(), edges=True,
-           background="white", parallel=True, clip=None, marcas=None, sin_corte=(), ssao=True):
+           background="white", parallel=True, clip=None, marcas=None, sin_corte=(), ssao=True, cuna=None):
     """opac: dict nombre-parcial -> opacidad.  hide: nombres parciales a omitir.
     clip: (normal, origen) para cortar el modelo y ver el interior."""
     opac = opac or {}
@@ -54,6 +54,13 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
         m = p["mesh"] if "mesh" in p else mesh_of(p["shape"])
         if clip is not None and not (p["grupo"] in sin_corte or any(k in p["nombre"] for k in sin_corte)):
             m = m.clip(normal=clip[0], origin=clip[1])
+            if m.n_points == 0:
+                continue
+        if cuna is not None and (p["grupo"] in cuna[2] or any(k in p["nombre"] for k in cuna[2])):
+            # corte "tipo Sims": se saca la pared que mira a la camara (sector angular alrededor del eje x)
+            th = np.degrees(np.arctan2(m.points[:, 2], m.points[:, 1]))
+            m.point_data["dang"] = np.abs((th - cuna[0] + 180.0) % 360.0 - 180.0)
+            m = m.clip_scalar(scalars="dang", value=cuna[1], invert=False).extract_surface()
             if m.n_points == 0:
                 continue
         o = 1.0
