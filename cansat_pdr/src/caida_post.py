@@ -95,7 +95,7 @@ def figuras(res, campos, out):
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10.5})
     tmp = os.path.join(out, "_tmp_int")
     os.makedirs(tmp, exist_ok=True)
-    fig = plt.figure(figsize=(11.0, 5.6))
+    fig = plt.figure(figsize=(11.0, 4.9))
     nom = {"A": "A: monocasco pegado", "B": "B: esqueleto de varillas M3"}
     for c, (r, F) in enumerate(zip(res, campos)):
         g = malla_pv(F["xyz"], F["els"], F["ever"])
@@ -105,11 +105,14 @@ def figuras(res, campos, out):
                       clim=CLIM, log=True, above=SIN_MARGEN)]
         if (~ok).any():
             capas.append(dict(grid=cortar(g.extract_cells(np.where(~ok)[0])), color=(0.80, 0.80, 0.80), lineas=False))
-        vtk(f"{tmp}/caida_{c}.png", capas, cam=((0.0, -1.0, 0.35), (1, 0, 0)), size=(1300, 1700))
+        vtk(f"{tmp}/caida_{c}.png", capas, size=(1800, 1250))
         p = min(r["piezas"].items(), key=lambda kv: kv[1]["G_rot_p999"])
-        panel(fig.add_axes([0.02 + 0.5 * c, 0.15, 0.46, 0.74]), f"{tmp}/caida_{c}.png",
-              f"{nom[r['var']]}\nmáx. a 30 G (p99,9) = {coma(30 / p[1]['G_rot_p999'], 2)}")
-    barra_util(fig, [0.22, 0.08, 0.56, 0.025])
+        panel(fig.add_axes([0.01 + 0.5 * c, 0.24, 0.48, 0.64]), f"{tmp}/caida_{c}.png",
+              f"{nom[r['var']]}\nmáx. a 30 G (p99,9) = {coma(30 / p[1]['G_rot_p999'], 2)} "
+              f"({'pegado de ' + p[0].split()[-1] if p[0].startswith('Adhesivo') else 'mamparo ' + p[0][:2]})")
+    cb = barra_util(fig, [0.22, 0.13, 0.56, 0.03])
+    cb.set_label("Fracción de la rotura a 30 G:  σ / σ$_{rotura}$  (sin factor de seguridad; escala logarítmica; "
+                 "magenta: rompe)", fontsize=10)
     fig.savefig(f"{out}/v2_caida_mapas.png", dpi=200)
     plt.close(fig)
 
@@ -133,7 +136,7 @@ def figuras(res, campos, out):
             ax.barh(y, g_, height=0.32, color=COL[r["var"]], label=lab)
             ax.text(g_ * 1.06, y, f"{g_:,.0f} G".replace(",", "."), va="center", fontsize=8.6, color="#0b0b0b")
     ax.axvline(30, color="#0b0b0b", lw=1.2, ls="--")
-    ax.text(31, len(grupos) - 0.45, "prueba de caída: 30 G", fontsize=8.6, color="#52514e", va="bottom")
+    ax.text(31, -0.62, "prueba de caída: 30 G", fontsize=8.6, color="#52514e", va="bottom")
     ax.set_xscale("log")
     ax.set_yticks(range(len(grupos)), yl)
     ax.invert_yaxis()
@@ -143,7 +146,8 @@ def figuras(res, campos, out):
     for s_ in ("top", "right"):
         ax.spines[s_].set_visible(False)
     h, l_ = ax.get_legend_handles_labels()
-    ax.legend(h, l_, loc="lower right", fontsize=9, frameon=False)
+    ax.legend(h, l_, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, fontsize=9.5, frameon=False)
+    ax.set_xlim(20, 6000)
     fig.tight_layout()
     fig.savefig(f"{out}/v2_caida_rotura.png", dpi=220)
     plt.close(fig)
