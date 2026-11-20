@@ -54,7 +54,7 @@ def piezas(var):
     for k, (y, z) in enumerate(ejes):
         if var == "B":
             v = cad.disc(X0, X_ANC, 2.53 / 2, y, z)
-            parts.append(dict(nombre=f"Varilla {k + 1} (M3 Al)", shape=v, mat="AL6061", grupo="estructura", h=0.55))
+            parts.append(dict(nombre=f"Varilla {k + 1} (M3 Al)", shape=v, mat="AL6061", grupo="estructura", h=0.8))
         else:
             v = cad.disc(I.MAMPAROS[3][1] - 3.4, X_ANC, 1.5, y, z).fuse(
                 cad.disc(I.MAMPAROS[3][1] - 3.4, I.MAMPAROS[3][1], 2.75, y, z)).clean()
