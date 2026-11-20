@@ -1,0 +1,481 @@
+{
+ "petg": [
+  [
+   "Carcasa",
+   [
+    8.46,
+    4.81
+   ],
+   [
+    -0.55,
+    -0.71
+   ],
+   [
+    1.78,
+    0.71
+   ]
+  ],
+  [
+   "M1 fondo (ventana nadir)",
+   [
+    39.13,
+    34.55
+   ],
+   [
+    0.86,
+    0.42
+   ],
+   [
+    10.8,
+    9.45
+   ]
+  ],
+  [
+   "M2 mamparo puente",
+   [
+    8.69,
+    6.05
+   ],
+   [
+    -0.49,
+    -0.63
+   ],
+   [
+    1.85,
+    1.07
+   ]
+  ],
+  [
+   "M3 mamparo de aviónica",
+   [
+    13.78,
+    10.98
+   ],
+   [
+    -0.33,
+    -0.46
+   ],
+   [
+    3.35,
+    2.52
+   ]
+  ],
+  [
+   "M4 mamparo cenit",
+   [
+    21.55,
+    15.98
+   ],
+   [
+    0.02,
+    -0.28
+   ],
+   [
+    5.63,
+    3.99
+   ]
+  ],
+  [
+   "M5 tapa de la copa",
+   [
+    26.21,
+    21.24
+   ],
+   [
+    0.34,
+    -0.0
+   ],
+   [
+    7.0,
+    5.54
+   ]
+  ],
+  [
+   "Varillas M3 (Al 6061)",
+   [
+    40.51,
+    38.31
+   ],
+   [
+    0.88,
+    0.78
+   ],
+   [
+    11.21,
+    10.56
+   ]
+  ]
+ ],
+ "lam": [
+  [
+   "Carcasa",
+   [
+    54.98,
+    38.07
+   ],
+   [
+    15.02,
+    10.18
+   ],
+   [
+    15.47,
+    10.49
+   ]
+  ],
+  [
+   "M1 fondo (ventana nadir)",
+   [
+    122.2,
+    107.07
+   ],
+   [
+    34.26,
+    29.93
+   ],
+   [
+    35.24,
+    30.78
+   ]
+  ],
+  [
+   "M2 mamparo puente",
+   [
+    17.08,
+    13.87
+   ],
+   [
+    8.35,
+    6.69
+   ],
+   [
+    4.32,
+    3.37
+   ]
+  ],
+  [
+   "M3 mamparo de aviónica",
+   [
+    44.75,
+    27.83
+   ],
+   [
+    12.1,
+    7.25
+   ],
+   [
+    12.46,
+    7.48
+   ]
+  ],
+  [
+   "M4 mamparo cenit",
+   [
+    61.77,
+    49.81
+   ],
+   [
+    31.47,
+    25.28
+   ],
+   [
+    17.46,
+    13.94
+   ]
+  ],
+  [
+   "M5 tapa de la copa",
+   [
+    66.86,
+    49.7
+   ],
+   [
+    34.1,
+    25.22
+   ],
+   [
+    18.96,
+    13.91
+   ]
+  ],
+  [
+   "Varillas M3 (Al 6061)",
+   [
+    97.9,
+    96.01
+   ],
+   [
+    39.87,
+    36.16
+   ],
+   [
+    28.09,
+    27.53
+   ]
+  ]
+ ],
+ "modos_petg": [
+  {
+   "f": 160.6142,
+   "meff": [
+    1.0125856740067555e-05,
+    4.5390547913104487e-07,
+    0.606142551451812
+   ]
+  },
+  {
+   "f": 172.0039,
+   "meff": [
+    7.200135992640143e-11,
+    0.5798352553420777,
+    4.858013883049364e-07
+   ]
+  },
+  {
+   "f": 399.7108,
+   "meff": [
+    1.1720437489142795e-09,
+    0.015431355290603658,
+    1.4614466699145097e-09
+   ]
+  },
+  {
+   "f": 552.2929,
+   "meff": [
+    0.02313651216455779,
+    3.2235567863376605e-06,
+    0.10950725372378287
+   ]
+  }
+ ],
+ "modos_lam": [
+  {
+   "f": 348.6492,
+   "meff": [
+    3.627488e-05,
+    4.2217219999999996e-07,
+    0.5376960000000001
+   ]
+  },
+  {
+   "f": 370.4615,
+   "meff": [
+    3.034452e-10,
+    0.5167734,
+    4.725164e-07
+   ]
+  },
+  {
+   "f": 489.2884,
+   "meff": [
+    0.15100964,
+    9.856388e-11,
+    5.569618e-05
+   ]
+  },
+  {
+   "f": 777.6398,
+   "meff": [
+    0.00015917486,
+    6.658069999999999e-08,
+    0.0019119841999999999
+   ]
+  }
+ ],
+ "f_petg": {
+  "y": 172.0039,
+  "z": 160.6142
+ },
+ "f_lam": {
+  "y": 370.4615,
+  "z": 348.6492
+ },
+ "aeq_petg": {
+  "y": 331.4783561324716,
+  "z": 282.9531647007105
+ },
+ "aeq_lam": {
+  "y": 47.97925641737983,
+  "z": 52.40486130873127
+ },
+ "masa": [
+  [
+   "1. Estructura primaria",
+   [
+    [
+     "Carcasa laminada: carbono-epoxi 0,8 mm (x < 130) + vidrio-epoxi 0,6 mm",
+     1,
+     75.3,
+     11.3,
+     "CAD × densidad (laminado manual)"
+    ],
+    [
+     "Mamparos M1–M5 PETG, 40 % de relleno (M5 = tapa de la copa)",
+     5,
+     69.8,
+     7.0,
+     "CAD × densidad efectiva"
+    ],
+    [
+     "Varillas roscadas M3 Al 6061 + tuercas nyloc",
+     4,
+     18.0,
+     0.5,
+     "Catálogo (v2)"
+    ],
+    [
+     "Refuerzo de bordes de ranuras (cinta de vidrio)",
+     2,
+     3.0,
+     0.9,
+     "Estimado (rev. E)"
+    ],
+    [
+     "Resorte expulsor de la tapa de la copa",
+     1,
+     3.0,
+     0.9,
+     "Estimado (faltaba en v2)"
+    ],
+    [
+     "Tornillos, insertos y adhesivo",
+     1,
+     8.0,
+     1.6,
+     "Estimado (faltaba en v2)"
+    ]
+   ]
+  ],
+  [
+   "2. Descenso y mecanismos",
+   [
+    [
+     "Paracaídas plano Ø233 mm con ventana Ø40 + 8 líneas + giratorio",
+     1,
+     8.5,
+     0.5,
+     "Gramaje 35 g/m² + Kevlar (v2)"
+    ],
+    [
+     "Vela Rogallo de nailon ripstop (patrón 58,5°)",
+     1,
+     11.5,
+     0.6,
+     "v2"
+    ],
+    [
+     "Largueros de carbono Ø4 × 225 mm + bisagras",
+     2,
+     11.0,
+     0.4,
+     "v2"
+    ],
+    [
+     "Resortes de torsión AISI 302 + pernos M4 + cápsula de nicrom",
+     2,
+     13.0,
+     0.7,
+     "v2"
+    ],
+    [
+     "Cubierta dorsal de la vela plegada",
+     1,
+     4.0,
+     1.2,
+     "Estimado (faltaba en v2)"
+    ],
+    [
+     "Brida de 3 ramales a las varillas + pasador de liberación",
+     1,
+     3.0,
+     0.6,
+     "Estimado (rev. E)"
+    ]
+   ]
+  ],
+  [
+   "3. Potencia y baliza",
+   [
+    [
+     "Celdas Li-ion 18650 (2S1P, lengüetas soldadas)",
+     2,
+     92.0,
+     0.9,
+     "Hoja de datos (v2)"
+    ],
+    [
+     "Sillas y cincha de las celdas",
+     1,
+     5.0,
+     1.0,
+     "Estimado (faltaba en v2)"
+    ],
+    [
+     "Paneles solares 50 × 30 mm",
+     2,
+     9.0,
+     0.5,
+     "Hoja de datos (v2)"
+    ],
+    [
+     "Baliza audible + batería propia + interruptor",
+     1,
+     15.0,
+     0.8,
+     "v2"
+    ]
+   ]
+  ],
+  [
+   "4. Aviónica, sensores y cámaras",
+   [
+    [
+     "PCB principal (MCU, barómetro, IMU, temperatura, INA219)",
+     1,
+     28.0,
+     2.8,
+     "Estimado (v2)"
+    ],
+    [
+     "Módulo GNSS + antena",
+     1,
+     12.0,
+     0.6,
+     "Hoja de datos (v2)"
+    ],
+    [
+     "Transceptor 915 MHz + antena",
+     1,
+     14.5,
+     0.7,
+     "Hoja de datos (v2)"
+    ],
+    [
+     "Cámaras cenit y nadir + SD",
+     2,
+     23.0,
+     1.2,
+     "v2"
+    ],
+    [
+     "Cableado, conectores, interruptor principal y LED",
+     1,
+     20.0,
+     4.0,
+     "Estimado (v2: ±0,5 g; rev. E: ±20 %)"
+    ],
+    [
+     "Lente de la ventana de nadir (policarbonato)",
+     1,
+     2.0,
+     0.5,
+     "Estimado (faltaba en v2)"
+    ]
+   ]
+  ]
+ ],
+ "seco": 448.6,
+ "lastre": 51.4,
+ "rss": 14.6,
+ "lineal": 39.1,
+ "masa_v2_petg_sin_lastre": 503.00494375412416
+}
