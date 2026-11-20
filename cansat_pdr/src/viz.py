@@ -41,7 +41,7 @@ def recortar(path, marcas=None, margen=24):
 
 
 def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hide=(), edges=True,
-           background="white", parallel=True, clip=None, marcas=None):
+           background="white", parallel=True, clip=None, marcas=None, sin_corte=(), ssao=True):
     """opac: dict nombre-parcial -> opacidad.  hide: nombres parciales a omitir.
     clip: (normal, origen) para cortar el modelo y ver el interior."""
     opac = opac or {}
@@ -51,8 +51,8 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
     for p in parts:
         if any(h in p["nombre"] for h in hide) or any(h == p["grupo"] for h in hide):
             continue
-        m = mesh_of(p["shape"])
-        if clip is not None:
+        m = p["mesh"] if "mesh" in p else mesh_of(p["shape"])
+        if clip is not None and not (p["grupo"] in sin_corte or any(k in p["nombre"] for k in sin_corte)):
             m = m.clip(normal=clip[0], origin=clip[1])
             if m.n_points == 0:
                 continue
@@ -72,7 +72,7 @@ def render(parts, path, view="iso", size=(1600, 1200), zoom=1.25, opac=None, hid
     if parallel:
         pl.enable_parallel_projection()
     pl.camera.zoom(zoom)
-    if not transl:
+    if ssao and not transl:
         try:
             pl.enable_ssao(radius=10, bias=0.5, kernel_size=128, blur=True)
         except Exception:

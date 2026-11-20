@@ -27,13 +27,19 @@ EJES = "xyz"
 NOM_EJE = {"x": "X (axial)", "y": "Y (lateral)", "z": "Z (lateral)"}
 TUBO = P.CT_MAT
 TUBO_N = {"LWPLA": "LW-PLA", "ASALW": "LW-ASA", "GFRP": "GFRP"}.get(TUBO, TUBO)
-ADM_MAT = {TUBO: P.MAT[TUBO]["Sut"] / P.MAT[TUBO]["FS"], "PA12CF": 65.0 / 2, "G10": 280.0 / 1.5, "CFRP": 900.0 / 1.5, "EQ_PCB": 280.0 / 1.5,
+ADM_MAT = {TUBO: P.MAT[TUBO]["Sut"] / P.MAT[TUBO]["FS"], "AL7075": P.MAT["AL7075"]["Sy"] / P.MAT["AL7075"]["FS"],
+           "PA12CF": 65.0 / 2, "G10": 280.0 / 1.5, "CFRP": 900.0 / 1.5, "EQ_PCB": 280.0 / 1.5,
            "A2-70": 450.0 / 1.25}
 MATS = [(TUBO, f"{TUBO_N} (tubo)", (0.93, 0.93, 0.86)), ("PA12CF", "PA12-CF (cuadernas, tapa)", (0.36, 0.38, 0.42)),
         ("G10", "G10 (paneles, bandeja)", (0.55, 0.70, 0.42)), ("CFRP", "CFRP (largueros)", (0.12, 0.12, 0.14)),
         ("EQ_PCB", "FR-4 (placas)", (0.05, 0.47, 0.27)), ("A2-70", "Inox (llave)", (0.78, 0.78, 0.82)),
         ("EQ_BAT", "Batería", (0.16, 0.38, 0.78)), ("EQ_BLK", "Masas de equipo", (0.90, 0.55, 0.18)),
         ("EQ_BOOM", "Botalón", (0.25, 0.20, 0.20)), ("ELAST", "Elastómero", (0.95, 0.85, 0.25))]
+if TUBO == "GFRP":          # tubo laminado en dos tramos (rev. D): carbono abajo, vidrio arriba
+    ADM_MAT["GFRP_INF"] = P.MAT["GFRP_INF"]["Sut"] / P.MAT["GFRP_INF"]["FS"]
+    MATS[0] = ("GFRP", "Vidrio-epoxi (tubo, arriba)", (0.80, 0.90, 0.80))
+    MATS.insert(0, ("GFRP_INF", "Carbono-epoxi (tubo, abajo)", (0.25, 0.25, 0.27)))
+MATS.append(("AL7075", "Al 7075 (arandela)", (0.62, 0.66, 0.74)))
 COL_MAT = {k: c for k, _, c in MATS}
 COL_MAT.update({"PAD_A": COL_MAT["ELAST"], "PAD_B": COL_MAT["ELAST"], "ELAST_X": COL_MAT["ELAST"], "ELAST_C": COL_MAT["ELAST"]})
 CAM = ((-1.0, -1.35, 0.8), (0, 0, 1))
@@ -164,7 +170,8 @@ def main(wd, tag, fjson, fnpz, fala, out):
         k = int(np.argmax(u))
         return cen_all[idx_v[k]].copy(), float(u[k]), mat[idx_v[k]], int(epart[idx_v[k]])
 
-    NOMB = {TUBO: f"tubo de {TUBO_N}", "PA12CF": "PA12-CF", "G10": "G10", "CFRP": "larguero", "EQ_PCB": "placa", "A2-70": "llave"}
+    NOMB = {TUBO: f"tubo de {TUBO_N}", "GFRP": "tubo de vidrio", "GFRP_INF": "tubo de carbono", "AL7075": "arandela",
+            "PA12CF": "PA12-CF", "G10": "G10", "CFRP": "larguero", "EQ_PCB": "placa", "A2-70": "llave"}
 
     def nc(x, d=2):
         return f"{x:.{d}f}".replace(".", ",")

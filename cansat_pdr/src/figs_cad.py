@@ -35,7 +35,7 @@ def explotar(parts):
     return out
 
 
-def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5):
+def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5, pos=None):
     """Agrega llamadas (linea roja + recuadro) a un render, usando las marcas proyectadas."""
     import matplotlib
     matplotlib.use("Agg")
@@ -58,7 +58,7 @@ def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5):
     for lado, labs in (("i", izq), ("d", der)):
         labs = sorted(labs, key=lambda t: mk[t[0]][1])
         for j, (m, txt) in enumerate(labs):
-            yc = H * (j + 0.5) / len(labs)
+            yc = H * ((pos or {}).get(m, (j + 0.5) / len(labs)))
             px, py = x0 + mk[m][0] * wi, mk[m][1] * H
             xt = W * cl - 0.08 if lado == "i" else x0 + wi + 0.08
             ax.plot([xt, px], [yc, py], color="#d62020", lw=0.9, zorder=3)

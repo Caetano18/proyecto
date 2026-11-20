@@ -134,7 +134,7 @@ A(tabla(["Tema", "Origen", "Decisión de la revisión E", "Motivo"], [
      "PETG 2\\,mm: 161\\,Hz, lijadora $-0{,}55$. Laminado: 349\\,Hz, $+15$; 87\\,g más liviana"],
     ["Esqueleto interno", "v2", "5 mamparos de PETG + 4 varillas roscadas M3 de aluminio",
      "Pasa todos los casos con amplio margen; la bandeja sale entera"],
-    ["Anclaje del paracaídas", "rev.\\ D", "Brida de 3 ramales a los extremos superiores de las varillas",
+    ["Anclaje del paracaídas", "rev.\\ D", "Brida de 4 ramales, uno a cada varilla (extremos superiores)",
      "Ensayo de caída: 265\\,N; el lazo de Dyneema queda fuera del camino de carga"],
     ["Verificación", "rev.\\ D", "FEM modal y estático + factores dinámicos de la lijadora y del choque",
      "v2 no verificaba la vibración (S4)"],
@@ -142,6 +142,7 @@ A(tabla(["Tema", "Origen", "Decisión de la revisión E", "Motivo"], [
      "La carcasa estaba subestimada y faltaban unos 29\\,g"],
     ["Energía", "v2 (equipo)", "2 celdas 18650 (2S1P)", "Coincide con el subsistema eléctrico y entra con margen"],
 ], r"P{2.4cm}P{1.4cm}LL", tam=r"\footnotesize"))
+A(r"\fig{1.0}{e_secuencia.png}{Revisión E en el CAD: el mismo cuerpo en las tres configuraciones de la misión. Las vistas anotadas de cada una están en las secciones 2 a 5.}")
 A(r"\fig{0.98}{v3_evolucion.png}{Lo que se hizo: primer modo lateral con el CanSat parado y fijo en la base, en cada "
   r"iteración verificada con el FEM. La lijadora barre de 0 a 233\,Hz al arrancar y frenar y marcha entre 200 y 233\,Hz: "
   r"un modo dentro de ese rango entra en resonancia. Detalle de la revisión D en el anexo A.}")
@@ -198,6 +199,7 @@ A(tabla(["Caso", "$C_{d0}$", "Masa", "Velocidad [m/s]"], [
 A(r"\fig{0.82}{v3_paracaidas.png}{Velocidad de la fase 1 contra el diámetro del paracaídas plano. Con la densidad del "
   r"sitio, el \diam226 de v2 baja a 15,4\,m/s; el \diam233 de la revisión E queda centrado en 15\,m/s y toda la banda de "
   r"$C_{d0} \pm 10$\,\% cae dentro de C3.}")
+A(r"\fig{0.56}{e_fase1_anot.png}{Fase 1 en el CAD: paracaídas plano \diam233 inflado (diámetro proyectado de unos 160\,mm), 8 líneas de 282\,mm, destorcedor y brida de 4 ramales a las varillas. La tapa ya salió y la vela sigue plegada.}")
 A(r"""Se mantiene la elección de v2: \textbf{paracaídas plano con ventana central}. La ventana reduce el balanceo a menos de
 $\pm 8^\circ$, y el cruciforme tiene más riesgo de enredo en una eyección rápida. Masa de 8,5\,g (tela de 1,5\,g, líneas y
 giratorio).
@@ -213,7 +215,7 @@ F_\mathrm{caída} &= m\cdot 30\,g\cdot \mathrm{FAD} = 0{,}500\cdot 30\cdot 9{,}8
 \tau_\mathrm{pasador} &= \frac{F_\mathrm{caída}}{2\,\pi\,r^2} = \frac{265}{2\,\pi\,1{,}5^2} = 18{,}7~\mathrm{MPa}\quad(\mathrm{MS} = +10)
 \end{align}
 \end{ecu}
-La brida de 3 ramales va a los extremos superiores de las 4 varillas M3, y el pasador de liberación es de acero, \diam3\,mm,
+La brida de 4 ramales va a los extremos superiores de las varillas M3, un ramal por varilla, y el pasador de liberación es de acero, \diam3\,mm,
 trabajando a corte doble.
 
 \pend{Condición de diseño:} el lazo de Dyneema (180\,N de rotura) \textbf{no puede estar en el camino de carga}. Con 265\,N se
@@ -224,7 +226,8 @@ cortaría en el ensayo de caída. El lazo solo retiene el pasador, que trabaja a
 A(r"""\section{Fase 2: planeador de vela Rogallo (C4)}
 Se mantienen la geometría y las ecuaciones de planeo helicoidal de v2: quilla de 190\,mm sobre el lomo del cilindro, largueros de
 225\,mm con flecha de $52^\circ$, envergadura de 425\,mm, $S = 0{,}0670$\,m², alargamiento 2,69, holgura de la tela (billow) del
-8,2\,\% y altura de inflado de 31\,mm. Las ecuaciones de equilibrio en la espiral son:
+8,2\,\% y altura de inflado de 31\,mm (figura siguiente, armada con esos valores). Las ecuaciones de equilibrio en la
+espiral son:
 \begin{ecu}
 \begin{gather}
 \tan\gamma = \frac{C_{D,\mathrm{tot}}}{C_L\cos\phi},\qquad
@@ -238,6 +241,7 @@ Las cuentas de v2 son correctas: $V = 8{,}71$\,m/s, $V_z = 5{,}03$\,m/s y $R = 1
 vela flexible de $52^\circ$ de flecha, cerca del ángulo en que el vórtice se rompe. Por eso se repite el cálculo con una fracción
 $f$ de la sustentación de vórtice ($K_p = 2{,}2$, $C_{D0} = 0{,}080$, $\phi = 25^\circ$) y con las dos densidades:
 """)
+A(r"\fig{0.98}{e_desplegado_anot.png}{Fase 2 en el CAD: largueros girados 52\textdegree{} sobre los pivotes de $x = 14$\,mm y vela inflada entre la quilla (fondo del canal dorsal) y los largueros, con la holgura de v2.}")
 A(tabla(["Fracción de vórtice $f$", "$C_L$", "$C_D$", "$\\gamma$", "$V_z$, $\\rho = 1{,}225$", "$V_z$, $\\rho = 1{,}15$",
          "Radio de la espiral"], [
     ["1,0 (v2)", "1,42", "0,91", "35,5\\textdegree", "5,05\\,m/s", "5,22\\,m/s", "11,0--11,7\\,m"],
@@ -292,12 +296,23 @@ A(tabla(["Estación $x$", "Bahía / mamparo", "Contenido"], [
     ["0--35\\,mm", "Bahía 1 (nadir) + M1 (fondo)", "Cámara de nadir con ventana \\diam14 + lente; baliza con batería e interruptor propios"],
     ["35--105\\,mm", "Bahía 2 + M2 puente ($x = 85$)", "Pack 2 $\\times$ 18650 con lengüetas soldadas; encastre de los largueros y topes"],
     ["105--175\\,mm", "Bahía 3 (aviónica) + M3", "PCB principal, GNSS, radio de 915\\,MHz, interruptor general"],
-    ["175--220\\,mm", "Bahía 4 (cenit) + M4", "Cámara de cenit inclinada 35\\textdegree; cápsula de nicrom; paneles solares en el lomo"],
+    ["175--220\\,mm", "Bahía 4 (cenit) + M4", "Cámara de cenit inclinada 35\\textdegree{} (ventana en el flanco); cápsula de nicrom; paneles solares en los flancos ($x$ 135--185)"],
     ["220--240\\,mm", "Bahía 5 (copa) + M5 (tapa)", "Paracaídas \\diam233\\,mm; resorte expulsor de la tapa; brida a las varillas"],
 ], r"P{2.0cm}P{4.2cm}L", tam=r"\footnotesize"))
 A(r"\fig{1.0}{v3_esquema.png}{Diseño combinado. Izquierda: corte longitudinal con los tramos de carbono y vidrio, los "
   r"mamparos M1--M5, las varillas M3 y las bahías. Derecha: vela desplegada, con el rango del punto neutro y del centro "
   r"de gravedad sobre la quilla.}")
+A(r"\fig{0.80}{e_corte_anot.png}{Corte longitudinal del CAD de la revisión E en configuración de lanzamiento (cenit arriba). Se ven las cinco bahías, los mamparos M1--M5, las varillas, el canal dorsal con la vela y un larguero en su ranura.}")
+A(r"\fig{1.0}{e_esqueleto_anot.png}{Esqueleto y equipos sin la carcasa: mamparos de PETG, varillas M3 con el lastre, pack transversal, las dos placas, la cápsula de nicrom y el resorte de la copa.}")
+A(r"""\pend{Decisiones que fijó el CAD} (v2 no las resolvía o se contradecían al armar el conjunto):
+\begin{itemize}
+\item \textbf{Canal dorsal de la vela:} v2 pone la vela plegada bajo una cubierta dorsal, y no hay lugar dentro de \diam90 sin rebajar el lomo. La carcasa forma un canal de $28 \times 6$\,mm sobre la quilla ($x$ 14--206); el laminado sigue continuo (es un pliegue, no un corte) y la cubierta queda a ras. El fondo del canal es la quilla. M2 y M3 llevan la muesca del canal y el paso de los largueros.
+\item \textbf{Paneles solares en los flancos:} v2 los pone en el lomo, pero ahí van la cubierta (fase 1) y la vela (fase 2), que los taparían. Van embutidos en dos planos de los flancos, en el tramo de vidrio.
+\item \textbf{Cámara de cenit:} la copa del paracaídas tapa el eje, así que mira por una ventana \diam10 en el flanco ($x = 212$), con el eje a 35\textdegree{} sobre el flanco, hacia el cenit.
+\item \textbf{Pivotes de los largueros en $x = 14$\,mm} (frente de las ranuras), en bloques de PETG pegados a la carcasa: perno M4 casi vertical, dos resortes de torsión debajo del larguero, y el tope y el trinquete en el mismo bloque (v2 los ponía en M2, a 70\,mm del pivote). La puntera de 40\,mm se pliega hacia adentro en la bisagra.
+\item \textbf{Pack 2 $\times$ 18650 transversal:} una celda mide 65\,mm y la bahía 2 tiene 48\,mm entre M1 y M2 libres de los pivotes; las celdas van atravesadas, entre las varillas.
+\end{itemize}
+""")
 A(r"""\pend{Regla nueva:} las antenas de radio y GNSS van por \textbf{encima de $x = 135$\,mm}, bajo el tramo de vidrio. El tramo
 de carbono ($x < 130$\,mm) es conductor y las taparía.
 
@@ -352,7 +367,8 @@ A(tabla(["Pieza", "CE-15", "Lijadora (parado)", "CH-30"], [[esc(f[0]), msr(f[1])
         r"LCCC"))
 A(r"\fig{1.0}{v3_mapas.png}{Utilización $\mathrm{FS}\cdot\sigma/\sigma_\mathrm{adm}$ en la lijadora y en el choque de "
   r"30\,G, con la misma escala logarítmica para las dos variantes (magenta: sin margen). Los elementos que tocan el apoyo se "
-  r"excluyen (singularidad del empotramiento).}")
+  r"excluyen (singularidad del empotramiento) y van en gris. En v2, el 0,7\,\% de los elementos pasa de 1 en la lijadora: "
+  r"están en los bordes y extremos de las ranuras, que en este corte quedan de canto.}")
 A(r"""\subsection{Cálculos manuales de v2, revisados}
 \begin{itemize}
 \item \textbf{Varillas M3 a 30\,G} (v2: 7,3\,MPa, FS 32,8): correcto. El FEM también da márgenes amplios ($+28$ en CH-30).
@@ -393,6 +409,7 @@ el pasador (sección 2.1).
 """)
 
 # ------------------------------------------------------------------ 6
+A(r"\fig{0.62}{e_exterior_anot.png}{Exterior en configuración de lanzamiento: ranura con el larguero y su bisagra, cubierta dorsal, panel solar embutido, unión de los tramos de carbono y vidrio, ventana de nadir y tapa de la copa. Todo queda dentro de \diam90 (S7).}")
 A(r"\section{Presupuesto de masa (S1)}")
 filas, sub = [], []
 for cat, items in D["masa"]:
@@ -436,6 +453,8 @@ A(tabla(["Pendiente", "Por qué", "Cómo se cierra"], [
      "Probetas y un tubo de prueba: medir espesor, módulo y masa; post-curado $> 60$\\,\\textdegree C (ensayo térmico)"],
     ["Bordes de las ranuras", "Concentración de tensiones en los extremos de las ranuras de 192\\,mm",
      "Cinta de vidrio en los bordes; FEM con malla fina"],
+    ["Canal dorsal en el FEM", "El modelo de la sección 4.3 no tiene el canal de la vela ni los planos de los paneles",
+     "Agregarlos al modelo de malla fina; fabricar el mandril con el canal"],
     ["Modo y amortiguamiento reales", "El ensayo se analizó con $\\zeta = 2$\\,\\%",
      "Ensayo con la lijadora sobre el prototipo con acelerómetro: verificar que no haya resonancia por debajo de 233\\,Hz"],
     ["Anclaje del paracaídas", "265\\,N en el ensayo de caída", "Ensayo de caída de 61\\,cm; confirmar que el lazo de Dyneema no carga"],

@@ -61,10 +61,15 @@ def utilizacion(M, d, fac):
 
 
 def capa_u(M, u):
+    """Mapa de utilizacion; los elementos excluidos (apoyo) van en gris, no en el color minimo de la escala."""
     g = malla_pv(M["xyz"], M["els"], M["ever"])
-    g.cell_data["u"] = np.clip(np.nan_to_num(u, nan=CLIM[0]), CLIM[0] * 1.001, None)
-    g = g.cell_data_to_point_data()
-    return [dict(grid=cortar(g), scalars="u", cmap=CM_U, clim=CLIM, log=True, above=SIN_MARGEN)]
+    ok = np.isfinite(u)
+    g.cell_data["u"] = np.clip(np.where(ok, u, CLIM[0]), CLIM[0] * 1.001, None)
+    gv = g.extract_cells(np.where(ok)[0]).cell_data_to_point_data()
+    capas = [dict(grid=cortar(gv), scalars="u", cmap=CM_U, clim=CLIM, log=True, above=SIN_MARGEN)]
+    if (~ok).any():
+        capas.append(dict(grid=cortar(g.extract_cells(np.where(~ok)[0])), color=(0.80, 0.80, 0.80), lineas=False))
+    return capas
 
 
 def main(wa, ta, wb, tb, out):
@@ -114,10 +119,10 @@ def main(wa, ta, wb, tb, out):
 
     # -------------------------------------------- mapas de utilizacion: lijadora (y) y choque (z)
     fig = plt.figure(figsize=(11.0, 7.6))
-    casos = (("lijadora, CanSat parado (lateral y)", 1, lambda M: M["mg"]["aeq_lijadora"]["y"]),
-             ("choque de 30 G (lateral z, 51 G)", 2, lambda M: 51.0))
+    casos = (("lijadora parado, lateral y", 1, lambda M: M["mg"]["aeq_lijadora"]["y"]),
+             ("choque 30 G, lateral z (51 G)", 2, lambda M: 51.0))
     for r, (tit, d, fac) in enumerate(casos):
-        for c, (M, nom) in enumerate(((A, "v2 · PETG 2 mm"), (B, "Rev. E · laminado"))):
+        for c, (M, nom) in enumerate(((A, "v2 · PETG"), (B, "Rev. E · laminado"))):
             u = utilizacion(M, d, fac(M))
             vtk(f"{tmp}/u_{r}{c}.png", capa_u(M, u), size=(1700, 1150))
             p999 = np.nanpercentile(u, 99.9)

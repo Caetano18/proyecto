@@ -95,7 +95,7 @@ C.push(...tabla(["Tema", "Origen", "Decisión de la revisión E", "Motivo"], [
   ["Paracaídas", "v2 + rev. D", "Plano con ventana, Ø233 mm (densidad del sitio 1,15 kg/m³)", "Con la densidad a nivel del mar, el Ø226 de v2 da 15,4 m/s en el sitio"],
   ["Carcasa", "rev. D", "Laminado: carbono-epoxi 0,8 mm (x < 130 mm) + vidrio-epoxi 0,6 mm (arriba)", "PETG 2 mm: 161 Hz, lijadora −0,55. Laminado: 349 Hz, +15; 87 g más liviana"],
   ["Esqueleto interno", "v2", "5 mamparos de PETG + 4 varillas roscadas M3 de aluminio", "Pasa todos los casos con amplio margen; la bandeja sale entera"],
-  ["Anclaje del paracaídas", "rev. D", "Brida de 3 ramales a los extremos superiores de las varillas", "Ensayo de caída: 265 N; el lazo de Dyneema queda fuera del camino de carga"],
+  ["Anclaje del paracaídas", "rev. D", "Brida de 4 ramales, uno a cada varilla (extremos superiores)", "Ensayo de caída: 265 N; el lazo de Dyneema queda fuera del camino de carga"],
   ["Verificación", "rev. D", "FEM modal y estático + factores dinámicos de la lijadora y del choque", "v2 no verificaba la vibración (S4)"],
   ["Presupuesto de masa", "v2 + rev. D", "Ítems que faltaban; incertidumbre por fuente", "La carcasa estaba subestimada y faltaban unos 29 g"],
   ["Energía", "v2 (equipo)", "2 celdas 18650 (2S1P)", "Coincide con el subsistema eléctrico y entra con margen"],
@@ -138,7 +138,7 @@ C.push(H2("2.1 Cargas sobre el anclaje"));
 C.push(P("v2 calcula la carga de apertura en 12,2 N (20 m/s, factor de choque 1,4), lo cual está bien para el vuelo. Pero el **ensayo de caída** de la competencia (cuerda atada al punto de anclaje del paracaídas, caída de 61 cm) carga ese anclaje con unos 30 G. La carga de diseño es:"));
 C.push(...ec([
   "F_caída = m · 30 · g · FAD = 0,500 · 30 · 9,81 · 1,8 = 265 N",
-  "Por varilla (brida de 3 ramales a los extremos de las 4 varillas): 66 N  →  σ_M3 = 66 / 5,03 = 13,2 MPa  (MS = +13)",
+  "Por varilla (brida de 4 ramales, uno a cada varilla): 66 N  →  σ_M3 = 66 / 5,03 = 13,2 MPa  (MS = +13)",
   "Pasador de liberación Ø3 de acero, corte doble: τ = 265 / (2·π·1,5²) = 18,7 MPa  (MS = +10)",
 ], "(Ec. 2.2)"));
 C.push(P("[[Condición de diseño:]] el lazo de Dyneema (180 N de rotura) **no puede estar en el camino de carga**. Con 265 N se cortaría en el ensayo de caída. El lazo solo retiene el pasador, que trabaja a corte; la brida va a las varillas, no a la tapa M5."));
