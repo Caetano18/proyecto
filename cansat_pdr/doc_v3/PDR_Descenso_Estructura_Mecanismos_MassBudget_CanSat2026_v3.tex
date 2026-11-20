@@ -1,0 +1,357 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
+\definecolor{azul}{HTML}{1F4E79}\definecolor{celeste}{HTML}{DCE6F2}\definecolor{rojo}{HTML}{C00000}
+\definecolor{rosa}{HTML}{FBE9E9}\definecolor{gris}{HTML}{595959}\definecolor{fondoec}{HTML}{F3F6FA}
+\newcommand{\diam}{\ensuremath{\varnothing}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.25}\arrayrulecolor{azul!45}
+\titleformat{\section}{\large\bfseries\color{azul}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azul}}{\thesubsection}{0.5em}{}
+\newtcolorbox{ecu}{colback=fondoec,colframe=azul!45,boxrule=0.4pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}
+\newcommand{\pend}[1]{\textcolor{rojo}{\bfseries #1}}
+\newcommand{\nota}[1]{{\par\small\itshape\color{gris}#1\par}\medskip}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[R]{\small\color{gris}PDR-STR-REC-2026-v3 · Equipo Hermes · página \thepage}
+\renewcommand{\headrulewidth}{0pt}\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}\setlist{nosep,leftmargin=1.4em}
+\begin{document}
+
+\begin{tcolorbox}[colback=celeste,colframe=azul,boxrule=0.6pt,arc=0pt]
+{\large\bfseries\color{azul} Memoria de cálculo y diseño preliminar (PDR) --- Edición combinada v3\par}\smallskip
+{\bfseries Control de descenso (fases 1 y 2), estructura primaria, mecanismos de liberación y presupuesto de masa ---
+CanSat Argentina Universitario 2026\par}
+\end{tcolorbox}
+\par{\small\noindent\begin{tabularx}{\linewidth}{P{3.0cm}LP{3.0cm}L}
+\rowcolor{azul}\color{white}\bfseries Dato & \color{white}\bfseries Valor & \color{white}\bfseries Dato & \color{white}\bfseries Valor \\
+\bfseries Código & PDR-STR-REC-2026-v3 & \bfseries Base & v2 del equipo + revisión D (verificación estructural) \\
+\bfseries Masa (S1) & 500,0 $\pm$ 10 g ($W$ = 4,905 N) & \bfseries Envolvente (S2, S3) & \diam\,90,0 $\times$ 240,0 mm \\
+\bfseries Descenso fase 1 (C3) & 14,3--15,9 m/s, paracaídas plano \diam233 mm & \bfseries Descenso fase 2 (C4) & 5,1--6,5 m/s, vela Rogallo en espiral \\
+\bfseries Carcasa & Laminado carbono 0,8 mm + vidrio 0,6 mm & \bfseries Fecha & 20/11/2026 \\
+\end{tabularx}}
+\par\medskip
+\section*{0. Qué combina esta edición}
+Esta memoria une los dos trabajos del subsistema mecánico. De la \textbf{memoria v2} del equipo se toma el concepto: cuerpo
+integral (todo el CanSat baja junto), vela Rogallo con espiral pasiva, liberación por nicrom encapsulado, cámaras que ven hacia
+afuera y la electrónica de 2 celdas. De la \textbf{revisión D} se toma la verificación: modelo de elementos finitos, ensayo de la
+lijadora con el CanSat parado, carga del ensayo de caída sobre el anclaje del paracaídas y presupuesto de masa por fuente.
+
+Al verificar el diseño v2 con el modelo de elementos finitos apareció un problema: con la carcasa de PETG de 2\,mm el primer modo
+lateral queda en 161--172\,Hz y \textbf{no pasa el ensayo de la lijadora} (MS $= -0{,}55$ en la carcasa). Además, la carcasa pesa
+163\,g y no 139\,g, y el CanSat suma 503\,g sin lastre. La revisión E conserva todo el concepto v2 y cambia la carcasa por la
+carcasa laminada de la revisión D: el modo lateral sube a 349--370\,Hz, todos los márgenes son positivos y quedan 51\,g de margen
+de masa.
+
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{2.4cm}P{1.4cm}LL}
+\rowcolor{azul}\color{white}\bfseries Tema & \color{white}\bfseries Origen & \color{white}\bfseries Decisión de la revisión E & \color{white}\bfseries Motivo \\
+\cellcolor{celeste}\bfseries Concepto de vuelo & v2 & Cuerpo integral: el paracaídas se suelta al 80\,\% del apogeo y el mismo cuerpo planea & Una sola pieza a recuperar; cámaras al exterior; el Apéndice A no exige separar payload y contenedor \\
+\cellcolor{celeste}\bfseries 2.º sistema de descenso & v2 & Vela Rogallo de 670\,cm², flecha 52\textdegree, espiral pasiva de 25\textdegree & Sin cola ni servos: unos 30\,g menos y ningún mecanismo activo en vuelo \\
+\cellcolor{celeste}\bfseries Liberación & v2 & Lazo de Dyneema cortado por nicrom dentro de una cápsula de PTFE (M1) & Un solo actuador; si falla, el CanSat sigue bajando con el paracaídas \\
+\cellcolor{celeste}\bfseries Paracaídas & v2 + rev.\ D & Plano con ventana, \diam233\,mm (densidad del sitio 1,15\,kg/m³) & Con la densidad a nivel del mar, el \diam226 de v2 da 15,4\,m/s en el sitio \\
+\cellcolor{celeste}\bfseries Carcasa & rev.\ D & Laminado: carbono-epoxi 0,8\,mm ($x < 130$\,mm) + vidrio-epoxi 0,6\,mm (arriba) & PETG 2\,mm: 161\,Hz, lijadora $-0{,}55$. Laminado: 349\,Hz, $+15$; 87\,g más liviana \\
+\cellcolor{celeste}\bfseries Esqueleto interno & v2 & 5 mamparos de PETG + 4 varillas roscadas M3 de aluminio & Pasa todos los casos con amplio margen; la bandeja sale entera \\
+\cellcolor{celeste}\bfseries Anclaje del paracaídas & rev.\ D & Brida de 3 ramales a los extremos superiores de las varillas & Ensayo de caída: 265\,N; el lazo de Dyneema queda fuera del camino de carga \\
+\cellcolor{celeste}\bfseries Verificación & rev.\ D & FEM modal y estático + factores dinámicos de la lijadora y del choque & v2 no verificaba la vibración (S4) \\
+\cellcolor{celeste}\bfseries Presupuesto de masa & v2 + rev.\ D & Ítems que faltaban; incertidumbre por fuente & La carcasa estaba subestimada y faltaban unos 29\,g \\
+\cellcolor{celeste}\bfseries Energía & v2 (equipo) & 2 celdas 18650 (2S1P) & Coincide con el subsistema eléctrico y entra con margen \\
+\end{tabularx}}
+\par\medskip
+\nota{De la revisión D quedan como alternativa ---si los organizadores exigieran que el payload se separe del contenedor--- el contenedor separado, el bastidor de carbono y G10, la cola en V con servo y la llave de bayoneta. Toda esa verificación está en el repositorio.}
+\section{Marco normativo y condiciones de contorno}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{1.7cm}P{2.6cm}P{3.6cm}L}
+\rowcolor{azul}\color{white}\bfseries Req. & \color{white}\bfseries Requisito & \color{white}\bfseries Especificación & \color{white}\bfseries Impacto en el diseño (rev.\ E) \\
+\cellcolor{celeste}\bfseries C1 / C2 & Integración y eyección & Dentro del cohete; sale con la carga de eyección & Cilindro liso \diam90\,mm, sin salientes; ranuras de los largueros enrasadas \\
+\cellcolor{celeste}\bfseries C3 & Fase 1 (paracaídas) & Despliegue automático, $15 \pm 3$\,m/s & Paracaídas plano \diam233\,mm con ventana \diam40\,mm en la copa superior \\
+\cellcolor{celeste}\bfseries C4 & Fase 2 (80\,\% del apogeo) & Otro sistema de descenso, $5 \pm 3$\,m/s & Se suelta el paracaídas y se abre la vela Rogallo; espiral pasiva \\
+\cellcolor{celeste}\bfseries C6 / C7 & Video cenit y nadir & Toda la secuencia de descenso & Ventana de nadir \diam14 en M1; cámara de cenit inclinada 35\textdegree{} en M4 \\
+\cellcolor{celeste}\bfseries C8 / E8 / E9 & Baliza & Audible, batería e interruptor propios & Bahía 1, acceso por orificio $\leq 10$\,mm \\
+\cellcolor{celeste}\bfseries S1 & Masa & $500 \pm 10$\,g & 448,6\,g secos + 51,4\,g de lastre y margen \\
+\cellcolor{celeste}\bfseries S2 / S3 & Dimensiones & \diam\,90\,mm; largo 200--250\,mm & \diam\,90 $\times$ 240\,mm (cuerpo de 220\,mm + copa de 20\,mm) \\
+\cellcolor{celeste}\bfseries S4 / S5 & Vibración y choque & 15\,G; 30\,G & Verificado por FEM: lijadora con el CanSat parado, 15\,G cuasi-estático y choque de 30\,G \\
+\cellcolor{celeste}\bfseries S6 & Pared exterior & $\geq 2$\,mm si es impresa; no debe flexionar & La carcasa es laminada, no impresa: la regla de 2\,mm no aplica. La rigidez se verifica por FEM \\
+\cellcolor{celeste}\bfseries S7 & Deslizamiento & Debe salir libremente del cohete & Superficie lisa; largueros dentro de la envolvente \\
+\cellcolor{celeste}\bfseries M1 / M2 & Mecanismos & Sin calor expuesto; mantener la configuración & Nicrom dentro de una cápsula cerrada; trinquete de bloqueo de los largueros \\
+\end{tabularx}}
+\par\medskip
+\nota{Corrección respecto de v2: el Apéndice A solo tiene M1 y M2 (v2 cita M1--M3).}
+\section{Fase 1: paracaídas primario (C3)}
+Se mantienen las ecuaciones de v2 para la caída libre axial del cilindro ($C_{d,\mathrm{cil}} = 0{,}86$ según Hoerner para
+$L/D = 2{,}44$; $v_\mathrm{libre} = 38{,}3$\,m/s; $Re_D$ entre $9\times10^4$ y $2{,}3\times10^5$). Lo que cambia es la
+\textbf{densidad de diseño}: v2 usa la atmósfera estándar a nivel del mar ($\rho = 1{,}225$\,kg/m³). En el sitio, sumando la
+altura de apertura (unos 700\,m), es $\rho = 1{,}15$\,kg/m³, y con menos densidad se baja más rápido.
+\begin{ecu}
+\begin{align}
+(C_d A)_\mathrm{tot} &= \frac{2W}{\rho\,v^2} = \frac{2\cdot 4{,}905}{1{,}15\cdot 15{,}0^2} = 0{,}03791~\mathrm{m^2}\\
+(C_d A)_\mathrm{para} &= (C_d A)_\mathrm{tot} - (C_d A)_\mathrm{cil} = 0{,}03791 - 0{,}00547 = 0{,}03244~\mathrm{m^2}
+\quad\Rightarrow\quad S_0 = \frac{0{,}03244}{0{,}78} = 0{,}0416~\mathrm{m^2}\\
+D_\mathrm{ext} &= \sqrt{\frac{4\,(S_0 + A_\mathrm{ventana})}{\pi}} = 234~\mathrm{mm}
+\quad\Rightarrow\quad \text{se adopta } D_\mathrm{ext} = 233~\mathrm{mm} \text{ con ventana } \varnothing 40~\mathrm{mm}
+\end{align}
+\end{ecu}
+
+\par{\small\noindent\begin{tabularx}{\linewidth}{LP{3.2cm}P{2.0cm}P{2.6cm}}
+\rowcolor{azul}\color{white}\bfseries Caso & \color{white}\bfseries $C_{d0}$ & \color{white}\bfseries Masa & \color{white}\bfseries Velocidad [m/s] \\
+\cellcolor{celeste}\bfseries Nominal en el sitio ($\rho = 1{,}15$) & 0,78 & 500\,g & 15,0 \\
+\cellcolor{celeste}\bfseries Banda de diseño & 0,70--0,86 ($\pm$10\,\%) & 490--510\,g & 14,3--15,9 \\
+\cellcolor{celeste}\bfseries A nivel del mar ($\rho = 1{,}225$) & 0,78 & 500\,g & 14,6 \\
+\cellcolor{celeste}\bfseries Paracaídas de v2 (\diam226) en el sitio & 0,78 & 500\,g & 15,4 \\
+\end{tabularx}}
+\par\medskip
+Se mantiene la elección de v2: \textbf{paracaídas plano con ventana central}. La ventana reduce el balanceo a menos de
+$\pm 8^\circ$, y el cruciforme tiene más riesgo de enredo en una eyección rápida. Masa de 8,5\,g (tela de 1,5\,g, líneas y
+giratorio).
+
+\subsection{Cargas sobre el anclaje}
+v2 calcula la carga de apertura en 12,2\,N (20\,m/s, factor de choque 1,4), lo cual está bien para el vuelo. Pero el
+\textbf{ensayo de caída} de la competencia (cuerda atada al punto de anclaje del paracaídas, caída de 61\,cm) carga ese anclaje con
+unos 30\,G. La carga de diseño es:
+\begin{ecu}
+\begin{align}
+F_\mathrm{caída} &= m\cdot 30\,g\cdot \mathrm{FAD} = 0{,}500\cdot 30\cdot 9{,}81\cdot 1{,}8 = 265~\mathrm{N}\\
+\sigma_\mathrm{M3} &= \frac{F_\mathrm{caída}/4}{A_s} = \frac{66}{5{,}03} = 13{,}2~\mathrm{MPa}\quad(\mathrm{MS} = +13)\\
+\tau_\mathrm{pasador} &= \frac{F_\mathrm{caída}}{2\,\pi\,r^2} = \frac{265}{2\,\pi\,1{,}5^2} = 18{,}7~\mathrm{MPa}\quad(\mathrm{MS} = +10)
+\end{align}
+\end{ecu}
+La brida de 3 ramales va a los extremos superiores de las 4 varillas M3, y el pasador de liberación es de acero, \diam3\,mm,
+trabajando a corte doble.
+
+\pend{Condición de diseño:} el lazo de Dyneema (180\,N de rotura) \textbf{no puede estar en el camino de carga}. Con 265\,N se
+cortaría en el ensayo de caída. El lazo solo retiene el pasador, que trabaja a corte; la brida va a las varillas, no a la tapa M5.
+
+\section{Fase 2: planeador de vela Rogallo (C4)}
+Se mantienen la geometría y las ecuaciones de planeo helicoidal de v2: quilla de 190\,mm sobre el lomo del cilindro, largueros de
+225\,mm con flecha de $52^\circ$, envergadura de 425\,mm, $S = 0{,}0670$\,m², alargamiento 2,69, holgura de la tela (billow) del
+8,2\,\% y altura de inflado de 31\,mm. Las ecuaciones de equilibrio en la espiral son:
+\begin{ecu}
+\begin{gather}
+\tan\gamma = \frac{C_{D,\mathrm{tot}}}{C_L\cos\phi},\qquad
+V = \sqrt{\frac{2\,W\cos\gamma}{\rho\,S\,C_L\cos\phi}},\qquad V_z = V\sin\gamma,\qquad R = \frac{(V\cos\gamma)^2}{g\tan\phi}\\
+C_L(\alpha) = K_p\sin\alpha\cos^2\alpha + f\,K_v\cos\alpha\sin^2\alpha,\qquad C_{D,i} = C_L\tan\alpha,\qquad
+C_{D,\mathrm{tot}} = C_{D0} + \frac{(C_d A)_\mathrm{cil}}{S} + C_{D,i}
+\end{gather}
+\end{ecu}
+Las cuentas de v2 son correctas: $V = 8{,}71$\,m/s, $V_z = 5{,}03$\,m/s y $R = 11{,}0$\,m. La revisión E agrega la
+\textbf{incertidumbre}. v2 usa toda la sustentación de vórtice de Polhamus ($f = 1$, $K_v = \pi$) con $\alpha = 28^\circ$, en una
+vela flexible de $52^\circ$ de flecha, cerca del ángulo en que el vórtice se rompe. Por eso se repite el cálculo con una fracción
+$f$ de la sustentación de vórtice ($K_p = 2{,}2$, $C_{D0} = 0{,}080$, $\phi = 25^\circ$) y con las dos densidades:
+
+\par{\small\noindent\begin{tabularx}{\linewidth}{LCCCCCC}
+\rowcolor{azul}\color{white}\bfseries Fracción de vórtice $f$ & \color{white}\bfseries $C_L$ & \color{white}\bfseries $C_D$ & \color{white}\bfseries $\gamma$ & \color{white}\bfseries $V_z$, $\rho = 1{,}225$ & \color{white}\bfseries $V_z$, $\rho = 1{,}15$ & \color{white}\bfseries Radio de la espiral \\
+\cellcolor{celeste}\bfseries 1,0 (v2) & 1,42 & 0,91 & 35,5\textdegree & 5,05\,m/s & 5,22\,m/s & 11,0--11,7\,m \\
+\cellcolor{celeste}\bfseries 0,5 (rev.\ D) & 1,11 & 0,75 & 36,8\textdegree & 5,84\,m/s & 6,02\,m/s & 13,3--14,2\,m \\
+\cellcolor{celeste}\bfseries 0,3 (pesimista) & 0,99 & 0,69 & 37,5\textdegree & 6,26\,m/s & 6,46\,m/s & 14,6--15,5\,m \\
+\end{tabularx}}
+\par\medskip
+En todos los casos el descenso queda dentro de $5 \pm 3$\,m/s: \textbf{entre 5,1 y 6,5\,m/s}. El margen hacia el límite de
+8\,m/s es de 1,5\,m/s en el peor caso.
+
+\subsection{Estabilidad en cabeceo (no estaba calculada en v2)}
+v2 afirma una estabilidad pendular pasiva, pero el centro de gravedad queda apenas unos 45\,mm debajo de la quilla: casi no hay
+efecto péndulo, y sin cola la estabilidad depende de dónde quede el centro de gravedad respecto del punto neutro. En un ala delta
+esbelta, el punto neutro está entre el 55\,\% y el 67\,\% de la quilla desde el ápice. Con el ápice en $x = 14$\,mm:
+\begin{ecu}
+\begin{equation}
+x_\mathrm{PN} = 14 + (0{,}55\ldots0{,}67)\cdot 190 = 119\ldots141~\mathrm{mm},\qquad
+\mathrm{ME} = \frac{x_\mathrm{PN} - x_\mathrm{CG}}{c_r} = \frac{(119\ldots141) - 100}{190} = 10\ldots21~\%
+\end{equation}
+\end{ecu}
+Con el centro de gravedad de diseño de v2 (95--105\,mm), el ala es \textbf{estáticamente estable}.
+
+\pend{Pendiente:} sin cola, el ángulo de equilibrio ($\alpha \approx 28^\circ$) depende de la posición del centro de gravedad y de
+la holgura de la tela. Se fija con ensayos de lanzamiento de la vela, moviendo el lastre. Los 51\,g de margen de masa alcanzan
+para correr el centro de gravedad unos 10\,mm.
+
+Guiado: se mantiene el de v2, totalmente pasivo. La espiral de $25^\circ$ se induce con 4\,mm de holgura extra en el lóbulo
+izquierdo o con topes asimétricos de $53^\circ$ y $51^\circ$.
+
+\section{Estructura primaria y verificación}
+\subsection{Estudio de compromiso}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.0cm}P{2.6cm}LL}
+\rowcolor{azul}\color{white}\bfseries Criterio & \color{white}\bfseries A · Monocasco impreso & \color{white}\bfseries B · Esqueleto M3 + carcasa PETG 2\,mm (v2) & \cellcolor{rojo}\color{white}\bfseries C · Esqueleto M3 + carcasa laminada (rev.\ E) \\
+\cellcolor{celeste}\bfseries Modo lateral, CanSat parado & $\approx 120$\,Hz (rev.\ B, impreso) & 161 / 172\,Hz & \cellcolor{rosa}349 / 370\,Hz \\
+\cellcolor{celeste}\bfseries Ensayo de la lijadora (200--233\,Hz) & Falla & \textcolor{rojo}{\bfseries Falla: MS $-0{,}55$} & \cellcolor{rosa}Pasa: MS $+15$ \\
+\cellcolor{celeste}\bfseries Masa de la carcasa & $\approx 160$\,g & 163\,g (v2 decía 139\,g) & \cellcolor{rosa}75\,g \\
+\cellcolor{celeste}\bfseries Masa sin lastre del CanSat & --- & 503,0\,g (no cierra en 500\,g) & \cellcolor{rosa}448,6\,g (51\,g de margen) \\
+\cellcolor{celeste}\bfseries Requisito S6 & Cumple & Cumple & \cellcolor{rosa}No es impresa: la regla de 2\,mm no aplica; la rigidez se verifica por FEM \\
+\cellcolor{celeste}\bfseries Radio y GNSS & Transparente & Transparente & \cellcolor{rosa}Vidrio arriba ($x > 130$\,mm) transparente; el carbono de abajo es conductor \\
+\cellcolor{celeste}\bfseries Fabricación & Una impresión larga & Impresión + ranuras & \cellcolor{rosa}Laminado manual sobre mandril de \diam88 + post-curado $> 60$\,\textdegree C; ranuras cortadas y reforzadas \\
+\end{tabularx}}
+\par\medskip
+\subsection{Zonificación interna (v2, con una regla nueva)}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{2.0cm}P{4.2cm}L}
+\rowcolor{azul}\color{white}\bfseries Estación $x$ & \color{white}\bfseries Bahía / mamparo & \color{white}\bfseries Contenido \\
+\cellcolor{celeste}\bfseries 0--35\,mm & Bahía 1 (nadir) + M1 (fondo) & Cámara de nadir con ventana \diam14 + lente; baliza con batería e interruptor propios \\
+\cellcolor{celeste}\bfseries 35--105\,mm & Bahía 2 + M2 puente ($x = 85$) & Pack 2 $\times$ 18650 con lengüetas soldadas; encastre de los largueros y topes \\
+\cellcolor{celeste}\bfseries 105--175\,mm & Bahía 3 (aviónica) + M3 & PCB principal, GNSS, radio de 915\,MHz, interruptor general \\
+\cellcolor{celeste}\bfseries 175--220\,mm & Bahía 4 (cenit) + M4 & Cámara de cenit inclinada 35\textdegree; cápsula de nicrom; paneles solares en el lomo \\
+\cellcolor{celeste}\bfseries 220--240\,mm & Bahía 5 (copa) + M5 (tapa) & Paracaídas \diam233\,mm; resorte expulsor de la tapa; brida a las varillas \\
+\end{tabularx}}
+\par\medskip
+\pend{Regla nueva:} las antenas de radio y GNSS van por \textbf{encima de $x = 135$\,mm}, bajo el tramo de vidrio. El tramo
+de carbono ($x < 130$\,mm) es conductor y las taparía.
+
+\subsection{Modelo de elementos finitos}
+Se usa el mismo procedimiento que en la revisión D, con CalculiX y tetraedros cuadráticos. El modelo incluye:
+\begin{itemize}
+\item Carcasa \diam90 $\times$ 240\,mm con las dos ranuras pasantes de 6 $\times$ 192\,mm para los largueros.
+\item Mamparos M1--M5 de PETG con 40\,\% de relleno (rigidez y densidad efectivas).
+\item 4 varillas M3 de aluminio 6061 pasantes.
+\item Los equipos como masa repartida en el mamparo o la carcasa que los sostiene. Total: 500\,g.
+\item Laminados ortótropos en ejes cilíndricos: carbono-epoxi $[0/90,\pm45,0/90]$ y vidrio-epoxi 0/90.
+\end{itemize}
+Apoyo: base fija, como en el ensayo de la lijadora, con el CanSat parado y sujeto por la base. Malla gruesa (unos 260\,000 nodos)
+para comparar variantes; antes del CDR se repite con malla fina.
+
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.6cm}CCCC}
+\rowcolor{azul}\color{white}\bfseries Variante & \color{white}\bfseries Modo 1 & \color{white}\bfseries Modo 2 & \color{white}\bfseries Modo 3 & \color{white}\bfseries Primer modo axial \\
+\cellcolor{celeste}\bfseries B · carcasa PETG 2\,mm (v2) & 161\,Hz (lateral $z$, 61\,\%) & 172\,Hz (lateral $y$, 58\,\%) & 400\,Hz (torsión) & $> 550$\,Hz \\
+\cellcolor{celeste}\bfseries C · carcasa laminada (rev.\ E) & 349\,Hz (lateral $z$, 54\,\%) & 370\,Hz (lateral $y$, 52\,\%) & 489\,Hz (axial, 15\,\%) & 489\,Hz \\
+\end{tabularx}}
+\par\medskip
+\subsection{Casos de carga y método}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{2.6cm}LP{3.0cm}}
+\rowcolor{azul}\color{white}\bfseries Caso & \color{white}\bfseries Carga & \color{white}\bfseries Requisito \\
+\cellcolor{celeste}\bfseries CE-15 & 15\,G cuasi-estático en $x$, $y$, $z$ & S4 \\
+\cellcolor{celeste}\bfseries Lijadora (parado) & Plato orbital $a(f) = 29\,\mathrm{G}\,(f/233)^2$. Si el modo lateral queda debajo de 233\,Hz, el arranque y el frenado lo cruzan (respuesta transitoria, $\zeta = 2$\,\%); si queda encima, marcha sostenida a 233\,Hz. Axial: 29\,G & S4 (ensayo de la competencia) \\
+\cellcolor{celeste}\bfseries CH-30 & Semiseno de 30\,G, factor de espectro de choque 1,7 (51\,G) en $x$, $y$, $z$ & S5 \\
+\cellcolor{celeste}\bfseries Caída 61\,cm & 265\,N sobre el anclaje del paracaídas (sección 2.1) & S5 (ensayo de la competencia) \\
+\end{tabularx}}
+\par\medskip
+Método: tensiones de 1\,G del modelo en cada eje $\times$ aceleración equivalente del caso,
+\begin{ecu}
+\begin{equation}
+\mathrm{MS} = \frac{\sigma_\mathrm{adm}}{\mathrm{FS}\cdot\sigma} - 1,\qquad
+\mathrm{FS} = 2{,}0~\text{(impresos, entre capas)},\quad 1{,}5~\text{(laminados)},\quad 1{,}25~\text{(metales)}
+\end{equation}
+\end{ecu}
+Se informa el percentil 99,9 de cada pieza y, entre paréntesis, el pico de un solo elemento. Aceleración equivalente de la lijadora: con PETG, 331\,G (pasa por la resonancia); con el laminado, 48\,G (por encima de la resonancia).
+
+\subsection{Márgenes de seguridad}
+\textbf{C · Revisión E (carcasa laminada):} todos los márgenes son positivos.
+\par{\small\noindent\begin{tabularx}{\linewidth}{LCCC}
+\rowcolor{azul}\color{white}\bfseries Pieza & \color{white}\bfseries CE-15 & \color{white}\bfseries Lijadora (parado) & \color{white}\bfseries CH-30 \\
+\cellcolor{celeste}\bfseries Carcasa & +54,98 (+38,07) & +15,02 (+10,18) & +15,47 (+10,49) \\
+\cellcolor{celeste}\bfseries M1 fondo (ventana nadir) & +122,20 (+107,07) & +34,26 (+29,93) & +35,24 (+30,78) \\
+\cellcolor{celeste}\bfseries M2 mamparo puente & +17,08 (+13,87) & +8,35 (+6,69) & +4,32 (+3,37) \\
+\cellcolor{celeste}\bfseries M3 mamparo de aviónica & +44,75 (+27,83) & +12,10 (+7,25) & +12,46 (+7,48) \\
+\cellcolor{celeste}\bfseries M4 mamparo cenit & +61,77 (+49,81) & +31,47 (+25,28) & +17,46 (+13,94) \\
+\cellcolor{celeste}\bfseries M5 tapa de la copa & +66,86 (+49,70) & +34,10 (+25,22) & +18,96 (+13,91) \\
+\cellcolor{celeste}\bfseries Varillas M3 (Al 6061) & +97,90 (+96,01) & +39,87 (+36,16) & +28,09 (+27,53) \\
+\end{tabularx}}
+\par\medskip
+\textbf{B · v2 (carcasa PETG de 2\,mm):} no pasa el ensayo de la lijadora.
+\par{\small\noindent\begin{tabularx}{\linewidth}{LCCC}
+\rowcolor{azul}\color{white}\bfseries Pieza & \color{white}\bfseries CE-15 & \color{white}\bfseries Lijadora (parado) & \color{white}\bfseries CH-30 \\
+\cellcolor{celeste}\bfseries Carcasa & +8,46 (+4,81) & \textcolor{rojo}{\bfseries $-$0,55} ($-$0,71) & +1,78 (+0,71) \\
+\cellcolor{celeste}\bfseries M1 fondo (ventana nadir) & +39,13 (+34,55) & +0,86 (+0,42) & +10,80 (+9,45) \\
+\cellcolor{celeste}\bfseries M2 mamparo puente & +8,69 (+6,05) & \textcolor{rojo}{\bfseries $-$0,49} ($-$0,63) & +1,85 (+1,07) \\
+\cellcolor{celeste}\bfseries M3 mamparo de aviónica & +13,78 (+10,98) & \textcolor{rojo}{\bfseries $-$0,33} ($-$0,46) & +3,35 (+2,52) \\
+\cellcolor{celeste}\bfseries M4 mamparo cenit & +21,55 (+15,98) & +0,02 ($-$0,28) & +5,63 (+3,99) \\
+\cellcolor{celeste}\bfseries M5 tapa de la copa & +26,21 (+21,24) & +0,34 (+0,00) & +7,00 (+5,54) \\
+\cellcolor{celeste}\bfseries Varillas M3 (Al 6061) & +40,51 (+38,31) & +0,88 (+0,78) & +11,21 (+10,56) \\
+\end{tabularx}}
+\par\medskip
+\subsection{Cálculos manuales de v2, revisados}
+\begin{itemize}
+\item \textbf{Varillas M3 a 30\,G} (v2: 7,3\,MPa, FS 32,8): correcto. El FEM también da márgenes amplios ($+28$ en CH-30).
+\item \textbf{Mamparo M2 a 30\,G} (v2: 17,4\,MPa, FS 2,59): v2 usa 45\,MPa, la resistencia del PETG macizo, pero el mamparo tiene
+40\,\% de relleno (unos 20\,MPa efectivos). Con la viga simplemente apoyada de v2, el FS bajaría a 1,15. El FEM, que lo apoya en las
+varillas y en la carcasa como es en realidad, da MS $= +4{,}3$ en CH-30: la viga de v2 era muy conservadora en el apoyo pero
+optimista en el material.
+\item \textbf{Viga puente y largueros de carbono del ala} (v2: FS 5,8 y 7,1): correctos; no cambian.
+\item \textbf{Carcasa a compresión} (v2: 0,27\,MPa): irrelevante; lo que dimensiona la carcasa es la flexión en la resonancia
+lateral, que v2 no calculaba.
+\end{itemize}
+
+\section{Mecanismos de estiba, retención y despliegue (M1, M2)}
+Se mantiene el diseño de v2 con un solo cambio en el camino de carga del paracaídas:
+\begin{itemize}
+\item \textbf{Estiba:} largueros de carbono plegados en las ranuras laterales, dentro de \diam90\,mm (S7). La vela va plegada en
+acordeón bajo una cubierta dorsal retenida por el mismo lazo.
+\item \textbf{Liberación:} lazo de Dyneema \diam0,40\,mm (180\,N de rotura) que retiene las puntas de los largueros y el pasador de
+liberación del paracaídas. Lo funde un nicrom AWG\,30 de 3 espiras dentro de una cápsula cerrada de PTFE (pulso de 3,7\,V,
+2,2\,A durante 0,7\,s, comandado por MOSFET al detectar el 80\,\% del apogeo).
+\item \textbf{Resortes de torsión:} dos por larguero, AISI\,302 de 1,8\,mm, diámetro medio de 10\,mm, 16,4 espiras.
+\end{itemize}
+\begin{ecu}
+\begin{gather}
+M_\mathrm{abierto} = 1{,}5\cdot 268 = 405~\mathrm{N\,mm},\qquad M_\mathrm{cerrado} = 6{,}75\cdot 112^\circ = 756~\mathrm{N\,mm},\qquad
+T_\mathrm{hilo} = \frac{756}{175} = 4{,}32~\mathrm{N}\\
+\sigma_b = K_b\,\frac{32\,M}{\pi d^3} = 1{,}152\cdot\frac{32\cdot 378}{\pi\cdot 1{,}8^3} = 762~\mathrm{MPa}\ (\mathrm{FS}\ 1{,}44),\qquad
+N_a = \frac{E\,d^4\,\pi}{64\,D_m\,k\cdot 180} = 16{,}4
+\end{gather}
+\end{ecu}
+\begin{itemize}
+\item \textbf{Tope y trinquete:} hombro en M2 a 14\,mm del eje, aplastamiento de 2,0\,MPa; trinquete elástico que impide el cierre (M2).
+\item \textbf{Cambio de la revisión E:} la brida del paracaídas va a los extremos de las varillas, y el lazo de Dyneema solo retiene
+el pasador (sección 2.1).
+\end{itemize}
+
+\section{Presupuesto de masa (S1)}
+\par{\footnotesize\begin{longtable}{>{\raggedright\arraybackslash}p{6.6cm}>{\centering\arraybackslash}p{0.8cm}>{\raggedleft\arraybackslash}p{1.3cm}>{\raggedleft\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{4.1cm}}
+\rowcolor{azul}\color{white}\bfseries Componente & \color{white}\bfseries Cant. & \color{white}\bfseries Masa [g] & \color{white}\bfseries Incert. [g] & \color{white}\bfseries Fuente \\ \endfirsthead
+\rowcolor{azul}\color{white}\bfseries Componente & \color{white}\bfseries Cant. & \color{white}\bfseries Masa [g] & \color{white}\bfseries Incert. [g] & \color{white}\bfseries Fuente \\ \endhead
+Carcasa laminada: carbono-epoxi 0,8 mm (x < 130) + vidrio-epoxi 0,6 mm & 1 & 75,3 & $\pm$11,3 & CAD $\times$ densidad (laminado manual) \\
+Mamparos M1–M5 PETG, 40 \% de relleno (M5 = tapa de la copa) & 5 & 69,8 & $\pm$7,0 & CAD $\times$ densidad efectiva \\
+Varillas roscadas M3 Al 6061 + tuercas nyloc & 4 & 18,0 & $\pm$0,5 & Catálogo (v2) \\
+Refuerzo de bordes de ranuras (cinta de vidrio) & 2 & 3,0 & $\pm$0,9 & Estimado (rev. E) \\
+Resorte expulsor de la tapa de la copa & 1 & 3,0 & $\pm$0,9 & Estimado (faltaba en v2) \\
+Tornillos, insertos y adhesivo & 1 & 8,0 & $\pm$1,6 & Estimado (faltaba en v2) \\
+\cellcolor{celeste}\bfseries 1. Estructura primaria --- subtotal & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 177,1 & \cellcolor{celeste}\bfseries $\pm$13,5 & \cellcolor{celeste}\bfseries  \\
+Paracaídas plano \diam{}233 mm con ventana \diam{}40 + 8 líneas + giratorio & 1 & 8,5 & $\pm$0,5 & Gramaje 35 g/m$^2$ + Kevlar (v2) \\
+Vela Rogallo de nailon ripstop (patrón 58,5\textdegree{}) & 1 & 11,5 & $\pm$0,6 & v2 \\
+Largueros de carbono \diam{}4 $\times$ 225 mm + bisagras & 2 & 11,0 & $\pm$0,4 & v2 \\
+Resortes de torsión AISI 302 + pernos M4 + cápsula de nicrom & 2 & 13,0 & $\pm$0,7 & v2 \\
+Cubierta dorsal de la vela plegada & 1 & 4,0 & $\pm$1,2 & Estimado (faltaba en v2) \\
+Brida de 3 ramales a las varillas + pasador de liberación & 1 & 3,0 & $\pm$0,6 & Estimado (rev. E) \\
+\cellcolor{celeste}\bfseries 2. Descenso y mecanismos --- subtotal & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 51,0 & \cellcolor{celeste}\bfseries $\pm$1,7 & \cellcolor{celeste}\bfseries  \\
+Celdas Li-ion 18650 (2S1P, lengüetas soldadas) & 2 & 92,0 & $\pm$0,9 & Hoja de datos (v2) \\
+Sillas y cincha de las celdas & 1 & 5,0 & $\pm$1,0 & Estimado (faltaba en v2) \\
+Paneles solares 50 $\times$ 30 mm & 2 & 9,0 & $\pm$0,5 & Hoja de datos (v2) \\
+Baliza audible + batería propia + interruptor & 1 & 15,0 & $\pm$0,8 & v2 \\
+\cellcolor{celeste}\bfseries 3. Potencia y baliza --- subtotal & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 121,0 & \cellcolor{celeste}\bfseries $\pm$1,6 & \cellcolor{celeste}\bfseries  \\
+PCB principal (MCU, barómetro, IMU, temperatura, INA219) & 1 & 28,0 & $\pm$2,8 & Estimado (v2) \\
+Módulo GNSS + antena & 1 & 12,0 & $\pm$0,6 & Hoja de datos (v2) \\
+Transceptor 915 MHz + antena & 1 & 14,5 & $\pm$0,7 & Hoja de datos (v2) \\
+Cámaras cenit y nadir + SD & 2 & 23,0 & $\pm$1,2 & v2 \\
+Cableado, conectores, interruptor principal y LED & 1 & 20,0 & $\pm$4,0 & Estimado (v2: $\pm$0,5 g; rev. E: $\pm$20 \%) \\
+Lente de la ventana de nadir (policarbonato) & 1 & 2,0 & $\pm$0,5 & Estimado (faltaba en v2) \\
+\cellcolor{celeste}\bfseries 4. Aviónica, sensores y cámaras --- subtotal & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 99,5 & \cellcolor{celeste}\bfseries $\pm$5,1 & \cellcolor{celeste}\bfseries  \\*
+\cellcolor{celeste}\bfseries Masa seca & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 448,6 & \cellcolor{celeste}\bfseries $\pm$14,6 (RSS) & \cellcolor{celeste}\bfseries  \\*
+Lastre y margen de ajuste (arandelas sobre las varillas en M1/M2) &  & 51,4 &  & Cierre a 500\,g \\*
+\cellcolor{celeste}\bfseries TOTAL (S1: $500 \pm 10$\,g) & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 500,0 & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries Cumple \\
+\end{longtable}}
+\par\medskip
+Correcciones respecto de v2: la carcasa de PETG de 240\,mm pesa 163\,g (v2: 139\,g); faltaban la tapa con su resorte, la
+cubierta de la vela, los tornillos y el adhesivo, las sillas de las celdas y la lente de nadir (unos 29\,g en total); y las
+incertidumbres de $\pm$3\,\% eran optimistas para piezas impresas y laminadas. Con la carcasa laminada, la masa seca es
+448,6\,g $\pm$ 14,6\,g (RSS; $\pm$39,1\,g en el peor caso lineal).
+
+\textbf{Métodos de corrección:}
+\begin{itemize}
+\item Si la masa medida es menor de 495\,g: agregar arandelas de acero sobre las varillas en M1 y M2. Corren el centro de gravedad
+hacia la nariz, lo que también ayuda a la estabilidad (sección 3.1).
+\item Si es mayor de 505\,g: reducir el lastre. Si no alcanza, bajar el relleno de los mamparos del 40\,\% al 25\,\% ($-14$\,g) y
+acortar los arneses ($-5$\,g).
+\item No se toca la carcasa: su espesor sale del ensayo de la lijadora, no de la masa.
+\end{itemize}
+
+\section{Pendientes y ensayos antes del CDR}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.2cm}LL}
+\rowcolor{azul}\color{white}\bfseries Pendiente & \color{white}\bfseries Por qué & \color{white}\bfseries Cómo se cierra \\
+\cellcolor{celeste}\bfseries Propiedades del laminado & El modo de 349\,Hz depende del módulo real de carbono y vidrio con laminado manual & Probetas y un tubo de prueba: medir espesor, módulo y masa; post-curado $> 60$\,\textdegree C (ensayo térmico) \\
+\cellcolor{celeste}\bfseries Bordes de las ranuras & Concentración de tensiones en los extremos de las ranuras de 192\,mm & Cinta de vidrio en los bordes; FEM con malla fina \\
+\cellcolor{celeste}\bfseries Modo y amortiguamiento reales & El ensayo se analizó con $\zeta = 2$\,\% & Ensayo con la lijadora sobre el prototipo con acelerómetro: verificar que no haya resonancia por debajo de 233\,Hz \\
+\cellcolor{celeste}\bfseries Anclaje del paracaídas & 265\,N en el ensayo de caída & Ensayo de caída de 61\,cm; confirmar que el lazo de Dyneema no carga \\
+\cellcolor{celeste}\bfseries Equilibrio y estabilidad de la vela & Sin cola, el ángulo de equilibrio depende del centro de gravedad y de la holgura de la tela & Lanzamientos de la vela con lastre móvil; medir la velocidad de descenso \\
+\cellcolor{celeste}\bfseries Cámaras en las dos fases & En planeo el eje del cuerpo queda casi horizontal & Verificar los campos de visión a cenit y nadir con la actitud de planeo ($\gamma \approx 36^\circ$) \\
+\cellcolor{celeste}\bfseries Masa de la electrónica & Asignaciones de EPS y C\&DH & Pesar las placas reales; actualizar el lastre \\
+\end{tabularx}}
+\par\medskip
+\end{document}
