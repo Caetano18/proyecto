@@ -69,13 +69,16 @@ A(r"""\documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{lmodern}
 \usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
 \usepackage[a4paper,margin=2cm]{geometry}
-\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec}
+\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec,graphicx,float,caption}
 \usepackage[table]{xcolor}
 \usepackage[most]{tcolorbox}
 \usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
 \definecolor{azul}{HTML}{1F4E79}\definecolor{celeste}{HTML}{DCE6F2}\definecolor{rojo}{HTML}{C00000}
 \definecolor{rosa}{HTML}{FBE9E9}\definecolor{gris}{HTML}{595959}\definecolor{fondoec}{HTML}{F3F6FA}
 \newcommand{\diam}{\ensuremath{\varnothing}}
+\graphicspath{{../figs/}}
+\captionsetup{font=small,labelfont={bf,color=azul}}
+\newcommand{\fig}[3]{\begin{figure}[H]\centering\includegraphics[width=#1\linewidth]{#2}\caption{#3}\end{figure}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}X}
@@ -139,6 +142,9 @@ A(tabla(["Tema", "Origen", "Decisión de la revisión E", "Motivo"], [
      "La carcasa estaba subestimada y faltaban unos 29\\,g"],
     ["Energía", "v2 (equipo)", "2 celdas 18650 (2S1P)", "Coincide con el subsistema eléctrico y entra con margen"],
 ], r"P{2.4cm}P{1.4cm}LL", tam=r"\footnotesize"))
+A(r"\fig{0.98}{v3_evolucion.png}{Lo que se hizo: primer modo lateral con el CanSat parado y fijo en la base, en cada "
+  r"iteración verificada con el FEM. La lijadora barre de 0 a 233\,Hz al arrancar y frenar y marcha entre 200 y 233\,Hz: "
+  r"un modo dentro de ese rango entra en resonancia. Detalle de la revisión D en el anexo A.}")
 A(r"\nota{De la revisión D quedan como alternativa ---si los organizadores exigieran que el payload se separe del contenedor--- "
   r"el contenedor separado, el bastidor de carbono y G10, la cola en V con servo y la llave de bayoneta. Toda esa verificación "
   r"está en el repositorio.}")
@@ -189,6 +195,9 @@ A(tabla(["Caso", "$C_{d0}$", "Masa", "Velocidad [m/s]"], [
     ["A nivel del mar ($\\rho = 1{,}225$)", "0,78", "500\\,g", "14,6"],
     ["Paracaídas de v2 (\\diam226) en el sitio", "0,78", "500\\,g", "15,4"],
 ], r"LP{3.2cm}P{2.0cm}P{2.6cm}"))
+A(r"\fig{0.82}{v3_paracaidas.png}{Velocidad de la fase 1 contra el diámetro del paracaídas plano. Con la densidad del "
+  r"sitio, el \diam226 de v2 baja a 15,4\,m/s; el \diam233 de la revisión E queda centrado en 15\,m/s y toda la banda de "
+  r"$C_{d0} \pm 10$\,\% cae dentro de C3.}")
 A(r"""Se mantiene la elección de v2: \textbf{paracaídas plano con ventana central}. La ventana reduce el balanceo a menos de
 $\pm 8^\circ$, y el cruciforme tiene más riesgo de enredo en una eyección rápida. Masa de 8,5\,g (tela de 1,5\,g, líneas y
 giratorio).
@@ -235,6 +244,8 @@ A(tabla(["Fracción de vórtice $f$", "$C_L$", "$C_D$", "$\\gamma$", "$V_z$, $\\
     ["0,5 (rev.\\ D)", "1,11", "0,75", "36,8\\textdegree", "5,84\\,m/s", "6,02\\,m/s", "13,3--14,2\\,m"],
     ["0,3 (pesimista)", "0,99", "0,69", "37,5\\textdegree", "6,26\\,m/s", "6,46\\,m/s", "14,6--15,5\\,m"],
 ], r"LCCCCCC"))
+A(r"\fig{0.82}{v3_planeo.png}{Descenso de la vela Rogallo según la fracción de sustentación de vórtice que genere "
+  r"realmente la tela. Aun con el 20\,\% queda dentro de C4; los lanzamientos de prueba fijan dónde está.}")
 A(r"""En todos los casos el descenso queda dentro de $5 \pm 3$\,m/s: \textbf{entre 5,1 y 6,5\,m/s}. El margen hacia el límite de
 8\,m/s es de 1,5\,m/s en el peor caso.
 
@@ -248,7 +259,8 @@ x_\mathrm{PN} = 14 + (0{,}55\ldots0{,}67)\cdot 190 = 119\ldots141~\mathrm{mm},\q
 \mathrm{ME} = \frac{x_\mathrm{PN} - x_\mathrm{CG}}{c_r} = \frac{(119\ldots141) - 100}{190} = 10\ldots21~\%
 \end{equation}
 \end{ecu}
-Con el centro de gravedad de diseño de v2 (95--105\,mm), el ala es \textbf{estáticamente estable}.
+Con el centro de gravedad de diseño de v2 (95--105\,mm), el ala es \textbf{estáticamente estable} (esquema de la
+sección 4.2).
 
 \pend{Pendiente:} sin cola, el ángulo de equilibrio ($\alpha \approx 28^\circ$) depende de la posición del centro de gravedad y de
 la holgura de la tela. Se fija con ensayos de lanzamiento de la vela, moviendo el lastre. Los 51\,g de margen de masa alcanzan
@@ -283,6 +295,9 @@ A(tabla(["Estación $x$", "Bahía / mamparo", "Contenido"], [
     ["175--220\\,mm", "Bahía 4 (cenit) + M4", "Cámara de cenit inclinada 35\\textdegree; cápsula de nicrom; paneles solares en el lomo"],
     ["220--240\\,mm", "Bahía 5 (copa) + M5 (tapa)", "Paracaídas \\diam233\\,mm; resorte expulsor de la tapa; brida a las varillas"],
 ], r"P{2.0cm}P{4.2cm}L", tam=r"\footnotesize"))
+A(r"\fig{1.0}{v3_esquema.png}{Diseño combinado. Izquierda: corte longitudinal con los tramos de carbono y vidrio, los "
+  r"mamparos M1--M5, las varillas M3 y las bahías. Derecha: vela desplegada, con el rango del punto neutro y del centro "
+  r"de gravedad sobre la quilla.}")
 A(r"""\pend{Regla nueva:} las antenas de radio y GNSS van por \textbf{encima de $x = 135$\,mm}, bajo el tramo de vidrio. El tramo
 de carbono ($x < 130$\,mm) es conductor y las taparía.
 
@@ -298,6 +313,10 @@ Se usa el mismo procedimiento que en la revisión D, con CalculiX y tetraedros c
 Apoyo: base fija, como en el ensayo de la lijadora, con el CanSat parado y sujeto por la base. Malla gruesa (unos 260\,000 nodos)
 para comparar variantes; antes del CDR se repite con malla fina.
 """)
+A(r"\fig{1.0}{v3_malla.png}{Modelos de elementos finitos de las dos variantes (corte por el plano medio). La geometría "
+  r"interna es la misma; cambia solo la carcasa.}")
+A(r"\fig{1.0}{v3_modos.png}{Primeros dos modos con el CanSat parado y fijo en la base. Con PETG el CanSat se balancea a "
+  r"161--172\,Hz, dentro del barrido de la lijadora; con la carcasa laminada el mismo balanceo sube a 349--370\,Hz.}")
 A(tabla(["Variante", "Modo 1", "Modo 2", "Modo 3", "Primer modo axial"], [
     ["B · carcasa PETG 2\\,mm (v2)", "161\\,Hz (lateral $z$, 61\\,\\%)", "172\\,Hz (lateral $y$, 58\\,\\%)", "400\\,Hz (torsión)", "$> 550$\\,Hz"],
     ["C · carcasa laminada (rev.\\ E)", "349\\,Hz (lateral $z$, 54\\,\\%)", "370\\,Hz (lateral $y$, 52\\,\\%)", "489\\,Hz (axial, 15\\,\\%)", "489\\,Hz"],
@@ -321,6 +340,9 @@ A(r"""Método: tensiones de 1\,G del modelo en cada eje $\times$ aceleración eq
 Se informa el percentil 99,9 de cada pieza y, entre paréntesis, el pico de un solo elemento. """
   + f"Aceleración equivalente de la lijadora: con PETG, {D['aeq_petg']['y']:.0f}\\,G (pasa por la resonancia); con el laminado, "
   + f"{D['aeq_lam']['y']:.0f}\\,G (por encima de la resonancia).\n")
+A(r"\fig{0.86}{v3_lijadora.png}{Por qué la carcasa de PETG falla y la laminada pasa. Curvas: respuesta estacionaria a la "
+  r"excitación del plato. Puntos: pico del arranque y frenado reales, simulados con el oscilador del primer modo "
+  r"($\zeta = 2$\,\%): 331\,G al cruzar los 161\,Hz con PETG; 48\,G a 233\,Hz con el laminado, que nunca entra en resonancia.}")
 A(r"\subsection{Márgenes de seguridad}")
 A(r"\textbf{C · Revisión E (carcasa laminada):} todos los márgenes son positivos.")
 A(tabla(["Pieza", "CE-15", "Lijadora (parado)", "CH-30"], [[esc(f[0]), msr(f[1]), msr(f[2]), msr(f[3])] for f in D["lam"]],
@@ -328,6 +350,9 @@ A(tabla(["Pieza", "CE-15", "Lijadora (parado)", "CH-30"], [[esc(f[0]), msr(f[1])
 A(r"\textbf{B · v2 (carcasa PETG de 2\,mm):} no pasa el ensayo de la lijadora.")
 A(tabla(["Pieza", "CE-15", "Lijadora (parado)", "CH-30"], [[esc(f[0]), msr(f[1]), msr(f[2]), msr(f[3])] for f in D["petg"]],
         r"LCCC"))
+A(r"\fig{1.0}{v3_mapas.png}{Utilización $\mathrm{FS}\cdot\sigma/\sigma_\mathrm{adm}$ en la lijadora y en el choque de "
+  r"30\,G, con la misma escala logarítmica para las dos variantes (magenta: sin margen). Los elementos que tocan el apoyo se "
+  r"excluyen (singularidad del empotramiento).}")
 A(r"""\subsection{Cálculos manuales de v2, revisados}
 \begin{itemize}
 \item \textbf{Varillas M3 a 30\,G} (v2: 7,3\,MPa, FS 32,8): correcto. El FEM también da márgenes amplios ($+28$ en CH-30).
@@ -387,6 +412,8 @@ A(tabla(["Componente", "Cant.", "Masa [g]", "Incert. [g]", "Fuente"], filas,
         r">{\raggedright\arraybackslash}p{6.6cm}>{\centering\arraybackslash}p{0.8cm}>{\raggedleft\arraybackslash}p{1.3cm}"
         r">{\raggedleft\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{4.1cm}",
         sub=sub, col0=False, tam=r"\footnotesize", larga=True))
+A(r"\fig{0.96}{v3_masa.png}{Masa por subsistema. El v2 cerraba en 500\,g en su memoria, pero recalculado (carcasa de "
+  r"240\,mm y los ítems que faltaban) llega a 532\,g, 22\,g por encima del límite. La carcasa laminada libera 84\,g.}")
 A(f"""Correcciones respecto de v2: la carcasa de PETG de 240\\,mm pesa 163\\,g (v2: 139\\,g); faltaban la tapa con su resorte, la
 cubierta de la vela, los tornillos y el adhesivo, las sillas de las celdas y la lente de nadir (unos 29\\,g en total); y las
 incertidumbres de $\\pm$3\\,\\% eran optimistas para piezas impresas y laminadas. Con la carcasa laminada, la masa seca es
@@ -418,6 +445,77 @@ A(tabla(["Pendiente", "Por qué", "Cómo se cierra"], [
      "Verificar los campos de visión a cenit y nadir con la actitud de planeo ($\\gamma \\approx 36^\\circ$)"],
     ["Masa de la electrónica", "Asignaciones de EPS y C\\&DH", "Pesar las placas reales; actualizar el lastre"],
 ], r"P{3.2cm}LL", tam=r"\footnotesize"))
+
+# ------------------------------------------------------------------ anexo A: revision D
+RD = json.load(open("../fea/resultados_fea.json", encoding="utf-8"))
+RDV = json.load(open("../fea/resultados_fea_vuelo.json", encoding="utf-8"))
+GD = [("Contenedor: tubo", "Tubo (carbono / vidrio)"), ("Contenedor: tapa", "Tapa nervada (PA12-CF)"),
+      ("Cuadernas", "Cuadernas, cunas y guías (PA12-CF)"), ("Rieles de bandeja", "Rieles de bandeja (PA12-CF)"),
+      ("Paneles y bandeja", "Paneles y bandeja (G10)"), ("Largueros", "Largueros (CFRP)"),
+      ("Arandela de C4", "Arandela de la llave (Al 7075)"), ("Llave de bayoneta", "Llave de bayoneta (A2-70)")]
+
+
+def peor_d(R, caso, g):
+    blk = R[caso]
+    best = None
+    for e in ([None] if "margenes" in blk else "xyz"):
+        d = blk["margenes"] if e is None else blk[e]["margenes"]
+        for k, v in d.items():
+            if k.split("|")[0].strip().startswith(g) and (best is None or v["MS"] < best[0]):
+                best = (v["MS"], v.get("MS_p999", v["MS"]))
+    return best
+
+
+A(r"""\appendix
+\section{Anexo A: verificación de la revisión D (alternativa con contenedor separado)}
+La revisión D es el diseño con contenedor y planeador separados: tubo laminado (carbono 0,8\,mm abajo, vidrio 0,6\,mm
+arriba), bastidor de carbono y G10, ala delta de membrana con cola en V y llave de bayoneta. Se verificó con malla fina
+(unos 320\,000 nodos) y el método completo del anexo B, en dos apoyos: parado y fijo en la base (lijadora) y apoyado en la
+bahía con la pared guiando arriba (vuelo). Queda como alternativa si los organizadores exigieran separar el payload.
+""")
+A(r"\fig{0.62}{lan_corte_anot.png}{Revisión D: el planeador dentro del contenedor, en configuración de lanzamiento.}")
+A(r"\fig{1.0}{fea_modos.png}{Revisión D, parado y fijo en la base: primeros cuatro modos (axial de 168\,Hz con el "
+  r"planeador sobre el aislador de la llave; laterales de 307 y 317\,Hz).}")
+A(r"\fig{1.0}{vuelo/fea_arm_mapas.png}{Revisión D en vuelo (apoyado en la bahía): envolvente de utilización del barrido "
+  r"senoidal de 15\,G entre 5 y 1000\,Hz en cada eje.}")
+A(r"\fig{1.0}{fea_choque_mapas.png}{Revisión D: envolvente de utilización del choque de 30\,G (semiseno con la duración más "
+  r"desfavorable entre 1 y 20\,ms).}")
+filas_d = []
+for g, nom in GD:
+    f_ = [nom]
+    for R_, c in ((RD, "cuasi15"), (RD, "lijadora"), (RDV, "armonico"), (RD, "choque"), (RD, "paracaidas")):
+        p = peor_d(R_, c, g)
+        f_.append(msr([p[0], p[1]]) if p else "---")
+    filas_d.append(f_)
+A(tabla(["Grupo de piezas", "CE-15", "Lijadora", "Vuelo 15\\,G", "CH-30", "PA-30"], filas_d, r"P{4.4cm}CCCCC",
+        tam=r"\footnotesize"))
+A(r"\nota{MS al percentil 99,9 de cada grupo y, entre paréntesis, al pico de un solo elemento. El mínimo, $+0{,}03$ en vuelo, "
+  r"es un elemento de la unión de C4 con los paneles; al percentil 99,9 la misma pieza da $+2{,}88$.}")
+
+# ------------------------------------------------------------------ anexo B: metodo
+A(r"""\section{Anexo B: método del FEM y cómo se verificó}
+\begin{itemize}
+\item \textbf{Modelo:} CAD paramétrico (CadQuery), malla de tetraedros cuadráticos (C3D10) con Gmsh y cálculo con CalculiX.
+Las piezas que se tocan comparten nodos (unión pegada). Los equipos entran como masa repartida en la pieza que los sostiene,
+y la masa total se cierra en 500\,g con el lastre.
+\item \textbf{Materiales:} laminados y largueros ortótropos (ejes cilíndricos en el tubo); piezas impresas isótropas, con la
+resistencia entre capas como criterio cuando la carga cruza las capas; elastómeros con el módulo de compresión aparente
+$E_c = E\,(1 + 2S^2)$ y caras de PTFE que deslizan.
+\item \textbf{Resolución:} modal (30 modos) y estáticos de 1\,G en cada eje. El resolvedor SPOOLES va en un solo hilo: en
+varios hilos dejaba ruido local en los autovectores (picos falsos de tensión).
+\item \textbf{Respuesta dinámica:} superposición modal con corrección estática de los modos no calculados; amortiguamiento
+modal del 2\,\% más el que aportan los elastómeros según su fracción de energía de deformación; respuesta en frecuencia
+(barrido de 15\,G), lijadora ($a(f) = 29\,\mathrm{G}\,(f/233)^2$) y choque (semiseno de 30\,G con barrido de duraciones).
+\item \textbf{Verificaciones:} el campo de tensiones de los modos reproduce el cálculo estático directo con menos del 1\,\%
+de diferencia; la masa del modelo coincide con el presupuesto; las uniones se verificaron además a mano (llave, pasador,
+anclaje, pegados).
+\item \textbf{Criterio:} $\mathrm{MS} = \sigma_\mathrm{adm}/(\mathrm{FS}\cdot\sigma) - 1$ con FS 2,0 en impresos, 1,5 en
+compuestos y 1,25 en metales. Se informa el percentil 99,9 de cada pieza y el pico de un elemento por separado.
+\item \textbf{Diseño combinado (sección 4):} para comparar las dos carcasas se usó una malla más gruesa y la escala de las
+tensiones de 1\,G por la aceleración equivalente de cada caso, que es conservadora porque aplica la aceleración a toda la
+masa. Antes del CDR se repite con malla fina y el método completo de este anexo.
+\end{itemize}
+""")
 
 A(r"\end{document}")
 open(sys.argv[2], "w", encoding="utf-8").write("\n".join(T) + "\n")

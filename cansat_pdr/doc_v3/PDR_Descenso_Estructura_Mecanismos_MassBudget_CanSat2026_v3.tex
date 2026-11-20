@@ -2,13 +2,16 @@
 \usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{lmodern}
 \usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
 \usepackage[a4paper,margin=2cm]{geometry}
-\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec}
+\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec,graphicx,float,caption}
 \usepackage[table]{xcolor}
 \usepackage[most]{tcolorbox}
 \usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
 \definecolor{azul}{HTML}{1F4E79}\definecolor{celeste}{HTML}{DCE6F2}\definecolor{rojo}{HTML}{C00000}
 \definecolor{rosa}{HTML}{FBE9E9}\definecolor{gris}{HTML}{595959}\definecolor{fondoec}{HTML}{F3F6FA}
 \newcommand{\diam}{\ensuremath{\varnothing}}
+\graphicspath{{../figs/}}
+\captionsetup{font=small,labelfont={bf,color=azul}}
+\newcommand{\fig}[3]{\begin{figure}[H]\centering\includegraphics[width=#1\linewidth]{#2}\caption{#3}\end{figure}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}X}
@@ -62,6 +65,7 @@ de masa.
 \cellcolor{celeste}\bfseries Energía & v2 (equipo) & 2 celdas 18650 (2S1P) & Coincide con el subsistema eléctrico y entra con margen \\
 \end{tabularx}}
 \par\medskip
+\fig{0.98}{v3_evolucion.png}{Lo que se hizo: primer modo lateral con el CanSat parado y fijo en la base, en cada iteración verificada con el FEM. La lijadora barre de 0 a 233\,Hz al arrancar y frenar y marcha entre 200 y 233\,Hz: un modo dentro de ese rango entra en resonancia. Detalle de la revisión D en el anexo A.}
 \nota{De la revisión D quedan como alternativa ---si los organizadores exigieran que el payload se separe del contenedor--- el contenedor separado, el bastidor de carbono y G10, la cola en V con servo y la llave de bayoneta. Toda esa verificación está en el repositorio.}
 \section{Marco normativo y condiciones de contorno}
 \par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{1.7cm}P{2.6cm}P{3.6cm}L}
@@ -103,6 +107,7 @@ D_\mathrm{ext} &= \sqrt{\frac{4\,(S_0 + A_\mathrm{ventana})}{\pi}} = 234~\mathrm
 \cellcolor{celeste}\bfseries Paracaídas de v2 (\diam226) en el sitio & 0,78 & 500\,g & 15,4 \\
 \end{tabularx}}
 \par\medskip
+\fig{0.82}{v3_paracaidas.png}{Velocidad de la fase 1 contra el diámetro del paracaídas plano. Con la densidad del sitio, el \diam226 de v2 baja a 15,4\,m/s; el \diam233 de la revisión E queda centrado en 15\,m/s y toda la banda de $C_{d0} \pm 10$\,\% cae dentro de C3.}
 Se mantiene la elección de v2: \textbf{paracaídas plano con ventana central}. La ventana reduce el balanceo a menos de
 $\pm 8^\circ$, y el cruciforme tiene más riesgo de enredo en una eyección rápida. Masa de 8,5\,g (tela de 1,5\,g, líneas y
 giratorio).
@@ -148,6 +153,7 @@ $f$ de la sustentación de vórtice ($K_p = 2{,}2$, $C_{D0} = 0{,}080$, $\phi = 
 \cellcolor{celeste}\bfseries 0,3 (pesimista) & 0,99 & 0,69 & 37,5\textdegree & 6,26\,m/s & 6,46\,m/s & 14,6--15,5\,m \\
 \end{tabularx}}
 \par\medskip
+\fig{0.82}{v3_planeo.png}{Descenso de la vela Rogallo según la fracción de sustentación de vórtice que genere realmente la tela. Aun con el 20\,\% queda dentro de C4; los lanzamientos de prueba fijan dónde está.}
 En todos los casos el descenso queda dentro de $5 \pm 3$\,m/s: \textbf{entre 5,1 y 6,5\,m/s}. El margen hacia el límite de
 8\,m/s es de 1,5\,m/s en el peor caso.
 
@@ -161,7 +167,8 @@ x_\mathrm{PN} = 14 + (0{,}55\ldots0{,}67)\cdot 190 = 119\ldots141~\mathrm{mm},\q
 \mathrm{ME} = \frac{x_\mathrm{PN} - x_\mathrm{CG}}{c_r} = \frac{(119\ldots141) - 100}{190} = 10\ldots21~\%
 \end{equation}
 \end{ecu}
-Con el centro de gravedad de diseño de v2 (95--105\,mm), el ala es \textbf{estáticamente estable}.
+Con el centro de gravedad de diseño de v2 (95--105\,mm), el ala es \textbf{estáticamente estable} (esquema de la
+sección 4.2).
 
 \pend{Pendiente:} sin cola, el ángulo de equilibrio ($\alpha \approx 28^\circ$) depende de la posición del centro de gravedad y de
 la holgura de la tela. Se fija con ensayos de lanzamiento de la vela, moviendo el lastre. Los 51\,g de margen de masa alcanzan
@@ -193,6 +200,7 @@ izquierdo o con topes asimétricos de $53^\circ$ y $51^\circ$.
 \cellcolor{celeste}\bfseries 220--240\,mm & Bahía 5 (copa) + M5 (tapa) & Paracaídas \diam233\,mm; resorte expulsor de la tapa; brida a las varillas \\
 \end{tabularx}}
 \par\medskip
+\fig{1.0}{v3_esquema.png}{Diseño combinado. Izquierda: corte longitudinal con los tramos de carbono y vidrio, los mamparos M1--M5, las varillas M3 y las bahías. Derecha: vela desplegada, con el rango del punto neutro y del centro de gravedad sobre la quilla.}
 \pend{Regla nueva:} las antenas de radio y GNSS van por \textbf{encima de $x = 135$\,mm}, bajo el tramo de vidrio. El tramo
 de carbono ($x < 130$\,mm) es conductor y las taparía.
 
@@ -208,6 +216,8 @@ Se usa el mismo procedimiento que en la revisión D, con CalculiX y tetraedros c
 Apoyo: base fija, como en el ensayo de la lijadora, con el CanSat parado y sujeto por la base. Malla gruesa (unos 260\,000 nodos)
 para comparar variantes; antes del CDR se repite con malla fina.
 
+\fig{1.0}{v3_malla.png}{Modelos de elementos finitos de las dos variantes (corte por el plano medio). La geometría interna es la misma; cambia solo la carcasa.}
+\fig{1.0}{v3_modos.png}{Primeros dos modos con el CanSat parado y fijo en la base. Con PETG el CanSat se balancea a 161--172\,Hz, dentro del barrido de la lijadora; con la carcasa laminada el mismo balanceo sube a 349--370\,Hz.}
 \par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.6cm}CCCC}
 \rowcolor{azul}\color{white}\bfseries Variante & \color{white}\bfseries Modo 1 & \color{white}\bfseries Modo 2 & \color{white}\bfseries Modo 3 & \color{white}\bfseries Primer modo axial \\
 \cellcolor{celeste}\bfseries B · carcasa PETG 2\,mm (v2) & 161\,Hz (lateral $z$, 61\,\%) & 172\,Hz (lateral $y$, 58\,\%) & 400\,Hz (torsión) & $> 550$\,Hz \\
@@ -232,6 +242,7 @@ Método: tensiones de 1\,G del modelo en cada eje $\times$ aceleración equivale
 \end{ecu}
 Se informa el percentil 99,9 de cada pieza y, entre paréntesis, el pico de un solo elemento. Aceleración equivalente de la lijadora: con PETG, 331\,G (pasa por la resonancia); con el laminado, 48\,G (por encima de la resonancia).
 
+\fig{0.86}{v3_lijadora.png}{Por qué la carcasa de PETG falla y la laminada pasa. Curvas: respuesta estacionaria a la excitación del plato. Puntos: pico del arranque y frenado reales, simulados con el oscilador del primer modo ($\zeta = 2$\,\%): 331\,G al cruzar los 161\,Hz con PETG; 48\,G a 233\,Hz con el laminado, que nunca entra en resonancia.}
 \subsection{Márgenes de seguridad}
 \textbf{C · Revisión E (carcasa laminada):} todos los márgenes son positivos.
 \par{\small\noindent\begin{tabularx}{\linewidth}{LCCC}
@@ -257,6 +268,7 @@ Se informa el percentil 99,9 de cada pieza y, entre paréntesis, el pico de un s
 \cellcolor{celeste}\bfseries Varillas M3 (Al 6061) & +40,51 (+38,31) & +0,88 (+0,78) & +11,21 (+10,56) \\
 \end{tabularx}}
 \par\medskip
+\fig{1.0}{v3_mapas.png}{Utilización $\mathrm{FS}\cdot\sigma/\sigma_\mathrm{adm}$ en la lijadora y en el choque de 30\,G, con la misma escala logarítmica para las dos variantes (magenta: sin margen). Los elementos que tocan el apoyo se excluyen (singularidad del empotramiento).}
 \subsection{Cálculos manuales de v2, revisados}
 \begin{itemize}
 \item \textbf{Varillas M3 a 30\,G} (v2: 7,3\,MPa, FS 32,8): correcto. El FEM también da márgenes amplios ($+28$ en CH-30).
@@ -328,6 +340,7 @@ Lastre y margen de ajuste (arandelas sobre las varillas en M1/M2) &  & 51,4 &  &
 \cellcolor{celeste}\bfseries TOTAL (S1: $500 \pm 10$\,g) & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries 500,0 & \cellcolor{celeste}\bfseries  & \cellcolor{celeste}\bfseries Cumple \\
 \end{longtable}}
 \par\medskip
+\fig{0.96}{v3_masa.png}{Masa por subsistema. El v2 cerraba en 500\,g en su memoria, pero recalculado (carcasa de 240\,mm y los ítems que faltaban) llega a 532\,g, 22\,g por encima del límite. La carcasa laminada libera 84\,g.}
 Correcciones respecto de v2: la carcasa de PETG de 240\,mm pesa 163\,g (v2: 139\,g); faltaban la tapa con su resorte, la
 cubierta de la vela, los tornillos y el adhesivo, las sillas de las celdas y la lente de nadir (unos 29\,g en total); y las
 incertidumbres de $\pm$3\,\% eran optimistas para piezas impresas y laminadas. Con la carcasa laminada, la masa seca es
@@ -354,4 +367,51 @@ acortar los arneses ($-5$\,g).
 \cellcolor{celeste}\bfseries Masa de la electrónica & Asignaciones de EPS y C\&DH & Pesar las placas reales; actualizar el lastre \\
 \end{tabularx}}
 \par\medskip
+\appendix
+\section{Anexo A: verificación de la revisión D (alternativa con contenedor separado)}
+La revisión D es el diseño con contenedor y planeador separados: tubo laminado (carbono 0,8\,mm abajo, vidrio 0,6\,mm
+arriba), bastidor de carbono y G10, ala delta de membrana con cola en V y llave de bayoneta. Se verificó con malla fina
+(unos 320\,000 nodos) y el método completo del anexo B, en dos apoyos: parado y fijo en la base (lijadora) y apoyado en la
+bahía con la pared guiando arriba (vuelo). Queda como alternativa si los organizadores exigieran separar el payload.
+
+\fig{0.62}{lan_corte_anot.png}{Revisión D: el planeador dentro del contenedor, en configuración de lanzamiento.}
+\fig{1.0}{fea_modos.png}{Revisión D, parado y fijo en la base: primeros cuatro modos (axial de 168\,Hz con el planeador sobre el aislador de la llave; laterales de 307 y 317\,Hz).}
+\fig{1.0}{vuelo/fea_arm_mapas.png}{Revisión D en vuelo (apoyado en la bahía): envolvente de utilización del barrido senoidal de 15\,G entre 5 y 1000\,Hz en cada eje.}
+\fig{1.0}{fea_choque_mapas.png}{Revisión D: envolvente de utilización del choque de 30\,G (semiseno con la duración más desfavorable entre 1 y 20\,ms).}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{4.4cm}CCCCC}
+\rowcolor{azul}\color{white}\bfseries Grupo de piezas & \color{white}\bfseries CE-15 & \color{white}\bfseries Lijadora & \color{white}\bfseries Vuelo 15\,G & \color{white}\bfseries CH-30 & \color{white}\bfseries PA-30 \\
+\cellcolor{celeste}\bfseries Tubo (carbono / vidrio) & +31,67 (+40,17) & +5,03 (+6,57) & +4,90 (+6,46) & +10,23 (+13,07) & +26,79 (+35,45) \\
+\cellcolor{celeste}\bfseries Tapa nervada (PA12-CF) & +10,75 (+11,25) & +1,12 (+1,21) & +1,16 (+1,25) & +2,89 (+3,06) & +2,66 (+3,13) \\
+\cellcolor{celeste}\bfseries Cuadernas, cunas y guías (PA12-CF) & +7,28 (+21,00) & +0,43 (+2,80) & +0,03 (+2,88) & +1,58 (+5,81) & +1,28 (+4,56) \\
+\cellcolor{celeste}\bfseries Rieles de bandeja (PA12-CF) & +33,85 (+35,76) & +4,52 (+4,89) & +0,09 (+0,17) & +3,98 (+4,38) & +51,19 (+54,10) \\
+\cellcolor{celeste}\bfseries Paneles y bandeja (G10) & +12,59 (+38,46) & +2,26 (+8,42) & +0,25 (+1,58) & +3,08 (+10,67) & +4,29 (+11,51) \\
+\cellcolor{celeste}\bfseries Largueros (CFRP) & +81,35 (+88,38) & +13,17 (+14,38) & +7,19 (+12,06) & +24,45 (+26,62) & +20,19 (+22,01) \\
+\cellcolor{celeste}\bfseries Arandela de la llave (Al 7075) & +37,55 (+37,67) & +5,71 (+5,73) & +5,69 (+5,82) & +11,10 (+11,14) & +9,34 (+9,37) \\
+\cellcolor{celeste}\bfseries Llave de bayoneta (A2-70) & +26,50 (+26,51) & +3,80 (+3,80) & +3,95 (+4,53) & +7,66 (+7,67) & +6,31 (+6,32) \\
+\end{tabularx}}
+\par\medskip
+\nota{MS al percentil 99,9 de cada grupo y, entre paréntesis, al pico de un solo elemento. El mínimo, $+0{,}03$ en vuelo, es un elemento de la unión de C4 con los paneles; al percentil 99,9 la misma pieza da $+2{,}88$.}
+\section{Anexo B: método del FEM y cómo se verificó}
+\begin{itemize}
+\item \textbf{Modelo:} CAD paramétrico (CadQuery), malla de tetraedros cuadráticos (C3D10) con Gmsh y cálculo con CalculiX.
+Las piezas que se tocan comparten nodos (unión pegada). Los equipos entran como masa repartida en la pieza que los sostiene,
+y la masa total se cierra en 500\,g con el lastre.
+\item \textbf{Materiales:} laminados y largueros ortótropos (ejes cilíndricos en el tubo); piezas impresas isótropas, con la
+resistencia entre capas como criterio cuando la carga cruza las capas; elastómeros con el módulo de compresión aparente
+$E_c = E\,(1 + 2S^2)$ y caras de PTFE que deslizan.
+\item \textbf{Resolución:} modal (30 modos) y estáticos de 1\,G en cada eje. El resolvedor SPOOLES va en un solo hilo: en
+varios hilos dejaba ruido local en los autovectores (picos falsos de tensión).
+\item \textbf{Respuesta dinámica:} superposición modal con corrección estática de los modos no calculados; amortiguamiento
+modal del 2\,\% más el que aportan los elastómeros según su fracción de energía de deformación; respuesta en frecuencia
+(barrido de 15\,G), lijadora ($a(f) = 29\,\mathrm{G}\,(f/233)^2$) y choque (semiseno de 30\,G con barrido de duraciones).
+\item \textbf{Verificaciones:} el campo de tensiones de los modos reproduce el cálculo estático directo con menos del 1\,\%
+de diferencia; la masa del modelo coincide con el presupuesto; las uniones se verificaron además a mano (llave, pasador,
+anclaje, pegados).
+\item \textbf{Criterio:} $\mathrm{MS} = \sigma_\mathrm{adm}/(\mathrm{FS}\cdot\sigma) - 1$ con FS 2,0 en impresos, 1,5 en
+compuestos y 1,25 en metales. Se informa el percentil 99,9 de cada pieza y el pico de un elemento por separado.
+\item \textbf{Diseño combinado (sección 4):} para comparar las dos carcasas se usó una malla más gruesa y la escala de las
+tensiones de 1\,G por la aceleración equivalente de cada caso, que es conservadora porque aplica la aceleración a toda la
+masa. Antes del CDR se repite con malla fina y el método completo de este anexo.
+\end{itemize}
+
 \end{document}
