@@ -381,5 +381,7 @@
  "Pivote: eje M4 y manivela;\nlo mueve el servo del ala": "Pivot: M4 shaft and crank,\ndriven by the wing servo",
  "Servo del ala: abre los\ndos largueros (bielas)": "Wing servo: opens both\nspars (two links)",
  "Pivote: eje M4; la biela del\nservo lo lleva al tope de 52°": "Pivot: M4 shaft; the servo link\ntakes the spar to the 52° stop",
- "Pasador de liberación:\nlo retira un servo": "Release pin:\npulled by a servo"
+ "Pasador de liberación:\nlo retira un servo": "Release pin:\npulled by a servo",
+ "Antena LoRa 920 MHz": "920 MHz LoRa antenna",
+ "Pack 2 × 18650 (89 g):\nla masa que más mueve el CG": "2 × 18650 pack (89 g):\nthe mass that moves the CG most"
 }

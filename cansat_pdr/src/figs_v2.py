@@ -52,7 +52,7 @@ def main(out):
         et = [("paracaidas", f"Paracaídas Ø{E.D_PARA:.0f} plegado\n(copa, bahía 5)"), 
               ("m4", "M4: mamparo de cenit"), ("capsula", "Servos de la tapa y\ndel paracaídas"),
               ("m3", "M3: mamparo de aviónica"), ("gnss", "GNSS"),
-              ("antena", "Antena 915 MHz"), ("pcb", "PCB principal"), ("m2", "M2: mamparo puente"),
+              ("antena", "Antena LoRa 920 MHz"), ("pcb", "PCB principal"), ("m2", "M2: mamparo puente"),
               ("bateria", "Pack 2 × 18650"), ("baliza", "Baliza con batería propia"),
               ("camara_n", "Cámara de nadir\n(ventana Ø14)"), ("m1", "M1: fondo de nadir"),
               ("vela", "Vela Rogallo plegada\nbajo la cubierta"), ("larguero", "Larguero CF Ø4\n(ala estibada)"),

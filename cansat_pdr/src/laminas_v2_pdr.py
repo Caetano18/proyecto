@@ -41,26 +41,27 @@ FUENTE = {
     "Rieles de las placas": ("S", 0.8, "CAD volume", "Board rails (PETG)"),
     "Paracaídas Ø226 ripstop + líneas": ("D", 0.5, "Ripstop nylon 35 g/m² + Kevlar lines", "Parachute Ø226, ripstop nylon + lines"),
     "Horquilla y pasador de liberación": ("D", 0.4, "Estimate", "Parachute release pin and clevis"),
-    "Servo de la tapa + traba (micro servo de 5 g)": ("D", 0.5, "Datasheet", "Lid servo (5 g micro servo) + latch"),
+    "Servo de la tapa SG90 + traba": ("D", 0.5, "Datasheet (SG90, 9 g)", "Lid servo SG90 + latch"),
     "Vela Rogallo plegada": ("D", 0.5, "Cut area + seams", "Rogallo sail, ripstop nylon"),
     "Largueros CF + bisagras": ("D", 0.4, "CF tube + printed hinge", "CF spars + tip hinge"),
     "Pivotes: ejes M4 de Al 7075, manivelas y bloques": ("D", 0.5, "Catalogue + CAD", "Spar pivots: Al 7075 M4 shafts, cranks, blocks"),
-    "Servo de liberación del paracaídas (5 g) + varilla": ("D", 0.5, "Datasheet", "Parachute release servo (5 g) + rod"),
-    "Servo del ala (5 g) + bocina y 2 bielas": ("D", 0.5, "Datasheet + CAD", "Wing servo (5 g) + horn and two links"),
+    "Servo de liberación del paracaídas SG90 + varilla": ("D", 0.5, "Datasheet (SG90, 9 g)", "Parachute release servo SG90 + rod"),
+    "Servo del ala SG90 + bocina y 2 bielas": ("D", 0.5, "Datasheet (SG90, 9 g) + CAD", "Wing servo SG90 + horn and two links"),
     "Panel solar (1)": ("E", 0.4, "Datasheet", "Solar panel (1)"),
-    "Baliza piezo + pila propia": ("E", 1.0, "Estimate", "Beacon: piezo + own cell"),
-    "Cámara de nadir": ("E", 0.5, "Datasheet", "Nadir camera"), "Cámara de cenit": ("E", 0.5, "Datasheet", "Zenith camera"),
+    "Baliza piezo + pila propia": ("E", 1.0, "Estimate", "Beacon: piezo + CR2032 cell"),
+    "Cámara de nadir": ("E", 1.0, "Estimate (module + microSD + mount)", "Nadir camera ESP32-CAM"),
+    "Cámara de cenit": ("E", 1.0, "Estimate (module + microSD + mount)", "Zenith camera ESP32-CAM"),
     "Cableado y conectores (arnés corto)": ("E", 3.0, "Estimate", "Wiring and connectors"),
-    "Pack 2 × 18650": ("E", 1.0, "Datasheet (46 g per cell)", "Battery 2 × 18650"),
-    "PCB principal": ("E", 1.0, "Estimate, populated FR4", "Main PCB"),
-    "Radio 915 MHz + antena": ("E", 0.5, "Datasheet", "Radio 915 MHz + antenna"),
-    "GNSS + antena": ("E", 0.5, "Datasheet", "GNSS + antenna"),
+    "Pack 2 × 18650 (2200 mAh)": ("E", 1.0, "Battery selection (44.5 g max per cell)", "Battery 2 × 18650, 2S1P 2200 mAh"),
+    "PCB principal": ("E", 1.0, "Estimate, populated FR4", "Main PCB (ESP32, sensors, RTC)"),
+    "Radio LoRa RFM95W 920 MHz + antena": ("E", 1.0, "Estimate (breakout + λ/4 wire monopole)", "LoRa radio RFM95W 920 MHz + antenna"),
+    "GNSS u-blox NEO-7M + antena": ("E", 0.5, "Datasheet", "GNSS u-blox NEO-7M + patch antenna"),
 }
 REDUCCION_EN = [  # mismo orden que CG.REDUCCION
     "Bulkheads M1–M4 printed at 25 % infill (instead of 40 %)",
     "Cup lid M5 of 2 mm with ribs (instead of 4 mm solid)",
     "One solar panel (E3 asks for at least one)",
-    "Smaller beacon with its own cell",
+    "Smaller beacon with its own CR2032 cell",
     "Shorter wiring harness",
     "Battery cradle with 2 mm walls",
     "End nuts in Al 7075 (instead of steel)",
@@ -72,7 +73,7 @@ GR_NOM = {"S": "Structure", "D": "Descent and mechanisms", "E": "Electronics and
 GR_FUENTE = {"S": "CAD volume × PETG density, slicer (printed parts); catalogue (rods, nuts)",
              "D": "Fabric area × ripstop density (sail, parachute); catalogue and datasheets (spars, servos); "
                   "estimate (links, pin)",
-             "E": "Datasheets (cells, cameras, radio, GNSS, panel); estimate (main PCB, wiring, beacon)"}
+             "E": "Battery selection; datasheets (GNSS, panel); estimate (cameras, radio, main PCB, wiring, beacon)"}
 
 
 def suma(g=None):
@@ -112,9 +113,9 @@ def L20_configA(sl):
         "out of the rocket bay (S7).",
         "**Structure:** 3D-printed PETG tube with a 2 mm wall (S6); the bulkheads are bonded to the wall and the bridle "
         "is tied to four M3 eyebolts in the top bulkhead.",
-        "**Phase 1 (C3):** after the separation from the rocket a micro servo releases the lid of the top cup; the lid, "
+        "**Phase 1 (C3):** when the breakwire detects the separation (X3), a servo releases the lid of the top cup; the lid, "
         "tied to the flat ripstop-nylon parachute, pulls it out.",
-        "**Phase 2 (C4):** at 80 % of apogee a micro servo releases the parachute and the wing servo opens a "
+        "**Phase 2 (C4):** at 80 % of apogee a servo releases the parachute and the wing servo opens a "
         "Rogallo sail on two carbon spars.",
     ], sz=11, spc=300)
 
@@ -171,14 +172,14 @@ def L24_componentes(sl):
     x = X0 + I(4.6) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 1.0, 2.6], ["Component", "Station x [mm]", "Location and mounting"], [
         ["Battery 2 × 18650", "41–79", "Bay 2, U cradle printed with M2; moves with M2"],
-        ["Main PCB (MCU, IMU, sensors)", "98–166", "Bay 3, rails hanging from M3"],
-        ["GPS module + ceramic antenna", "146–168", "Upper board, antenna facing up"],
-        ["Radio 915 MHz + antenna", "120–146", "Upper board, helical antenna"],
-        ["Nadir camera", "6–14", "Bay 1, Ø14 window in M1"],
-        ["Zenith camera", "192–213", "Bay 4, under M4, window in the flank"],
-        ["Beacon with its own cell", "6–20", "Bay 1, switch through a hole ≤ 10 mm"],
-        ["Lid and parachute servos", "183–207", "Bay 4, on a bracket under M4"],
-        ["Wing servo", "5–17", "Bay 1, between the spar pivots"],
+        ["Main PCB (ESP32, IMU, barometer)", "98–166", "Bay 3, rails hanging from M3"],
+        ["GNSS u-blox NEO-7M", "146–168", "Upper board, patch antenna facing zenith"],
+        ["LoRa radio RFM95W, 920 MHz", "120–146", "Upper board, λ/4 monopole"],
+        ["Nadir camera ESP32-CAM", "6–14", "Bay 1, Ø14 window in M1"],
+        ["Zenith camera ESP32-CAM", "192–213", "Bay 4, under M4, window in the flank"],
+        ["Beacon with its own CR2032 cell", "6–20", "Bay 1, switch through a hole ≤ 10 mm"],
+        ["Lid and parachute servos (SG90)", "183–215", "Bay 4, on a bracket under M4"],
+        ["Wing servo (SG90)", "5–17", "Bay 1, between the spar pivots"],
         ["Solar panel", "136–184", "Recessed in the flank of the fairing"],
     ], sz=10, sz_cab=10.5, alto=I(0.41), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
@@ -223,7 +224,7 @@ def L48_descenso(sl):
     ], sz=10.5, sz_cab=11, alto=I(0.55), alto_cab=I(0.36), alin=["l", "l", "l"], ml=60000)
     y = Y0 + I(0.36) + 2 * I(0.55) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, "How it works", [
-        f"**Separation:** the flight software detects it and the lid servo releases the lid, which pulls the "
+        f"**Separation:** the breakwire detects it (X3) and the lid servo releases the lid, which pulls the "
         f"parachute out; phase 1 lasts about {T1:.0f} s with the "
         f"{APOGEO:.0f} m apogee of the launch vehicle.",
         f"**80 % of apogee ({0.8 * APOGEO:.0f} m):** the barometric altitude triggers the parachute release "
@@ -278,7 +279,7 @@ def L51_estrategias(sl):
          "A servo pulls a line on one spar on command"],
         ["Path", f"Steady left spiral, about {DES['R']:.0f} m radius", "Can be steered toward a point"],
         ["Hardware", "None", "Servo, line and driver"],
-        ["Software", "None after the release", "Guidance with GPS and IMU"],
+        ["Software", "None after the release", "Guidance with GNSS and IMU"],
         ["Main risk", "Spiral radius set by the real sail", "Line and servo must survive 30 G"],
     ], sz=10, sz_cab=10.5, alto=I(0.62), alto_cab=I(0.36), alin=["l", "l", "l"], ml=60000)
 
@@ -308,12 +309,12 @@ def L53_mecanico(sl):
         ["Station nuts", "Nyloc M3, Al 7075", "Clamp the bulkheads; set the CG"],
         ["Wing spars", "Carbon tube Ø4/2", "Leading edges of the sail"],
         ["Sail and parachute", "Ripstop nylon, Kevlar lines", "Phase 2 and phase 1"],
-        ["Servos", "Three micro servos and links", "Lid, parachute release, wing opening"],
+        ["Servos", "Three SG90 servos and links", "Lid, parachute release, wing opening"],
     ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.38), ml=70000)
     x = X0 + w1 + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Mechanical configuration", [
         "**One integral body:** skeleton of four threaded rods and five bulkheads inside a PETG fairing; five bays.",
-        "**Mechanisms:** three micro servos and no springs: the lid servo opens the cup, the parachute servo pulls the "
+        "**Mechanisms:** three SG90 servos and no springs: the lid servo opens the cup, the parachute servo pulls the "
         "release pin and the wing servo opens both spars through two links to a fixed 52° stop.",
         "**Requirements:** 2 mm printed wall (S6); smooth cylinder (S7); everything screwed, clamped or on standoffs "
         "(S8); PETG and nylon (S9); no pyrotechnics or heat (M1, M2); latches and links hold without power (M3); soldered battery "
@@ -341,14 +342,14 @@ def L55_electrica(sl):
     x = X0 + I(4.6) + GAP
     tabla(sl, x, Y0, X1 - x, [1.7, 0.7, 2.6], ["Component", "Bay", "Mounting"], [
         ["Battery 2 × 18650, soldered tabs (E2, M4)", "2", "U cradle printed with M2; walls hold the cells"],
-        ["Main PCB: MCU, IMU, barometer, temperature and humidity, current", "3", "Lower rails hanging from M3"],
-        ["GPS module + ceramic antenna", "3", "Upper board, antenna facing up"],
-        ["Radio 915 MHz + antenna", "3", "Upper board"],
-        ["Nadir and zenith cameras (C6, C7)", "1, 4", "On M1 (Ø14 window) and under M4 (flank window)"],
-        ["Beacon with its own cell and switch (C8, E8, E9)", "1", "Switch through a hole ≤ 10 mm"],
+        ["Main PCB: ESP32, BMI160, BMP390, INA219, RTC", "3", "Lower rails hanging from M3"],
+        ["GNSS u-blox NEO-7M + patch antenna", "3", "Upper board, antenna facing zenith"],
+        ["LoRa radio RFM95W, 920 MHz", "3", "Upper board, λ/4 monopole"],
+        ["2× ESP32-CAM, nadir and zenith (C6, C7)", "1, 4", "On M1 (Ø14 window) and under M4 (flank window)"],
+        ["Beacon with CR2032 cell and switch (C8, E8, E9)", "1", "Switch through a hole ≤ 10 mm"],
         ["Main switch and power LED (E4–E6)", "3", "Through a hole ≤ 10 mm in the fairing"],
-        ["Lid and parachute servos", "4", "On a bracket under M4"],
-        ["Wing servo", "1", "On M1, between the spar pivots"],
+        ["Lid and parachute servos (SG90)", "4", "On a bracket under M4"],
+        ["Wing servo (SG90)", "1", "On M1, between the spar pivots"],
         ["Solar panel (E3)", "Flank", "Recessed in the fairing"],
     ], sz=10, sz_cab=10.5, alto=I(0.41), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
@@ -361,7 +362,7 @@ def L56_mecanismos(sl):
         ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 52°"],
         ["Right spar tip hinge", "199", "The 40 mm tip folds to fit the 192 mm slot; the sail tension opens it"],
         ["Wing servo and links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
-        ["Parachute servo", "183–222", "Pulls the release pin at 80 % of apogee"],
+        ["Parachute servo", "183–223", "Pulls the release pin at 80 % of apogee"],
         ["Lid servo and latch", "188–234", "Releases the lid after the separation; the lid pulls the parachute out"],
         ["Threaded stations", "M2, M3", "Move the battery and avionics modules (0.5 mm per turn)"],
     ], sz=10, sz_cab=10.5, alto=I(0.56), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
@@ -424,9 +425,9 @@ def L60_incertidumbre(sl):
           alto=I(0.62), alto_cab=I(0.36), alin=["l", "r", "r", "l"], sub=(3,), ml=60000)
     x = X0 + w1 + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Uncertainty", [
-        "**Datasheet and catalogue:** ±2–5 % (cells, cameras, servos, rods, nuts).",
+        "**Datasheet and catalogue:** ±2–5 % (cells, servos, GNSS, rods, nuts).",
         "**CAD volume and slicer:** ±5–10 % (printed parts; ±8 g on the fairing).",
-        "**Estimates:** ±10–20 % (wiring, beacon, main PCB).",
+        "**Estimates:** ±10–25 % (wiring, beacon, main PCB, cameras, radio).",
         "The total uses the root sum of squares. Every part is weighed during integration.",
     ], sz=11, spc=320)
 

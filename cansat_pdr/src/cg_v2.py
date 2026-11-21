@@ -27,17 +27,17 @@ FIJOS = [  # (item, masa g, x mm)
     ("Varillas roscadas M3 Al 6061 (4)", 13.6, 113.0), ("Tuercas de los extremos (8, Al 7075)", 1.6, 111.5),
     ("Tuercas de M1 y M4 (8, Al 7075)", 1.6, 110.0),
     ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Horquilla y pasador de liberación", 2.0, 225.0),
-    ("Servo de la tapa + traba (micro servo de 5 g)", 5.5, 200.0),
+    ("Servo de la tapa SG90 + traba", 9.5, 199.0),
     ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF + bisagras", 11.0, 103.0),
     ("Pivotes: ejes M4 de Al 7075, manivelas y bloques", 5.0, 14.0),
-    ("Servo de liberación del paracaídas (5 g) + varilla", 5.5, 196.0),
-    ("Servo del ala (5 g) + bocina y 2 bielas", 6.5, 11.0),
+    ("Servo de liberación del paracaídas SG90 + varilla", 9.5, 200.0),
+    ("Servo del ala SG90 + bocina y 2 bielas", 10.5, 11.0),
     ("Panel solar (1)", 4.5, 160.0), ("Baliza piezo + pila propia", 10.0, 12.0),
     ("Cámara de nadir", 11.5, 10.0), ("Cámara de cenit", 11.5, 203.0), ("Cableado y conectores (arnés corto)", 15.0, 120.0),
 ]
-BATERIA = [("Pack 2 × 18650", 92.0, -23.0), ("Cuna en U (PETG, paredes de 2 mm)", 7.0, -23.0),
+BATERIA = [("Pack 2 × 18650 (2200 mAh)", 89.0, -23.0), ("Cuna en U (PETG, paredes de 2 mm)", 7.0, -23.0),
            ("M2 (25 % de relleno)", 9.7, 2.0), ("Tuercas de M2 (8, Al 7075)", 1.6, 2.0)]
-AVIONICA = [("PCB principal", 28.0, -41.0), ("Radio 915 MHz + antena", 14.5, -45.0), ("GNSS + antena", 12.0, -16.0),
+AVIONICA = [("PCB principal", 28.0, -41.0), ("Radio LoRa RFM95W 920 MHz + antena", 4.0, -45.0), ("GNSS u-blox NEO-7M + antena", 12.0, -16.0),
             ("Rieles de las placas", 8.0, -39.0), ("M3 (25 % de relleno)", 9.7, 2.0), ("Tuercas de M3 (8, Al 7075)", 1.6, 2.0)]
 REDUCCION = [  # (cambio, g antes, g despues)
     ("Mamparos M1–M4 al 25 % de relleno (v2: 40 %)", 4 * 13.2, 4 * 9.7),

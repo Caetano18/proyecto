@@ -42,7 +42,7 @@ def main(out):
           ("tuerca2", "Tuercas nyloc a cada lado\nde M2: se corre la estación"),
           ("m2", f"M2: estación regulable\nx = {CG.RANGO2[0]:.0f}–{CG.RANGO2[1]:.0f} mm"),
           ("cuna", "Cuna en U impresa con M2:\nel pack cuelga de M2"),
-          ("pack", "Pack 2 × 18650 (92 g):\nla masa que más mueve el CG"),
+          ("pack", "Pack 2 × 18650 (89 g):\nla masa que más mueve el CG"),
           ("m3", f"M3: estación regulable\nx = {CG.RANGO3[0]:.0f}–{CG.RANGO3[1]:.0f} mm"),
           ("tuerca3", "Tuercas nyloc de\nla estación M3"), ("pcb", "Módulo de aviónica:\nlos rieles cuelgan de M3"),
           ("m1", "M1: fondo de nadir (fijo)"),

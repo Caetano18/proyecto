@@ -392,16 +392,16 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
             p["shape"] = p["shape"].translate(V(d3, 0, 0))
     # bahia 4: nicrom, camara de cenit
     if VAR in ("A", "B", "BR"):   # sin resortes: servo del paracaidas (retira el pasador) y servo de la tapa
-        y0 = -12.5
+        y0 = -12.5                # SG90: 22.2 x 11.8 x 22.7 mm, orejas de 32.2 mm
         E.append(_pz("Servo de liberacion del paracaidas",
-                     fuse(box(186.0, 202.0, y0, y0 + 11.5, 13.0, 24.5), box(183.0, 205.0, y0, y0 + 11.5, 21.0, 22.5)),
+                     fuse(box(188.0, 210.2, y0, y0 + 11.8, 9.5, 32.2), box(183.0, 215.2, y0, y0 + 11.8, 24.5, 26.0)),
                      (0.10, 0.20, 0.55), "equipo"))
-        E.append(_pz("Brazo de traba", box(190.0, 198.0, y0 + 2.0, y0 + 9.5, 24.5, 26.0), C_BLANCO, "equipo"))
-        E.append(_pz("Varilla del pasador", rod((204.0, -5.0, 18.0), (222.0, -5.0, 2.5), 1.6), C_ACERO, "equipo"))
+        E.append(_pz("Brazo de traba", box(201.0, 209.0, y0 + 2.0, y0 + 9.8, 32.2, 33.5), C_BLANCO, "equipo"))
+        E.append(_pz("Varilla del pasador", rod((208.0, -5.0, 32.8), (223.0, -5.0, 2.5), 1.6), C_ACERO, "equipo"))
         # servo de la tapa: su traba pasa por M4 y retiene la tapa M5 hasta la separacion del cohete
-        E.append(_pz("Servo de la tapa", fuse(box(188.0, 204.0, -12.5, -1.0, -31.0, -19.5),
-                                              box(185.0, 207.0, -12.5, -1.0, -23.0, -21.5)), (0.10, 0.20, 0.55), "equipo"))
-        E.append(_pz("Traba de la tapa", rod((204.0, -7.0, -29.0), (234.0, -7.0, -29.0), 2.0), C_ACERO, "equipo"))
+        E.append(_pz("Servo de la tapa", fuse(box(188.0, 210.2, -12.5, -0.7, -34.7, -12.0),
+                                              box(183.0, 215.2, -12.5, -0.7, -28.5, -27.0)), (0.10, 0.20, 0.55), "equipo"))
+        E.append(_pz("Traba de la tapa", rod((210.2, -7.0, -31.0), (234.0, -7.0, -31.0), 2.0), C_ACERO, "equipo"))
     else:
         E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
     if VAR in ("A", "B", "BR"):   # bahia 1: servo del ala; con dos bielas lleva los dos largueros al tope de 52 grados
