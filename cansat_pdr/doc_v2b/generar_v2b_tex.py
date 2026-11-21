@@ -127,7 +127,7 @@ A(r"""\subsection{Procedimiento de ajuste}
 \item Calcular el corrimiento del módulo:
 \begin{ecu}
 \begin{equation}
-\Delta x_\mathrm{módulo} = \frac{m_\mathrm{total}}{m_\mathrm{módulo}}\,\Delta x_\mathrm{CG}\qquad\Rightarrow\qquad
+\Delta x_\text{módulo} = \frac{m_\text{total}}{m_\text{módulo}}\,\Delta x_\text{CG}\qquad\Rightarrow\qquad
 \text{batería: } \frac{""" + f1(CGR["masa"]) + "}{" + f1(CGR["m_bateria"]) + r"""} = """ + f1(CGR["masa"] / CGR["m_bateria"], 2) +
   r"""\ \text{mm de módulo por mm de CG}
 \end{equation}
@@ -144,7 +144,7 @@ filas = []
 for n, m, x in CG.items():
     filas.append([esc(n), f1(m), f"{x:.0f}", f1(m * x / 1000.0, 2)])
 filas.append([r"\bfseries Total (posición nominal)", r"\bfseries " + f1(CGR["masa"]), r"\bfseries " + f1(nom["x_cg"]), ""])
-A(tabla(["Ítem", "Masa [g]", "$x$ [mm]", "$m\\,x$ [kg\\,mm]"], filas, r"LP{1.4cm}P{1.4cm}P{1.8cm}", sub=(len(filas) - 1,),
+A(tabla(["Ítem", "Masa [g]", "$x$ [mm]", "$m\\,x$ [kg\\,mm]"], filas, r"P{9.6cm}P{1.5cm}P{1.4cm}P{2.0cm}", sub=(len(filas) - 1,),
         tam=r"\footnotesize", larga=True))
 A(r"\nota{Masas del documento v2, con la carena recalculada (163\,g para 240\,mm con el canal y las ranuras) y las tuercas de "
   r"las estaciones. $x$ desde el fondo de nadir. Los módulos de batería y de aviónica están en su posición nominal.}")

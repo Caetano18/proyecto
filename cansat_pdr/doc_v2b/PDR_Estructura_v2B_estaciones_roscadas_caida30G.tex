@@ -1,0 +1,248 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{amsmath,amssymb,textcomp,array,tabularx,longtable,booktabs,enumitem,microtype,fancyhdr,titlesec,graphicx,float,caption}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage[colorlinks=true,linkcolor=azul,urlcolor=azul]{hyperref}
+\definecolor{azul}{HTML}{1F4E79}\definecolor{celeste}{HTML}{DCE6F2}\definecolor{rojo}{HTML}{C00000}
+\definecolor{rosa}{HTML}{FBE9E9}\definecolor{gris}{HTML}{595959}\definecolor{fondoec}{HTML}{F3F6FA}
+\newcommand{\diam}{\ensuremath{\varnothing}}
+\graphicspath{{../figs/}}
+\captionsetup{font=small,labelfont={bf,color=azul}}
+\newcommand{\fig}[3]{\begin{figure}[H]\centering\includegraphics[width=#1\linewidth]{#2}\caption{#3}\end{figure}}
+\newcommand{\figdos}[5]{\begin{figure}[H]\centering\includegraphics[width=#1\linewidth]{#2}\hfill\includegraphics[width=#3\linewidth]{#4}\caption{#5}\end{figure}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.25}\arrayrulecolor{azul!45}
+\titleformat{\section}{\large\bfseries\color{azul}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azul}}{\thesubsection}{0.5em}{}
+\newtcolorbox{ecu}{colback=fondoec,colframe=azul!45,boxrule=0.4pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt}
+\newcommand{\pend}[1]{\textcolor{rojo}{\bfseries #1}}
+\newcommand{\nota}[1]{{\par\small\itshape\color{gris}#1\par}\medskip}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[R]{\small\color{gris}PDR-STR-REC-2026-v2B · Equipo Hermes · página \thepage}
+\renewcommand{\headrulewidth}{0pt}\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}\setlist{nosep,leftmargin=1.4em}
+\begin{document}
+
+\begin{tcolorbox}[colback=celeste,colframe=azul,boxrule=0.6pt,arc=0pt]
+{\large\bfseries\color{azul} Estructura v2, opción B regulable: estaciones roscadas para ajustar el CG\par}\smallskip
+{\bfseries Ajuste del centro de gravedad con la batería y verificación del choque de 30\,G (prueba de caída) ---
+CanSat Argentina Universitario 2026\par}
+\end{tcolorbox}
+\par{\small\noindent\begin{tabularx}{\linewidth}{P{2.8cm}LP{2.8cm}L}
+\rowcolor{azul}\color{white}\bfseries Dato & \color{white}\bfseries Valor & \color{white}\bfseries Dato & \color{white}\bfseries Valor \\
+\bfseries Código & PDR-STR-REC-2026-v2B & \bfseries Base & Documento v2 del equipo, diseño B (esqueleto) \\
+\bfseries Masa & 531,8\,g (recalculada) & \bfseries Envolvente & \diam\,90 $\times$ 240\,mm \\
+\bfseries CG nominal & 110,7\,mm desde nadir & \bfseries Rango del CG & 104,5--112,8\,mm \\
+\bfseries Rotura en la caída & 427\,G (mamparo M2) & \bfseries Fecha & 21/11/2026 \\
+\end{tabularx}}
+\par\medskip
+\section*{Resumen}
+\begin{itemize}
+\item \textbf{Propuesta:} las cuatro varillas M3 son roscadas en toda su longitud y cada mamparo queda apretado entre dos
+tuercas nyloc. Girando las tuercas se corre la estación: \textbf{0,5\,mm por vuelta}. Se hacen regulables las dos estaciones
+que llevan masa: \textbf{M2 con el módulo de batería} (116,8\,g) y \textbf{M3 con el módulo de
+aviónica} (77,3\,g).
+\item \textbf{Centro de gravedad:} nominal en 110,7\,mm desde el fondo de nadir. Corriendo los dos
+módulos se mueve entre 104,5 y 112,8\,mm. El margen estático de la vela
+queda positivo en todo el rango.
+\item \textbf{Choque de 30\,G (prueba de caída):} con el CanSat colgado de la brida, la opción B regulable rompe recién a
+\textbf{427\,G} (mamparo M2). La opción A (monocasco pegado) rompe a
+92\,G en el pegado de M4 a la pared.
+\item \textbf{Pendientes que no resuelve este cambio:} la masa (531,8\,g, sobre el máximo de 510\,g),
+el ensayo de la lijadora con la carena de PETG y el área real de la vela (sección 5).
+\end{itemize}
+
+\section{Las dos opciones de v2 y por qué se sigue con B}
+El documento v2 compara dos arquitecturas: \textbf{A}, un monocasco de PETG impreso con los mamparos pegados a la pared, y
+\textbf{B}, un esqueleto de cuatro varillas M3 con mamparos y una carena de 2\,mm que se desliza por encima. v2 eligió B por
+cualitativo (delaminación, acceso a la electrónica). El FEM de la prueba de caída (sección 4) lo confirma con números.
+
+\figdos{0.49}{v2A_interior_anot.png}{0.49}{v2B_interior_anot.png}{Opciones A (izquierda) y B (derecha) del documento v2, en corte: la pared que mira a la cámara está recortada y el interior queda entero.}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.6cm}LL}
+\rowcolor{azul}\color{white}\bfseries Criterio & \color{white}\bfseries A: monocasco pegado & \cellcolor{rojo}\color{white}\bfseries B: esqueleto de varillas \\
+\cellcolor{celeste}\bfseries Camino de la carga en la caída & Todo cuelga del pegado de M4 a la pared & \cellcolor{rosa}Las varillas llevan la carga a la brida \\
+\cellcolor{celeste}\bfseries Rotura en la caída (FEM) & 92\,G (pegado de M4 a la pared) & \cellcolor{rosa}431\,G (mamparo M4) \\
+\cellcolor{celeste}\bfseries Acceso a la electrónica & Cerrado al pegar & \cellcolor{rosa}El esqueleto sale entero al sacar 6 tornillos \\
+\cellcolor{celeste}\bfseries Ajuste del CG & No (mamparos pegados) & \cellcolor{rosa}Sí, con estaciones roscadas (esta memoria) \\
+\cellcolor{celeste}\bfseries Incertidumbre principal & Adherencia sobre PETG (2--6\,MPa) & \cellcolor{rosa}Aflojamiento de tuercas (nyloc + marca) \\
+\end{tabularx}}
+\par\medskip
+\section{Estaciones roscadas}
+\subsection{Concepto}
+Las varillas M3 de Al 6061 ya eran roscadas en v2; el cambio es usar la rosca en toda la longitud. Cada mamparo queda
+apretado entre dos tuercas nyloc con arandela plana, así que su posición se fija en cualquier punto de la varilla.
+\textbf{Por qué tuercas y no mamparos roscados:} un mamparo con agujeros roscados no puede girar sobre cuatro varillas
+paralelas a la vez (giraría alrededor del eje del CanSat, no de cada varilla). Con tuercas, cada una gira sola sobre su
+varilla y el mamparo baja o sube sin girar.
+\begin{itemize}
+\item \textbf{Módulo de batería:} M2 se imprime con una cuna en U de la que cuelga el pack 2 $\times$ 18650. Se mueve
+entero con M2. Las paredes de la cuna contienen las celdas en los costados (carga lateral de la lijadora).
+\item \textbf{Módulo de aviónica:} los rieles de las placas cuelgan solo de M3 (en v2 iban de M2 a M3), así que el módulo
+se mueve con M3 sin depender de M2.
+\item \textbf{Fijos:} M1 (fondo de nadir, ventana de la cámara y pivotes de los largueros) y M4 (copa del paracaídas y
+anclaje de la brida). La baliza baja a $x$ = 6--20\,mm para dar recorrido al módulo de batería.
+\item \textbf{Herrajes:} ocho tuercas por varilla (32 en total). Las de los extremos son de acero (anclaje de la brida y
+apriete del conjunto); las de las estaciones intermedias, nyloc de Al 7075 (0,2\,g). Agregan unos 5\,g respecto de v2.
+\end{itemize}
+
+\fig{0.74}{v2BR_interior_anot.png}{Opción B regulable en la posición nominal (corte). M2 y M3 son estaciones regulables sobre las varillas roscadas; M1 y M4 quedan fijos.}
+\fig{0.72}{v2BR_detalle_anot.png}{Detalle de la estación de M2: el mamparo queda apretado entre dos tuercas nyloc y la cuna en U, impresa con M2, lleva el pack. Una vuelta de las tuercas corre el módulo 0,5\,mm.}
+\subsection{Recorrido de cada módulo}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{2.0cm}P{1.1cm}P{1.2cm}P{1.6cm}LL}
+\rowcolor{azul}\color{white}\bfseries Módulo & \color{white}\bfseries Masa & \color{white}\bfseries Nominal & \color{white}\bfseries Recorrido & \color{white}\bfseries Límite hacia nadir & \color{white}\bfseries Límite hacia cenit \\
+\cellcolor{celeste}\bfseries Batería (M2) & 116,8\,g & 83\,mm & 66--90\,mm & La cuna llega a la baliza ($x$ = 20) & Las tuercas de M2 llegan a los rieles de la aviónica \\
+\cellcolor{celeste}\bfseries Aviónica (M3) & 77,3\,g & 173\,mm & 156--177\,mm & Los rieles llegan a M2 (hace falta $x_{M3} \geq x_{M2} + 86$) & Las tuercas de M3 llegan a la cápsula de nicrom \\
+\end{tabularx}}
+\par\medskip
+\subsection{Procedimiento de ajuste}
+\begin{enumerate}
+\item Integrar todo con las estaciones nominales y cerrar la carena.
+\item Medir la masa y el CG (sobre un filo o con dos balanzas).
+\item Calcular el corrimiento del módulo:
+\begin{ecu}
+\begin{equation}
+\Delta x_\text{módulo} = \frac{m_\text{total}}{m_\text{módulo}}\,\Delta x_\text{CG}\qquad\Rightarrow\qquad
+\text{batería: } \frac{531,8}{116,8} = 4,55\ \text{mm de módulo por mm de CG}
+\end{equation}
+\end{ecu}
+\item Sacar la carena, aflojar las tuercas del módulo y girarlas: 2 vueltas = 1\,mm. Apretar con torque bajo (arandela plana
+\diam7 para no marcar el PETG) y marcar la posición con pintura.
+\item Volver a medir el CG.
+\end{enumerate}
+
+\section{Centro de gravedad}
+\par{\footnotesize\begin{longtable}{P{9.6cm}P{1.5cm}P{1.4cm}P{2.0cm}}
+\rowcolor{azul}\color{white}\bfseries Ítem & \color{white}\bfseries Masa [g] & \color{white}\bfseries $x$ [mm] & \color{white}\bfseries $m\,x$ [kg\,mm] \\ \endfirsthead
+\rowcolor{azul}\color{white}\bfseries Ítem & \color{white}\bfseries Masa [g] & \color{white}\bfseries $x$ [mm] & \color{white}\bfseries $m\,x$ [kg\,mm] \\ \endhead
+\cellcolor{celeste}\bfseries Carena PETG 2 mm (240 mm, ranuras y canal) & 163,0 & 118 & 19,23 \\
+\cellcolor{celeste}\bfseries M1 fondo de nadir & 13,2 & 2 & 0,03 \\
+\cellcolor{celeste}\bfseries M4 mamparo de cenit & 13,2 & 218 & 2,88 \\
+\cellcolor{celeste}\bfseries M5 tapa de la copa & 13,2 & 238 & 3,14 \\
+\cellcolor{celeste}\bfseries Varillas roscadas M3 Al 6061 (4) & 13,6 & 113 & 1,54 \\
+\cellcolor{celeste}\bfseries Tuercas de los extremos (8, acero) & 4,4 & 112 & 0,49 \\
+\cellcolor{celeste}\bfseries Tuercas de M1 y M4 (8, Al 7075) & 1,6 & 110 & 0,18 \\
+\cellcolor{celeste}\bfseries Paracaídas \diam{}226 + líneas & 8,0 & 229 & 1,83 \\
+\cellcolor{celeste}\bfseries Resorte expulsor + horquilla y pasador & 5,0 & 226 & 1,13 \\
+\cellcolor{celeste}\bfseries Vela Rogallo plegada & 11,5 & 110 & 1,26 \\
+\cellcolor{celeste}\bfseries Largueros CF + bisagras & 11,0 & 103 & 1,13 \\
+\cellcolor{celeste}\bfseries Pivotes: pernos M4, resortes, bloques & 8,0 & 14 & 0,11 \\
+\cellcolor{celeste}\bfseries Cápsula de nicrom (PTFE) & 5,0 & 194 & 0,97 \\
+\cellcolor{celeste}\bfseries Paneles solares (2) & 9,0 & 160 & 1,44 \\
+\cellcolor{celeste}\bfseries Baliza + batería propia & 15,0 & 12 & 0,18 \\
+\cellcolor{celeste}\bfseries Cámara de nadir & 11,5 & 10 & 0,12 \\
+\cellcolor{celeste}\bfseries Cámara de cenit & 11,5 & 203 & 2,33 \\
+\cellcolor{celeste}\bfseries Cableado y conectores & 20,0 & 120 & 2,40 \\
+\cellcolor{celeste}\bfseries Pack 2 $\times$ 18650 & 92,0 & 60 & 5,52 \\
+\cellcolor{celeste}\bfseries Cuna en U (PETG) & 10,0 & 60 & 0,60 \\
+\cellcolor{celeste}\bfseries M2 & 13,2 & 85 & 1,12 \\
+\cellcolor{celeste}\bfseries Tuercas de M2 (8, Al 7075) & 1,6 & 85 & 0,14 \\
+\cellcolor{celeste}\bfseries PCB principal & 28,0 & 132 & 3,70 \\
+\cellcolor{celeste}\bfseries Radio 915 MHz + antena & 14,5 & 128 & 1,86 \\
+\cellcolor{celeste}\bfseries GNSS + antena & 12,0 & 157 & 1,88 \\
+\cellcolor{celeste}\bfseries Rieles de las placas & 8,0 & 134 & 1,07 \\*
+\cellcolor{celeste}\bfseries M3 & 13,2 & 175 & 2,31 \\*
+\cellcolor{celeste}\bfseries Tuercas de M3 (8, Al 7075) & 1,6 & 175 & 0,28 \\*
+\cellcolor{celeste}\bfseries \bfseries Total (posición nominal) & \cellcolor{celeste}\bfseries \bfseries 531,8 & \cellcolor{celeste}\bfseries \bfseries 110,7 & \cellcolor{celeste}\bfseries  \\
+\end{longtable}}
+\par\medskip
+\nota{Masas del documento v2, con la carena recalculada (163\,g para 240\,mm con el canal y las ranuras) y las tuercas de las estaciones. $x$ desde el fondo de nadir. Los módulos de batería y de aviónica están en su posición nominal.}
+\par{\small\noindent\begin{tabularx}{\linewidth}{LCCCC}
+\rowcolor{azul}\color{white}\bfseries Posición & \color{white}\bfseries $x$ de M2 & \color{white}\bfseries $x$ de M3 & \color{white}\bfseries CG [mm] & \color{white}\bfseries Margen estático \\
+\cellcolor{celeste}\bfseries Nominal & 83 & 173 & 110,7 & 4--16\,\% \\
+\cellcolor{celeste}\bfseries Bateria abajo & 66 & 173 & 107,0 & 6--18\,\% \\
+\cellcolor{celeste}\bfseries Bateria arriba & 90 & 173 & 112,2 & 3--15\,\% \\
+\cellcolor{celeste}\bfseries Todo abajo & 66 & 156 & 104,5 & 7--19\,\% \\
+\cellcolor{celeste}\bfseries Todo arriba & 90 & 177 & 112,8 & 3--15\,\% \\
+\end{tabularx}}
+\par\medskip
+\fig{0.84}{v2BR_cg.png}{CG según el corrimiento de los módulos. Correr también la aviónica casi duplica el efecto. La línea roja es la estimación baja del punto neutro de la vela: el CG tiene que quedar debajo.}
+\fig{1.0}{v2BR_posiciones.png}{Las dos posiciones extremas y la nominal, con el CG marcado.}
+El margen estático se calcula con el punto neutro entre el 55 y el 67\,\% de la quilla (190\,mm) desde el ápice en
+$x = 14$\,mm, es decir $x_\mathrm{PN}$ = 119--141\,mm, y
+$\mathrm{ME} = (x_\mathrm{PN} - x_\mathrm{CG})/c_r$.
+
+\pend{Lo que muestra la cuenta:} v2 pide el CG entre 95 y 105\,mm, pero con las masas recalculadas el nominal queda en
+110,7\,mm. Solo con los dos módulos hacia nadir se llega a 104,5\,mm. El
+margen estático es positivo en todo el rango, pero es chico con la estimación baja del punto neutro. Correr los módulos
+hacia nadir siempre lo aumenta. Para ir más abajo hace falta lastre en M1 (10\,g en $x = 2$ bajan el CG unos 2\,mm), pero
+el CanSat ya está pasado de masa.
+
+\section{Impulso de 30\,G: prueba de caída (FEM)}
+\subsection{Ensayo y modelo}
+La prueba de caída de la competencia ata el paracaídas a una cuerda no elástica de 61\,cm y suelta el CanSat desde la altura
+del punto de anclaje. Al tensarse la cuerda, el CanSat recibe unos 30\,G a lo largo del eje. Se verifica el paracaídas, su
+anclaje y los soportes de los equipos y de la batería.
+\begin{itemize}
+\item \textbf{Apoyo:} el CanSat cuelga de la brida. En la opción B los anclajes son los extremos de las cuatro varillas,
+fijos en las tres direcciones; en la A, cuatro cáncamos M3 roscados en M4.
+\item \textbf{Carga:} inercia de 1\,G hacia nadir, escalada al pulso. Masa de 524\,g (el
+CanSat sin el paracaídas).
+\item \textbf{Modelo:} tetraedros cuadráticos (CalculiX). Los equipos son masa repartida en la pieza que los sostiene; en la
+opción regulable el pack de 92\,g va en la cuna de M2 y la aviónica en M3.
+\item \textbf{Mamparos y tuercas:} el mamparo apretado entre dos tuercas se modela pegado a la varilla.
+\end{itemize}
+
+\fig{1.0}{v2BR_fem_modelo.png}{Modelo FEM de la opción B regulable: malla por material, anclajes de la brida y carga. Derecha: el pulso de la cuerda y el factor dinámico según su duración.}
+\subsection{Pulso y factor dinámico}
+\begin{ecu}
+\begin{equation}
+v = \sqrt{2\,g\,h} = \sqrt{2\cdot 9{,}81\cdot 0{,}61} = 3{,}46~\mathrm{m/s},\qquad
+T = \frac{\pi\,v}{a_\mathrm{máx}} = \frac{\pi\cdot 3{,}46}{30\cdot 9{,}81} = 37~\mathrm{ms}
+\end{equation}
+\end{ecu}
+Se supone que la cuerda frena y devuelve al CanSat como un resorte (semiseno con rebote). Con el primer modo axial
+por encima de 492\,Hz (ninguno de los ocho primeros modos es axial), el pulso es mucho más largo que el período propio y el factor dinámico queda en
+1,01: el choque es casi estático. Para un pulso corto, el peor caso de cualquier duración, el factor
+sube a 1,72.
+
+\subsection{Criterio de rotura}
+Sin factor de seguridad. En las piezas impresas manda la menor entre la resistencia en el plano y la tracción entre capas.
+
+\par{\small\noindent\begin{tabularx}{\linewidth}{P{3.4cm}P{3.6cm}L}
+\rowcolor{azul}\color{white}\bfseries Material & \color{white}\bfseries Pieza & \color{white}\bfseries Resistencia usada \\
+\cellcolor{celeste}\bfseries PETG impreso & Carena / monocasco & 45\,MPa (von Mises); 25\,MPa de tracción entre capas \\
+\cellcolor{celeste}\bfseries PETG, 40\,\% de relleno & Mamparos y cuna & 20\,MPa; 11\,MPa entre capas \\
+\cellcolor{celeste}\bfseries Al 6061-T6 & Varillas M3 & 310\,MPa \\
+\cellcolor{celeste}\bfseries Acero A2-70 & Cáncamos (opción A) & 700\,MPa \\
+\cellcolor{celeste}\bfseries Adhesivo sobre PETG & Pegados (opción A) & 4\,MPa de corte (rango 2--6\,MPa) \\
+\end{tabularx}}
+\par\medskip
+\subsection{Resultados}
+\par{\small\noindent\begin{tabularx}{\linewidth}{P{4.0cm}CCC}
+\rowcolor{azul}\color{white}\bfseries Pieza & \color{white}\bfseries A: monocasco & \color{white}\bfseries B: esqueleto & \cellcolor{rojo}\color{white}\bfseries B regulable \\
+\cellcolor{celeste}\bfseries Pared de PETG & 554 (330) & 2.573 (1.512) & \cellcolor{rosa}2.471 (1.451) \\
+\cellcolor{celeste}\bfseries Mamparo M1 & 1.249 (744) & 592 (348) & \cellcolor{rosa}793 (466) \\
+\cellcolor{celeste}\bfseries Mamparo M2 & 1.592 (949) & 524 (308) & \cellcolor{rosa}427 (250) \\
+\cellcolor{celeste}\bfseries Mamparo M3 & 3.373 (2.010) & 606 (356) & \cellcolor{rosa}530 (311) \\
+\cellcolor{celeste}\bfseries Mamparo M4 (brida) & 131 (78) & 431 (253) & \cellcolor{rosa}430 (252) \\
+\cellcolor{celeste}\bfseries Pegado mamparo-pared & 92 (55) & --- & \cellcolor{rosa}--- \\
+\cellcolor{celeste}\bfseries Varillas o cáncamos & 505 (301) & 842 (495) & \cellcolor{rosa}752 (441) \\
+\cellcolor{celeste}\bfseries Cuna de la batería & --- & --- & \cellcolor{rosa}658 (387) \\
+\end{tabularx}}
+\par\medskip
+\nota{Pico del pulso, en G, que lleva la pieza a la rotura (percentil 99,9 de la pieza) con el pulso de la cuerda; entre paréntesis, con el pulso más desfavorable de cualquier duración. Se excluyen los elementos a menos de 4\,mm de los anclajes (introducción de la carga).}
+\fig{0.86}{v2_caida_rotura_3.png}{G de rotura de cada pieza en las tres variantes. La línea punteada es la prueba de caída.}
+\fig{1.0}{v2_caida_mapas_3.png}{Fracción de la rotura con 30\,G en las tres variantes (corte por el plano medio).}
+\pend{Lectura:} las tres variantes pasan los 30\,G. En la opción A todo cuelga del pegado de M4, que rompe a
+92\,G y depende de cuánto agarra el adhesivo sobre PETG. En B la carga va por las varillas
+y el eslabón débil pasa a ser un mamparo, a 431\,G. En la opción regulable el pack cuelga de
+M2: ese mamparo trabaja más, pero el mínimo sigue en 427\,G (mamparo M2),
+más de 14 veces la carga del ensayo.
+
+\section{Pendientes}
+\par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.0cm}LL}
+\rowcolor{azul}\color{white}\bfseries Pendiente & \color{white}\bfseries Por qué & \color{white}\bfseries Cómo se cierra \\
+\cellcolor{celeste}\bfseries Masa (S1) & 531,8\,g recalculados, sobre el máximo de 510\,g & Bajar el relleno de los mamparos, acortar la carena, revisar la electrónica \\
+\cellcolor{celeste}\bfseries Ensayo de la lijadora & Con la carena de PETG de 2\,mm el primer modo lateral queda dentro de 0--233\,Hz (MS $-0{,}55$) & Carena laminada (memoria v3) o rigidizar la carena \\
+\cellcolor{celeste}\bfseries Área de la vela & Con la quilla de 190\,mm y los largueros de 225\,mm a 52\textdegree{} el área es 0,045\,m², no 0,067 & Redimensionar la vela o verificar la definición de área de v2 \\
+\cellcolor{celeste}\bfseries CG en el rango de v2 & Nominal 110,7\,mm; con los módulos hacia nadir, 104,5\,mm & Medir el CG real y ajustar; ensayos de planeo \\
+\cellcolor{celeste}\bfseries Tuercas que se aflojan & Vibración de la lijadora y del vuelo & Nyloc + marca de pintura; inspección después de cada ensayo \\
+\cellcolor{celeste}\bfseries Prueba térmica (60\,\textdegree C) & El PETG pierde rigidez cerca de 60\,\textdegree C & Ensayo de 2\,h con la estructura integrada \\
+\cellcolor{celeste}\bfseries Choque lateral & Solo se verificó la caída axial & Caso de 30\,G lateral (aterrizaje) con el mismo modelo \\
+\end{tabularx}}
+\par\medskip
+\end{document}

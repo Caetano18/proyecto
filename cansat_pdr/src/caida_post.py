@@ -140,7 +140,17 @@ def figuras(res, campos, out, sufijo=""):
     fig.savefig(f"{out}/v2_caida_mapas{sufijo}.png", dpi=200)
     plt.close(fig)
 
-    # G de rotura por pieza (barras horizontales, escala logaritmica)
+    barras(res, out, sufijo)
+
+
+def barras(res, out, sufijo=""):
+    """G de rotura por pieza (barras horizontales, escala logaritmica)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10.5})
+    nv = len(res)
+    nom = NOM
     grupos = [("Pared de PETG", ("CT1",)), ("Mamparo M1", ("M1",)), ("Mamparo M2", ("M2",)), ("Mamparo M3", ("M3",)),
               ("Mamparo M4 (brida)", ("M4",)), ("Pegado mamparo-pared", ("Adhesivo",)),
               ("Varillas M3 / cáncamos", ("Varilla", "Cancamo")), ("Cuna de la batería", ("Cuna",))]
@@ -164,7 +174,10 @@ def figuras(res, campos, out, sufijo=""):
     ax.axvline(30, color="#0b0b0b", lw=1.2, ls="--")
     ax.text(31, -0.62, "prueba de caída: 30 G", fontsize=8.6, color="#52514e", va="bottom")
     ax.set_xscale("log")
-    ax.set_yticks(range(len(grupos)), yl)
+    ax.set_yticks(range(len(grupos)), [""] * len(grupos))
+    ax.tick_params(axis="y", length=0)
+    for gi, t_ in enumerate(yl):         # rotulos como texto (los de los ticks no pasan por la traduccion)
+        ax.text(-0.015, gi, t_, transform=ax.get_yaxis_transform(), ha="right", va="center", fontsize=10.5)
     ax.invert_yaxis()
     ax.set_xlabel("Pico del pulso que rompe la pieza [G]  (percentil 99,9; pulso de la cuerda, ~37 ms)")
     ax.grid(axis="x", color="#e6e6e6", lw=0.6)
