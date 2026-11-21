@@ -71,6 +71,8 @@ def cd_parasito(V, S):
 # del ala de 5,3 con tubos del 1,5 % de la quilla y de 3,7 con tubos del 7 %; los largueros de O4 sobre la quilla de
 # 190 mm son el 2,1 %.  El CL sale de la fuerza normal de placa plana (Hoerner) entre 20 y 28 grados de incidencia.
 LD_ENSAYO = (3.7, 5.3)
+RE_ENSAYO = 1.5e6          # Reynolds del ensayo (300-MPH 7 x 10 ft, 38.6 mph); el vuelo es de ~1e5
+FLECHA_ENSAYO = (40.0, 75.0)   # flecha del borde de ataque medida desde la envergadura; la nuestra es 90 - 60 = 30
 D_REL = 4.0 / 190.0 * 100.0
 LD_NOM = LD_ENSAYO[1] - (LD_ENSAYO[1] - LD_ENSAYO[0]) * (D_REL - 1.5) / (7.0 - 1.5)
 ALFAS = (20.0, 24.0, 28.0)
@@ -101,7 +103,13 @@ def vz_ala(ld, a_deg, S=None):
     """Descenso con el L/D del ala medido en el tunel (incluye tela, largueros y quilla) mas el arrastre del cuerpo."""
     S = S or area_asim()
     CL, _ = placa(a_deg, S)
-    return espiral(CL, lambda V: CL / ld + CDA_CIL / S, S)
+    return espiral(CL, lambda V: CL / ld + dcd_reynolds(V, S) + CDA_CIL / S, S)
+
+
+def dcd_reynolds(V, S):
+    """Rozamiento extra de la tela a nuestro Reynolds respecto del ensayo (placa plana turbulenta, dos caras)."""
+    re = V * (S / (envergadura() / 1000.0)) / NU
+    return 2 * K_TELA * 0.074 * (re ** -0.2 - RE_ENSAYO ** -0.2)
 
 
 def estilo(ax):
@@ -239,7 +247,7 @@ def planeo(out):
     ax.axhspan(2, 8, color="#e8f1fb", lw=0)
     ax.axvspan(*LD_ENSAYO, color="#fde3d3", alpha=0.55, lw=0)
     ax.text(5.57, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom", ha="right")
-    ax.text(sum(LD_ENSAYO) / 2, 9.55, "measured range, NASA TN D-1957\n(rigid leading edges and keel)", ha="center",
+    ax.text(sum(LD_ENSAYO) / 2, 9.55, "range measured in NASA TN D-1957\n(sweep 40–75°, Re 1.5 × 10⁶)", ha="center",
             va="top", fontsize=8.6, color=TX2)
     for a_, ls_, lw_ in ((ALFAS[0], "--", 1.3), (ALFAS[1], "-", 2.2), (ALFAS[2], "-.", 1.3)):
         CL, _ = placa(a_, S)
@@ -254,7 +262,7 @@ def planeo(out):
     ax.annotate(f"{vp:.1f} m/s", (3.03, vp), xytext=(0, 4), textcoords="offset points", fontsize=8.8, color=TX2)
     ax.set_xlim(3.0, 5.6)
     ax.set_ylim(0, 10)
-    ax.set_xlabel("Lift-drag ratio of the wing alone (wind-tunnel data)")
+    ax.set_xlabel("Lift-drag ratio of the wing alone in the wind tunnel (corrected to flight Re)")
     ax.set_ylabel("Glide descent rate at the site [m/s]")
     ax.legend(loc="lower left", fontsize=8.4, frameon=False)
     estilo(ax)
@@ -267,7 +275,7 @@ def planeo(out):
     return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=nom[1], V=nom[2],
                 vz=dict(min=vmin, nom=nom[0], max=vmax), LD_nom=LD_NOM, LD_ensayo=LD_ENSAYO, d_rel=D_REL,
                 CL=[placa(a_, S)[0] for a_ in ALFAS], alfas=ALFAS,
-                vz_placa=vp, AR=(envergadura() / 1000.0) ** 2 / S, carga_alar=W / 9.80665 / S,
+                vz_placa=vp, re_vuelo=nom[2] * (S / (envergadura() / 1000.0)) / NU, flecha=90.0 - ANG, AR=(envergadura() / 1000.0) ** 2 / S, carga_alar=W / 9.80665 / S,
                 vueltas_s=2 * math.pi * R_ESPIRAL / (nom[2] * math.cos(nom[3])))
 
 

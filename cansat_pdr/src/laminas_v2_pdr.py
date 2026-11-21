@@ -296,12 +296,12 @@ def L52_sel_estrategia(sl):
         f"**How it works:** the left lobe has {100 * (1 - DES['lob_izq'] / DES['lob_der']):.0f} % less area than the "
         f"right one. The lift difference banks the glider about {DES['phi_deg']:.0f}° and it flies a steady left "
         f"spiral of about {DES['R']:.0f} m radius ({DES['vueltas_s']:.0f} s per turn).",
-        f"**Descent rate:** about {VZ['nom']:.1f} m/s ({VZ['min']:.1f}–{VZ['max']:.1f}) with the measured lift-drag ratio "
-        f"of rigid-leading-edge parawings (about {DES['LD_nom']:.1f} for tubes of {DES['d_rel']:.1f} % of the keel); "
-        f"{DES['vz_placa']:.1f} m/s for a flat plate (conservative bound). Inside C4 in both cases.",
-        f"**Wing loading** {DES['carga_alar']:.1f} kg/m², similar to a hang glider; aspect ratio {DES['AR']:.1f}.",
-        "**Verification:** glide drops at flight mass measure rate and radius; the CG station sets the trim and the "
-        "left tip length the radius.",
+        f"**Descent rate:** about {VZ['nom']:.1f} m/s ({VZ['min']:.1f}–{VZ['max']:.1f}) with the lift-drag ratio "
+        f"measured on parawings with rigid leading edges and keel ({DES['LD_nom']:.1f} for tubes of {DES['d_rel']:.1f} % "
+        f"of the keel), corrected to our Reynolds number; {DES['vz_placa']:.1f} m/s for a flat plate. Inside C4 in both cases.",
+        f"**Limits:** our wing is less swept ({DES['flecha']:.0f}° against 40–75° tested) and flies at "
+        f"Re ≈ {DES['re_vuelo'] / 1e5:.0f} × 10⁵ (tests: 1.5 × 10⁶). The trend with sweep is favourable, but it is an "
+        "extrapolation: glide drops at flight mass confirm rate and radius.",
         "**Theory:** NASA wind-tunnel data for parawings with rigid leading edges and keel (TN D-1957); flat-plate "
         "normal force (Hoerner); ripstop skin friction; body Cd (Hoerner); coordinated turn.",
     ], sz=10, spc=220)
@@ -455,10 +455,11 @@ def L61_total(sl):
         f"**Total: {n1(MTOT)} ± {n1(UTOT)} g** (S1: 500 ± 10 g).",
         f"**CG:** {n1(CAS['nominal']['x_cg'])} mm from the nadir end with the nominal stations; moving M2 and M3 "
         f"sets it anywhere between {rango_cg()}.",
-        f"**Neutral point:** x = {CG.XPN[1]:.0f} mm (area centroid of the sail plus the body crossflow); the margin "
-        f"below uses {CG.XPN[1] - CG.XPN[0]:.0f} mm of allowance forward.",
-        f"**Static margin:** {me_rango()} over the CG range, positive in every case; the stations move the CG "
-        "forward if the glide drops ask for more.",
+        "**Pitch stability (open item):** in NASA TN D-1957 the parawing alone was neutral or unstable, and trim "
+        "was shown with the CG 0.75 keel lengths below the keel. Our CG is 0.21 keel lengths below it.",
+        "**Measures:** canopy sewn under the spars and keel (in the same tests this raised stability and gave a "
+        "positive pitching moment at zero lift); CG moved forward with the stations; glide drops before CDR. "
+        "Fallback: hang the body below the wing on short lines.",
     ], sz=11.5, spc=330)
 
 
