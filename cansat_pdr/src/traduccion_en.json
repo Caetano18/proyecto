@@ -369,5 +369,8 @@
  "Larguero izquierdo de 185 mm (sin\npuntera): lóbulo más chico → vira": "Left spar 185 mm (no tip):\nsmaller lobe → the CanSat turns",
  "Servos de liberación (2):\nparacaídas y ala": "Release servos (2):\nparachute and wing",
  "Servos de liberación (2)\ny lazo de Dyneema": "Release servos (2)\nand Dyneema loop",
- "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈7 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, ≈7 m/s"
+ "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈7 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, ≈7 m/s",
+ "Larguero izquierdo de 185 mm\nsin puntera: lóbulo\nmás chico → vira": "Left spar 185 mm,\nno tip: smaller lobe\n→ the CanSat turns",
+ "Varillas roscadas (rosca M3)\nen toda su longitud, paso 0,5 mm": "Threaded rods (M3 thread),\nfull length, 0.5 mm pitch",
+ "Tuercas nyloc de\nla estación M3": "Nyloc nuts of\nthe M3 station"
 }

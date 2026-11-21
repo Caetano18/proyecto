@@ -33,18 +33,18 @@ def main(out):
     YL, ZL = E.YL, E.ZL
     est = E.build("estibado")
     x2, x3 = E.X_M2, E.X_M3
-    mk = {"varilla": (130, -23.3, 23.3), "tuerca2": (x2 - 1.2, -23.3 - 2.6, 23.3), "m2": (x2, -20, 25),
+    mk = {"varilla": (130, -23.3, 23.3), "tuerca2": (x2 - 1.2, -23.3 - 2.6, 23.3), "m2": (x2 + 4, -25, -20),
           "cuna": (x2 - 23, -34.7, -8), "pack": (x2 - 33 - 4.4, -20, 4.2), "m3": (x3, -25, -20),
           "tuerca3": (x3 + 5.2, -23.3 - 2.6, 23.3), "pcb": (x3 - 38, -15, -12),
           "m1": (0, -25, 15), "m4": (216, -25, -20), "capsula": (194, -12.5, 19), "paracaidas": (229, -22.3, 15.2),
           "larguero": (100, -YL, ZL), "carcasa": (120, -15.0, -41.3)}
-    et = [("varilla", "Varillas M3 roscadas en toda\nsu longitud (paso 0,5 mm)"),
+    et = [("varilla", "Varillas roscadas (rosca M3)\nen toda su longitud, paso 0,5 mm"),
           ("tuerca2", "Tuercas nyloc a cada lado\nde M2: se corre la estación"),
           ("m2", f"M2: estación regulable\nx = {CG.RANGO2[0]:.0f}–{CG.RANGO2[1]:.0f} mm"),
           ("cuna", "Cuna en U impresa con M2:\nel pack cuelga de M2"),
           ("pack", "Pack 2 × 18650 (92 g):\nla masa que más mueve el CG"),
           ("m3", f"M3: estación regulable\nx = {CG.RANGO3[0]:.0f}–{CG.RANGO3[1]:.0f} mm"),
-          ("tuerca3", "Tuercas de M3"), ("pcb", "Módulo de aviónica:\nlos rieles cuelgan de M3"),
+          ("tuerca3", "Tuercas nyloc de\nla estación M3"), ("pcb", "Módulo de aviónica:\nlos rieles cuelgan de M3"),
           ("m1", "M1: fondo de nadir (fijo)"),
           ("m4", "M4 (fijo)"), ("capsula", "Servos de liberación (2):\nparacaídas y ala"), ("paracaidas", "Paracaídas Ø226"),
           ("larguero", "Larguero CF (ala estibada)"), ("carcasa", "Carena PETG 2 mm\n(recortada)")]

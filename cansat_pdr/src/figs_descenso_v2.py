@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, Rectangle, Polygon, FancyArrowPatch
+from matplotlib.patches import Circle, Rectangle, Polygon, FancyArrowPatch, Arc
 import cg_v2 as CG
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10})
@@ -71,10 +71,10 @@ def estilo(ax):
         ax.spines[s_].set_visible(False)
 
 
-def cota(ax, p0, p1, txt, off=(0, 0), rot=0, fs=9, col=TX):
-    ax.add_patch(FancyArrowPatch(p0, p1, arrowstyle="<->", mutation_scale=9, color=col, lw=0.9))
+def cota(ax, p0, p1, txt, off=(0, 0), rot=0, fs=9, col=TX, z=2, fondo="white"):
+    ax.add_patch(FancyArrowPatch(p0, p1, arrowstyle="<->", mutation_scale=9, color=col, lw=0.9, zorder=z))
     ax.text((p0[0] + p1[0]) / 2 + off[0], (p0[1] + p1[1]) / 2 + off[1], txt, ha="center", va="center", fontsize=fs,
-            rotation=rot, color=col, bbox=dict(fc="white", ec="none", pad=0.6))
+            rotation=rot, color=col, bbox=dict(fc=fondo, ec="none", pad=0.6), zorder=z + 1)
 
 
 def dimensiones(out):
@@ -90,11 +90,14 @@ def dimensiones(out):
         ax.text(47, (a + b) / 2, f"{n}  x = {a:.0f}", fontsize=8.5, va="center", color=TX)
     for y in (-23.3, 23.3):
         ax.plot([y, y], [0.4, 226], color=AM, lw=1.4)
-    bah = [("Bay 1: nadir camera, beacon,\nspar pivots", 4, CG.NOM2 - 46), ("Bay 2: 2 × 18650 pack\n(hangs from M2)", CG.NOM2 - 46, CG.NOM2),
+    ax.annotate("Threaded M3\nrods (× 4)", xy=(23.3, 152), xytext=(50, 152), fontsize=8.5, va="center", color=TX,
+                arrowprops=dict(arrowstyle="-", color=AM, lw=1.0))
+    bah = [("Bay 1: nadir camera,\nbeacon, spar pivots", 4, CG.NOM2 - 46), ("Bay 2: 2 × 18650 pack\n(hangs from M2)", CG.NOM2 - 46, CG.NOM2),
            ("Bay 3: avionics\n(hangs from M3)", CG.NOM2 + 4, CG.NOM3), ("Bay 4: zenith camera,\nrelease servos", CG.NOM3 + 4, 216),
            ("Bay 5: parachute cup", 220, 236)]
     for t, a, b in bah:
-        ax.text(0, (a + b) / 2, t, ha="center", va="center", fontsize=7.6, color=TX2)
+        ax.text(0, (a + b) / 2, t, ha="center", va="center", fontsize=7.6, color=TX2, zorder=5,
+                bbox=dict(fc="#eef2f8", ec="none", pad=0.8))
     cota(ax, (-55, 0), (-55, 240), "240", off=(-7, 0), rot=90)
     cota(ax, (-45, -9), (45, -9), "Ø90 (wall 2 mm PETG)", off=(0, -6))
     ax.set_xlim(-75, 110)
@@ -119,10 +122,14 @@ def dimensiones(out):
     cota(ax, (-tI[1], 14), (tD[1], 14), f"span {b:.0f} mm", off=(0, 9))
     for xx, tt in ((tD[1], tD), (-tI[1], tI)):
         ax.plot([xx, xx], [-tt[0], 14], color=TX2, lw=0.6, ls=":")
-    cota(ax, (60, -14), (60, -204), "keel 190", off=(14, 0), rot=90)
-    ax.text(tD[1] * 0.62, -60, f"{ang:.0f}° from the keel", fontsize=8.6, color=TX)
-    ax.text(tD[1] - 4, -tD[0] - 14, f"right spar {L_DER:.0f} mm\n(185 + 40 folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
-    ax.text(-tI[1] + 4, -tI[0] - 14, f"left spar {L_IZQ:.0f} mm\n(no tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    cota(ax, (-24, -14), (-24, -204), "keel 190", rot=90, z=5, fondo="#eef2f8")
+    ax.plot([35, 35], [-14, -84], color=TX2, lw=0.7, ls=":", zorder=5)
+    ax.add_patch(Arc((35, -14), 110, 110, theta1=-90, theta2=-90 + ang, color=TX, lw=1.0, zorder=5))
+    am = math.radians(-90 + ang / 2)
+    ax.text(35 + 72 * math.cos(am), -14 + 72 * math.sin(am), f"{ang:.0f}°", fontsize=9, ha="center", va="center",
+            color=TX, zorder=6)
+    ax.text(tD[1] - 20, -tD[0] - 32, f"right spar {L_DER:.0f} mm\n(185 + 40 folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    ax.text(-tI[1], -tI[0] - 30, f"left spar {L_IZQ:.0f} mm\n(no tip)", fontsize=8.4, ha="center", va="top", color=TX)
     aD, aI = lobulo(L_DER), lobulo(L_IZQ)
     ax.text(tD[1] * 0.60, -135, f"{aD * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
     ax.text(-tI[1] * 0.60, -135, f"{aI * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
@@ -145,8 +152,9 @@ def paracaidas(out):
     ax.add_patch(Circle((-150, 0), 113, fc="#fde3d3", ec=NA, lw=1.3))
     ax.add_patch(Circle((-150, 0), 20, fc="white", ec=NA, lw=1.0))
     cota(ax, (-263, -128), (-37, -128), "Ø226", off=(0, -10))
-    ax.text(-150, 0, "vent\nØ40", ha="center", va="center", fontsize=8)
-    ax.text(-150, 132, "1A: flat circular with vent", ha="center", fontsize=9.5, weight="bold")
+    ax.annotate("vent Ø40", xy=(-150 + 14, 14), xytext=(-150 + 40, 62), fontsize=8.5, ha="left", va="center",
+                arrowprops=dict(arrowstyle="-", color=TX, lw=0.8))
+    ax.text(-150, 1.5 * 94.1 + 18, "1A: flat circular with vent", ha="center", fontsize=9.5, weight="bold")
     w = 94.1
     for cx, cy in ((0, 0), (w, 0), (-w, 0), (0, w), (0, -w)):
         ax.add_patch(Rectangle((150 + cx - w / 2, cy - w / 2), w, w, fc="#dbe8f7", ec=AZ, lw=1.1))
@@ -161,11 +169,12 @@ def paracaidas(out):
         v = np.sqrt(2 * W / (RHO_SITIO * (cd * S0 + CDA_CIL)))
         ax.plot(S0 * 1e4, v, color=col, lw=2, label=lab)
     ax.axhspan(12, 18, color="#e8f1fb", lw=0)
-    ax.text(253, 17.6, "C3: 15 ± 3 m/s", fontsize=8.8, color=TX2, va="top")
+    ax.text(253, 12.15, "C3: 15 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom")
     for s0, cd, col in ((0.03862, 0.78, NA), (0.04430, 0.68, AZ)):
         v = math.sqrt(2 * W / (RHO_SITIO * (cd * s0 + CDA_CIL)))
         ax.plot(s0 * 1e4, v, "o", ms=8, color=col, mec="white", mew=1.5, zorder=5)
-        ax.annotate(f"{v:.1f} m/s", (s0 * 1e4, v), xytext=(6, 6), textcoords="offset points", fontsize=8.8)
+        ax.annotate(f"{v:.1f} m/s", (s0 * 1e4, v), xytext=(-10, -16) if col == NA else (8, 8), textcoords="offset points",
+                    fontsize=8.8, ha="right" if col == NA else "left")
     ax.set_xlabel("Canopy area S0 [cm²]")
     ax.set_ylabel("Descent rate at the site [m/s]")
     ax.set_title("Phase 1, 500 g, site density 1.15 kg/m³ (body drag included)", fontsize=10)

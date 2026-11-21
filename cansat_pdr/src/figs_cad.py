@@ -35,8 +35,50 @@ def explotar(parts):
     return out
 
 
+def _cruzan(a, b, c, d):
+    """True si los segmentos ab y cd se cortan (sin contar extremos compartidos)."""
+    def o(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    return (o(a, b, c) * o(a, b, d) < 0) and (o(c, d, a) * o(c, d, b) < 0)
+
+
+def _alturas_y(deseada, alto, H, sep=0.07, margen=0.05):
+    """Ubica las etiquetas (ya ordenadas) lo mas cerca posible de la altura de su marca, sin superponerse:
+    se juntan en grupos que se centran en el promedio de lo deseado, y despues se recortan a la figura."""
+    grupos = [[k] for k in range(len(deseada))]
+
+    def colocar(g):
+        off = [0.0]
+        for a, b in zip(g[:-1], g[1:]):
+            off.append(off[-1] + (alto[a] + alto[b]) / 2 + sep)
+        base = sum(deseada[k] - o for k, o in zip(g, off)) / len(g)
+        return [base + o for o in off]
+
+    while True:
+        Y = [colocar(g) for g in grupos]
+        for k in range(len(grupos) - 1):
+            a, b = grupos[k][-1], grupos[k + 1][0]
+            if Y[k + 1][0] - Y[k][-1] < (alto[a] + alto[b]) / 2 + sep - 1e-9:
+                grupos[k] = grupos[k] + grupos.pop(k + 1)
+                break
+        else:
+            break
+    y = [v for Yg in Y for v in Yg]
+    lo = margen
+    for k in range(len(y)):
+        y[k] = max(y[k], lo + alto[k] / 2)
+        lo = y[k] + alto[k] / 2 + sep
+    hi = H - margen
+    for k in reversed(range(len(y))):
+        y[k] = min(y[k], hi - alto[k] / 2)
+        hi = y[k] - alto[k] / 2 - sep
+    return y
+
+
 def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5, pos=None):
-    """Agrega llamadas (linea roja + recuadro) a un render, usando las marcas proyectadas."""
+    """Agrega llamadas (linea roja + recuadro) a un render, usando las marcas proyectadas.
+    Cada recuadro va a la altura de su marca (sin superponerse) y se corrige el orden si dos lineas se cruzan.
+    Avisa si un recuadro queda cortado por el borde o si dos lineas se siguen cruzando."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -55,17 +97,65 @@ def anotar(out, M, img, key, izq=(), der=(), ancho=7.0, col=0.27, fs=8.5, pos=No
     x0 = W * cl
     ax.imshow(im, extent=(x0, x0 + wi, H, 0), interpolation="lanczos")
     mk = M[key]
+    en = os.environ.get("FIG_LANG") == "en"
+    if en:
+        import idioma
+        dic = idioma._dic()
+    segs, textos = [], []
     for lado, labs in (("i", izq), ("d", der)):
-        labs = sorted(labs, key=lambda t: mk[t[0]][1])
-        for j, (m, txt) in enumerate(labs):
-            yc = H * ((pos or {}).get(m, (j + 0.5) / len(labs)))
-            px, py = x0 + mk[m][0] * wi, mk[m][1] * H
-            xt = W * cl - 0.08 if lado == "i" else x0 + wi + 0.08
+        if not labs:
+            continue
+        xt = W * cl - 0.08 if lado == "i" else x0 + wi + 0.08
+        P = {m: (x0 + mk[m][0] * wi, mk[m][1] * H) for m, _ in labs}
+        orden = sorted(labs, key=lambda t: P[t[0]][1])
+        for _ in range(30):
+            alto = [((t.count("\n") + 1) * 1.22 * fs + 0.6 * fs + 2.0) / 72.0 for _, t in orden]
+            if pos:
+                ys = [H * pos.get(m, (j + 0.5) / len(orden)) for j, (m, _) in enumerate(orden)]
+            else:
+                ys = _alturas_y([P[m][1] for m, _ in orden], alto, H)
+            cruce = None
+            for a in range(len(orden)):
+                for b in range(a + 1, len(orden)):
+                    if _cruzan((xt, ys[a]), P[orden[a][0]], (xt, ys[b]), P[orden[b][0]]):
+                        cruce = (a, b)
+                        break
+                if cruce:
+                    break
+            if cruce is None or pos:
+                break
+            a, b = cruce
+            orden[a], orden[b] = orden[b], orden[a]
+        for (m, txt), yc in zip(orden, ys):
+            px, py = P[m]
+            segs.append(((xt, yc), (px, py), m))
             ax.plot([xt, px], [yc, py], color="#d62020", lw=0.9, zorder=3)
             ax.plot([px], [py], "o", color="#d62020", ms=3, zorder=4)
-            ax.text(xt, yc, txt, ha="right" if lado == "i" else "left", va="center", fontsize=fs, zorder=5,
-                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#2f3192", lw=0.9))
-    fig.savefig(f"{out}/{img}_anot.png", dpi=250)
+            t = ax.text(xt, yc, idioma.traducir(txt, dic)[0] if en else txt, ha="right" if lado == "i" else "left",
+                        va="center", fontsize=fs, zorder=5,
+                        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#2f3192", lw=0.9))
+            textos.append((t, txt))
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    fb = fig.bbox
+    for t, txt in textos:
+        bb = t.get_bbox_patch().get_window_extent(r)
+        if bb.x0 < fb.x0 - 0.5 or bb.x1 > fb.x1 + 0.5 or bb.y0 < fb.y0 - 0.5 or bb.y1 > fb.y1 + 0.5:
+            print(f"AVISO {img}: recuadro cortado por el borde: {txt!r}")
+    for k, (t, txt) in enumerate(textos):
+        for t2, txt2 in textos[k + 1:]:
+            if t.get_bbox_patch().get_window_extent(r).overlaps(t2.get_bbox_patch().get_window_extent(r)):
+                print(f"AVISO {img}: recuadros superpuestos: {txt!r} / {txt2!r}")
+    for k in range(len(segs)):
+        for q in range(k + 1, len(segs)):
+            if _cruzan(segs[k][0], segs[k][1], segs[q][0], segs[q][1]):
+                print(f"AVISO {img}: lineas cruzadas: {segs[k][2]} / {segs[q][2]}")
+    if en:                       # los textos ya estan en ingles: se guarda solo la version _en
+        os.environ["FIG_LANG"] = ""
+        fig.savefig(f"{out}/{img}_anot_en.png", dpi=250)
+        os.environ["FIG_LANG"] = "en"
+    else:
+        fig.savefig(f"{out}/{img}_anot.png", dpi=250)
     plt.close(fig)
 
 

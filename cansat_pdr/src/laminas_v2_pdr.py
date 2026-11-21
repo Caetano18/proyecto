@@ -121,7 +121,7 @@ def L21_configB(sl):
     x = X0 + I(6.0) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Configuration B: rod skeleton and fairing", [
         "**Same envelope and descent sequence** as configuration A.",
-        "**Structure:** four threaded M3 aluminium rods carry the loads from every bulkhead to the bridle; a 2 mm PETG "
+        "**Structure:** four threaded aluminium rods (M3 thread) carry the loads from every bulkhead to the bridle; a 2 mm PETG "
         "fairing closes the body and is held by six screws.",
         "**Threaded stations:** each bulkhead is clamped between two nyloc nuts. The battery module (M2) and the "
         "avionics module (M3) slide along the rods to set the centre of gravity: one turn of the nuts moves them 0.5 mm.",
@@ -166,15 +166,15 @@ def L24_componentes(sl):
     panel(sl, X0, Y0, I(4.6), Y1 - Y0, [("v2BR_interior_anot_en.png", 1)], "Cut-away, nominal stations")
     x = X0 + I(4.6) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 1.0, 2.6], ["Component", "Station x [mm]", "Location and mounting"], [
-        ["Battery 2 × 18650", "37–79", "Bay 2, U cradle printed with M2; moves with M2"],
+        ["Battery 2 × 18650", "41–79", "Bay 2, U cradle printed with M2; moves with M2"],
         ["Main PCB (MCU, IMU, sensors)", "98–166", "Bay 3, rails hanging from M3"],
-        ["GPS module + ceramic antenna", "148–166", "Upper board, antenna facing up"],
-        ["Radio 915 MHz + antenna", "120–143", "Upper board, helical antenna"],
+        ["GPS module + ceramic antenna", "146–168", "Upper board, antenna facing up"],
+        ["Radio 915 MHz + antenna", "120–146", "Upper board, helical antenna"],
         ["Nadir camera", "6–14", "Bay 1, Ø14 window in M1"],
         ["Zenith camera", "192–213", "Bay 4, under M4, window in the flank"],
         ["Beacon with its own cell", "6–20", "Bay 1, switch through a hole ≤ 10 mm"],
         ["Release servos (2)", "183–205", "Bay 4; actuators of the descent system"],
-        ["Solar panel", "135–185", "Recessed in the flank of the fairing"],
+        ["Solar panel", "136–184", "Recessed in the flank of the fairing"],
     ], sz=10, sz_cab=10.5, alto=I(0.44), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
 
@@ -322,7 +322,7 @@ def L54_estructura(sl):
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Two structures", [
         "**A:** the printed tube is the structure; the bulkheads are bonded to the wall and the bridle is tied to "
         "eyebolts in M4.",
-        "**B (selected):** four M3 rods are the structure; the bulkheads are clamped by nuts and the bridle is tied to "
+        "**B (selected):** four threaded rods are the structure; the bulkheads are clamped by nuts and the bridle is tied to "
         "the rod ends. The fairing only closes the body.",
         "Both keep the same bays, stations and envelope, so the electronics layout does not change.",
     ], sz=11.5, spc=330)
@@ -445,7 +445,7 @@ def L62_margen(sl):
     ahorro = sum(b - c for _, b, c in CG.REDUCCION)
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Margin", [
         f"**Margin = 500 − {n1(MTOT)} = +{n1(500 - MTOT)} g** (the measures in the table save {ahorro:.0f} g).",
-        "**If the real mass is lower:** steel washers on the rods at M1 bring it to 500 g and move the CG forward.",
+        "**If the real mass is lower:** steel washers on the rods at M1 bring it to 500 g and move the CG toward the apex.",
         "**If it is higher:** shorter fairing (S3 allows 200–250 mm; about 10 g less per 15 mm) and lighter brackets.",
         "Final trim after weighing all parts, together with the station positions.",
     ], sz=11.5, spc=330)

@@ -29,7 +29,7 @@ def main(out):
     et = [("apice", "Ápice: la quilla va en el\ncanal dorsal (190 mm)"),
           ("pivote", "Pivote: perno M4, 2 resortes,\ntope y trinquete a 52°"),
           ("larguero", "Larguero CF Ø4/2,\n52° de la quilla"),
-          ("bisagra", "Larguero izquierdo de 185 mm (sin\npuntera): lóbulo más chico → vira"),
+          ("bisagra", "Larguero izquierdo de 185 mm\nsin puntera: lóbulo\nmás chico → vira"),
           ("vela", "Vela Rogallo de ripstop\n(espiral pasiva)"), ("fuga", "Borde de fuga libre"),
           ("holgura", "Holgura de la tela:\ninflado de 31 mm"), ("cuerpo", "Cuerpo: carena PETG 2 mm"),
           ("nadir", "Ventana de nadir")]
@@ -49,9 +49,7 @@ def main(out):
           ("cansat", "CanSat: 15 m/s,\nala todavía plegada")]
     i = [x for x in et if x[0] in ("lineas", "pasador", "brida", "cansat")]
     d = [x for x in et if x[0] in ("ventana", "tela", "destorcedor")]
-    anotar(out, M, "v2BR_fase1", "f1", izq=i, der=d, ancho=6.4, col=0.32,
-           pos={"ventana": 0.06, "tela": 0.22, "destorcedor": 0.50, "lineas": 0.30, "pasador": 0.47, "brida": 0.58,
-                "cansat": 0.80})
+    anotar(out, M, "v2BR_fase1", "f1", izq=i, der=d, ancho=6.4, col=0.32)
     est = E.build("estibado")
     viz.render(est, f"{out}/v2BR_exterior.png", V_VERT, (1500, 2000), 1.25)
     import matplotlib
