@@ -451,7 +451,7 @@ def L61_total(sl):
     tabla(sl, X0, Y0, w1, [2.4, 1.0, 0.9], ["Group", "Mass [g]", "± (RSS)"], filas, sz=12, sz_cab=12, alto=I(0.5),
           alto_cab=I(0.4), alin=["l", "r", "r"], sub=(3,), ml=70000)
     x = X0 + w1 + GAP
-    tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Total mass and centre of gravity", [
+    tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Total mass, centre of gravity and stability", [
         f"**Total: {n1(MTOT)} ± {n1(UTOT)} g** (S1: 500 ± 10 g).",
         f"**CG:** {n1(CAS['nominal']['x_cg'])} mm from the nadir end with the nominal stations; moving M2 and M3 "
         f"sets it anywhere between {rango_cg()}.",
@@ -461,7 +461,13 @@ def L61_total(sl):
         "and widens the window to x ≈ 107–111 mm (static margin 3–6 %); the threaded stations put the CG inside it "
         "(M2 at about 79 mm → CG ≈ 109.4 mm) and glide drops fine-tune it (0.5 mm per nut turn).",
         "**Fallback:** if the drops show it too sensitive, the wing is raised 25 mm on folding struts (margin 7 %).",
-    ], sz=11.5, spc=330)
+        "**Lateral (roll) stability:** the parawing already has positive effective dihedral at our incidences "
+        "(TN D-1957 fig. 18: Clβ ≈ −0.0016 to −0.0019 per degree from 20° to 35°). The 5° dihedral, the sail billow "
+        "and the CG hanging 49 mm below the wing add to it.",
+        f"**In the turn:** the smaller left lobe banks the CanSat about {DES['phi_deg']:.0f}°; the roll stability "
+        "holds that bank instead of letting it deepen into a spiral dive. The left tip length sets the radius in the "
+        "glide drops.",
+    ], sz=10.5, spc=240)
 
 
 def L62_margen(sl):
