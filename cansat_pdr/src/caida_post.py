@@ -19,6 +19,7 @@ from scipy.signal import lsim, lti
 import params as P
 import fe_post as FP
 import caida as C
+import idioma  # noqa: F401
 
 G0 = 9.80665
 ZETA = P.ZETA
@@ -87,7 +88,25 @@ def analizar(wd, var, m_real):
     return out, dict(xyz=xyz, els=els, ever=ever, u30=u * 30 * d_est * esc)
 
 
-def figuras(res, campos, out):
+def corto(n):
+    if n.startswith("Adhesivo"):
+        return "pegado de " + n.split()[-1]
+    if n.startswith("CT1"):
+        return "pared"
+    if n.startswith("Cuna"):
+        return "cuna de la batería"
+    if n.startswith("Varilla"):
+        return "varillas"
+    if n.startswith("Cancamo"):
+        return "cáncamos"
+    return "mamparo " + n[:2]
+
+
+NOM = {"A": "A: monocasco pegado", "B": "B: esqueleto de varillas M3", "BR": "B regulable (estaciones roscadas)"}
+COLV = {"A": "#2a78d6", "B": "#eb6834", "BR": "#1baf7a"}
+
+
+def figuras(res, campos, out, sufijo=""):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -95,8 +114,9 @@ def figuras(res, campos, out):
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10.5})
     tmp = os.path.join(out, "_tmp_int")
     os.makedirs(tmp, exist_ok=True)
-    fig = plt.figure(figsize=(11.0, 4.9))
-    nom = {"A": "A: monocasco pegado", "B": "B: esqueleto de varillas M3"}
+    nv = len(res)
+    fig = plt.figure(figsize=(11.0 if nv < 3 else 13.0, 4.9))
+    nom = NOM
     for c, (r, F) in enumerate(zip(res, campos)):
         g = malla_pv(F["xyz"], F["els"], F["ever"])
         ok = np.isfinite(F["u30"])
@@ -107,21 +127,23 @@ def figuras(res, campos, out):
             capas.append(dict(grid=cortar(g.extract_cells(np.where(~ok)[0])), color=(0.80, 0.80, 0.80), lineas=False))
         vtk(f"{tmp}/caida_{c}.png", capas, size=(1800, 1250))
         p = min(r["piezas"].items(), key=lambda kv: kv[1]["G_rot_p999"])
-        panel(fig.add_axes([0.01 + 0.5 * c, 0.24, 0.48, 0.64]), f"{tmp}/caida_{c}.png",
+        panel(fig.add_axes([0.01 + c / nv, 0.24, 1 / nv - 0.02, 0.64]), f"{tmp}/caida_{c}.png",
               f"{nom[r['var']]}\nmáx. a 30 G (p99,9) = {coma(30 / p[1]['G_rot_p999'], 2)} "
-              f"({'pegado de ' + p[0].split()[-1] if p[0].startswith('Adhesivo') else 'mamparo ' + p[0][:2]})")
+              f"({corto(p[0])})")
     cb = barra_util(fig, [0.22, 0.13, 0.56, 0.03])
     cb.set_label("Fracción de la rotura a 30 G:  σ / σ$_{rotura}$  (sin factor de seguridad; escala logarítmica; "
                  "magenta: rompe)", fontsize=10)
-    fig.savefig(f"{out}/v2_caida_mapas.png", dpi=200)
+    fig.savefig(f"{out}/v2_caida_mapas{sufijo}.png", dpi=200)
     plt.close(fig)
 
     # G de rotura por pieza (barras horizontales, escala logaritmica)
     grupos = [("Pared de PETG", ("CT1",)), ("Mamparo M1", ("M1",)), ("Mamparo M2", ("M2",)), ("Mamparo M3", ("M3",)),
               ("Mamparo M4 (brida)", ("M4",)), ("Pegado mamparo-pared", ("Adhesivo",)),
-              ("Varillas M3 / cáncamos", ("Varilla", "Cancamo"))]
-    COL = {"A": "#2a78d6", "B": "#eb6834"}
-    fig, ax = plt.subplots(figsize=(8.6, 4.4))
+              ("Varillas M3 / cáncamos", ("Varilla", "Cancamo")), ("Cuna de la batería", ("Cuna",))]
+    COL = COLV
+    grupos = [g_ for g_ in grupos if any(n.startswith(g_[1]) for r in res for n in r["piezas"])]
+    fig, ax = plt.subplots(figsize=(8.6, 4.4 if nv < 3 else 5.4))
+    hb = 0.72 / nv
     yl, hechos = [], set()
     for gi, (gn, pref) in enumerate(grupos):
         yl.append(gn)
@@ -130,10 +152,10 @@ def figuras(res, campos, out):
             if not vals:
                 continue
             g_ = min(vals)
-            y = gi + (vi - 0.5) * 0.36
+            y = gi + (vi - (nv - 1) / 2) * hb
             lab = nom[r["var"]] if r["var"] not in hechos else None
             hechos.add(r["var"])
-            ax.barh(y, g_, height=0.32, color=COL[r["var"]], label=lab)
+            ax.barh(y, g_, height=hb * 0.9, color=COL[r["var"]], label=lab)
             ax.text(g_ * 1.06, y, f"{g_:,.0f} G".replace(",", "."), va="center", fontsize=8.6, color="#0b0b0b")
     ax.axvline(30, color="#0b0b0b", lw=1.2, ls="--")
     ax.text(31, -0.62, "prueba de caída: 30 G", fontsize=8.6, color="#52514e", va="bottom")
@@ -146,10 +168,10 @@ def figuras(res, campos, out):
     for s_ in ("top", "right"):
         ax.spines[s_].set_visible(False)
     h, l_ = ax.get_legend_handles_labels()
-    ax.legend(h, l_, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, fontsize=9.5, frameon=False)
+    ax.legend(h, l_, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=min(nv, 3), fontsize=9.2, frameon=False)
     ax.set_xlim(20, 6000)
     fig.tight_layout()
-    fig.savefig(f"{out}/v2_caida_rotura.png", dpi=220)
+    fig.savefig(f"{out}/v2_caida_rotura{sufijo}.png", dpi=220)
     plt.close(fig)
 
 
@@ -157,9 +179,10 @@ def coma(x, d=1):
     return f"{x:.{d}f}".replace(".", ",")
 
 
-def main(wa, wb, out, m_real=524.0):
+def main(pares, out, m_real=524.0, sufijo=""):
+    """pares: lista de (carpeta, variante)."""
     res, campos = [], []
-    for wd, v in ((wa, "A"), (wb, "B")):
+    for wd, v in pares:
         r, F_ = analizar(wd, v, m_real)
         res.append(r)
         campos.append(F_)
@@ -169,11 +192,92 @@ def main(wa, wb, out, m_real=524.0):
         for n, p in sorted(r["piezas"].items(), key=lambda kv: kv[1]["G_rot_p999"]):
             print(f"  {n:34s} {p['criterio']:22s} G_rot p99,9 = {p['G_rot_p999']:8.0f}   peor elem. = "
                   f"{p['G_rot_max']:8.0f}   (peor pulso {p['G_rot_p999_peor']:6.0f})   x = {p['x_max']:.0f}")
-    json.dump(res, open(os.path.join(out, "..", "fea", "caida_v2_AB.json"), "w"), indent=1)
-    figuras(res, campos, out)
+    json.dump(res, open(os.path.join(out, "..", "fea", f"caida_v2_{''.join(v for _, v in pares)}.json"), "w"), indent=1)
+    figuras(res, campos, out, sufijo)
     print("figuras de la caida ok")
 
 
 if __name__ == "__main__":
+    # uso: python3 caida_post.py <figs> <masa g> <sufijo|-> VAR:carpeta [VAR:carpeta ...]
     a = sys.argv
-    main(a[1], a[2], a[3], *(float(x) for x in a[4:5]))
+    main([(p.split(":", 1)[1], p.split(":", 1)[0]) for p in a[4:]], a[1], float(a[2]), "" if a[3] == "-" else a[3])
+
+
+def figura_modelo(wd, var, out, f_ax=None):
+    """Modelo FEM de la prueba de caida: malla por material, anclajes de la brida, carga de 30 G y el pulso."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch, FancyArrowPatch
+    import pyvista as pv
+    from figs_fea import malla_pv, cortar, vtk
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10})
+    C.materiales()
+    z = np.load(os.path.join(wd, f"malla_{var}.npz"))
+    xyz, els, ep = z["xyz"], z["els"], z["epart"]
+    partes = json.load(open(os.path.join(wd, f"partes_{var}.json")))
+    COLM = {"PETG": (0.80, 0.84, 0.90), "PETG40": (0.42, 0.47, 0.58), "AL6061": (0.93, 0.62, 0.10),
+            "A2-70": (0.55, 0.57, 0.62), "ADH": (0.86, 0.62, 0.18)}
+    NOMM = {"PETG": "Carena PETG 2 mm", "PETG40": "Mamparos y cuna (PETG 40 %)", "AL6061": "Varillas M3 Al 6061",
+            "A2-70": "Cáncamos M3 (A2-70)", "ADH": "Adhesivo"}
+    mat = np.array([p["mat"] for p in partes])[ep]
+    g = malla_pv(xyz, els)
+    g.cell_data["rgb"] = (np.array([COLM[m] for m in mat]) * 255).astype(np.uint8)
+    anc = xyz[C.nodos_anclaje(xyz)]
+    esf = pv.PolyData(anc).glyph(geom=pv.Sphere(radius=1.6), scale=False, orient=False)
+    tmp = os.path.join(out, "_tmp_int")
+    os.makedirs(tmp, exist_ok=True)
+    cam = ((-0.35, -1.0, 0.5), (1, 0, 0))
+    marcas = vtk(f"{tmp}/modelo_{var}.png", [dict(grid=cortar(g), rgb=True, edges=True, lineas=False),
+                                           dict(grid=esf, color=(0.82, 0.08, 0.08), lineas=False)],
+                 cam=cam, size=(1300, 1800), marcas={"anc": tuple(anc.mean(axis=0)), "cg": (100.0, 0.0, 0.0)})
+    fig = plt.figure(figsize=(11.0, 6.2))
+    ax = fig.add_axes([0.0, 0.10, 0.42, 0.86])
+    im = plt.imread(f"{tmp}/modelo_{var}.png")
+    ax.imshow(im, interpolation="lanczos")
+    ax.axis("off")
+    h, w = im.shape[:2]
+    pa = (marcas["anc"][0] * w, marcas["anc"][1] * h)
+    ax.annotate("Anclajes de la brida (fijos):\nextremos de las 4 varillas", pa, xytext=(0.62 * w, 0.03 * h), fontsize=9,
+                ha="left", va="top", arrowprops=dict(arrowstyle="-", color="#d03b3b", lw=1.0),
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#d03b3b", lw=0.9))
+    pc = (marcas["cg"][0] * w, marcas["cg"][1] * h)
+    ax.add_patch(FancyArrowPatch((0.80 * w, 0.30 * h), (0.80 * w, 0.62 * h), arrowstyle="-|>", mutation_scale=22,
+                                 color="#0b0b0b", lw=2.2))
+    ax.text(0.83 * w, 0.46 * h, "Inercia\nde 30 G\nhacia\nnadir", ha="left", va="center", fontsize=9.5, weight="bold")
+    mats = [m for m in ("PETG", "PETG40", "AL6061", "A2-70", "ADH") if m in set(mat)]
+    ax.legend(handles=[Patch(fc=COLM[m], ec="0.3", label=NOMM[m]) for m in mats], loc="lower center",
+              bbox_to_anchor=(0.5, -0.11), ncol=2, fontsize=8.6, frameon=False)
+    ax.set_title(f"Modelo: {len(xyz) // 1000} k nodos, {len(els) // 1000} k tetraedros cuadráticos (C3D10)",
+                 fontsize=9.5, pad=2)
+    # pulso
+    T = T_PULSO
+    a1 = fig.add_axes([0.53, 0.60, 0.44, 0.31])
+    t = np.linspace(-0.005, 0.05, 600)
+    a1.plot(1e3 * t, np.where((t > 0) & (t < T), 30 * np.sin(np.pi * t / T), 0.0), color="#2a78d6", lw=2)
+    a1.set_xlabel("Tiempo [ms]")
+    a1.set_ylabel("Aceleración [G]")
+    a1.set_title(f"Pulso de la cuerda: semiseno de 30 G, {1e3 * T:.0f} ms", fontsize=10)
+    a1.text(1e3 * T / 2, 15, f"Δv = {2 * V_CAIDA:.1f} m/s".replace(".", ",") + "\n(caída de 61 cm y rebote)", ha="center",
+            fontsize=8.6, color="#52514e")
+    # factor dinamico
+    a2 = fig.add_axes([0.53, 0.12, 0.44, 0.33])
+    Ts = np.geomspace(0.5e-3, 0.06, 80)
+    for fa, lab, col in (f_ax or []):
+        a2.plot(1e3 * Ts, [daf(fa, x) for x in Ts], color=col, lw=2, label=f"{lab}: modo axial {fa:.0f} Hz")
+    a2.axvline(1e3 * T, color="#0b0b0b", ls="--", lw=1)
+    a2.text(1e3 * T * 0.95, 1.78, "pulso real", ha="right", fontsize=8.6, va="top")
+    a2.set_xscale("log")
+    a2.set_ylim(0, 1.9)
+    a2.set_xlabel("Duración del pulso [ms]")
+    a2.set_ylabel("Factor dinámico")
+    a2.set_title("Amplificación según la duración (espectro de choque, ζ = 2 %)", fontsize=10)
+    a2.legend(loc="lower left", fontsize=8.4, frameon=False)
+    for a_ in (a1, a2):
+        a_.grid(color="#e6e6e6", lw=0.6)
+        a_.set_axisbelow(True)
+        for s_ in ("top", "right"):
+            a_.spines[s_].set_visible(False)
+    fig.savefig(f"{out}/v2{var}_fem_modelo.png", dpi=200)
+    plt.close(fig)
+    print("figura del modelo ok")

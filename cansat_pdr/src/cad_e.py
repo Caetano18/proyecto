@@ -58,10 +58,36 @@ C_ADH = (0.86, 0.62, 0.18)
 D_PARA = 233.0
 
 
-def variante(v):
-    global VAR, D_PARA
+X_M2, X_M3 = 83.0, 173.0          # estaciones de M2 (modulo de bateria) y M3 (modulo de avionica)
+
+
+def variante(v, x_m2=83.0, x_m3=173.0):
+    """v = "E", "A", "B" o "BR" (B regulable: estaciones roscadas; x_m2 y x_m3 son las caras inferiores de M2 y M3)."""
+    global VAR, D_PARA, X_M2, X_M3
     VAR = v
     D_PARA = 233.0 if v == "E" else 226.0
+    X_M2, X_M3 = (x_m2, x_m3) if v == "BR" else (83.0, 173.0)
+    MAMP["M2"] = (X_M2, X_M2 + 4.0)
+    MAMP["M3"] = (X_M3, X_M3 + 4.0)
+
+
+def tuerca(x0, y, z, ancho=5.5, alto=2.4):
+    """Tuerca hexagonal M3 (eje x) con la cara inferior en x0."""
+    return cq.Workplane("YZ").polygon(6, ancho / math.cos(math.radians(30))).extrude(alto).val().translate(V(x0, y, z))
+
+
+def tuercas_estaciones():
+    """BR: cada mamparo queda apretado entre dos tuercas nyloc M3; girandolas se corre la estacion (0,5 mm por vuelta)."""
+    out = []
+    xs = [MAMP["M1"][1], MAMP["M2"][0] - 2.4, MAMP["M2"][1], MAMP["M3"][0] - 2.4, MAMP["M3"][1], MAMP["M4"][0] - 2.4]
+    for a in VAR_ANG:
+        y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
+        sh = None
+        for x0 in xs:
+            t_ = tuerca(x0, y, z)
+            sh = t_ if sh is None else sh.fuse(t_)
+        out.append(_pz("Tuercas nyloc de las estaciones", sh, C_ACERO, "esqueleto"))
+    return out
 
 
 def t_en(x):
@@ -101,8 +127,9 @@ def carcasa(ventana_cenit=True):
             inn = inn.cut(b.mirror("XZ") if s < 0 else b)
         sh = ext.cut(inn).cut(ran)
         sh = sh.intersect(box(x0, x1, -60, 60, -60, 60))
-        if x0 < 22 < x1:
-            sh = sh.cut(rod((22, 30, 0), (22, 50, 0), 8.0))                    # orificio de la baliza
+        xb = 12.0 if VAR == "BR" else 22.0
+        if x0 < xb < x1:
+            sh = sh.cut(rod((xb, 30, 0), (xb, 50, 0), 8.0))                    # orificio de la baliza
         if ventana_cenit and x0 < 212 < x1:
             sh = sh.cut(rod((212, 30, 0), (212, 50, 0), 10.0))                 # ventana de la camara de cenit
         out.append(_pz(nombre, sh.clean(), col, "carcasa"))
@@ -286,20 +313,32 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
     E.append(_pz("Camara de nadir", box(6.0, 14.0, -11, 11, -31, -9), C_NEGRO, "equipo"))
     E.append(_pz("Lente de nadir", disc(1.2, 6.0, 4.0, 0, -20), (0.35, 0.37, 0.42), "equipo"))
     E.append(_pz("Ventana de policarbonato", disc(0.2, 1.2, 6.8, 0, -20), (0.70, 0.82, 0.92), "equipo"))
-    E.append(_pz("Baliza (zumbador)", rod((22, 36.0, 0), (22, 43.2, 0), 12.0), C_NEGRO, "equipo"))
-    E.append(_pz("Bateria de la baliza", box(9.0, 33.0, 18, 30, -7, 5), (0.85, 0.62, 0.15), "equipo"))
+    xb = 12.0 if VAR == "BR" else 22.0                  # BR: baliza mas abajo para dar recorrido al modulo de bateria
+    E.append(_pz("Baliza (zumbador)", rod((xb, 36.0, 0), (xb, 43.2, 0), 12.0), C_NEGRO, "equipo"))
+    E.append(_pz("Bateria de la baliza", box(6.0, 20.0, 18, 30, -7, 5) if VAR == "BR" else box(9.0, 33.0, 18, 30, -7, 5),
+                 (0.85, 0.62, 0.15), "equipo"))
     # bahia 2: pack 2 x 18650 transversal
-    for xc in (50.0, 70.0):
+    d2 = X_M2 - 83.0
+    for xc in (50.0 + d2, 70.0 + d2):
         E.append(_pz("Celda 18650", rod((xc, -32.5, -4), (xc, 32.5, -4), 18.6), C_BAT, "equipo"))
-    E.append(_pz("Lenguetas soldadas", fuse(box(45, 75, 32.5, 33.3, -9, 1), box(45, 75, -33.3, -32.5, -9, 1)), C_AL, "equipo"))
-    cuna = box(4.0, 83.0, -30, 30, -16.6, -13.6)
-    for xc in (50.0, 70.0):
+    E.append(_pz("Lenguetas soldadas", fuse(box(45 + d2, 75 + d2, 32.5, 33.3, -9, 1), box(45 + d2, 75 + d2, -33.3, -32.5, -9, 1)),
+                 C_AL, "equipo"))
+    if VAR == "BR":       # cuna en U impresa con M2: el pack cuelga de M2 y se mueve con el
+        cuna = box(X_M2 - 46.0, X_M2, -30, 30, -16.6, -13.6)
+        for sg in (1, -1):
+            w = fuse(box(X_M2 - 46.0, X_M2, 33.5, 36.0, -16.6, 2.0), box(X_M2 - 46.0, X_M2, 29.9, 33.6, -16.6, -13.6))
+            cuna = cuna.fuse(w if sg > 0 else w.mirror("XZ"))
+    else:
+        cuna = box(4.0, 83.0, -30, 30, -16.6, -13.6)
+    for xc in (50.0 + d2, 70.0 + d2):
         cuna = cuna.fuse(box(xc - 7, xc + 7, -30, 30, -14.5, -10.0).cut(rod((xc, -31, -4), (xc, 31, -4), 18.8)))
     E.append(_pz("Cuna de las celdas", cuna.clean(), C_PETG, "esqueleto"))
-    # bahia 3: avionica
+    # bahia 3: avionica (en BR los rieles cuelgan solo de M3 y el modulo se mueve con M3)
+    n0 = len(E)
+    xr0 = 95.0 if VAR == "BR" else 87.0
     for y0 in (17.0, -21.0):
-        E.append(_pz("Riel de PCB", box(87.0, 173.0, y0, y0 + 4, -17.0, -13.6), C_PETG, "esqueleto"))
-        E.append(_pz("Riel de PCB", box(87.0, 173.0, y0, y0 + 4, 4.0, 8.4), C_PETG, "esqueleto"))
+        E.append(_pz("Riel de PCB", box(xr0, 173.0, y0, y0 + 4, -17.0, -13.6), C_PETG, "esqueleto"))
+        E.append(_pz("Riel de PCB", box(xr0, 173.0, y0, y0 + 4, 4.0, 8.4), C_PETG, "esqueleto"))
     E.append(_pz("PCB principal", box(98.0, 166.0, -22, 22, -13.6, -12.0), C_PCB, "equipo"))
     for b in ((116, 130, -7, 7), (140, 147, -13, -6), (150, 156, 8, 14), (104, 110, 10, 17), (158, 163, -16, -9)):
         E.append(_pz("Componente", box(b[0], b[1], b[2], b[3], -12.0, -10.6), C_NEGRO, "equipo"))
@@ -308,6 +347,10 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
     E.append(_pz("Antena helicoidal 915 MHz", rod((143, 11, 10.0), (143, 11, 31.0), 6.0), (0.80, 0.62, 0.30), "equipo"))
     E.append(_pz("Modulo GNSS", box(146.0, 168.0, -20, 2, 10.0, 12.0), C_NEGRO, "equipo"))
     E.append(_pz("Antena ceramica GNSS", box(148.0, 166.0, -18, 0, 12.0, 16.0), (0.86, 0.80, 0.66), "equipo"))
+    d3 = X_M3 - 173.0
+    if abs(d3) > 1e-9:
+        for p in E[n0:]:
+            p["shape"] = p["shape"].translate(V(d3, 0, 0))
     # bahia 4: nicrom, camara de cenit
     E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
     cam = box(-4, 4, -10, 10, -10, 10)                    # cuerpo de la camara: eje optico +x local
@@ -413,7 +456,7 @@ def larguero_punto(s_sign, l):
 def build(config="estibado"):
     if config == "estibado":
         return (carcasa() + cubierta() + varillas() + mamparos() + pivotes(False) + largueros(False) + equipos()
-                + (tornillos_carena() if VAR == "B" else []))
+                + (tornillos_carena() if VAR in ("B", "BR") else []) + (tuercas_estaciones() if VAR == "BR" else []))
     if config == "desplegado":
         return (carcasa() + varillas() + mamparos(con_tapa=False) + pivotes(True) + largueros(True) + vela_desplegada()
                 + equipos(con_paracaidas=False, lazo=False))

@@ -43,16 +43,25 @@ def piezas(var):
         sh = cad.disc(x0, x1, r)
         if nombre.startswith("M1"):
             sh = sh.cut(cad.disc(x0 - 1, x1 + 1, 7.0, 0.0, -20.0))
-        if var == "B" or nombre.startswith("M4"):
+        if var in ("B", "BR") or nombre.startswith("M4"):
             for y, z in ejes:
-                sh = sh.cut(cad.disc(x0 - 1, x1 + 1, 1.265 if var == "B" else 1.5, y, z))
+                sh = sh.cut(cad.disc(x0 - 1, x1 + 1, 1.265 if var != "A" else 1.5, y, z))
         parts.append(dict(nombre=nombre, shape=sh.clean(), mat="PETG40", grupo="estructura", h=1.25))
         if var == "A":
             ra = I.RO - T
             cord = cad.disc(x0, x1, ra).cut(cad.disc(x0 - 1, x1 + 1, r))
             parts.append(dict(nombre=f"Adhesivo {nombre[:2]}", shape=cord, mat="ADH", grupo="estructura", h=G_ADH))
+    if var == "BR":        # B regulable: la bateria cuelga de M2 en una cuna en U impresa con M2 (se mueve con M2)
+        x2 = [m for m in MAMP if m[0].startswith("M2")][0][1]
+        cuna = cad.box(x2 - 46.0, x2, -30.0, 30.0, -16.6, -13.6)
+        for s_ in (1, -1):
+            w = cad.box(x2 - 46.0, x2, 33.5, 36.0, -16.6, 2.0)
+            cuna = cuna.fuse(w if s_ > 0 else w.mirror("XZ"))
+            pu = cad.box(x2 - 46.0, x2, 30.0 - 0.01, 33.51, -16.6, -13.6)
+            cuna = cuna.fuse(pu if s_ > 0 else pu.mirror("XZ"))
+        parts.append(dict(nombre="Cuna de la bateria (con M2)", shape=cuna.clean(), mat="PETG40", grupo="estructura", h=1.25))
     for k, (y, z) in enumerate(ejes):
-        if var == "B":
+        if var in ("B", "BR"):
             v = cad.disc(X0, X_ANC, 2.53 / 2, y, z)
             parts.append(dict(nombre=f"Varilla {k + 1} (M3 Al)", shape=v, mat="AL6061", grupo="estructura", h=0.8))
         else:
@@ -64,6 +73,12 @@ def piezas(var):
         p["masa"] = p["vol"] * P.MAT[p["mat"]]["rho"] / 1000.0
     nsm = {k: dict(v) for k, v in I.NSM.items() if k != "M5"}
     nsm["M4"]["cableado de la copa"] = 4.0                        # el paracaidas (8 g) ya no esta en el cuerpo
+    if var == "BR":        # el pack entero en la cuna de M2; la avionica cuelga de M3; los pivotes del ala estan en x = 14
+        nsm["M1"] = {k: v for k, v in nsm["M1"].items() if "pack" not in k}
+        nsm["M1"]["pivotes y resortes del ala"] = 13.0
+        nsm["M2"] = {"cableado": 4.0}
+        nsm["M3"] = {"avionica": 54.5, "cableado": 4.0}
+        nsm["Cuna"] = {"pack 2 x 18650": 92.0}
     for c, d in nsm.items():
         ps = [p for p in parts if p["nombre"].startswith(c) or (c == "carcasa" and p["nombre"].startswith("CT1"))]
         vt = sum(p["vol"] for p in ps)
