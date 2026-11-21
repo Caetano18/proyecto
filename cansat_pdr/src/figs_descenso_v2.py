@@ -20,10 +20,11 @@ RHO_SITIO, RHO_MAR = 1.15, 1.225
 CDA_CIL = 0.86 * math.pi * 0.09 ** 2 / 4
 
 
-L_DER, L_IZQ = 225.0, 185.0      # el larguero izquierdo va sin puntera: lobulo izquierdo mas chico (viraje)
+L_DER, L_IZQ = 350.0, 310.0      # 185 + punteras plegables de 165 / 125: lobulo izquierdo mas chico (viraje)
+ANG = 60.0                        # flecha fija desde la quilla
 
 
-def lobulo(L, ang=52.0, keel=190.0, ypiv=35.0, x0=14.0):
+def lobulo(L, ang=ANG, keel=190.0, ypiv=35.0, x0=14.0):
     """Area en planta de un lobulo (de la quilla al larguero) [m2]."""
     d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
     pts = [(x0, 0.0), (x0, ypiv), (x0 + L * d[0], ypiv + L * d[1]), (x0 + keel, 0.0)]
@@ -35,7 +36,7 @@ def area_asim():
     return lobulo(L_DER) + lobulo(L_IZQ)
 
 
-def area_vela(L, ang=52.0, keel=190.0, ypiv=35.0, x0=14.0):
+def area_vela(L, ang=ANG, keel=190.0, ypiv=35.0, x0=14.0):
     d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
     pts = [(x0, ypiv), (x0 + L * d[0], ypiv + L * d[1]), (x0 + keel, 0.0), (x0 + L * d[0], -ypiv - L * d[1]), (x0, -ypiv)]
     x = np.array([p[0] for p in pts]); y = np.array([p[1] for p in pts])
@@ -107,7 +108,7 @@ def dimensiones(out):
     ax = fig.add_axes([0.42, 0.08, 0.56, 0.86])
     ax.set_aspect("equal")
     ax.axis("off")
-    ang = 52.0
+    ang = ANG
     d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
     tD = (14 + L_DER * d[0], 35 + L_DER * d[1])        # derecha (+y)
     tI = (14 + L_IZQ * d[0], 35 + L_IZQ * d[1])        # izquierda (-y)
@@ -128,16 +129,18 @@ def dimensiones(out):
     am = math.radians(-90 + ang / 2)
     ax.text(35 + 72 * math.cos(am), -14 + 72 * math.sin(am), f"{ang:.0f}°", fontsize=9, ha="center", va="center",
             color=TX, zorder=6)
-    ax.text(tD[1] - 20, -tD[0] - 32, f"right spar {L_DER:.0f} mm\n(185 + 40 folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
-    ax.text(-tI[1], -tI[0] - 30, f"left spar {L_IZQ:.0f} mm\n(no tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    ax.text(tD[1] - 20, -tD[0] - 32, f"right spar {L_DER:.0f} mm\n(185 + {L_DER - 185:.0f} folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    ax.text(-tI[1], -tI[0] - 30, f"left spar {L_IZQ:.0f} mm\n(185 + {L_IZQ - 185:.0f} folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
     aD, aI = lobulo(L_DER), lobulo(L_IZQ)
-    ax.text(tD[1] * 0.60, -135, f"{aD * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
-    ax.text(-tI[1] * 0.60, -135, f"{aI * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
-    ax.text(0, -232, "body Ø90 × 240", ha="center", fontsize=8.6, color=TX2, zorder=5)
+    for sg, tt, aa in ((1, tD, aD), (-1, tI, aI)):           # area en el centroide de cada lobulo (fuera del cuerpo)
+        q = [(sg * 35, -14), (sg * tt[1], -tt[0]), (sg * 45, -204 + 4), (sg * 45, -14)]
+        cx, cy = sum(v[0] for v in q) / 4, sum(v[1] for v in q) / 4
+        ax.text(cx, cy, f"{aa * 1e4:.0f} cm²", ha="center", va="center", fontsize=9, weight="bold", color=NA, zorder=6)
+    ax.text(0, -247, "body Ø90 × 240", ha="center", va="top", fontsize=8.6, color=TX2, zorder=5)
     ax.text(0, 52, f"Sail area {(aD + aI):.3f} m²; left lobe {100 * (1 - aI / aD):.0f} % smaller → left turn",
             ha="center", fontsize=9.5, weight="bold", color=TX)
-    ax.set_xlim(-250, 250)
-    ax.set_ylim(-260, 70)
+    ax.set_xlim(-390, 390)
+    ax.set_ylim(-275, 70)
     ax.set_title("Deployed Rogallo glider (plan view, nose up)", fontsize=10.5, weight="bold", pad=14)
     fig.savefig(f"{out}/v2_dimensiones_en.png", dpi=220)
     plt.close(fig)

@@ -50,10 +50,15 @@ C_CUB = (0.90, 0.90, 0.86)
 YL, ZL = R_LAR * math.cos(math.radians(RAN_ANG)), R_LAR * math.sin(math.radians(RAN_ANG))
 
 
+PUNTAS_V2 = (165.0, 125.0)         # punteras plegables derecha / izquierda (A, B, BR): el lobulo izquierdo es mas chico
+
+
 def punta(s_sign):
-    """Largo de la puntera plegable.  En BR el larguero izquierdo (-y, mirando hacia adelante = nadir) va sin puntera:
-    ese lobulo tiene menos superficie y la diferencia de sustentacion hace virar al CanSat."""
-    return 0.0 if (VAR == "BR" and s_sign < 0) else L_PUNTA
+    """Largo de la puntera plegable.  A, B y BR: las dos punteras se pliegan debajo del larguero; la izquierda (-y) es
+    40 mm mas corta, ese lobulo tiene menos superficie y la diferencia de sustentacion hace virar al CanSat."""
+    if VAR in ("A", "B", "BR"):
+        return PUNTAS_V2[0] if s_sign > 0 else PUNTAS_V2[1]
+    return L_PUNTA
 
 # variante: "E" = rev. E (laminado + esqueleto con lastre); "A" = v2 diseno A (monocasco PETG 2 mm, mamparos pegados);
 # "B" = v2 diseno B (esqueleto de 4 varillas M3 + mamparos + carena PETG 2 mm)
@@ -69,8 +74,9 @@ X_M2, X_M3 = 83.0, 173.0          # estaciones de M2 (modulo de bateria) y M3 (m
 
 def variante(v, x_m2=83.0, x_m3=173.0):
     """v = "E", "A", "B" o "BR" (B regulable: estaciones roscadas; x_m2 y x_m3 son las caras inferiores de M2 y M3)."""
-    global VAR, D_PARA, X_M2, X_M3
+    global VAR, D_PARA, X_M2, X_M3, FLECHA
     VAR = v
+    FLECHA = 52.0 if v == "E" else 60.0          # flecha fija desde la quilla
     D_PARA = 233.0 if v == "E" else 226.0
     X_M2, X_M3 = (x_m2, x_m3) if v == "BR" else (83.0, 173.0)
     MAMP["M2"] = (X_M2, X_M2 + 4.0)
@@ -141,6 +147,8 @@ def _pz(nombre, shape, color, grupo, **kw):
 def carcasa(ventana_cenit=True):
     wr = math.degrees(RAN_W / RO)
     ran = fuse(*[sector(RAN_X[0], RAN_X[1], R_LAR - 3.5, RO + 1, a, wr) for a in (RAN_ANG, 180 - RAN_ANG)])
+    if VAR in ("A", "B", "BR"):      # alivio en la raiz de la ranura: el larguero sale a 60 grados sin tocar la pared
+        ran = fuse(ran, *[sector(10.0, 24.0, R_LAR - 3.5, RO + 1, a, 2.4 * wr) for a in (RAN_ANG, 180 - RAN_ANG)])
     out = []
     if VAR == "E":
         tramos = (("CT1a carcasa carbono-epoxi 0,8", 0.0, XH, TC, C_CARB), ("CT1b carcasa vidrio-epoxi 0,6", XH, L - 4.0, TV, C_VID))
@@ -296,20 +304,20 @@ def largueros(desplegada):
         if desplegada:
             d = np.array([math.cos(math.radians(FLECHA)), s * math.sin(math.radians(FLECHA)), 0.0])
             pb = p0 + L_LAR * d
-            tubo = rod(tuple(p0 - 6 * d), tuple(pb), 4.0, 2.0)
+            tubo = rod(tuple(p0 - 6 * d), tuple(pb), 4.0, 3.0 if VAR in ("A", "B", "BR") else 2.0)
             out.append(_pz("Larguero CF", tubo, C_CF, "ala"))
             if punta(s) > 0:
-                out += [_pz("Puntera del larguero", rod(tuple(pb), tuple(pb + punta(s) * d), 4.0, 2.0), C_CF, "ala"),
+                out += [_pz("Puntera del larguero", rod(tuple(pb), tuple(pb + punta(s) * d), 4.0, 3.0), C_CF, "ala"),
                         _pz("Bisagra de la puntera", rod(tuple(pb - 3 * d), tuple(pb + 3 * d), 6.0, 4.0), C_AL, "ala")]
         else:
             x1 = 14.0 + L_LAR
-            tubo = rod((8.0, s * YL, ZL), (x1, s * YL, ZL), 4.0, 2.0)
+            tubo = rod((8.0, s * YL, ZL), (x1, s * YL, ZL), 4.0, 3.0 if VAR in ("A", "B", "BR") else 2.0)
             bis = rod((x1 - 3, s * YL, ZL), (x1 + 3, s * YL, ZL), 6.0, 4.0)
             rp = R_LAR - 4.8
             yp, zp = s * rp * math.cos(math.radians(RAN_ANG)), rp * math.sin(math.radians(RAN_ANG))
             out.append(_pz("Larguero CF", tubo, C_CF, "ala"))
             if punta(s) > 0:
-                out += [_pz("Puntera plegada", rod((x1 - L_PUNTA, yp, zp), (x1, yp, zp), 4.0, 2.0), C_CF, "ala"),
+                out += [_pz("Puntera plegada", rod((x1 - punta(s), yp, zp), (x1, yp, zp), 4.0, 3.0), C_CF, "ala"),
                         _pz("Bisagra de la puntera", bis, C_AL, "ala")]
     return out
 

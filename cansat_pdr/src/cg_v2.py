@@ -28,7 +28,7 @@ FIJOS = [  # (item, masa g, x mm)
     ("Tuercas de M1 y M4 (8, Al 7075)", 1.6, 110.0),
     ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Horquilla y pasador de liberación", 2.0, 225.0),
     ("Servo de la tapa SG90 + traba", 9.5, 199.0),
-    ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF + bisagras", 11.0, 103.0),
+    ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF Ø4/3 + punteras plegables + bisagras", 10.8, 112.0),
     ("Pivotes: ejes M4 de Al 7075, manivelas y bloques", 5.0, 14.0),
     ("Servo de liberación del paracaídas SG90 + varilla", 9.5, 200.0),
     ("Servo del ala SG90 + bocina y 2 bielas", 10.5, 11.0),

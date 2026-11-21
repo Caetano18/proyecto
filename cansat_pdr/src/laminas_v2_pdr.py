@@ -42,8 +42,8 @@ FUENTE = {
     "Paracaídas Ø226 ripstop + líneas": ("D", 0.5, "Ripstop nylon 35 g/m² + Kevlar lines", "Parachute Ø226, ripstop nylon + lines"),
     "Horquilla y pasador de liberación": ("D", 0.4, "Estimate", "Parachute release pin and clevis"),
     "Servo de la tapa SG90 + traba": ("D", 0.5, "Datasheet (SG90, 9 g)", "Lid servo SG90 + latch"),
-    "Vela Rogallo plegada": ("D", 0.5, "Cut area + seams", "Rogallo sail, ripstop nylon"),
-    "Largueros CF + bisagras": ("D", 0.4, "CF tube + printed hinge", "CF spars + tip hinge"),
+    "Vela Rogallo plegada": ("D", 1.5, "Cut area + seams + keel strip", "Rogallo sail, ripstop nylon"),
+    "Largueros CF Ø4/3 + punteras plegables + bisagras": ("D", 1.0, "CF tube length × catalogue + fittings", "CF spars Ø4/3 + folding tips + hinges"),
     "Pivotes: ejes M4 de Al 7075, manivelas y bloques": ("D", 0.5, "Catalogue + CAD", "Spar pivots: Al 7075 M4 shafts, cranks, blocks"),
     "Servo de liberación del paracaídas SG90 + varilla": ("D", 0.5, "Datasheet (SG90, 9 g)", "Parachute release servo SG90 + rod"),
     "Servo del ala SG90 + bocina y 2 bielas": ("D", 0.5, "Datasheet (SG90, 9 g) + CAD", "Wing servo SG90 + horn and two links"),
@@ -162,7 +162,7 @@ def L23_dimensiones(sl):
         "launch vehicle within its ±1 mm tolerance.",
         "**Stations:** M1 at x = 0; M2 adjustable 66–90 mm; M3 adjustable 156–177 mm; M4 at 216; lid at 236.",
         "**Wing stowage:** two 6 × 192 mm slots and a 28 × 6 mm dorsal channel.",
-        f"**Glider:** keel 190 mm; spars at 52° from the keel, right 225 mm and left 185 mm; sail "
+        f"**Glider:** keel 190 mm; spars at 60° from the keel, right 350 mm and left 310 mm (185 mm + folding tip); sail "
         f"{DES['S']:.3f} m².",
     ], sz=11, spc=300)
 
@@ -208,7 +208,7 @@ def L26_desplegado(sl):
         f"hangs from a four-leg bridle tied "
         f"to the rods and descends at about {V1:.1f} m/s.",
         "**Phase 2:** at 80 % of apogee the parachute servo pulls the release pin; then the wing servo swings both spars "
-        "to 52°, where the links lock against a stop.",
+        "to 60°, where the links lock against a stop; the sail tension unfolds the tips.",
         "The sail fills between the keel and the spars. The left lobe is smaller, so the CanSat flies a steady left "
         f"spiral of about {DES['R']:.0f} m radius.",
     ], sz=11, spc=300)
@@ -275,7 +275,7 @@ def L51_estrategias(sl):
     panel(sl, X0, Y0, I(7.0), Y1 - Y0, [("v2BR_desplegado_anot_en.png", 1)], "Rogallo glider, phase 2")
     x = X0 + I(7.0) + GAP
     tabla(sl, x, Y0, X1 - x, [1.3, 1.6, 1.6], ["", "A: asymmetric sail", "B: servo steering"], [
-        ["How it turns", "Left lobe 15 % smaller (left spar without the folding tip)",
+        ["How it turns", "Left lobe 10 % smaller (left folding tip 40 mm shorter)",
          "A servo pulls a line on one spar on command"],
         ["Path", f"Steady left spiral, about {DES['R']:.0f} m radius", "Can be steered toward a point"],
         ["Hardware", "None", "Servo, line and driver"],
@@ -307,7 +307,7 @@ def L53_mecanico(sl):
         ["Bulkheads M1–M5", "PETG, 25 % infill", "Carry the bays; stations"],
         ["Rods (4)", "Threaded M3, Al 6061", "Primary structure, bridle anchor"],
         ["Station nuts", "Nyloc M3, Al 7075", "Clamp the bulkheads; set the CG"],
-        ["Wing spars", "Carbon tube Ø4/2", "Leading edges of the sail"],
+        ["Wing spars", "Carbon tube Ø4/3, folding tips", "Leading edges of the sail"],
         ["Sail and parachute", "Ripstop nylon, Kevlar lines", "Phase 2 and phase 1"],
         ["Servos", "Three SG90 servos and links", "Lid, parachute release, wing opening"],
     ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.38), ml=70000)
@@ -315,7 +315,7 @@ def L53_mecanico(sl):
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Mechanical configuration", [
         "**One integral body:** skeleton of four threaded rods and five bulkheads inside a PETG fairing; five bays.",
         "**Mechanisms:** three SG90 servos and no springs: the lid servo opens the cup, the parachute servo pulls the "
-        "release pin and the wing servo opens both spars through two links to a fixed 52° stop.",
+        "release pin and the wing servo opens both spars through two links to a fixed 60° stop.",
         "**Requirements:** 2 mm printed wall (S6); smooth cylinder (S7); everything screwed, clamped or on standoffs "
         "(S8); PETG and nylon (S9); no pyrotechnics or heat (M1, M2); latches and links hold without power (M3); soldered battery "
         "tabs (M4).",
@@ -359,9 +359,9 @@ def L56_mecanismos(sl):
           "Threaded station of M2: the battery module moves along the rods")
     x = X0 + I(6.4) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
-        ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 52°"],
-        ["Right spar tip hinge", "199", "The 40 mm tip folds to fit the 192 mm slot; the sail tension opens it"],
-        ["Wing servo and links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
+        ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 60°"],
+        ["Spar tip hinges (2)", "199", "Tips of 165 mm (right) and 125 mm (left) fold under the spar; the sail tension opens them"],
+        ["Wing servo and links", "5–17", "Swing both spars to 60° and lock over centre at the stop"],
         ["Parachute servo", "183–223", "Pulls the release pin at 80 % of apogee"],
         ["Lid servo and latch", "183–234", "Releases the lid after the separation; the lid pulls the parachute out"],
         ["Threaded stations", "M2, M3", "Move the battery and avionics modules (0.5 mm per turn)"],
@@ -373,7 +373,7 @@ def L57_seleccion_mec(sl):
         ["Structure", "B: rod skeleton + fairing", "A: printed monocoque", "Rods carry the loads; access; CG adjustment"],
         ["Lid opening", "Micro servo + latch", "Compression spring", "Opens after the separation; no stored energy"],
         ["Parachute release", "Micro servo pulls the pin", "Nichrome wire", "No heat (M2), testable on the bench, reusable"],
-        ["Wing opening", "One servo, two links, 52° stop", "Torsion springs + ratchet", "Same sweep on both sides; no springs"],
+        ["Wing opening", "One servo, two links, 60° stop", "Torsion springs + ratchet", "Same sweep on both sides; no springs"],
         ["Turn", "Smaller left lobe", "Servo steering", "No actuators in phase 2"],
         ["Station fixing", "Nyloc nuts on both sides", "Bonded bulkheads", "CG set after weighing the real parts"],
         ["Parachute anchor", "Four-leg bridle to the rod ends", "Bridle to the lid", "The load goes straight into the rods"],
