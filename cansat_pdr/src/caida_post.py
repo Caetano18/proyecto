@@ -143,6 +143,9 @@ def figuras(res, campos, out, sufijo=""):
     barras(res, out, sufijo)
 
 
+TOPE = 1000.0          # por encima, la pieza casi no lleva carga: el numero no dice nada util
+
+
 def barras(res, out, sufijo=""):
     """G de rotura por pieza (barras horizontales, escala logaritmica)."""
     import matplotlib
@@ -169,10 +172,14 @@ def barras(res, out, sufijo=""):
             y = gi + (vi - (nv - 1) / 2) * hb
             lab = nom[r["var"]] if r["var"] not in hechos else None
             hechos.add(r["var"])
-            ax.barh(y, g_, height=hb * 0.9, color=COL[r["var"]], label=lab)
-            ax.text(g_ * 1.06, y, f"{g_:,.0f} G".replace(",", "."), va="center", fontsize=8.6, color="#0b0b0b")
+            gv = min(g_, TOPE)
+            ax.barh(y, gv, height=hb * 0.9, color=COL[r["var"]], label=lab)
+            txt = f"{g_:,.0f} G".replace(",", ".") if g_ <= TOPE else f"> {TOPE:.0f} G (no carga)"
+            ax.text(gv * 1.06, y, txt, va="center", fontsize=8.6, color="#0b0b0b")
     ax.axvline(30, color="#0b0b0b", lw=1.2, ls="--")
     ax.text(31, -0.62, "prueba de caída: 30 G", fontsize=8.6, color="#52514e", va="bottom")
+    ax.axvline(150, color="#d03b3b", lw=1.2, ls=":")
+    ax.text(157, -0.62, "celdas 18650 (UN 38.3): 150 G", fontsize=8.6, color="#d03b3b", va="bottom")
     ax.set_xscale("log")
     ax.set_yticks(range(len(grupos)), [""] * len(grupos))
     ax.tick_params(axis="y", length=0)
@@ -186,7 +193,7 @@ def barras(res, out, sufijo=""):
         ax.spines[s_].set_visible(False)
     h, l_ = ax.get_legend_handles_labels()
     ax.legend(h, l_, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=min(nv, 3), fontsize=9.2, frameon=False)
-    ax.set_xlim(20, 6000)
+    ax.set_xlim(20, 4500)
     fig.tight_layout()
     fig.savefig(f"{out}/v2_caida_rotura{sufijo}.png", dpi=220)
     plt.close(fig)

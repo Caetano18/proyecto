@@ -53,7 +53,8 @@ A(tabla(["Dato", "Valor", "Dato", "Valor"], [
     [r"\bfseries Masa", f"{f1(CGR['masa'])}\\,g (recalculada)", r"\bfseries Envolvente", r"\diam\,90 $\times$ 240\,mm"],
     [r"\bfseries CG nominal", f"{f1(nom['x_cg'])}\\,mm desde nadir", r"\bfseries Rango del CG",
      f"{f1(tod_ab['x_cg'])}--{f1(tod_ar['x_cg'])}\\,mm"],
-    [r"\bfseries Rotura en la caída", f"{g0(pBR['G_rot_p999'])}\\,G ({nombre_pieza(nBR)})", r"\bfseries Fecha", "21/11/2026"],
+    [r"\bfseries Rotura en la caída", f"estructura {g0(pBR['G_rot_max'])}--{g0(pBR['G_rot_p999'])}\\,G; conjunto $\\approx$ 150\\,G (celdas)",
+     r"\bfseries Fecha", "21/11/2026"],
 ], r"P{2.8cm}LP{2.8cm}L", col0=False))
 
 A(r"""\section*{Resumen}
@@ -65,9 +66,11 @@ aviónica} (""" + f1(CGR["m_avionica"]) + r"""\,g).
 \item \textbf{Centro de gravedad:} nominal en """ + f1(nom["x_cg"]) + r"""\,mm desde el fondo de nadir. Corriendo los dos
 módulos se mueve entre """ + f1(tod_ab["x_cg"]) + r" y " + f1(tod_ar["x_cg"]) + r"""\,mm. El margen estático de la vela
 queda positivo en todo el rango.
-\item \textbf{Choque de 30\,G (prueba de caída):} con el CanSat colgado de la brida, la opción B regulable rompe recién a
-\textbf{""" + g0(pBR["G_rot_p999"]) + r"""\,G} (""" + nombre_pieza(nBR) + r"""). La opción A (monocasco pegado) rompe a
-""" + g0(pA["G_rot_p999"]) + r"""\,G en el """ + nombre_pieza(nA) + r""".
+\item \textbf{Choque de 30\,G (prueba de caída):} con el CanSat colgado de la brida, la estructura de la opción B regulable
+rompe entre """ + g0(pBR["G_rot_max"]) + " y " + g0(pBR["G_rot_p999"]) + r"""\,G (""" + nombre_pieza(nBR) + r""", con la batería; a mano
+da unos 310\,G). Pero antes llegan cosas que no son estructura: las celdas 18650 están certificadas solo hasta 150\,G
+(UN\,38.3). \textbf{El conjunto aguanta unos 150\,G: 5 veces la prueba.} La opción A rompe a """ + g0(pA["G_rot_p999"]) + r"""\,G en
+el """ + nombre_pieza(nA) + r""".
 \item \textbf{Pendientes que no resuelve este cambio:} la masa (""" + f1(CGR["masa"]) + r"""\,g, sobre el máximo de 510\,g),
 el ensayo de la lijadora con la carena de PETG y el área real de la vela (sección 5).
 \end{itemize}
@@ -219,7 +222,7 @@ for gn, pref in grupos:
         vals = [p for n, p in RES[v]["piezas"].items() if n.startswith(pref)]
         if vals:
             p = min(vals, key=lambda q: q["G_rot_p999"])
-            f_.append(f"{g0(p['G_rot_p999'])} ({g0(p['G_rot_p999_peor'])})")
+            f_.append(f"{g0(p['G_rot_p999'])} ({g0(p['G_rot_p999_peor'])})" if p["G_rot_p999"] <= 1000 else "$>$ 1.000 (no carga)")
         else:
             f_.append("---")
     filas.append(f_)
@@ -227,14 +230,36 @@ A(tabla(["Pieza", "A: monocasco", "B: esqueleto", "B regulable"], filas, r"P{4.0
 A(r"\nota{Pico del pulso, en G, que lleva la pieza a la rotura (percentil 99,9 de la pieza) con el pulso de la cuerda; entre "
   r"paréntesis, con el pulso más desfavorable de cualquier duración. Se excluyen los elementos a menos de 4\,mm de los "
   r"anclajes (introducción de la carga).}")
-A(r"\fig{0.86}{v2_caida_rotura_3.png}{G de rotura de cada pieza en las tres variantes. La línea punteada es la prueba de caída.}")
+A(r"\fig{0.86}{v2_caida_rotura_3.png}{G de rotura de cada pieza en las tres variantes. Negro: la prueba de caída; rojo: el "
+  r"límite de las celdas 18650. Las barras cortadas en 1.000\,G son piezas que casi no llevan carga en esa variante.}")
 A(r"\fig{1.0}{v2_caida_mapas_3.png}{Fracción de la rotura con 30\,G en las tres variantes (corte por el plano medio).}")
 A(r"""\pend{Lectura:} las tres variantes pasan los 30\,G. En la opción A todo cuelga del pegado de M4, que rompe a
 """ + g0(pA["G_rot_p999"]) + r"""\,G y depende de cuánto agarra el adhesivo sobre PETG. En B la carga va por las varillas
 y el eslabón débil pasa a ser un mamparo, a """ + g0(pB["G_rot_p999"]) + r"""\,G. En la opción regulable el pack cuelga de
 M2: ese mamparo trabaja más, pero el mínimo sigue en """ + g0(pBR["G_rot_p999"]) + r"""\,G (""" + nombre_pieza(nBR) + r"""),
 más de """ + f"{int(pBR['G_rot_p999'] / 30)}" + r""" veces la carga del ensayo.
+
+\subsection{Qué rompe primero en la práctica}
+Los valores de varios cientos o miles de G no son lo que aguanta el CanSat. Son lo que necesitaría cada pieza para romperse
+sola en un cálculo lineal: la pared de B casi no lleva carga porque todo va por las varillas, y por eso su número es enorme.
+El CanSat rompe por la pieza más débil, y hay piezas que el modelo no tiene.
+\begin{ecu}
+\begin{gather}
+F_{M2} = m_\text{módulo}\,n\,g = 0{,}117\cdot n\cdot 9{,}81;\qquad
+M \approx \frac{F}{4}\cdot 12~\text{mm};\qquad \sigma = \frac{6M}{b\,t^2} = \frac{6M}{20\cdot 4^2}\\
+n = 30:\ \sigma = 1{,}9~\text{MPa};\qquad \sigma = 20~\text{MPa (rotura del PETG al 40\,\%)}\ \Rightarrow\ n \approx 310~\text{G}
+\end{gather}
+\end{ecu}
+La cuenta a mano de M2 (placa de 4\,mm apoyada en las cuatro varillas, con la cuna colgada) da unos 310\,G. El FEM da
+""" + g0(pBR["G_rot_max"]) + r"""\,G en el peor elemento y """ + g0(pBR["G_rot_p999"]) + r"""\,G al percentil 99,9. Coinciden.
 """)
+A(tabla(["Elemento", "Límite", "De dónde sale"], [
+    ["Celdas 18650", "150\\,G", "Certificación UN\\,38.3, ensayo T4: semiseno de 150\\,G y 6\\,ms"],
+    ["Estructura (M2 con la batería)", f"{g0(pBR['G_rot_max'])}--{g0(pBR['G_rot_p999'])}\\,G", "FEM de esta sección; a mano, unos 310\\,G"],
+    ["Líneas del paracaídas y brida", "A verificar", "Con 150\\,G la brida lleva 770\\,N: hace falta el dato de las líneas de Kevlar"],
+    ["Electrónica y conectores", "A ensayar", "Los conectores sin traba se pueden soltar antes que cualquier pieza"],
+    [r"\bfseries Conjunto", r"\bfseries $\approx$ 150\,G", r"\bfseries 5 veces la prueba de caída (30\,G)"],
+], r"P{4.2cm}P{2.4cm}L", sub=(4,), tam=r"\small"))
 
 # ------------------------------------------------------------------ 5
 A(r"\section{Pendientes}")

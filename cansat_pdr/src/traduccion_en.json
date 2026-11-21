@@ -358,5 +358,7 @@
  "re:A: modo axial (\\d+) Hz": "A: axial mode \\1 Hz",
  "re:B: modo axial (\\d+) Hz": "B: axial mode \\1 Hz",
  "re:B regulable: modo axial (\\d+) Hz": "Adjustable B: axial mode \\1 Hz",
- "re:B regulable: modo axial > (\\d+) Hz": "Adjustable B: axial mode > \\1 Hz"
+ "re:B regulable: modo axial > (\\d+) Hz": "Adjustable B: axial mode > \\1 Hz",
+ "re:> (\\d+) G \\(no carga\\)": "> \\1 G (no load)",
+ "celdas 18650 (UN 38.3): 150 G": "18650 cells (UN 38.3): 150 G"
 }

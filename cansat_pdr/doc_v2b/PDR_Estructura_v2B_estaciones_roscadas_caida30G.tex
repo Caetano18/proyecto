@@ -37,7 +37,7 @@ CanSat Argentina Universitario 2026\par}
 \bfseries Código & PDR-STR-REC-2026-v2B & \bfseries Base & Documento v2 del equipo, diseño B (esqueleto) \\
 \bfseries Masa & 531,8\,g (recalculada) & \bfseries Envolvente & \diam\,90 $\times$ 240\,mm \\
 \bfseries CG nominal & 110,7\,mm desde nadir & \bfseries Rango del CG & 104,5--112,8\,mm \\
-\bfseries Rotura en la caída & 427\,G (mamparo M2) & \bfseries Fecha & 21/11/2026 \\
+\bfseries Rotura en la caída & estructura 338--427\,G; conjunto $\approx$ 150\,G (celdas) & \bfseries Fecha & 21/11/2026 \\
 \end{tabularx}}
 \par\medskip
 \section*{Resumen}
@@ -49,9 +49,11 @@ aviónica} (77,3\,g).
 \item \textbf{Centro de gravedad:} nominal en 110,7\,mm desde el fondo de nadir. Corriendo los dos
 módulos se mueve entre 104,5 y 112,8\,mm. El margen estático de la vela
 queda positivo en todo el rango.
-\item \textbf{Choque de 30\,G (prueba de caída):} con el CanSat colgado de la brida, la opción B regulable rompe recién a
-\textbf{427\,G} (mamparo M2). La opción A (monocasco pegado) rompe a
-92\,G en el pegado de M4 a la pared.
+\item \textbf{Choque de 30\,G (prueba de caída):} con el CanSat colgado de la brida, la estructura de la opción B regulable
+rompe entre 338 y 427\,G (mamparo M2, con la batería; a mano
+da unos 310\,G). Pero antes llegan cosas que no son estructura: las celdas 18650 están certificadas solo hasta 150\,G
+(UN\,38.3). \textbf{El conjunto aguanta unos 150\,G: 5 veces la prueba.} La opción A rompe a 92\,G en
+el pegado de M4 a la pared.
 \item \textbf{Pendientes que no resuelve este cambio:} la masa (531,8\,g, sobre el máximo de 510\,g),
 el ensayo de la lijadora con la carena de PETG y el área real de la vela (sección 5).
 \end{itemize}
@@ -214,10 +216,10 @@ Sin factor de seguridad. En las piezas impresas manda la menor entre la resisten
 \subsection{Resultados}
 \par{\small\noindent\begin{tabularx}{\linewidth}{P{4.0cm}CCC}
 \rowcolor{azul}\color{white}\bfseries Pieza & \color{white}\bfseries A: monocasco & \color{white}\bfseries B: esqueleto & \cellcolor{rojo}\color{white}\bfseries B regulable \\
-\cellcolor{celeste}\bfseries Pared de PETG & 554 (330) & 2.573 (1.512) & \cellcolor{rosa}2.471 (1.451) \\
-\cellcolor{celeste}\bfseries Mamparo M1 & 1.249 (744) & 592 (348) & \cellcolor{rosa}793 (466) \\
-\cellcolor{celeste}\bfseries Mamparo M2 & 1.592 (949) & 524 (308) & \cellcolor{rosa}427 (250) \\
-\cellcolor{celeste}\bfseries Mamparo M3 & 3.373 (2.010) & 606 (356) & \cellcolor{rosa}530 (311) \\
+\cellcolor{celeste}\bfseries Pared de PETG & 554 (330) & $>$ 1.000 (no carga) & \cellcolor{rosa}$>$ 1.000 (no carga) \\
+\cellcolor{celeste}\bfseries Mamparo M1 & $>$ 1.000 (no carga) & 592 (348) & \cellcolor{rosa}793 (466) \\
+\cellcolor{celeste}\bfseries Mamparo M2 & $>$ 1.000 (no carga) & 524 (308) & \cellcolor{rosa}427 (250) \\
+\cellcolor{celeste}\bfseries Mamparo M3 & $>$ 1.000 (no carga) & 606 (356) & \cellcolor{rosa}530 (311) \\
 \cellcolor{celeste}\bfseries Mamparo M4 (brida) & 131 (78) & 431 (253) & \cellcolor{rosa}430 (252) \\
 \cellcolor{celeste}\bfseries Pegado mamparo-pared & 92 (55) & --- & \cellcolor{rosa}--- \\
 \cellcolor{celeste}\bfseries Varillas o cáncamos & 505 (301) & 842 (495) & \cellcolor{rosa}752 (441) \\
@@ -225,7 +227,7 @@ Sin factor de seguridad. En las piezas impresas manda la menor entre la resisten
 \end{tabularx}}
 \par\medskip
 \nota{Pico del pulso, en G, que lleva la pieza a la rotura (percentil 99,9 de la pieza) con el pulso de la cuerda; entre paréntesis, con el pulso más desfavorable de cualquier duración. Se excluyen los elementos a menos de 4\,mm de los anclajes (introducción de la carga).}
-\fig{0.86}{v2_caida_rotura_3.png}{G de rotura de cada pieza en las tres variantes. La línea punteada es la prueba de caída.}
+\fig{0.86}{v2_caida_rotura_3.png}{G de rotura de cada pieza en las tres variantes. Negro: la prueba de caída; rojo: el límite de las celdas 18650. Las barras cortadas en 1.000\,G son piezas que casi no llevan carga en esa variante.}
 \fig{1.0}{v2_caida_mapas_3.png}{Fracción de la rotura con 30\,G en las tres variantes (corte por el plano medio).}
 \pend{Lectura:} las tres variantes pasan los 30\,G. En la opción A todo cuelga del pegado de M4, que rompe a
 92\,G y depende de cuánto agarra el adhesivo sobre PETG. En B la carga va por las varillas
@@ -233,6 +235,29 @@ y el eslabón débil pasa a ser un mamparo, a 431\,G. En la opción regulable el
 M2: ese mamparo trabaja más, pero el mínimo sigue en 427\,G (mamparo M2),
 más de 14 veces la carga del ensayo.
 
+\subsection{Qué rompe primero en la práctica}
+Los valores de varios cientos o miles de G no son lo que aguanta el CanSat. Son lo que necesitaría cada pieza para romperse
+sola en un cálculo lineal: la pared de B casi no lleva carga porque todo va por las varillas, y por eso su número es enorme.
+El CanSat rompe por la pieza más débil, y hay piezas que el modelo no tiene.
+\begin{ecu}
+\begin{gather}
+F_{M2} = m_\text{módulo}\,n\,g = 0{,}117\cdot n\cdot 9{,}81;\qquad
+M \approx \frac{F}{4}\cdot 12~\text{mm};\qquad \sigma = \frac{6M}{b\,t^2} = \frac{6M}{20\cdot 4^2}\\
+n = 30:\ \sigma = 1{,}9~\text{MPa};\qquad \sigma = 20~\text{MPa (rotura del PETG al 40\,\%)}\ \Rightarrow\ n \approx 310~\text{G}
+\end{gather}
+\end{ecu}
+La cuenta a mano de M2 (placa de 4\,mm apoyada en las cuatro varillas, con la cuna colgada) da unos 310\,G. El FEM da
+338\,G en el peor elemento y 427\,G al percentil 99,9. Coinciden.
+
+\par{\small\noindent\begin{tabularx}{\linewidth}{P{4.2cm}P{2.4cm}L}
+\rowcolor{azul}\color{white}\bfseries Elemento & \color{white}\bfseries Límite & \color{white}\bfseries De dónde sale \\
+\cellcolor{celeste}\bfseries Celdas 18650 & 150\,G & Certificación UN\,38.3, ensayo T4: semiseno de 150\,G y 6\,ms \\
+\cellcolor{celeste}\bfseries Estructura (M2 con la batería) & 338--427\,G & FEM de esta sección; a mano, unos 310\,G \\
+\cellcolor{celeste}\bfseries Líneas del paracaídas y brida & A verificar & Con 150\,G la brida lleva 770\,N: hace falta el dato de las líneas de Kevlar \\
+\cellcolor{celeste}\bfseries Electrónica y conectores & A ensayar & Los conectores sin traba se pueden soltar antes que cualquier pieza \\
+\cellcolor{celeste}\bfseries \bfseries Conjunto & \cellcolor{celeste}\bfseries \bfseries $\approx$ 150\,G & \cellcolor{celeste}\bfseries \bfseries 5 veces la prueba de caída (30\,G) \\
+\end{tabularx}}
+\par\medskip
 \section{Pendientes}
 \par{\footnotesize\noindent\begin{tabularx}{\linewidth}{P{3.0cm}LL}
 \rowcolor{azul}\color{white}\bfseries Pendiente & \color{white}\bfseries Por qué & \color{white}\bfseries Cómo se cierra \\

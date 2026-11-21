@@ -143,9 +143,11 @@ def L_fem_resultados(sl):
         "**All three options survive the 30 G drop test.**",
         f"A: everything hangs from the M4 bond; it fails at {PA['G_rot_p999']:.0f} G and depends on the bond strength on PETG.",
         f"B: the rods carry the load; the weakest part is a bulkhead at {PB['G_rot_p999']:.0f} G.",
-        f"Adjustable B: the pack hangs from M2; minimum {PR['G_rot_p999']:.0f} G ({pieza_en(NR)}), "
-        f"{PR['G_rot_p999'] / 30:.0f} times the test load.",
-    ], sz=10.5, spc=280)
+        f"Adjustable B: the pack hangs from M2; the structure fails at {PR['G_rot_max']:.0f}–{PR['G_rot_p999']:.0f} G "
+        f"({pieza_en(NR)}); a hand check of M2 gives about 310 G.",
+        "**Whole CanSat ≈ 150 G** (5 × the test): the 18650 cells are only certified to 150 G (UN 38.3, T4). "
+        "Values above 1000 G are parts that carry almost no load.",
+    ], sz=10, spc=220)
 
 
 def L_fem_mapas(sl):
