@@ -27,7 +27,7 @@ def main(out):
         "bisagra": E.larguero_punto(-1, 180), "vela": E.vela_punto(1, 0.55, 0.55), "fuga": E.vela_punto(-1, 1.0, 0.45),
         "holgura": E.vela_punto(-1, 0.62, 0.5), "cuerpo": (60, -43.0, -10.0), "nadir": (0, 0, -20)})
     et = [("apice", "Ápice: la quilla va en el\ncanal dorsal (190 mm)"),
-          ("pivote", "Pivote: perno M4, 2 resortes,\ntope y trinquete a 52°"),
+          ("pivote", "Pivote: eje M4; la biela del\nservo lo lleva al tope de 52°"),
           ("larguero", "Larguero CF Ø4/2,\n52° de la quilla"),
           ("bisagra", "Larguero izquierdo de 185 mm\nsin puntera: lóbulo\nmás chico → vira"),
           ("vela", "Vela Rogallo de ripstop\n(espiral pasiva)"), ("fuga", "Borde de fuga libre"),
@@ -45,7 +45,7 @@ def main(out):
         "brida": (250, -0.5 * 23.3, 0.5 * 23.3), "cansat": (120, -43.0, 10.0)})
     et = [("tela", "Paracaídas plano Ø226\n(gajos de ripstop)"), ("ventana", "Ventana central Ø40"),
           ("lineas", "8 líneas de Kevlar\n(282 mm)"), ("destorcedor", "Destorcedor"),
-          ("pasador", "Pasador de liberación:\nlo retiene el lazo"), ("brida", "Brida de 4 ramales\na las varillas"),
+          ("pasador", "Pasador de liberación:\nlo retira un servo"), ("brida", "Brida de 4 ramales\na las varillas"),
           ("cansat", "CanSat: 15 m/s,\nala todavía plegada")]
     i = [x for x in et if x[0] in ("lineas", "pasador", "brida", "cansat")]
     d = [x for x in et if x[0] in ("ventana", "tela", "destorcedor")]

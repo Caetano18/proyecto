@@ -36,7 +36,7 @@ def main(out):
     mk = {"varilla": (130, -23.3, 23.3), "tuerca2": (x2 - 1.2, -23.3 - 2.6, 23.3), "m2": (x2 + 4, -25, -20),
           "cuna": (x2 - 23, -34.7, -8), "pack": (x2 - 33 - 4.4, -20, 4.2), "m3": (x3, -25, -20),
           "tuerca3": (x3 + 5.2, -23.3 - 2.6, 23.3), "pcb": (x3 - 38, -15, -12),
-          "m1": (0, -25, 15), "m4": (216, -25, -20), "capsula": (194, -12.5, 19), "paracaidas": (229, -22.3, 15.2),
+          "m1": (0, -25, 15), "m4": (216, -25, -20), "capsula": (194, -12.5, 19), "servo_ala": (15.0, 0.0, 17.0), "paracaidas": (229, -22.3, 15.2),
           "larguero": (100, -YL, ZL), "carcasa": (120, -15.0, -41.3)}
     et = [("varilla", "Varillas roscadas (rosca M3)\nen toda su longitud, paso 0,5 mm"),
           ("tuerca2", "Tuercas nyloc a cada lado\nde M2: se corre la estación"),
@@ -46,7 +46,7 @@ def main(out):
           ("m3", f"M3: estación regulable\nx = {CG.RANGO3[0]:.0f}–{CG.RANGO3[1]:.0f} mm"),
           ("tuerca3", "Tuercas nyloc de\nla estación M3"), ("pcb", "Módulo de aviónica:\nlos rieles cuelgan de M3"),
           ("m1", "M1: fondo de nadir (fijo)"),
-          ("m4", "M4 (fijo)"), ("capsula", "Servos (3): tapa,\nparacaídas y ala"), ("paracaidas", "Paracaídas Ø226"),
+          ("m4", "M4 (fijo)"), ("capsula", "Servos de la tapa y\ndel paracaídas"), ("servo_ala", "Servo del ala: abre los\ndos largueros (bielas)"), ("paracaidas", "Paracaídas Ø226"),
           ("larguero", "Larguero CF (ala estibada)"), ("carcasa", "Carena PETG 2 mm\n(recortada)")]
     M["int"] = viz.render(est, f"{out}/v2BR_interior.png", V, (1500, 2000), 1.25, cuna=CUNA, marcas=mk)
     i, d = lados(M, "int", et)

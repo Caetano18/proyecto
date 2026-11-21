@@ -375,5 +375,11 @@
  "Tuercas nyloc de\nla estación M3": "Nyloc nuts of\nthe M3 station",
  "Tapa M5 de la copa\n(la libera un servo)": "Cup lid M5\n(released by a servo)",
  "Servos (3): tapa, paracaídas\ny ala; lazo de Dyneema": "Servos (3): lid, parachute\nand wing; Dyneema loop",
- "Servos (3): tapa,\nparacaídas y ala": "Servos (3): lid,\nparachute and wing"
+ "Servos (3): tapa,\nparacaídas y ala": "Servos (3): lid,\nparachute and wing",
+ "Bisagra de la puntera\n(la abre la tensión de la vela)": "Tip hinge\n(opened by the sail tension)",
+ "Servos de la tapa y\ndel paracaídas": "Lid and parachute\nservos",
+ "Pivote: eje M4 y manivela;\nlo mueve el servo del ala": "Pivot: M4 shaft and crank,\ndriven by the wing servo",
+ "Servo del ala: abre los\ndos largueros (bielas)": "Wing servo: opens both\nspars (two links)",
+ "Pivote: eje M4; la biela del\nservo lo lleva al tope de 52°": "Pivot: M4 shaft; the servo link\ntakes the spar to the 52° stop",
+ "Pasador de liberación:\nlo retira un servo": "Release pin:\npulled by a servo"
 }

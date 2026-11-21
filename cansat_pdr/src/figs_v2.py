@@ -36,7 +36,7 @@ def main(out):
               ("panel", "Panel solar 50 × 30"),
               ("ranura", "Ranura 6 × 192 con el\nlarguero CF Ø4"), ("pivote", "Pivote del larguero")]
         if v == "A":
-            et.append(("bisagra", "Bisagra de la puntera\n(retenida por el lazo)"))
+            et.append(("bisagra", "Bisagra de la puntera\n(la abre la tensión de la vela)"))
         if v == "B":
             mk["tornillo"] = (218, -45, 0)
             et.append(("tornillo", "Tornillos de la carena\n(3 arriba y 3 abajo)"))
@@ -45,18 +45,18 @@ def main(out):
         anotar(out, M, f"{k}_exterior", k + "_ext", izq=i, der=d, ancho=7.8, col=0.31, fs=8.0)
         # ------------------------------------------------ corte tipo Sims
         mk = {"paracaidas": (229, -22.3, 15.2), "m4": (216, -25, -20),
-              "capsula": (194, -12.5, 19), "m3": (173, -25, -20), "gnss": (157, -9, 16),
+              "capsula": (194, -12.5, 19), "servo_ala": (15.0, 0.0, 17.0), "m3": (173, -25, -20), "gnss": (157, -9, 16),
               "antena": (143, 8.5, 17), "pcb": (135, -15, -12), "m2": (83, -25, -20), "bateria": (45.6, -20, 4.2),
               "baliza": (28, 18, 4), "camara_n": (0, 0, -20), "m1": (0, -25, 15), "vela": (110, -12.5, 40.5),
               "larguero": (100, -YL, ZL), "pivote": (14, -YL, ZL), "carcasa": (120, -15.0, -41.3)}
         et = [("paracaidas", f"Paracaídas Ø{E.D_PARA:.0f} plegado\n(copa, bahía 5)"), 
-              ("m4", "M4: mamparo de cenit"), ("capsula", "Servos (3): tapa, paracaídas\ny ala; lazo de Dyneema"),
+              ("m4", "M4: mamparo de cenit"), ("capsula", "Servos de la tapa y\ndel paracaídas"),
               ("m3", "M3: mamparo de aviónica"), ("gnss", "GNSS"),
               ("antena", "Antena 915 MHz"), ("pcb", "PCB principal"), ("m2", "M2: mamparo puente"),
               ("bateria", "Pack 2 × 18650"), ("baliza", "Baliza con batería propia"),
               ("camara_n", "Cámara de nadir\n(ventana Ø14)"), ("m1", "M1: fondo de nadir"),
               ("vela", "Vela Rogallo plegada\nbajo la cubierta"), ("larguero", "Larguero CF Ø4\n(ala estibada)"),
-              ("pivote", "Pivote: perno M4 y\n2 resortes de torsión"),
+              ("pivote", "Pivote: eje M4 y manivela;\nlo mueve el servo del ala"), ("servo_ala", "Servo del ala: abre los\ndos largueros (bielas)"),
               ("carcasa", "Pared de PETG 2 mm\n(recortada para ver adentro)")]
         if v == "A":
             mk.update({"adhesivo": (172.5, -11.0, -41.1), "cancamo": (214.3, -23.3, -23.3)})

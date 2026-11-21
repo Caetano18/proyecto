@@ -29,7 +29,9 @@ FIJOS = [  # (item, masa g, x mm)
     ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Horquilla y pasador de liberación", 2.0, 225.0),
     ("Servo de la tapa + traba (micro servo de 5 g)", 5.5, 200.0),
     ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF + bisagras", 11.0, 103.0),
-    ("Pivotes: pernos M4, resortes, bloques", 8.0, 14.0), ("Servos de liberación (2 micro servos de 5 g)", 10.0, 194.0),
+    ("Pivotes: ejes M4 de Al 7075, manivelas y bloques", 5.0, 14.0),
+    ("Servo de liberación del paracaídas (5 g) + varilla", 5.5, 196.0),
+    ("Servo del ala (5 g) + bocina y 2 bielas", 6.5, 11.0),
     ("Panel solar (1)", 4.5, 160.0), ("Baliza piezo + pila propia", 10.0, 12.0),
     ("Cámara de nadir", 11.5, 10.0), ("Cámara de cenit", 11.5, 203.0), ("Cableado y conectores (arnés corto)", 15.0, 120.0),
 ]
@@ -45,6 +47,7 @@ REDUCCION = [  # (cambio, g antes, g despues)
     ("Arnés de cables más corto", 20.0, 15.0),
     ("Cuna de la batería con paredes de 2 mm", 10.0, 7.0),
     ("Tuercas de los extremos de Al 7075", 4.4, 1.6),
+    ("Ejes de los pivotes de Al 7075", 4.2, 1.5),
 ]
 
 

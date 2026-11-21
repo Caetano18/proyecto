@@ -271,13 +271,21 @@ def pivotes(desplegada):
     for s in (1, -1):
         blk = sector(4.0, 26.0, 34.6, RO - t_en(10.0) - 0.05, RAN_ANG, 24.0)
         blk = blk.cut(rod((3, YL, ZL), (27, YL, ZL), 4.4)).cut(rod((14, YL, ZL - 9), (14, YL, ZL + 9), 4.0))
-        perno = rod((14, YL, ZL - 8.0), (14, YL, ZL + 5.0), 4.0)
-        res = fuse(cq.Solid.makeTorus(3.6, 0.8, V(14, YL, ZL - 3.4), V(0, 0, 1)),
-                   cq.Solid.makeTorus(3.6, 0.8, V(14, YL, ZL - 6.4), V(0, 0, 1)))
+        if VAR in ("A", "B", "BR"):    # sin resortes: el eje baja a una manivela que mueve el servo del ala
+            blk = blk.cut(rod((14, YL, ZL - 14), (14, YL, ZL - 8), 4.4)).cut(
+                box(11.5, 16.5, 28.5, YL + 2.5, ZL - 13.0, ZL - 10.0))
+            perno = rod((14, YL, ZL - 12.5), (14, YL, ZL + 5.0), 4.0)
+            res = box(12.0, 16.0, 29.0, YL + 2.0, ZL - 12.5, ZL - 10.5)
+            nres = "Manivela del larguero"
+        else:
+            perno = rod((14, YL, ZL - 8.0), (14, YL, ZL + 5.0), 4.0)
+            res = fuse(cq.Solid.makeTorus(3.6, 0.8, V(14, YL, ZL - 3.4), V(0, 0, 1)),
+                       cq.Solid.makeTorus(3.6, 0.8, V(14, YL, ZL - 6.4), V(0, 0, 1)))
+            nres = "Resortes de torsion"
         if s < 0:
             blk, perno, res = blk.mirror("XZ"), perno.mirror("XZ"), res.mirror("XZ")
         out += [_pz("Bloque de pivote", blk, C_PETG, "esqueleto"), _pz("Perno M4 del pivote", perno, C_ACERO, "ala"),
-                _pz("Resortes de torsion", res, C_ACERO, "ala")]
+                _pz(nres, res, C_ACERO if nres.startswith("Res") else C_AL, "ala")]
     return out
 
 
@@ -383,18 +391,26 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
         for p in E[n0:]:
             p["shape"] = p["shape"].translate(V(d3, 0, 0))
     # bahia 4: nicrom, camara de cenit
-    if VAR in ("A", "B", "BR"):   # despliegue con dos micro servos de un solo uso (paracaidas y ala)
-        for k_, y0 in enumerate((-12.5, 0.5)):
-            E.append(_pz("Servo de liberacion " + ("del paracaidas" if k_ == 0 else "del ala"),
-                         fuse(box(186.0, 202.0, y0, y0 + 11.5, 13.0, 24.5), box(183.0, 205.0, y0, y0 + 11.5, 21.0, 22.5)),
-                         (0.10, 0.20, 0.55), "equipo"))
-            E.append(_pz("Brazo de traba", box(190.0, 198.0, y0 + 2.0, y0 + 9.5, 24.5, 26.0), C_BLANCO, "equipo"))
+    if VAR in ("A", "B", "BR"):   # sin resortes: servo del paracaidas (retira el pasador) y servo de la tapa
+        y0 = -12.5
+        E.append(_pz("Servo de liberacion del paracaidas",
+                     fuse(box(186.0, 202.0, y0, y0 + 11.5, 13.0, 24.5), box(183.0, 205.0, y0, y0 + 11.5, 21.0, 22.5)),
+                     (0.10, 0.20, 0.55), "equipo"))
+        E.append(_pz("Brazo de traba", box(190.0, 198.0, y0 + 2.0, y0 + 9.5, 24.5, 26.0), C_BLANCO, "equipo"))
+        E.append(_pz("Varilla del pasador", rod((204.0, -5.0, 18.0), (222.0, -5.0, 2.5), 1.6), C_ACERO, "equipo"))
         # servo de la tapa: su traba pasa por M4 y retiene la tapa M5 hasta la separacion del cohete
         E.append(_pz("Servo de la tapa", fuse(box(188.0, 204.0, -12.5, -1.0, -31.0, -19.5),
                                               box(185.0, 207.0, -12.5, -1.0, -23.0, -21.5)), (0.10, 0.20, 0.55), "equipo"))
         E.append(_pz("Traba de la tapa", rod((204.0, -7.0, -29.0), (234.0, -7.0, -29.0), 2.0), C_ACERO, "equipo"))
     else:
         E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
+    if VAR in ("A", "B", "BR"):   # bahia 1: servo del ala; con dos bielas lleva los dos largueros al tope de 52 grados
+        E.append(_pz("Servo del ala", fuse(box(4.5, 17.0, -11.5, 11.5, -5.0, 17.0), box(4.5, 17.0, -16.0, 16.0, 10.0, 11.5)),
+                     (0.10, 0.20, 0.55), "equipo"))
+        E.append(_pz("Bocina del servo del ala", box(9.0, 12.5, -9.0, 9.0, 17.0, 18.5), C_BLANCO, "equipo"))
+        for s_ in (1, -1):
+            E.append(_pz("Biela del larguero", rod((10.75, s_ * 7.5, 17.75), (14.0, s_ * 30.0, ZL - 11.5), 2.0), C_AL,
+                         "equipo"))
     cam = box(-4, 4, -10, 10, -10, 10)                    # cuerpo de la camara: eje optico +x local
     lente = disc(4, 10, 4.0)
     ang = 90.0 - 35.0                                     # eje 35 grados sobre el flanco, hacia el cenit
@@ -416,7 +432,7 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
             t = cq.Solid.makeTorus(38.5, 0.7, V(221.2 + 2.25 * k, 0, 0), V(1, 0, 0))
             res = t if res is None else res.fuse(t)
         E.append(_pz("Resorte expulsor", res, C_ACERO, "paracaidas"))
-    if lazo:
+    if lazo and VAR not in ("A", "B", "BR"):
         lz = [((194.0, 0, 25), (199.0, YL - 2.5, ZL - 1.5)), ((194.0, 0, 25), (199.0, -YL + 2.5, ZL - 1.5)),
               ((194.0, 0, 25), (214.0, 0, 2.0)), ((214.0, 0, 2.0), (x_pas, 0, 2.0))]
         sh = None
