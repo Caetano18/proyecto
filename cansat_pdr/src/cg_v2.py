@@ -18,21 +18,33 @@ RANGO3 = (156.0, 177.0)        # limites por los rieles (abajo) y la capsula de 
 XPN = (14 + 0.55 * 190, 14 + 0.67 * 190)
 CR = 190.0
 
+# Masas del documento v2 con la carena recalculada, y los cambios para quedar debajo de 500 g (PESO_V2 guarda el valor
+# original de cada item cambiado, para la tabla de reduccion de masa).
 FIJOS = [  # (item, masa g, x mm)
     ("Carena PETG 2 mm (240 mm, ranuras y canal)", 163.0, 118.0),
-    ("M1 fondo de nadir", 13.2, 2.0), ("M4 mamparo de cenit", 13.2, 218.0), ("M5 tapa de la copa", 13.2, 238.0),
-    ("Varillas roscadas M3 Al 6061 (4)", 13.6, 113.0), ("Tuercas de los extremos (8, acero)", 4.4, 111.5),
+    ("M1 fondo de nadir (25 % de relleno)", 9.7, 2.0), ("M4 mamparo de cenit (25 % de relleno)", 9.7, 218.0),
+    ("M5 tapa de la copa (2 mm con nervios)", 7.0, 238.0),
+    ("Varillas roscadas M3 Al 6061 (4)", 13.6, 113.0), ("Tuercas de los extremos (8, Al 7075)", 1.6, 111.5),
     ("Tuercas de M1 y M4 (8, Al 7075)", 1.6, 110.0),
-    ("Paracaídas Ø226 + líneas", 8.0, 229.0), ("Resorte expulsor + horquilla y pasador", 5.0, 226.0),
+    ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Resorte expulsor + horquilla y pasador", 5.0, 226.0),
     ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF + bisagras", 11.0, 103.0),
-    ("Pivotes: pernos M4, resortes, bloques", 8.0, 14.0), ("Cápsula de nicrom (PTFE)", 5.0, 194.0),
-    ("Paneles solares (2)", 9.0, 160.0), ("Baliza + batería propia", 15.0, 12.0),
-    ("Cámara de nadir", 11.5, 10.0), ("Cámara de cenit", 11.5, 203.0), ("Cableado y conectores", 20.0, 120.0),
+    ("Pivotes: pernos M4, resortes, bloques", 8.0, 14.0), ("Servos de liberación (2 micro servos de 5 g)", 10.0, 194.0),
+    ("Panel solar (1)", 4.5, 160.0), ("Baliza piezo + pila propia", 10.0, 12.0),
+    ("Cámara de nadir", 11.5, 10.0), ("Cámara de cenit", 11.5, 203.0), ("Cableado y conectores (arnés corto)", 15.0, 120.0),
 ]
-BATERIA = [("Pack 2 × 18650", 92.0, -23.0), ("Cuna en U (PETG)", 10.0, -23.0), ("M2", 13.2, 2.0),
-           ("Tuercas de M2 (8, Al 7075)", 1.6, 2.0)]
+BATERIA = [("Pack 2 × 18650", 92.0, -23.0), ("Cuna en U (PETG, paredes de 2 mm)", 7.0, -23.0),
+           ("M2 (25 % de relleno)", 9.7, 2.0), ("Tuercas de M2 (8, Al 7075)", 1.6, 2.0)]
 AVIONICA = [("PCB principal", 28.0, -41.0), ("Radio 915 MHz + antena", 14.5, -45.0), ("GNSS + antena", 12.0, -16.0),
-            ("Rieles de las placas", 8.0, -39.0), ("M3", 13.2, 2.0), ("Tuercas de M3 (8, Al 7075)", 1.6, 2.0)]
+            ("Rieles de las placas", 8.0, -39.0), ("M3 (25 % de relleno)", 9.7, 2.0), ("Tuercas de M3 (8, Al 7075)", 1.6, 2.0)]
+REDUCCION = [  # (cambio, g antes, g despues)
+    ("Mamparos M1–M4 al 25 % de relleno (v2: 40 %)", 4 * 13.2, 4 * 9.7),
+    ("Tapa M5 de 2 mm con nervios (v2: 4 mm)", 13.2, 7.0),
+    ("Un panel solar (despiece del equipo; E3 pide uno o más)", 9.0, 4.5),
+    ("Baliza piezo con pila propia más chica", 15.0, 10.0),
+    ("Arnés de cables más corto", 20.0, 15.0),
+    ("Cuna de la batería con paredes de 2 mm", 10.0, 7.0),
+    ("Tuercas de los extremos de Al 7075", 4.4, 1.6),
+]
 
 
 def items(x_m2=NOM2, x_m3=NOM3):

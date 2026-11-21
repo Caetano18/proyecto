@@ -363,5 +363,11 @@
  "celdas 18650 (UN 38.3): 150 G": "18650 cells (UN 38.3): 150 G",
  "Vela Rogallo de ripstop\n(espiral pasiva)": "Ripstop Rogallo sail\n(passive spiral)",
  "Cuerpo: carena PETG 2 mm": "Body: PETG 2 mm fairing",
- "Paracaídas plano Ø226\n(gajos de ripstop)": "Ø226 flat parachute\n(ripstop gores)"
+ "Paracaídas plano Ø226\n(gajos de ripstop)": "Ø226 flat parachute\n(ripstop gores)",
+ "Servo de flecha: varillas\nde empuje a los largueros": "Sweep servo: push rods\nto both spars",
+ "Larguero CF Ø4/2,\n52° de la quilla": "CF spar Ø4/2,\n52° from the keel",
+ "Larguero izquierdo de 185 mm (sin\npuntera): lóbulo más chico → vira": "Left spar 185 mm (no tip):\nsmaller lobe → the CanSat turns",
+ "Servos de liberación (2):\nparacaídas y ala": "Release servos (2):\nparachute and wing",
+ "Servos de liberación (2)\ny lazo de Dyneema": "Release servos (2)\nand Dyneema loop",
+ "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈7 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, ≈7 m/s"
 }

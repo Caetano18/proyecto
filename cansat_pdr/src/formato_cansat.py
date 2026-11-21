@@ -31,6 +31,21 @@ CTX_TEXTO = {qn("a:rPr"), qn("a:endParaRPr"), qn("a:defRPr")}
 CTX_LINEA = {qn("a:ln"), qn("a:lnL"), qn("a:lnR"), qn("a:lnT"), qn("a:lnB")}
 
 
+NEUTRO = False
+
+
+def neutro():
+    """Variante neutra: blanco y grises, sin colores; tarjetas redondeadas sin borde (menos 'cuadrado')."""
+    global AZUL, AZUL_T, CELESTE, ROJO_SEL, ROSA_SEL, BORDE, TEXTO, RELLENO, LINEA, NEUTRO
+    NEUTRO = True
+    AZUL, AZUL_T, CELESTE, ROJO_SEL, ROSA_SEL, BORDE = "262626", "262626", "F4F4F4", "262626", "EBEBEB", "D0D0D0"
+    TEXTO = {"242C4F": "262626", "138A8A": "262626", "5B6478": "595959", "6B7280": "595959", "5A6280": "595959",
+             "B23A2E": "262626", "1F4E79": "262626", "C00000": "262626"}
+    RELLENO = {"242C4F": "404040", "138A8A": "595959", "F1F4F9": "F4F4F4", "E2F1F1": "EBEBEB", "BFE6E6": "F4F4F4",
+               "D5DAE5": "D0D0D0", "C00000": "1F1F1F", "FBE9E9": "EBEBEB", "2E75B6": "595959", "1F4E79": "404040"}
+    LINEA = {"D5DAE5": "D0D0D0", "138A8A": "8C8C8C", "242C4F": "8C8C8C", "1F4E79": "8C8C8C"}
+
+
 def _rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
@@ -138,7 +153,25 @@ def recolorear(el, blanco_a_azul=False):
 
 
 def tarjetas_a_recuadros(el):
-    """Tarjetas redondeadas grises -> recuadros blancos con filete azul (como los PDR de referencia)."""
+    """Tarjetas redondeadas grises -> recuadros blancos con filete azul (como los PDR de referencia).
+    En la variante neutra quedan redondeadas, en gris muy claro y sin borde."""
+    if NEUTRO:
+        for sp in el.iter(qn("p:sp")):
+            sppr = sp.find(qn("p:spPr"))
+            if sppr is None:
+                continue
+            geo, sf = sppr.find(qn("a:prstGeom")), sppr.find(qn("a:solidFill"))
+            if geo is None or geo.get("prst") != "roundRect" or sf is None:
+                continue
+            c = sf.find(qn("a:srgbClr"))
+            if c is None or c.get("val", "").upper() not in ("F1F4F9", "F4F4F4"):
+                continue
+            c.set("val", "F4F4F4")
+            ln = sppr.find(qn("a:ln"))
+            if ln is not None:
+                sppr.remove(ln)
+            etree.SubElement(sppr, qn("a:ln")).append(etree.Element(qn("a:noFill")))
+        return
     for sp in el.iter(qn("p:sp")):
         sppr = sp.find(qn("p:spPr"))
         if sppr is None:

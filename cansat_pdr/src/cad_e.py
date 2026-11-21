@@ -49,6 +49,12 @@ C_CUB = (0.90, 0.90, 0.86)
 
 YL, ZL = R_LAR * math.cos(math.radians(RAN_ANG)), R_LAR * math.sin(math.radians(RAN_ANG))
 
+
+def punta(s_sign):
+    """Largo de la puntera plegable.  En BR el larguero izquierdo (-y, mirando hacia adelante = nadir) va sin puntera:
+    ese lobulo tiene menos superficie y la diferencia de sustentacion hace virar al CanSat."""
+    return 0.0 if (VAR == "BR" and s_sign < 0) else L_PUNTA
+
 # variante: "E" = rev. E (laminado + esqueleto con lastre); "A" = v2 diseno A (monocasco PETG 2 mm, mamparos pegados);
 # "B" = v2 diseno B (esqueleto de 4 varillas M3 + mamparos + carena PETG 2 mm)
 VAR = "E"
@@ -74,6 +80,30 @@ def variante(v, x_m2=83.0, x_m3=173.0):
 def tuerca(x0, y, z, ancho=5.5, alto=2.4):
     """Tuerca hexagonal M3 (eje x) con la cara inferior en x0."""
     return cq.Workplane("YZ").polygon(6, ancho / math.cos(math.radians(30))).extrude(alto).val().translate(V(x0, y, z))
+
+
+def servo_flecha(desplegada=False):
+    """BR: servo de flecha en la bahia 1, entre los pivotes.  Los resortes de torsion empujan los largueros hacia afuera y el
+    servo, con dos varillas de empuje, los frena en el angulo que se le ordena (es un tope regulable)."""
+    out = []
+    cuerpo = box(8.0, 30.8, -6.1, 6.1, 8.0, 34.5)
+    orejas = box(4.0, 34.8, -6.1, 6.1, 26.0, 28.5)
+    out.append(_pz("Servo de flecha", fuse(cuerpo, orejas), (0.10, 0.20, 0.55), "equipo"))
+    out.append(_pz("Soporte del servo", box(4.0, 8.0, -9.0, 9.0, 6.0, 30.0), C_PETG, "esqueleto"))
+    eje = (19.4, 0.0, 34.5)
+    out.append(_pz("Brazo del servo", fuse(rod((19.4, 0, 34.5), (19.4, 0, 36.0), 6.0), box(16.0, 22.8, -14.0, 14.0, 35.0, 36.0)),
+                   C_BLANCO, "equipo"))
+    var = None
+    for s_ in (1, -1):
+        if desplegada:
+            d = np.array([math.cos(math.radians(FLECHA)), s_ * math.sin(math.radians(FLECHA)), 0.0])
+            q = tuple(np.array([14.0, s_ * YL, ZL]) + 9.0 * d)
+        else:
+            q = (24.0, s_ * (YL - 1.5), ZL + 1.0)
+        r_ = rod((19.4, s_ * 13.0, 35.5), q, 1.4)
+        var = r_ if var is None else var.fuse(r_)
+    out.append(_pz("Varillas de empuje", var, C_ACERO, "equipo"))
+    return out
 
 
 def tuercas_estaciones():
@@ -259,19 +289,20 @@ def largueros(desplegada):
             d = np.array([math.cos(math.radians(FLECHA)), s * math.sin(math.radians(FLECHA)), 0.0])
             pb = p0 + L_LAR * d
             tubo = rod(tuple(p0 - 6 * d), tuple(pb), 4.0, 2.0)
-            punta = rod(tuple(pb), tuple(pb + L_PUNTA * d), 4.0, 2.0)
-            bis = rod(tuple(pb - 3 * d), tuple(pb + 3 * d), 6.0, 4.0)
-            out += [_pz("Larguero CF", tubo, C_CF, "ala"), _pz("Puntera del larguero", punta, C_CF, "ala"),
-                    _pz("Bisagra de la puntera", bis, C_AL, "ala")]
+            out.append(_pz("Larguero CF", tubo, C_CF, "ala"))
+            if punta(s) > 0:
+                out += [_pz("Puntera del larguero", rod(tuple(pb), tuple(pb + punta(s) * d), 4.0, 2.0), C_CF, "ala"),
+                        _pz("Bisagra de la puntera", rod(tuple(pb - 3 * d), tuple(pb + 3 * d), 6.0, 4.0), C_AL, "ala")]
         else:
             x1 = 14.0 + L_LAR
             tubo = rod((8.0, s * YL, ZL), (x1, s * YL, ZL), 4.0, 2.0)
             bis = rod((x1 - 3, s * YL, ZL), (x1 + 3, s * YL, ZL), 6.0, 4.0)
             rp = R_LAR - 4.8
             yp, zp = s * rp * math.cos(math.radians(RAN_ANG)), rp * math.sin(math.radians(RAN_ANG))
-            punta = rod((x1 - L_PUNTA, yp, zp), (x1, yp, zp), 4.0, 2.0)
-            out += [_pz("Larguero CF", tubo, C_CF, "ala"), _pz("Puntera plegada", punta, C_CF, "ala"),
-                    _pz("Bisagra de la puntera", bis, C_AL, "ala")]
+            out.append(_pz("Larguero CF", tubo, C_CF, "ala"))
+            if punta(s) > 0:
+                out += [_pz("Puntera plegada", rod((x1 - L_PUNTA, yp, zp), (x1, yp, zp), 4.0, 2.0), C_CF, "ala"),
+                        _pz("Bisagra de la puntera", bis, C_AL, "ala")]
     return out
 
 
@@ -282,7 +313,7 @@ def vela_mesh(s_sign, ns=140, nt=70, h=31.0):
     zq = RO - CANAL_P + 0.6
     S, T = np.meshgrid(np.linspace(0, 1, ns), np.linspace(0, 1, nt), indexing="ij")
     K = np.stack([QUILLA[0] + (QUILLA[1] - QUILLA[0]) * S, 0 * S, zq + 0 * S], axis=-1)
-    Lp = P0[None, None, :] + (L_LAR + L_PUNTA) * S[..., None] * d[None, None, :]
+    Lp = P0[None, None, :] + (L_LAR + punta(s_sign)) * S[..., None] * d[None, None, :]
     X = (1 - T)[..., None] * K + T[..., None] * Lp
     X[..., 2] += h * S * 4 * T * (1 - T)
     y = np.abs(X[..., 1])
@@ -352,7 +383,14 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
         for p in E[n0:]:
             p["shape"] = p["shape"].translate(V(d3, 0, 0))
     # bahia 4: nicrom, camara de cenit
-    E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
+    if VAR in ("A", "B", "BR"):   # despliegue con dos micro servos de un solo uso (paracaidas y ala)
+        for k_, y0 in enumerate((-12.5, 0.5)):
+            E.append(_pz("Servo de liberacion " + ("del paracaidas" if k_ == 0 else "del ala"),
+                         fuse(box(186.0, 202.0, y0, y0 + 11.5, 13.0, 24.5), box(183.0, 205.0, y0, y0 + 11.5, 21.0, 22.5)),
+                         (0.10, 0.20, 0.55), "equipo"))
+            E.append(_pz("Brazo de traba", box(190.0, 198.0, y0 + 2.0, y0 + 9.5, 24.5, 26.0), C_BLANCO, "equipo"))
+    else:
+        E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
     cam = box(-4, 4, -10, 10, -10, 10)                    # cuerpo de la camara: eje optico +x local
     lente = disc(4, 10, 4.0)
     ang = 90.0 - 35.0                                     # eje 35 grados sobre el flanco, hacia el cenit
@@ -442,7 +480,7 @@ def vela_punto(s_sign, s, t, h=31.0):
     d = np.array([math.cos(math.radians(FLECHA)), s_sign * math.sin(math.radians(FLECHA)), 0.0])
     P0 = np.array([14.0, s_sign * YL, ZL])
     K = np.array([QUILLA[0] + (QUILLA[1] - QUILLA[0]) * s, 0.0, RO - CANAL_P + 0.6])
-    X = (1 - t) * K + t * (P0 + (L_LAR + L_PUNTA) * s * d)
+    X = (1 - t) * K + t * (P0 + (L_LAR + punta(s_sign)) * s * d)
     X[2] += h * s * 4 * t * (1 - t)
     return tuple(float(v) for v in X)
 

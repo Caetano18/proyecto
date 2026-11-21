@@ -20,6 +20,21 @@ RHO_SITIO, RHO_MAR = 1.15, 1.225
 CDA_CIL = 0.86 * math.pi * 0.09 ** 2 / 4
 
 
+L_DER, L_IZQ = 225.0, 185.0      # el larguero izquierdo va sin puntera: lobulo izquierdo mas chico (viraje)
+
+
+def lobulo(L, ang=52.0, keel=190.0, ypiv=35.0, x0=14.0):
+    """Area en planta de un lobulo (de la quilla al larguero) [m2]."""
+    d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
+    pts = [(x0, 0.0), (x0, ypiv), (x0 + L * d[0], ypiv + L * d[1]), (x0 + keel, 0.0)]
+    x = np.array([p[0] for p in pts]); y = np.array([p[1] for p in pts])
+    return 0.5 * abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))) / 1e6
+
+
+def area_asim():
+    return lobulo(L_DER) + lobulo(L_IZQ)
+
+
 def area_vela(L, ang=52.0, keel=190.0, ypiv=35.0, x0=14.0):
     d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
     pts = [(x0, ypiv), (x0 + L * d[0], ypiv + L * d[1]), (x0 + keel, 0.0), (x0 + L * d[0], -ypiv - L * d[1]), (x0, -ypiv)]
@@ -27,13 +42,26 @@ def area_vela(L, ang=52.0, keel=190.0, ypiv=35.0, x0=14.0):
     return 0.5 * abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))) / 1e6, 2 * (ypiv + L * d[1])
 
 
-def vz(f, rho, S):
-    phi, a, Kp, Kv, CD0 = math.radians(25), math.radians(28), 2.2, math.pi, 0.080
+R_ESPIRAL = 50.0          # radio de la espiral estimado por el equipo [m]
+
+
+def vz(f, rho, S, R=R_ESPIRAL, solo_v=False):
+    """Descenso en una espiral de radio R: el alabeo sale de R = (V cos g)^2 / (g tan phi)."""
+    phi = math.radians(6.0)
+    for _ in range(30):
+        v_, g_ = _vz_phi(f, rho, S, phi)
+        phi = math.atan((v_ * math.cos(g_)) ** 2 / (9.80665 * R))
+    v_, g_ = _vz_phi(f, rho, S, phi)
+    return (v_ * math.sin(g_), math.degrees(phi), v_) if solo_v else v_ * math.sin(g_)
+
+
+def _vz_phi(f, rho, S, phi):
+    a, Kp, Kv, CD0 = math.radians(28), 2.2, math.pi, 0.080
     CL = Kp * math.sin(a) * math.cos(a) ** 2 + f * Kv * math.cos(a) * math.sin(a) ** 2
     CD = CD0 + CDA_CIL / S + CL * math.tan(a)
     g = math.atan(CD / (CL * math.cos(phi)))
     V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL * math.cos(phi)))
-    return V * math.sin(g)
+    return V, g
 
 
 def estilo(ax):
@@ -63,7 +91,7 @@ def dimensiones(out):
     for y in (-23.3, 23.3):
         ax.plot([y, y], [0.4, 226], color=AM, lw=1.4)
     bah = [("Bay 1: nadir camera, beacon,\nspar pivots", 4, CG.NOM2 - 46), ("Bay 2: 2 × 18650 pack\n(hangs from M2)", CG.NOM2 - 46, CG.NOM2),
-           ("Bay 3: avionics\n(hangs from M3)", CG.NOM2 + 4, CG.NOM3), ("Bay 4: zenith camera,\nnichrome capsule", CG.NOM3 + 4, 216),
+           ("Bay 3: avionics\n(hangs from M3)", CG.NOM2 + 4, CG.NOM3), ("Bay 4: zenith camera,\nrelease servos", CG.NOM3 + 4, 216),
            ("Bay 5: parachute cup", 220, 236)]
     for t, a, b in bah:
         ax.text(0, (a + b) / 2, t, ha="center", va="center", fontsize=7.6, color=TX2)
@@ -72,33 +100,38 @@ def dimensiones(out):
     ax.set_xlim(-75, 110)
     ax.set_ylim(-22, 250)
     ax.set_title("Stowed CanSat (section, nominal stations)", fontsize=10.5, weight="bold")
-    # ---------------- planta desplegada
+    # ---------------- planta desplegada (lobulo izquierdo mas chico)
     ax = fig.add_axes([0.42, 0.08, 0.56, 0.86])
     ax.set_aspect("equal")
     ax.axis("off")
-    L, ang = 225.0, 52.0
+    ang = 52.0
     d = (math.cos(math.radians(ang)), math.sin(math.radians(ang)))
-    tip = (14 + L * d[0], 35 + L * d[1])
-    vela = [(14, 35), tip, (204, 0), (tip[0], -tip[1]), (14, -35)]
+    tD = (14 + L_DER * d[0], 35 + L_DER * d[1])        # derecha (+y)
+    tI = (14 + L_IZQ * d[0], 35 + L_IZQ * d[1])        # izquierda (-y)
+    # vista desde arriba con el apice arriba: derecha del vuelo a la derecha de la figura
+    vela = [(14, 35), tD, (204, 0), (tI[0], -tI[1]), (14, -35)]
     ax.add_patch(Polygon([(p[1], -p[0]) for p in vela], closed=True, fc="#fde3d3", ec=NA, lw=1.2))
     ax.add_patch(Rectangle((-45, -240), 90, 240, fc="#eef2f8", ec=TX, lw=1.0, zorder=3))
-    for s in (1, -1):
-        ax.plot([s * 35, s * tip[1]], [-14, -tip[0]], color=TX, lw=2.4, zorder=4)
+    ax.plot([35, tD[1]], [-14, -tD[0]], color=TX, lw=2.4, zorder=4)
+    ax.plot([-35, -tI[1]], [-14, -tI[0]], color=TX, lw=2.4, zorder=4)
     ax.plot([0, 0], [-14, -204], color=TX, lw=1.4, ls="--", zorder=4)
-    S, b = area_vela(L, ang)
-    cota(ax, (-tip[1], 14), (tip[1], 14), f"span {b:.0f} mm", off=(0, 9))
-    for s_ in (1, -1):
-        ax.plot([s_ * tip[1], s_ * tip[1]], [-tip[0], 14], color=TX2, lw=0.6, ls=":")
+    b = tD[1] + tI[1]
+    cota(ax, (-tI[1], 14), (tD[1], 14), f"span {b:.0f} mm", off=(0, 9))
+    for xx, tt in ((tD[1], tD), (-tI[1], tI)):
+        ax.plot([xx, xx], [-tt[0], 14], color=TX2, lw=0.6, ls=":")
     cota(ax, (60, -14), (60, -204), "keel 190", off=(14, 0), rot=90)
-    rot = math.degrees(math.atan2(L * d[0], L * d[1]))
-    ax.text(-35 - 0.5 * L * d[1] - 18, -14 - 0.5 * L * d[0] + 22, f"spar CF Ø4/2, {L:.0f} mm\n(185 + 40 folding tip)",
-            fontsize=8.6, ha="center", va="center", rotation=rot, color=TX)
-    ax.text(tip[1] * 0.62, -60, f"{ang:.0f}° from the keel", fontsize=8.6, color=TX)
+    ax.text(tD[1] * 0.62, -60, f"{ang:.0f}° from the keel", fontsize=8.6, color=TX)
+    ax.text(tD[1] - 4, -tD[0] - 14, f"right spar {L_DER:.0f} mm\n(185 + 40 folding tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    ax.text(-tI[1] + 4, -tI[0] - 14, f"left spar {L_IZQ:.0f} mm\n(no tip)", fontsize=8.4, ha="center", va="top", color=TX)
+    aD, aI = lobulo(L_DER), lobulo(L_IZQ)
+    ax.text(tD[1] * 0.60, -135, f"{aD * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
+    ax.text(-tI[1] * 0.60, -135, f"{aI * 1e4:.0f} cm²", ha="center", fontsize=9, weight="bold", color=NA)
     ax.text(0, -232, "body Ø90 × 240", ha="center", fontsize=8.6, color=TX2, zorder=5)
-    ax.text(0, 52, f"Planform area {S:.3f} m² (v2 uses 0.067 m²)", ha="center", fontsize=9.5, weight="bold", color=TX)
+    ax.text(0, 52, f"Sail area {(aD + aI):.3f} m²; left lobe {100 * (1 - aI / aD):.0f} % smaller → left turn",
+            ha="center", fontsize=9.5, weight="bold", color=TX)
     ax.set_xlim(-250, 250)
     ax.set_ylim(-260, 70)
-    ax.set_title("Deployed Rogallo glider (plan view)", fontsize=10.5, weight="bold", pad=14)
+    ax.set_title("Deployed Rogallo glider (plan view, nose up)", fontsize=10.5, weight="bold", pad=14)
     fig.savefig(f"{out}/v2_dimensiones_en.png", dpi=220)
     plt.close(fig)
 
@@ -143,31 +176,29 @@ def paracaidas(out):
 
 
 def planeo(out):
-    S_v2 = 0.067
-    S_real, _ = area_vela(225.0)
-    # largo de larguero para 0,068 m2 con la misma quilla y el mismo angulo
-    Ls = np.linspace(225, 400, 500)
-    L_req = float(Ls[np.argmin([abs(area_vela(L)[0] - 0.068) for L in Ls])])
-    fig, ax = plt.subplots(figsize=(7.4, 4.0))
+    S = area_asim()
     f = np.linspace(0.2, 1.0, 100)
+    fig, ax = plt.subplots(figsize=(7.4, 4.0))
     ax.axhspan(2, 8, color="#e8f1fb", lw=0)
-    ax.text(0.205, 7.9, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="top")
-    for S, col, lab in ((S_v2, AZ, f"S = {S_v2:.3f} m² (v2 value)"), (S_real, NA, f"S = {S_real:.3f} m² (actual planform)"),
-                        (0.068, VE, f"S = 0.068 m² (spars of {L_req:.0f} mm)")):
-        ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=col, lw=2, label=lab)
-    ax.set_xlim(0.2, 1.0)
+    ax.text(0.205, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom")
+    ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=NA, lw=2.2, label=f"sail {S:.3f} m², spiral radius {R_ESPIRAL:.0f} m")
+    for fr in (1.0, 0.5, 0.3):
+        v = vz(fr, RHO_SITIO, S)
+        ax.plot(fr, v, "o", ms=7, color=NA, mec="white", mew=1.5, zorder=5)
+        ax.annotate(f"{v:.1f} m/s", (fr, v), xytext=(4, 7), textcoords="offset points", fontsize=8.8)
+    ax.set_xlim(0.2, 1.02)
     ax.set_ylim(0, 10)
-    ax.set_xlabel("Fraction of Polhamus vortex lift developed by the sail, f")
+    ax.set_xlabel("Fraction of the vortex lift developed by the sail, f")
     ax.set_ylabel("Glide descent rate at the site [m/s]")
-    ax.legend(loc="lower left", fontsize=8.6, frameon=False)
+    ax.legend(loc="lower left", fontsize=8.8, frameon=False)
     estilo(ax)
     fig.tight_layout()
     fig.savefig(f"{out}/v2_planeo_en.png", dpi=220)
     plt.close(fig)
-    out_d = dict(S_v2=S_v2, S_real=S_real, L_req=L_req,
-                 vz={k: {str(fr): vz(fr, RHO_SITIO, S) for fr in (1.0, 0.5, 0.3)} for k, S in
-                     (("v2", S_v2), ("real", S_real), ("068", 0.068))})
-    return out_d
+    vz5, phi5, v5 = vz(0.5, RHO_SITIO, S, solo_v=True)
+    return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=phi5, V=v5,
+                vz={str(fr): vz(fr, RHO_SITIO, S) for fr in (1.0, 0.5, 0.3)},
+                vueltas_s=2 * math.pi * R_ESPIRAL / (v5 * math.cos(math.atan(vz5 / v5))))
 
 
 if __name__ == "__main__":

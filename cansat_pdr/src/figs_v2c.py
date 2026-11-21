@@ -24,11 +24,12 @@ def main(out):
     M = {}
     M["des"] = viz.render(des, f"{out}/v2BR_desplegado.png", V_DES, (2000, 1500), 1.3, marcas={
         "apice": (16, 0, 41), "pivote": (14, -YL, ZL), "larguero": E.larguero_punto(-1, 110),
-        "bisagra": E.larguero_punto(-1, 185), "vela": E.vela_punto(1, 0.55, 0.55), "fuga": E.vela_punto(-1, 1.0, 0.45),
+        "bisagra": E.larguero_punto(-1, 180), "vela": E.vela_punto(1, 0.55, 0.55), "fuga": E.vela_punto(-1, 1.0, 0.45),
         "holgura": E.vela_punto(-1, 0.62, 0.5), "cuerpo": (60, -43.0, -10.0), "nadir": (0, 0, -20)})
     et = [("apice", "Ápice: la quilla va en el\ncanal dorsal (190 mm)"),
           ("pivote", "Pivote: perno M4, 2 resortes,\ntope y trinquete a 52°"),
-          ("larguero", "Larguero CF Ø4/2 × 225,\nflecha 52°"), ("bisagra", "Bisagra de la puntera (40 mm)"),
+          ("larguero", "Larguero CF Ø4/2,\n52° de la quilla"),
+          ("bisagra", "Larguero izquierdo de 185 mm (sin\npuntera): lóbulo más chico → vira"),
           ("vela", "Vela Rogallo de ripstop\n(espiral pasiva)"), ("fuga", "Borde de fuga libre"),
           ("holgura", "Holgura de la tela:\ninflado de 31 mm"), ("cuerpo", "Cuerpo: carena PETG 2 mm"),
           ("nadir", "Ventana de nadir")]
@@ -59,7 +60,7 @@ def main(out):
     plt.rcParams["font.family"] = "Inter"
     ims = [plt.imread(f"{out}/{n}.png") for n in ("v2BR_exterior", "v2BR_fase1", "v2BR_desplegado")]
     tit = ["1. Lanzamiento: Ø90 × 240,\nala y paracaídas guardados", "2. Fase 1: paracaídas,\n15 m/s",
-           "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, 5 m/s"]
+           "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈7 m/s"]
     fig = plt.figure(figsize=(11.0, 5.4))
     pos = [[0.0, 0.0, 0.2, 0.86], [0.2, 0.0, 0.22, 0.86], [0.43, 0.08, 0.57, 0.70]]
     for k in range(3):
