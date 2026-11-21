@@ -162,7 +162,7 @@ def L23_dimensiones(sl):
         "launch vehicle within its ±1 mm tolerance.",
         "**Stations:** M1 at x = 0; M2 adjustable 66–90 mm; M3 adjustable 156–177 mm; M4 at 216; lid at 236.",
         "**Wing stowage:** two 6 × 192 mm slots and a 28 × 6 mm dorsal channel.",
-        f"**Glider:** keel 190 mm; spars at 60° from the keel, right 350 mm and left 310 mm (185 mm + folding tip); sail "
+        f"**Glider:** keel 190 mm; spars at 60° from the keel with 5° dihedral, right 350 mm and left 310 mm (185 mm + folding tip); sail "
         f"{DES['S']:.3f} m².",
     ], sz=11, spc=300)
 
@@ -370,7 +370,7 @@ def L56_mecanismos(sl):
           "Threaded station of M2: the battery module moves along the rods")
     x = X0 + I(6.4) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
-        ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 60°"],
+        ["Spar pivots (2)", "14", "Al 7075 M4 shaft tilted 5° (dihedral) with a crank; fixed stop at 60°"],
         ["Spar tip hinges (2)", "199", "Tips of 165 / 125 mm fold under the spar; the airflow unfolds them, a snap latch holds them"],
         ["Wing servo and links", "5–17", "Over centre at both ends: no load on the gears stowed or open"],
         ["Parachute servo", "183–223", "PTFE-sleeved pin of a two-ring release: about 3 N of pull at the 30 G drop load (servo: 18 N)"],
@@ -455,11 +455,12 @@ def L61_total(sl):
         f"**Total: {n1(MTOT)} ± {n1(UTOT)} g** (S1: 500 ± 10 g).",
         f"**CG:** {n1(CAS['nominal']['x_cg'])} mm from the nadir end with the nominal stations; moving M2 and M3 "
         f"sets it anywhere between {rango_cg()}.",
-        "**Pitch stability (open item):** in NASA TN D-1957 the parawing alone was neutral or unstable, and trim "
-        "was shown with the CG 0.75 keel lengths below the keel. Our CG is 0.21 keel lengths below it.",
-        "**Measures:** canopy sewn under the spars and keel (in the same tests this raised stability and gave a "
-        "positive pitching moment at zero lift); CG moved forward with the stations; glide drops before CDR. "
-        "Fallback: hang the body below the wing on short lines.",
+        "**Longitudinal stability:** the pitching moments measured in NASA TN D-1957 (fig. 13), moved to our CG, "
+        "show a stable trim only inside a narrow CG window, because our CG sits close to the wing.",
+        "**How it is controlled:** a 5° dihedral (spar pivot shafts tilted 5°) raises the wing 9.5 mm over the CG "
+        "and widens the window to x ≈ 107–111 mm (static margin 3–6 %); the threaded stations put the CG inside it "
+        "(M2 at about 79 mm → CG ≈ 109.4 mm) and glide drops fine-tune it (0.5 mm per nut turn).",
+        "**Fallback:** if the drops show it too sensitive, the wing is raised 25 mm on folding struts (margin 7 %).",
     ], sz=11.5, spc=330)
 
 
