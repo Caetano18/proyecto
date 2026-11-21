@@ -249,6 +249,7 @@ def L49_paracaidas(sl):
     y = Y0 + I(0.36) + 7 * I(0.4) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, None, [
         "Both in calendered ripstop nylon (35 g/m²), already available to the team. Both meet C3 (15 ± 3 m/s).",
+        "**Theory:** drag equation at terminal velocity; canopy Cd0 (Knacke) and body Cd (Hoerner).",
     ], sz=10.5, spc=200)
 
 
@@ -296,7 +297,9 @@ def L52_sel_estrategia(sl):
         "much vortex lift the sail develops. Inside C4 (5 ± 3 m/s).",
         "**Verification:** glide drops of the sail at flight mass to measure rate and radius; the left tip length sets "
         "the radius.",
-    ], sz=11, spc=300)
+        "**Theory:** Polhamus leading-edge-suction analogy; flat-plate skin friction of the ripstop; crossflow drag "
+        "of the spars; body Cd (Hoerner); coordinated turn.",
+    ], sz=10.5, spc=260)
 
 
 # ============================================================ MECHANICAL

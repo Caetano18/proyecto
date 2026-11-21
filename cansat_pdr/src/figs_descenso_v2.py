@@ -56,12 +56,41 @@ def vz(f, rho, S, R=R_ESPIRAL, solo_v=False):
     return (v_ * math.sin(g_), math.degrees(phi), v_) if solo_v else v_ * math.sin(g_)
 
 
-def _vz_phi(f, rho, S, phi):
-    a, Kp, Kv, CD0 = math.radians(28), 2.2, math.pi, 0.080
+NU = 1.6e-5            # viscosidad cinematica del aire en el sitio [m2/s]
+K_TELA = 1.15          # area de tela / area en planta (embolsamiento de la vela)
+CD_MEMB = 0.030        # tolerancia de forma de la membrana (embolsamiento y flameo del borde de fuga)
+D_LARG, CD_CIL_LARG = 0.005, 1.0   # larguero dentro de la vaina [m] y Cd de flujo cruzado (Re_d ~ 3000)
+
+
+def envergadura():
+    return 2 * 35.0 + (L_DER + L_IZQ) * math.sin(math.radians(ANG))
+
+
+def cd_parasito(V, S):
+    """Arrastre parasito de la vela referido a S: rozamiento del ripstop (dos caras, placa plana turbulenta:
+    conservador por la rugosidad del tejido) + forma de los largueros (flujo cruzado) + tolerancia de la membrana."""
+    c = S / (envergadura() / 1000.0)                      # cuerda media geometrica [m]
+    re = max(V * c / NU, 1e3)
+    cf = 0.074 * re ** -0.2
+    cd_f = cf * 2 * K_TELA
+    cd_l = CD_CIL_LARG * D_LARG * (L_DER + L_IZQ) / 1000.0 * math.sin(math.radians(ANG)) ** 3 / S
+    return cd_f, cd_l, CD_MEMB, re
+
+
+def _vz_phi(f, rho, S, phi, detalle=False):
+    """Analogia de succion del borde de ataque (Polhamus): CL = Kp sen a cos2 a + Kv cos a sen2 a; sin succion en el
+    borde de ataque, el arrastre debido a la sustentacion es CL tan a."""
+    a, Kp, Kv = math.radians(28), 2.2, math.pi
     CL = Kp * math.sin(a) * math.cos(a) ** 2 + f * Kv * math.cos(a) * math.sin(a) ** 2
-    CD = CD0 + CDA_CIL / S + CL * math.tan(a)
-    g = math.atan(CD / (CL * math.cos(phi)))
-    V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL * math.cos(phi)))
+    V = 10.0
+    for _ in range(40):                                   # el rozamiento depende de V (Reynolds)
+        cd_f, cd_l, cd_m, re = cd_parasito(V, S)
+        CD = cd_f + cd_l + cd_m + CDA_CIL / S + CL * math.tan(a)
+        g = math.atan(CD / (CL * math.cos(phi)))
+        V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL * math.cos(phi)))
+    if detalle:
+        return dict(CL=CL, cd_roz=cd_f, cd_largueros=cd_l, cd_membrana=cd_m, cd_cuerpo=CDA_CIL / S,
+                    cd_sustentacion=CL * math.tan(a), CD=CD, Re=re, V=V)
     return V, g
 
 
@@ -208,7 +237,8 @@ def planeo(out):
     fig.savefig(f"{out}/v2_planeo_en.png", dpi=220)
     plt.close(fig)
     vz5, phi5, v5 = vz(0.5, RHO_SITIO, S, solo_v=True)
-    return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=phi5, V=v5,
+    det = _vz_phi(0.5, RHO_SITIO, S, math.radians(phi5), detalle=True)
+    return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=phi5, V=v5, arrastre=det,
                 vz={str(fr): vz(fr, RHO_SITIO, S) for fr in (1.0, 0.5, 0.3)},
                 vueltas_s=2 * math.pi * R_ESPIRAL / (v5 * math.cos(math.atan(vz5 / v5))))
 
