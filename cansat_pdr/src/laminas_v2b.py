@@ -1,5 +1,5 @@
 """Laminas en la plantilla del PDR (mismo modelo y formato que las del principio): estructura v2, opcion B con estaciones
-roscadas para ajustar el CG, y FEM del impulso de 30 G (prueba de caida).  En ingles, como el resto de la presentacion.
+roscadas para ajustar el CG (diseno y diagramas, sin FEM).  En ingles, como el resto de la presentacion.
 
 Uso: python3 laminas_v2b.py <presentacion_equipo.pptx> <salida.pptx>
 Lee ../fea/cg_v2BR.json y ../fea/caida_v2_ABBR.json, y las figuras *_en.png de ../figs.
@@ -15,7 +15,6 @@ import cg_v2 as CG
 
 FEA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fea")
 CGR = json.load(open(os.path.join(FEA, "cg_v2BR.json")))
-RES = {r["var"]: r for r in json.load(open(os.path.join(FEA, "caida_v2_ABBR.json")))}
 CAS = CGR["casos"]
 
 
@@ -41,9 +40,6 @@ def pieza_en(n):
     return "bulkhead " + n[:2]
 
 
-NA, PA = minimo(RES["A"])
-NB, PB = minimo(RES["B"])
-NR, PR = minimo(RES["BR"])
 
 
 def L_trade(sl):
@@ -52,16 +48,16 @@ def L_trade(sl):
           "Option A (left) and option B (right) of the team's v2 design, cut away")
     x = X0 + wi + GAP
     tabla(sl, x, Y0, X1 - x, [1.45, 1.55, 1.55], ["Criterion", "A: glued monocoque", "B: M3 rod skeleton"], [
-        ["Load path in the drop test", "Everything hangs from the M4 bond", "The rods carry the load to the bridle"],
-        ["Failure in the drop test (FEM)", f"{PA['G_rot_p999']:.0f} G ({pieza_en(NA)})", f"{PB['G_rot_p999']:.0f} G ({pieza_en(NB)})"],
+        ["Load path", "Through the bulkhead-to-wall bonds", "Through the rods, up to the bridle"],
+        ["Manufacturing", "Long print; layer delamination", "Small bulkheads; the fairing carries no load"],
         ["Access to electronics", "Closed once glued", "Skeleton slides out (6 screws)"],
         ["CG adjustment", "No (glued bulkheads)", "Yes: threaded stations"],
         ["Main uncertainty", "Bond strength on PETG (2–6 MPa)", "Nuts loosening (nyloc + paint mark)"],
     ], sz=10, sz_cab=10.5, alto=I(0.46), alto_cab=I(0.36), col_sel=2, ml=70000)
     y = Y0 + I(0.36) + 5 * I(0.46) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, "Selection: option B", [
-        "Both options are in the v2 trade study; v2 chose B qualitatively. The drop-test FEM confirms it: B fails at "
-        f"**{PB['G_rot_p999']:.0f} G**, A at **{PA['G_rot_p999']:.0f} G**.",
+        "Both options are in the v2 trade study; v2 chose B for its resistance to delamination and the access to the "
+        "electronics.",
         "B also allows the CG to be trimmed by moving the heavy modules along the rods (next slide).",
     ], sz=11, spc=300)
 
@@ -163,21 +159,16 @@ def L_fem_mapas(sl):
 def L_pendientes(sl):
     tabla(sl, X0, Y0, X1 - X0, [1.6, 3.4, 3.0], ["Open item", "Why", "How it closes"], [
         ["Mass (S1)", f"{CGR['masa']:.0f} g recalculated, above the 510 g limit", "Lower bulkhead infill, shorter fairing, review electronics masses"],
-        ["Sander test", "With the 2 mm PETG fairing the first lateral mode falls inside 0–233 Hz (MS −0.55)", "Laminated shell (memo v3) or a stiffer fairing"],
         ["Sail area", "With the 190 mm keel and 225 mm spars at 52° the area is 0.045 m², not 0.067 m²", "Resize the sail or check the v2 area definition"],
         ["CG within the v2 range", f"Nominal {n1(CAS['nominal']['x_cg'])} mm; with both modules down {n1(CAS['todo abajo']['x_cg'])} mm", "Measure the real CG, trim, glide tests"],
         ["Nuts loosening", "Sander and flight vibration", "Nyloc nuts + paint mark; inspect after each test"],
         ["Thermal test (60 °C)", "PETG loses stiffness close to 60 °C", "2 h test with the integrated structure"],
-        ["Lateral shock", "Only the axial drop was checked", "30 G lateral case (landing) with the same model"],
     ], sz=10.5, sz_cab=11, alto=I(0.5), alto_cab=I(0.36), ml=70000)
 
 
 LAMINAS = [(L_trade, "Structure Trade: Option A vs. Option B"),
            (L_estaciones, "Option B with Adjustable (Threaded) Stations"),
            (L_cg, "CG Adjustment with the Battery and Avionics Modules"),
-           (L_fem_modelo, "FEM: 30 G Impulse (Drop Test) – Model"),
-           (L_fem_resultados, "FEM: 30 G Impulse – Failure Load of Each Part"),
-           (L_fem_mapas, "FEM: 30 G Impulse – Stress Maps"),
            (L_pendientes, "Open Items")]
 
 
