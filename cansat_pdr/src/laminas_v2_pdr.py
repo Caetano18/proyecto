@@ -5,7 +5,7 @@ dos micro servos de un solo uso.  Formato de los PDR de referencia en variante n
 
 Laminas: 20-26 (configuracion y layout fisico), 48-52 (control de descenso), 53-57 (subsistema mecanico),
 58-62 (presupuesto de masa).
-Uso: python3 laminas_v2_pdr.py <presentacion_equipo.pptx> <salida.pptx> [--estilo-equipo]
+Uso: python3 laminas_v2_pdr.py <presentacion_equipo.pptx> <salida.pptx>   (estilo del equipo)
 """
 import os
 import sys
@@ -464,7 +464,51 @@ ESPERADO = {20: "Configuration A", 21: "Configuration B", 22: "Selection and rat
             60: "Sources or uncertainties", 61: "Total Mass", 62: "Margin"}
 
 
-def main(entrada, salida, formato=True):
+def aligerar(salida, entrada, laminas, lado_max=1800):
+    """Deja el archivo robusto para cualquier visor (el de iOS mezclaba imagenes entre laminas por el rId):
+    - las figuras agregadas llevan identificadores de relacion unicos en todo el archivo (rIdFig<lamina>_<n>),
+      distintos de los rId1..rId5 que usan las laminas del equipo;
+    - las figuras se reducen a lo que realmente se ve (lado mayor <= lado_max px).
+    Las imagenes y laminas del equipo no se tocan."""
+    import io
+    import re
+    import zipfile
+    from PIL import Image
+    equipo = {n for n in zipfile.ZipFile(entrada).namelist() if n.startswith("ppt/media/")}
+    zin = zipfile.ZipFile(salida)
+    datos = {i.filename: zin.read(i.filename) for i in zin.infolist()}
+    orden = [i.filename for i in zin.infolist()]
+    zin.close()
+    pres = datos["ppt/_rels/presentation.xml.rels"].decode()
+    destino = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="(slides/slide\d+\.xml)"', pres))
+    ids = re.findall(r'<p:sldId [^>]*r:id="(rId\d+)"', datos["ppt/presentation.xml"].decode())
+    for k in laminas:
+        xml_n = "ppt/" + destino[ids[k - 1]]
+        rel_n = xml_n.replace("slides/", "slides/_rels/") + ".rels"
+        rels, xml = datos[rel_n].decode(), datos[xml_n].decode()
+        cambio = {}
+        for rid, tgt in re.findall(r'Id="(rId\d+)" Type="[^"]*/image" Target="\.\./(media/[^"]+)"', rels):
+            if "ppt/" + tgt not in equipo:
+                cambio[rid] = f"rIdFig{k}_{len(cambio) + 1}"
+        for a, b in cambio.items():
+            rels = rels.replace(f'Id="{a}"', f'Id="{b}"')
+            xml = xml.replace(f'r:embed="{a}"', f'r:embed="{b}"')
+        datos[rel_n], datos[xml_n] = rels.encode(), xml.encode()
+    for n in orden:
+        if n.startswith("ppt/media/") and n not in equipo and n.endswith(".png"):
+            im = Image.open(io.BytesIO(datos[n]))
+            if max(im.size) > lado_max:
+                f = lado_max / max(im.size)
+                im = im.resize((round(im.size[0] * f), round(im.size[1] * f)), Image.LANCZOS)
+            b = io.BytesIO()
+            im.save(b, "PNG", optimize=True)
+            datos[n] = b.getvalue()
+    with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as zout:
+        for n in orden:
+            zout.writestr(n, datos[n])
+
+
+def main(entrada, salida, neutro=False):
     prs = Presentation(entrada)
     sl = prs.slides
     for k, t in ESPERADO.items():
@@ -473,13 +517,14 @@ def main(entrada, salida, formato=True):
     for k, fn in TRABAJO.items():
         limpiar(sl[k - 1])
         fn(sl[k - 1])
-    if formato:                 # formato de los PDR de referencia, variante neutra (blanco y grises)
+    if neutro:                  # variante neutra (reformatea TODA la presentacion; no es la que usa el equipo)
         import formato_cansat
         formato_cansat.neutro()
         formato_cansat.aplicar(prs)
     prs.save(salida)
+    aligerar(salida, entrada, sorted(TRABAJO))
     print("ok:", salida, len(prs.slides), "laminas;", len(TRABAJO), "rellenas")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], formato="--estilo-equipo" not in sys.argv)
+    main(sys.argv[1], sys.argv[2], neutro="--neutro" in sys.argv)
