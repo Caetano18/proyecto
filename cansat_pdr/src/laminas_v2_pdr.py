@@ -454,7 +454,7 @@ ESPERADO = {20: "Configuration A", 21: "Configuration B", 22: "Selection and rat
             60: "Sources or uncertainties", 61: "Total Mass", 62: "Margin"}
 
 
-def main(entrada, salida):
+def main(entrada, salida, formato=True):
     prs = Presentation(entrada)
     sl = prs.slides
     for k, t in ESPERADO.items():
@@ -463,11 +463,12 @@ def main(entrada, salida):
     for k, fn in TRABAJO.items():
         limpiar(sl[k - 1])
         fn(sl[k - 1])
-    import formato_cansat
-    formato_cansat.aplicar(prs)
+    if formato:                 # formato clasico de la competencia; sin el, queda el estilo propio del equipo
+        import formato_cansat
+        formato_cansat.aplicar(prs)
     prs.save(salida)
     print("ok:", salida, len(prs.slides), "laminas;", len(TRABAJO), "rellenas")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], formato="--estilo-equipo" not in sys.argv)
