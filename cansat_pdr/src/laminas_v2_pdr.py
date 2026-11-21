@@ -361,9 +361,9 @@ def L56_mecanismos(sl):
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
         ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 52°"],
         ["Right spar tip hinge", "199", "The 40 mm tip folds to fit the 192 mm slot; the sail tension opens it"],
-        ["Wing servo and links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
-        ["Parachute servo", "183–223", "Pulls the release pin at 80 % of apogee"],
-        ["Lid servo and latch", "188–234", "Releases the lid after the separation; the lid pulls the parachute out"],
+        ["Servo 3: wing, links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
+        ["Servo 2: parachute", "183–223", "Pulls the release pin at 80 % of apogee"],
+        ["Servo 1: lid latch", "183–234", "Releases the lid after the separation; the lid pulls the parachute out"],
         ["Threaded stations", "M2, M3", "Move the battery and avionics modules (0.5 mm per turn)"],
     ], sz=10, sz_cab=10.5, alto=I(0.56), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
@@ -519,6 +519,66 @@ def aligerar(salida, entrada, laminas, lado_max=1800):
             zout.writestr(n, datos[n])
 
 
+# ============================================================ ajustes minimos en laminas del equipo (coherencia)
+def _texto(par, t):
+    """Reemplaza el texto de un parrafo conservando el formato del primer run."""
+    runs = par.runs
+    runs[0].text = t
+    for r in runs[1:]:
+        r._r.getparent().remove(r._r)
+
+
+def _celda(tabla_sh, i, j, viejo, nuevo):
+    c = tabla_sh.table.cell(i, j)
+    assert c.text == viejo, (i, j, c.text)
+    _texto(c.text_frame.paragraphs[0], nuevo)
+
+
+def ajustes_equipo(prs):
+    """Lamina 30: largo real del CanSat (240 mm con el paracaidas adentro).  Lamina 83: el servo de la tapa actua en
+    la separacion; al 80 % actuan el del paracaidas y el del ala.  Si el texto original cambio, no se toca nada."""
+    sl = prs.slides[29]
+    sh = {x.shape_id: x for x in sl.shapes}
+    if sh[357].text_frame.text != "CanSat" or sh[362].text_frame.text != "200 mm":
+        print("AVISO: la lamina 30 cambio; no se ajusta")
+    else:
+        mm = 3375000 / 270.0                       # la bahia de 270 mm mide 3375000 EMU en el dibujo
+        tope, base = 2610000, 5985000
+        top_c = base - int(240 * mm)
+        sh[356].top, sh[356].height = tope, top_c - tope
+        par = sh[356].text_frame.paragraphs
+        _texto(par[0], "Clearance")
+        for q in par[1:]:
+            q._p.getparent().remove(q._p)
+        sh[357].top, sh[357].height = top_c, base - top_c
+        p2 = sh[357].text_frame.add_paragraph()
+        p2.alignment = sh[357].text_frame.paragraphs[0].alignment
+        r = p2.add_run()
+        r.text = "parachute inside\n(top cup)"
+        r.font.size = sh[358].text_frame.paragraphs[0].runs[0].font.size
+        r.font.bold = False
+        f0 = sh[357].text_frame.paragraphs[0].runs[0].font
+        r.font.name = f0.name
+        if f0.color and f0.color.type is not None:
+            r.font.color.rgb = f0.color.rgb
+        sh[359].begin_y, sh[359].end_y = tope, top_c
+        sh[360].top, sh[360].height = tope, top_c - tope
+        _texto(sh[360].text_frame.paragraphs[0], "30 mm")
+        sh[361].begin_y, sh[361].end_y = top_c, base
+        sh[362].top = (top_c + base) // 2 - sh[362].height // 2
+        _texto(sh[362].text_frame.paragraphs[0], "240 mm")
+        _celda(sh[367], 2, 1, "CanSat: 200 mm, plus 50 mm of parachute space",
+               "CanSat: 240 mm with the parachute inside (top cup); 30 mm clearance to the nose cone")
+    sl = prs.slides[82]
+    tb = [x for x in sl.shapes if x.has_table][0]
+    if tb.table.cell(4, 3).text != "15 ± 3 m/s (C3); NVS checkpoint":
+        print("AVISO: la lamina 83 cambio; no se ajusta")
+    else:
+        _celda(tb, 4, 3, "15 ± 3 m/s (C3); NVS checkpoint", "On entry servo 1 opens the lid; 15 ± 3 m/s (C3); NVS checkpoint")
+        _celda(tb, 5, 3, "PWM to 3 servos (1.5 A peak @ 5 V)",
+               "Servo 2 (parachute), then servo 3 (wing); 1.5 A peak @ 5 V")
+
+
 def main(entrada, salida, neutro=False):
     prs = Presentation(entrada)
     sl = prs.slides
@@ -528,6 +588,8 @@ def main(entrada, salida, neutro=False):
     for k, fn in TRABAJO.items():
         limpiar(sl[k - 1])
         fn(sl[k - 1])
+    if len(sl) == 106 and subtitulo(sl[29]) is not None and "Launch Vehicle Compatibility (2/2)" in subtitulo(sl[29]).text_frame.text:
+        ajustes_equipo(prs)
     if neutro:                  # variante neutra (reformatea TODA la presentacion; no es la que usa el equipo)
         import formato_cansat
         formato_cansat.neutro()
