@@ -42,7 +42,7 @@ def main(out):
             et.append(("tornillo", "Tornillos de la carena\n(3 arriba y 3 abajo)"))
         M[k + "_ext"] = viz.render(est, f"{out}/{k}_exterior.png", V, (1500, 2000), 1.25, marcas=mk)
         i, d = lados(M, k + "_ext", et)
-        anotar(out, M, f"{k}_exterior", k + "_ext", izq=i, der=d, ancho=7.0, col=0.30)
+        anotar(out, M, f"{k}_exterior", k + "_ext", izq=i, der=d, ancho=7.8, col=0.31, fs=8.0)
         # ------------------------------------------------ corte tipo Sims
         mk = {"paracaidas": (229, -22.3, 15.2), "resorte": (228, -33.3, 19.3), "m4": (216, -25, -20),
               "capsula": (194, -12.5, 19), "m3": (173, -25, -20), "gnss": (157, -9, 16),
@@ -67,7 +67,7 @@ def main(out):
             et += [("varilla", "Varillas M3 de Al 6061 (×4):\nllevan la carga y la brida")]
         M[k + "_sims"] = viz.render(est, f"{out}/{k}_interior.png", V, (1500, 2000), 1.25, cuna=CUNA, marcas=mk)
         i, d = lados(M, k + "_sims", et)
-        anotar(out, M, f"{k}_interior", k + "_sims", izq=i, der=d, ancho=7.6, col=0.30, fs=8.0)
+        anotar(out, M, f"{k}_interior", k + "_sims", izq=i, der=d, ancho=7.8, col=0.31, fs=8.0)
     E.variante("E")
     json.dump(M, open(f"{out}/marcas_v2.json", "w"), indent=1)
     print("diagramas v2 ok")

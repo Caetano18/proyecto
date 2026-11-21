@@ -144,7 +144,7 @@ def dimensiones(out):
 
 
 def paracaidas(out):
-    fig = plt.figure(figsize=(11.0, 4.4))
+    fig = plt.figure(figsize=(9.0, 5.0))
     # esquemas
     ax = fig.add_axes([0.01, 0.06, 0.40, 0.86])
     ax.set_aspect("equal")
@@ -152,16 +152,16 @@ def paracaidas(out):
     ax.add_patch(Circle((-150, 0), 113, fc="#fde3d3", ec=NA, lw=1.3))
     ax.add_patch(Circle((-150, 0), 20, fc="white", ec=NA, lw=1.0))
     cota(ax, (-263, -128), (-37, -128), "Ø226", off=(0, -10))
-    ax.annotate("vent Ø40", xy=(-150 + 14, 14), xytext=(-150 + 40, 62), fontsize=8.5, ha="left", va="center",
+    ax.annotate("vent Ø40", xy=(-150, -20), xytext=(-150, -62), fontsize=8.5, ha="center", va="center",
                 arrowprops=dict(arrowstyle="-", color=TX, lw=0.8))
-    ax.text(-150, 1.5 * 94.1 + 18, "1A: flat circular with vent", ha="center", fontsize=9.5, weight="bold")
+    ax.text(-150, 1.5 * 94.1 + 18, "1A: flat circular\nwith vent", ha="center", va="bottom", fontsize=9.5, weight="bold")
     w = 94.1
     for cx, cy in ((0, 0), (w, 0), (-w, 0), (0, w), (0, -w)):
         ax.add_patch(Rectangle((150 + cx - w / 2, cy - w / 2), w, w, fc="#dbe8f7", ec=AZ, lw=1.1))
     cota(ax, (150 - 1.5 * w, -1.5 * w - 14), (150 + 1.5 * w, -1.5 * w - 14), "282", off=(0, -10))
-    ax.text(150, 1.5 * w + 18, "1B: cruciform (L/W = 3)", ha="center", fontsize=9.5, weight="bold")
+    ax.text(150, 1.5 * w + 18, "1B: cruciform\n(L/W = 3)", ha="center", va="bottom", fontsize=9.5, weight="bold")
     ax.set_xlim(-275, 300)
-    ax.set_ylim(-180, 175)
+    ax.set_ylim(-180, 215)
     # velocidad contra area
     ax = fig.add_axes([0.50, 0.15, 0.47, 0.74])
     S0 = np.linspace(0.025, 0.06, 200)
@@ -187,7 +187,7 @@ def paracaidas(out):
 def planeo(out):
     S = area_asim()
     f = np.linspace(0.2, 1.0, 100)
-    fig, ax = plt.subplots(figsize=(7.4, 4.0))
+    fig, ax = plt.subplots(figsize=(6.4, 4.4))
     ax.axhspan(2, 8, color="#e8f1fb", lw=0)
     ax.text(0.205, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom")
     ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=NA, lw=2.2, label=f"sail {S:.3f} m², spiral radius {R_ESPIRAL:.0f} m")

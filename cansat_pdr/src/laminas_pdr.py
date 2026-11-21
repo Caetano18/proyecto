@@ -267,10 +267,26 @@ def imagen(sl, nombre, x, y, w, h, alin="c", valin="c", src=FIGS, nombre_sh=None
     return pic
 
 
-def panel(sl, x, y, w, h, figs, pie=None, sz_pie=10.5, pad=I(0.12)):
-    """Tarjeta con una o varias figuras lado a lado (lista de (nombre, peso_ancho)) y un pie opcional."""
+def panel(sl, x, y, w, h, figs, pie=None, sz_pie=10.5, pad=I(0.12), misma_escala=False):
+    """Tarjeta con una o varias figuras lado a lado (lista de (nombre, peso_ancho)) y un pie opcional.
+    misma_escala: todas las figuras con el mismo factor px -> EMU (vistas del mismo objeto a la misma escala),
+    lo mas grandes posible y centradas en el panel."""
     tarjeta(sl, x, y, w, h, nombre="Figure panel")
     hp = I(0.42) if pie else 0
+    if misma_escala:
+        dims = [recortar(nom) for nom, _ in figs]
+        wu, hu = w - 2 * pad - pad * (len(figs) - 1), h - 2 * pad - hp
+        esc = min(wu / sum(d[1] for d in dims), hu / max(d[2] for d in dims))
+        xx = x + (w - (sum(int(d[1] * esc) for d in dims) + pad * (len(figs) - 1))) // 2
+        for (nom, _), (p, iw, ih) in zip(figs, dims):
+            ww, hh = int(iw * esc), int(ih * esc)
+            pic = sl.shapes.add_picture(p, xx, y + pad + (hu - hh) // 2, ww, hh)
+            pic.name = "Figure " + nom
+            xx += ww + pad
+        if pie:
+            texto(sl, x + pad, y + h - hp - I(0.04), w - 2 * pad, hp, [pie], sz_pie, GRIS, "Caption", algn="c",
+                  anchor="ctr", italic=True)
+        return
     tot = sum(p for _, p in figs)
     xx = x + pad
     wu = w - 2 * pad - pad * (len(figs) - 1)

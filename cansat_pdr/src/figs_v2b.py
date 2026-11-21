@@ -73,9 +73,9 @@ def main(out):
     et = [("tuerca_a", "Tuerca nyloc arriba"), ("tuerca_b", "Tuerca nyloc abajo"),
           ("varilla", "Varilla M3 roscada:\n1 vuelta = 0,5 mm"), ("m2", "M2 (PETG, 4 mm)"),
           ("cuna", "Pared de la cuna en U"), ("pack", "Pack 2 × 18650")]
-    M["det"] = viz.render(det, f"{out}/v2BR_detalle.png", ((0.05, -1.0, 0.55), (1, 0, 0)), (1500, 1300), 1.3, marcas=mk)
+    M["det"] = viz.render(det, f"{out}/v2BR_detalle.png", ((0.05, -1.0, 0.55), (1, 0, 0)), (1300, 1300), 1.3, marcas=mk)
     i, d = lados(M, "det", et)
-    anotar(out, M, "v2BR_detalle", "det", izq=i, der=d, ancho=7.0, col=0.27, fs=8.5)
+    anotar(out, M, "v2BR_detalle", "det", izq=i, der=d, ancho=6.6, col=0.26, fs=8.5)
 
     # ------------------------------------------------------------ tres posiciones con el CG
     casos = [("Todo hacia nadir", CG.RANGO2[0], CG.RANGO3[0]), ("Nominal", CG.NOM2, CG.NOM3),

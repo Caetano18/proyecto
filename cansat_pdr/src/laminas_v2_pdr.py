@@ -102,7 +102,7 @@ T1 = 0.2 * APOGEO / V1
 # ============================================================ SYSTEMS OVERVIEW
 def L20_configA(sl):
     panel(sl, X0, Y0, I(6.0), Y1 - Y0, [("v2A_exterior_anot_en.png", 1), ("v2A_interior_anot_en.png", 1)],
-          "Configuration A: printed monocoque, exterior and cut-away")
+          "Configuration A: printed monocoque, exterior and cut-away", misma_escala=True)
     x = X0 + I(6.0) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Configuration A: printed monocoque", [
         "**Integral CanSat, Ø90 × 240 mm (S2, S3):** a single body that is also its own container and slides freely "
@@ -117,7 +117,7 @@ def L20_configA(sl):
 
 def L21_configB(sl):
     panel(sl, X0, Y0, I(6.0), Y1 - Y0, [("v2B_exterior_anot_en.png", 1), ("v2BR_interior_anot_en.png", 1)],
-          "Configuration B: rod skeleton with threaded stations, exterior and cut-away")
+          "Configuration B: rod skeleton with threaded stations, exterior and cut-away", misma_escala=True)
     x = X0 + I(6.0) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Configuration B: rod skeleton and fairing", [
         "**Same envelope and descent sequence** as configuration A.",
@@ -180,7 +180,7 @@ def L24_componentes(sl):
 
 def L25_lanzamiento(sl):
     panel(sl, X0, Y0, I(6.4), Y1 - Y0, [("v2B_exterior_anot_en.png", 1), ("v2BR_interior_anot_en.png", 1)],
-          "Launch configuration: exterior and cut-away")
+          "Launch configuration: exterior and cut-away", misma_escala=True)
     x = X0 + I(6.4) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Stowed configuration", [
         "**In the rocket:** the CanSat sits on its support between the rocket parachutes and the nose cone, with no "
@@ -263,8 +263,8 @@ def L50_sel_paracaidas(sl):
 
 
 def L51_estrategias(sl):
-    panel(sl, X0, Y0, I(6.0), Y1 - Y0, [("v2BR_desplegado_anot_en.png", 1)], "Rogallo glider, phase 2")
-    x = X0 + I(6.0) + GAP
+    panel(sl, X0, Y0, I(7.0), Y1 - Y0, [("v2BR_desplegado_anot_en.png", 1)], "Rogallo glider, phase 2")
+    x = X0 + I(7.0) + GAP
     tabla(sl, x, Y0, X1 - x, [1.3, 1.6, 1.6], ["", "A: asymmetric sail", "B: servo steering"], [
         ["How it turns", "Left lobe 15 % smaller (left spar without the folding tip)",
          "A servo pulls a line on one spar on command"],
@@ -317,7 +317,7 @@ def L53_mecanico(sl):
 
 def L54_estructura(sl):
     panel(sl, X0, Y0, I(7.4), Y1 - Y0, [("v2A_interior_anot_en.png", 1), ("v2BR_interior_anot_en.png", 1)],
-          "Structure A, printed monocoque (left), and B, rod skeleton with threaded stations (right)")
+          "Structure A, printed monocoque (left), and B, rod skeleton with threaded stations (right)", misma_escala=True)
     x = X0 + I(7.4) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Two structures", [
         "**A:** the printed tube is the structure; the bulkheads are bonded to the wall and the bridle is tied to "
@@ -345,8 +345,8 @@ def L55_electrica(sl):
 
 
 def L56_mecanismos(sl):
-    panel(sl, X0, Y0, I(6.4), Y1 - Y0, [("v2B_exterior_anot_en.png", 1), ("v2BR_detalle_anot_en.png", 1.5)],
-          "Slots and pivots (left); threaded station of M2 (right)")
+    panel(sl, X0, Y0, I(6.4), Y1 - Y0, [("v2BR_detalle_anot_en.png", 1)],
+          "Threaded station of M2: the battery module moves along the rods")
     x = X0 + I(6.4) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
         ["Spar pivots (2)", "14", "M4 bolt, two torsion springs, stop and ratchet at 52°"],
