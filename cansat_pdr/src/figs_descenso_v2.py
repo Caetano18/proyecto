@@ -93,7 +93,7 @@ def dimensiones(out):
     ax.annotate("Threaded M3\nrods (× 4)", xy=(23.3, 152), xytext=(50, 152), fontsize=8.5, va="center", color=TX,
                 arrowprops=dict(arrowstyle="-", color=AM, lw=1.0))
     bah = [("Bay 1: nadir camera,\nbeacon, spar pivots", 4, CG.NOM2 - 46), ("Bay 2: 2 × 18650 pack\n(hangs from M2)", CG.NOM2 - 46, CG.NOM2),
-           ("Bay 3: avionics\n(hangs from M3)", CG.NOM2 + 4, CG.NOM3), ("Bay 4: zenith camera,\nrelease servos", CG.NOM3 + 4, 216),
+           ("Bay 3: avionics\n(hangs from M3)", CG.NOM2 + 4, CG.NOM3), ("Bay 4: zenith camera,\nthree micro servos", CG.NOM3 + 4, 216),
            ("Bay 5: parachute cup", 220, 236)]
     for t, a, b in bah:
         ax.text(0, (a + b) / 2, t, ha="center", va="center", fontsize=7.6, color=TX2, zorder=5,

@@ -46,7 +46,7 @@ def main(out):
           ("m3", f"M3: estación regulable\nx = {CG.RANGO3[0]:.0f}–{CG.RANGO3[1]:.0f} mm"),
           ("tuerca3", "Tuercas nyloc de\nla estación M3"), ("pcb", "Módulo de aviónica:\nlos rieles cuelgan de M3"),
           ("m1", "M1: fondo de nadir (fijo)"),
-          ("m4", "M4 (fijo)"), ("capsula", "Servos de liberación (2):\nparacaídas y ala"), ("paracaidas", "Paracaídas Ø226"),
+          ("m4", "M4 (fijo)"), ("capsula", "Servos (3): tapa,\nparacaídas y ala"), ("paracaidas", "Paracaídas Ø226"),
           ("larguero", "Larguero CF (ala estibada)"), ("carcasa", "Carena PETG 2 mm\n(recortada)")]
     M["int"] = viz.render(est, f"{out}/v2BR_interior.png", V, (1500, 2000), 1.25, cuna=CUNA, marcas=mk)
     i, d = lados(M, "int", et)

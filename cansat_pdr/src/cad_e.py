@@ -389,6 +389,10 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
                          fuse(box(186.0, 202.0, y0, y0 + 11.5, 13.0, 24.5), box(183.0, 205.0, y0, y0 + 11.5, 21.0, 22.5)),
                          (0.10, 0.20, 0.55), "equipo"))
             E.append(_pz("Brazo de traba", box(190.0, 198.0, y0 + 2.0, y0 + 9.5, 24.5, 26.0), C_BLANCO, "equipo"))
+        # servo de la tapa: su traba pasa por M4 y retiene la tapa M5 hasta la separacion del cohete
+        E.append(_pz("Servo de la tapa", fuse(box(188.0, 204.0, -12.5, -1.0, -31.0, -19.5),
+                                              box(185.0, 207.0, -12.5, -1.0, -23.0, -21.5)), (0.10, 0.20, 0.55), "equipo"))
+        E.append(_pz("Traba de la tapa", rod((204.0, -7.0, -29.0), (234.0, -7.0, -29.0), 2.0), C_ACERO, "equipo"))
     else:
         E.append(_pz("Capsula de nicrom (PTFE)", box(186.0, 202.0, -8, 8, 15, 25), C_BLANCO, "equipo"))
     cam = box(-4, 4, -10, 10, -10, 10)                    # cuerpo de la camara: eje optico +x local
@@ -406,6 +410,7 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
         E.append(_pz("Pasador de liberacion", rod((225.0, -6, 0), (225.0, 6, 0), 3.0), C_ACERO, "equipo"))
     if con_paracaidas:
         E.append(_pz("Paracaidas plegado", disc(222.5, 235.5, 27.0).cut(disc(222, 236, 7.0)), C_PARA, "paracaidas"))
+    if con_paracaidas and VAR not in ("A", "B", "BR"):     # disenos anteriores: tapa expulsada por resorte
         res = None
         for k in range(7):
             t = cq.Solid.makeTorus(38.5, 0.7, V(221.2 + 2.25 * k, 0, 0), V(1, 0, 0))

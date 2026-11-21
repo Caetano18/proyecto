@@ -32,7 +32,7 @@ def main(out):
         et = [("cubierta", "Cubierta dorsal: la vela\nva plegada debajo"),
               ("carcasa", "Monocasco de PETG 2 mm\nimpreso (es la estructura)" if v == "A" else
                "Carena de PETG 2 mm\n(se desliza sobre el esqueleto)"),
-              ("nadir", "Ventana de nadir Ø14"), ("tapa", "Tapa M5 de la copa\n(la expulsa un resorte)"),
+              ("nadir", "Ventana de nadir Ø14"), ("tapa", "Tapa M5 de la copa\n(la libera un servo)"),
               ("panel", "Panel solar 50 × 30"),
               ("ranura", "Ranura 6 × 192 con el\nlarguero CF Ø4"), ("pivote", "Pivote del larguero")]
         if v == "A":
@@ -44,13 +44,13 @@ def main(out):
         i, d = lados(M, k + "_ext", et)
         anotar(out, M, f"{k}_exterior", k + "_ext", izq=i, der=d, ancho=7.8, col=0.31, fs=8.0)
         # ------------------------------------------------ corte tipo Sims
-        mk = {"paracaidas": (229, -22.3, 15.2), "resorte": (228, -33.3, 19.3), "m4": (216, -25, -20),
+        mk = {"paracaidas": (229, -22.3, 15.2), "m4": (216, -25, -20),
               "capsula": (194, -12.5, 19), "m3": (173, -25, -20), "gnss": (157, -9, 16),
               "antena": (143, 8.5, 17), "pcb": (135, -15, -12), "m2": (83, -25, -20), "bateria": (45.6, -20, 4.2),
               "baliza": (28, 18, 4), "camara_n": (0, 0, -20), "m1": (0, -25, 15), "vela": (110, -12.5, 40.5),
               "larguero": (100, -YL, ZL), "pivote": (14, -YL, ZL), "carcasa": (120, -15.0, -41.3)}
-        et = [("paracaidas", f"Paracaídas Ø{E.D_PARA:.0f} plegado\n(copa, bahía 5)"), ("resorte", "Resorte expulsor"),
-              ("m4", "M4: mamparo de cenit"), ("capsula", "Servos de liberación (2)\ny lazo de Dyneema"),
+        et = [("paracaidas", f"Paracaídas Ø{E.D_PARA:.0f} plegado\n(copa, bahía 5)"), 
+              ("m4", "M4: mamparo de cenit"), ("capsula", "Servos (3): tapa, paracaídas\ny ala; lazo de Dyneema"),
               ("m3", "M3: mamparo de aviónica"), ("gnss", "GNSS"),
               ("antena", "Antena 915 MHz"), ("pcb", "PCB principal"), ("m2", "M2: mamparo puente"),
               ("bateria", "Pack 2 × 18650"), ("baliza", "Baliza con batería propia"),
