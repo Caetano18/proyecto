@@ -216,13 +216,30 @@ def paracaidas(out):
     plt.close(fig)
 
 
+def vz_placa(S, a_deg=28.0, rho=RHO_SITIO):
+    """Cota conservadora: placa plana con fuerza normal (Hoerner; ajuste de alargamiento finito), sin sustentacion de
+    vortice.  Mismo rozamiento, largueros, membrana y cuerpo que el modelo principal."""
+    AR = (envergadura() / 1000.0) ** 2 / S
+    a = math.radians(a_deg)
+    cd90 = 1.98 - 0.81 * (1 - math.exp(-20 / AR))
+    CN = cd90 * math.sin(a) / (0.56 + 0.44 * math.sin(a))
+    CL, CDn = CN * math.cos(a), CN * math.sin(a)
+    V = 10.0
+    for _ in range(40):
+        cd_f, cd_l, cd_m, _ = cd_parasito(V, S)
+        CD = CDn + cd_f + cd_l + cd_m + CDA_CIL / S
+        g = math.atan(CD / CL)
+        V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL))
+    return V * math.sin(g)
+
+
 def planeo(out):
     S = area_asim()
     f = np.linspace(0.2, 1.0, 100)
     fig, ax = plt.subplots(figsize=(6.4, 4.4))
     ax.axhspan(2, 8, color="#e8f1fb", lw=0)
     ax.text(0.205, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom")
-    ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=NA, lw=2.2, label=f"sail {S:.3f} m², spiral radius {R_ESPIRAL:.0f} m")
+    ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=NA, lw=2.2, label=f"vortex-lift model (Polhamus form), sail {S:.3f} m², spiral {R_ESPIRAL:.0f} m")
     for fr in (1.0, 0.5, 0.3):
         v = vz(fr, RHO_SITIO, S)
         ax.plot(fr, v, "o", ms=7, color=NA, mec="white", mew=1.5, zorder=5)
@@ -231,6 +248,9 @@ def planeo(out):
     ax.set_ylim(0, 10)
     ax.set_xlabel("Fraction of the vortex lift developed by the sail, f")
     ax.set_ylabel("Glide descent rate at the site [m/s]")
+    vp = vz_placa(S)
+    ax.axhline(vp, color=TX2, lw=1.4, ls="--", label="flat plate, no vortex lift (conservative bound)")
+    ax.annotate(f"{vp:.1f} m/s", (0.205, vp), xytext=(0, 5), textcoords="offset points", fontsize=8.8, color=TX2)
     ax.legend(loc="lower left", fontsize=8.8, frameon=False)
     estilo(ax)
     fig.tight_layout()
@@ -239,6 +259,7 @@ def planeo(out):
     vz5, phi5, v5 = vz(0.5, RHO_SITIO, S, solo_v=True)
     det = _vz_phi(0.5, RHO_SITIO, S, math.radians(phi5), detalle=True)
     return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=phi5, V=v5, arrastre=det,
+                vz_placa=vz_placa(S), AR=(envergadura() / 1000.0) ** 2 / S, carga_alar=W / 9.80665 / S,
                 vz={str(fr): vz(fr, RHO_SITIO, S) for fr in (1.0, 0.5, 0.3)},
                 vueltas_s=2 * math.pi * R_ESPIRAL / (v5 * math.cos(math.atan(vz5 / v5))))
 

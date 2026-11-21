@@ -41,13 +41,12 @@ def main(out):
         "tela": E.paracaidas_punto(0.55, 165), "ventana": (xa, 0, 0),
         "lineas": (info["x_sw"] + 0.55 * (info["x_skirt"] - info["x_sw"]), -0.55 * info["rp"] * 0.707,
                    0.55 * info["rp"] * 0.707),
-        "destorcedor": (info["x_conf"] + 5, 0, 0), "pasador": (info["x_conf"] - 3, -5, 0),
-        "brida": (250, -0.5 * 23.3, 0.5 * 23.3), "cansat": (120, -43.0, 10.0)})
+        "destorcedor": (info["x_conf"] + 5, 0, 0), "elevador": (252.0, 0.0, 0.0), "cansat": (120, -43.0, 10.0)})
     et = [("tela", "Paracaídas plano Ø226\n(gajos de ripstop)"), ("ventana", "Ventana central Ø40"),
           ("lineas", "8 líneas de Kevlar\n(282 mm)"), ("destorcedor", "Destorcedor"),
-          ("pasador", "Pasador de liberación:\nlo retira un servo"), ("brida", "Brida de 4 ramales\na las varillas"),
+          ("elevador", "Elevador: sale de la copa.\nAdentro, brida a las varillas\ny liberación de 2 anillos;\nun servo retira el pasador"),
           ("cansat", "CanSat: 15 m/s,\nala todavía plegada")]
-    i = [x for x in et if x[0] in ("lineas", "pasador", "brida", "cansat")]
+    i = [x for x in et if x[0] in ("lineas", "elevador", "cansat")]
     d = [x for x in et if x[0] in ("ventana", "tela", "destorcedor")]
     anotar(out, M, "v2BR_fase1", "f1", izq=i, der=d, ancho=6.4, col=0.32)
     est = E.build("estibado")

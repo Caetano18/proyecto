@@ -33,7 +33,7 @@ def main(out):
               ("carcasa", "Monocasco de PETG 2 mm\nimpreso (es la estructura)" if v == "A" else
                "Carena de PETG 2 mm\n(se desliza sobre el esqueleto)"),
               ("nadir", "Ventana de nadir Ø14"), ("tapa", "Tapa M5 de la copa\n(la libera un servo)"),
-              ("panel", "Panel solar 50 × 30"),
+              ("panel", "Panel solar 45 × 25"),
               ("ranura", "Ranura 6 × 192 con el\nlarguero CF Ø4"), ("pivote", "Pivote del larguero")]
         if v == "A":
             et.append(("bisagra", "Bisagra de la puntera\n(la abre la tensión de la vela)"))

@@ -387,5 +387,7 @@
  "Pivote: eje M4; la biela del\nservo lo lleva al tope de 60°": "Pivot: M4 shaft; the servo link\ntakes the spar to the 60° stop",
  "Larguero CF Ø4/3,\n60° de la quilla": "CF spar Ø4/3,\n60° from the keel",
  "Larguero izquierdo de 310 mm\n(puntera más corta): lóbulo\nmás chico → vira": "Left spar 310 mm\n(shorter tip): smaller lobe\n→ the CanSat turns",
- "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈5,5 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, ≈5.5 m/s"
+ "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈5,5 m/s": "3. Phase 2 (80 % of apogee): Rogallo\nsail in a spiral, ≈5.5 m/s",
+ "Panel solar 45 × 25": "Solar panel 45 × 25",
+ "Elevador: sale de la copa.\nAdentro, brida a las varillas\ny liberación de 2 anillos;\nun servo retira el pasador": "Riser leaving the cup. Inside:\nbridle to the rods and a\ntwo-ring release; a servo\npulls the pin"
 }

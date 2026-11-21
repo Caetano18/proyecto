@@ -170,6 +170,8 @@ def carcasa(ventana_cenit=True):
             sh = sh.cut(rod((xb, 30, 0), (xb, 50, 0), 8.0))                    # orificio de la baliza
         if ventana_cenit and x0 < 212 < x1:
             sh = sh.cut(rod((212, 30, 0), (212, 50, 0), 10.0))                 # ventana de la camara de cenit
+        if VAR in ("A", "B", "BR") and x0 < 150 < x1:
+            sh = sh.cut(rod((150, 30, 0), (150, 50, 0), 6.0))                  # venteo del SHT31 externo (flanco +y)
         out.append(_pz(nombre, sh.clean(), col, "carcasa"))
     return out
 
@@ -449,6 +451,10 @@ def equipos(con_paracaidas=True, lazo=True, pasador=True, x_pas=225.0):
             sh = r_ if sh is None else sh.fuse(r_)
         E.append(_pz("Lazo de Dyneema", sh, C_DYN, "lazo"))
     # paneles solares en los flancos
+    if VAR in ("A", "B", "BR"):    # un panel de 45 x 25 en el flanco -y; el flanco +y lleva el venteo del SHT31 externo
+        p = box(137.5, 182.5, Y_FLAT, Y_FLAT + 1.0, -12.5, 12.5)
+        E.append(_pz("Panel solar", p.mirror("XZ"), C_SOLAR, "solar"))
+        return E
     for s in (1, -1):
         p = box(PANEL_X[0] + 1, PANEL_X[1] - 1, Y_FLAT, Y_FLAT + 1.0, -14, 14)
         E.append(_pz("Panel solar", p.mirror("XZ") if s < 0 else p, C_SOLAR, "solar"))
@@ -485,12 +491,21 @@ def paracaidas_abierto(x_conf=275.0, solo_info=False):
     out.append(_pz("Destorcedor", fuse(disc(x_conf + 2, x_sw, 2.5), cq.Solid.makeTorus(3.0, 0.8, V(x_conf, 0, 0), V(0, 1, 0))),
                    C_ACERO, "paracaidas"))
     brida = None
-    for a in VAR_ANG:
-        y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
-        r_ = rod((226.5, y, z), (x_conf - 3, 0, 0), 1.2)
-        brida = r_ if brida is None else brida.fuse(r_)
-    out.append(_pz("Brida de 4 ramales", brida, (0.85, 0.75, 0.35), "paracaidas"))
-    out.append(_pz("Pasador de liberacion", rod((x_conf - 3, -5, 0), (x_conf - 3, 5, 0), 3.0), C_ACERO, "paracaidas"))
+    if VAR in ("A", "B", "BR"):   # brida corta dentro de la copa hasta el anillo de la liberacion de 2 anillos
+        for a in VAR_ANG:
+            y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
+            r_ = rod((226.5, y, z), (229.0, 0.4 * y, 0.4 * z), 1.0)
+            brida = r_ if brida is None else brida.fuse(r_)
+        brida = brida.fuse(cq.Solid.makeTorus(9.5, 1.0, V(229.0, 0, 0), V(1, 0, 0)))
+        out.append(_pz("Brida y anillo de liberacion", brida, C_ACERO, "paracaidas"))
+        out.append(_pz("Elevador", rod((229.0, 0, 0), (x_conf - 3, 0, 0), 1.4), (0.85, 0.75, 0.35), "paracaidas"))
+    else:
+        for a in VAR_ANG:
+            y, z = R_VAR * math.cos(math.radians(a)), R_VAR * math.sin(math.radians(a))
+            r_ = rod((226.5, y, z), (x_conf - 3, 0, 0), 1.2)
+            brida = r_ if brida is None else brida.fuse(r_)
+        out.append(_pz("Brida de 4 ramales", brida, (0.85, 0.75, 0.35), "paracaidas"))
+        out.append(_pz("Pasador de liberacion", rod((x_conf - 3, -5, 0), (x_conf - 3, 5, 0), 3.0), C_ACERO, "paracaidas"))
     return out, dict(x_skirt=x_skirt, x_apex=x_skirt + Rs * (1 - math.cos(phi_max)), rp=rp, x_sw=x_sw, x_conf=x_conf)
 
 
@@ -530,7 +545,7 @@ def build(config="estibado"):
     if config == "fase1":
         par, par_info = paracaidas_abierto()
         return (carcasa() + cubierta() + varillas() + mamparos(con_tapa=False) + pivotes(False) + largueros(False)
-                + equipos(con_paracaidas=False, pasador=False, x_pas=par_info["x_conf"] - 3) + par)
+                + equipos(con_paracaidas=False, pasador=VAR in ("A", "B", "BR"), x_pas=par_info["x_conf"] - 3) + par)
     raise ValueError(config)
 
 

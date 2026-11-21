@@ -40,10 +40,10 @@ FUENTE = {
     "Cuna en U (PETG, paredes de 2 mm)": ("S", 0.7, "CAD volume", "Battery U cradle (PETG)"),
     "Rieles de las placas": ("S", 0.8, "CAD volume", "Board rails (PETG)"),
     "Paracaídas Ø226 ripstop + líneas": ("D", 0.5, "Ripstop nylon 35 g/m² + Kevlar lines", "Parachute Ø226, ripstop nylon + lines"),
-    "Horquilla y pasador de liberación": ("D", 0.4, "Estimate", "Parachute release pin and clevis"),
+    "Horquilla, pasador con PTFE y 2 anillos": ("D", 0.4, "Estimate", "Two-ring release, PTFE-sleeved pin, clevis"),
     "Servo de la tapa SG90 + traba": ("D", 0.5, "Datasheet (SG90, 9 g)", "Lid servo SG90 + latch"),
     "Vela Rogallo plegada": ("D", 1.5, "Cut area + seams + keel strip", "Rogallo sail, ripstop nylon"),
-    "Largueros CF Ø4/3 + punteras plegables + bisagras": ("D", 1.0, "CF tube length × catalogue + fittings", "CF spars Ø4/3 + folding tips + hinges"),
+    "Largueros CF Ø4/3 + punteras plegables + bisagras": ("D", 1.0, "CF tube length × catalogue + fittings", "CF spars Ø4/3 + folding tips, hinges, latches"),
     "Pivotes: ejes M4 de Al 7075, manivelas y bloques": ("D", 0.5, "Catalogue + CAD", "Spar pivots: Al 7075 M4 shafts, cranks, blocks"),
     "Servo de liberación del paracaídas SG90 + varilla": ("D", 0.5, "Datasheet (SG90, 9 g)", "Parachute release servo SG90 + rod"),
     "Servo del ala SG90 + bocina y 2 bielas": ("D", 0.5, "Datasheet (SG90, 9 g) + CAD", "Wing servo SG90 + horn and two links"),
@@ -173,14 +173,14 @@ def L24_componentes(sl):
     tabla(sl, x, Y0, X1 - x, [1.5, 1.0, 2.6], ["Component", "Station x [mm]", "Location and mounting"], [
         ["Battery 2 × 18650", "41–79", "Bay 2, U cradle printed with M2; moves with M2"],
         ["Main PCB (ESP32, IMU, barometer)", "98–166", "Bay 3, rails hanging from M3"],
-        ["GNSS u-blox NEO-7M", "146–168", "Upper board, patch antenna facing zenith"],
+        ["GNSS u-blox NEO-7M", "146–168", "Upper board, patch facing the dorsal side (sky in glide)"],
         ["LoRa radio RFM95W, 920 MHz", "120–146", "Upper board, λ/4 monopole"],
         ["Nadir camera ESP32-CAM", "6–14", "Bay 1, Ø14 window in M1"],
         ["Zenith camera ESP32-CAM", "192–213", "Bay 4, under M4, window in the flank"],
         ["Beacon with its own CR2032 cell", "6–20", "Bay 1, switch through a hole ≤ 10 mm"],
         ["Lid and parachute servos (SG90)", "183–215", "Bay 4, on a bracket under M4"],
         ["Wing servo (SG90)", "5–17", "Bay 1, between the spar pivots"],
-        ["Solar panel", "136–184", "Recessed in the flank of the fairing"],
+        ["Solar panel 45 × 25 mm", "138–183", "Recessed in the −y flank; vent for the external SHT31 on +y"],
     ], sz=10, sz_cab=10.5, alto=I(0.41), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
 
@@ -190,12 +190,13 @@ def L25_lanzamiento(sl):
     x = X0 + I(6.4) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Stowed configuration", [
         "**In the rocket:** the CanSat sits on its support between the rocket parachutes and the nose cone, with no "
-        "vertical restraint, and slides out at ejection (C1, C2, S7).",
-        "**Wing:** spars folded along the body inside the two slots; the sail is accordion-folded in the dorsal channel "
-        "under a flush cover.",
-        "**Retention:** the wing servo holds both spars in their slots through its two links; the parachute servo holds "
-        "the release pin.",
-        "**Parachute:** packed in the top cup under the lid; the lid servo keeps the lid latched until the separation.",
+        "vertical restraint, and slides out at ejection (C1, C2, S7). The fairing is the container.",
+        "**Separation (X3):** a breakwire loop leaves through M1 and is tied to the support; it breaks when the CanSat "
+        "slides out.",
+        "**Wing:** spars and folded tips in the two slots; the sail is folded in the dorsal channel under a flush cover "
+        "that the spars hold.",
+        "**Retention (M3, S5):** the wing links sit over centre, so launch and 30 G loads go into the pins and not into "
+        "the servo gears; the parachute pin sits in a clevis; the lid servo latch holds the lid.",
     ], sz=11, spc=300)
 
 
@@ -204,13 +205,14 @@ def L26_desplegado(sl):
           "Phase 1 under the parachute (left) and phase 2 gliding (right)")
     x = X0 + I(8.0) + GAP
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Deployed configuration", [
-        f"**Phase 1:** after the separation the lid servo releases the lid, which pulls the parachute out; the CanSat "
-        f"hangs from a four-leg bridle tied "
-        f"to the rods and descends at about {V1:.1f} m/s.",
-        "**Phase 2:** at 80 % of apogee the parachute servo pulls the release pin; then the wing servo swings both spars "
-        "to 60°, where the links lock against a stop; the sail tension unfolds the tips.",
-        "The sail fills between the keel and the spars. The left lobe is smaller, so the CanSat flies a steady left "
-        f"spiral of about {DES['R']:.0f} m radius.",
+        f"**Phase 1:** at the separation the lid servo releases the lid, which pulls the parachute out; the CanSat "
+        f"hangs from a short bridle to the rod ends and descends at about {V1:.1f} m/s.",
+        "**Phase 2, step 1:** at 80 % of apogee the wing opens while still under the parachute: the flow runs along the "
+        "keel, so the servo works at low load. The links lock over centre at 60°; the airflow unfolds the tips and a "
+        "snap latch holds them.",
+        "**Step 2:** the parachute servo pulls the pin of the two-ring release. The left lobe is smaller, so the CanSat "
+        f"flies a left spiral of about {DES['R']:.0f} m radius.",
+        "If the wing is not confirmed open, the parachute is kept and the CanSat lands under it.",
     ], sz=11, spc=300)
 
 
@@ -227,10 +229,12 @@ def L48_descenso(sl):
         f"**Separation:** the breakwire detects it (X3) and the lid servo releases the lid, which pulls the "
         f"parachute out; phase 1 lasts about {T1:.0f} s with the "
         f"{APOGEO:.0f} m apogee of the launch vehicle.",
-        f"**80 % of apogee ({0.8 * APOGEO:.0f} m):** the barometric altitude triggers the parachute release "
-        "and then the wing servo.",
+        f"**80 % of apogee ({0.8 * APOGEO:.0f} m):** the wing servo opens the wing under the parachute; once it is "
+        "locked, the parachute servo opens the two-ring release.",
         f"**Phase 2:** about {T2:.0f} s of gliding in a spiral of {DES['R']:.0f} m (about "
-        f"{T2 / DES['vueltas_s']:.1f} turns), with no actuators after the release.",
+        f"{T2 / DES['vueltas_s']:.1f} turns), with no actuators after the release. Landing at about "
+        f"{DES['V']:.0f} m/s along the path: {0.5 * MTOT / 1000 * DES['V'] ** 2:.0f} J, against "
+        f"{0.5 * MTOT / 1000 * V1 ** 2:.0f} J under the parachute.",
     ], sz=11, spc=280)
 
 
@@ -292,14 +296,14 @@ def L52_sel_estrategia(sl):
         f"**How it works:** the left lobe has {100 * (1 - DES['lob_izq'] / DES['lob_der']):.0f} % less area than the "
         f"right one. The lift difference banks the glider about {DES['phi_deg']:.0f}° and it flies a steady left "
         f"spiral of about {DES['R']:.0f} m radius ({DES['vueltas_s']:.0f} s per turn).",
-        "No moving parts after the release: nothing to fail under the 30 G of the drop test.",
-        f"**Descent rate:** about {VZ['0.5']:.1f} m/s; between {VZ['1.0']:.1f} and {VZ['0.3']:.1f} m/s depending on how "
-        "much vortex lift the sail develops. Inside C4 (5 ± 3 m/s).",
-        "**Verification:** glide drops of the sail at flight mass to measure rate and radius; the left tip length sets "
-        "the radius.",
-        "**Theory:** Polhamus leading-edge-suction analogy; flat-plate skin friction of the ripstop; crossflow drag "
-        "of the spars; body Cd (Hoerner); coordinated turn.",
-    ], sz=10.5, spc=260)
+        f"**Descent rate:** about {VZ['0.5']:.1f} m/s ({VZ['1.0']:.1f}–{VZ['0.3']:.1f}) with vortex lift; "
+        f"{DES['vz_placa']:.1f} m/s for a flat plate without it (conservative bound). Inside C4 (≤ 8 m/s) in both cases.",
+        f"**Wing loading** {DES['carga_alar']:.1f} kg/m², similar to a hang glider; aspect ratio {DES['AR']:.1f}.",
+        "**Verification:** glide drops at flight mass measure rate and radius; the CG station sets the trim and the "
+        "left tip length the radius.",
+        "**Theory:** vortex lift in the Polhamus form (leading-edge sweep 30°, outside its validated range: upper "
+        "estimate); flat-plate normal force (Hoerner, lower bound); ripstop skin friction; crossflow drag; coordinated turn.",
+    ], sz=10, spc=220)
 
 
 # ============================================================ MECHANICAL
@@ -318,12 +322,14 @@ def L53_mecanico(sl):
     tarjeta(sl, x, Y0, X1 - x, Y1 - Y0, "Mechanical configuration", [
         "**One integral body:** skeleton of four threaded rods and five bulkheads inside a PETG fairing; five bays.",
         "**Mechanisms:** three SG90 servos and no springs: the lid servo opens the cup, the parachute servo pulls the "
-        "release pin and the wing servo opens both spars through two links to a fixed 60° stop.",
+        "pin of a two-ring release and the wing servo opens both spars through two links that lock over centre at both "
+        "ends (stowed and 60°), so the gears carry no load at rest.",
         "**Requirements:** 2 mm printed wall (S6); smooth cylinder (S7); everything screwed, clamped or on standoffs "
         "(S8); PETG and nylon (S9); no pyrotechnics or heat (M1, M2); latches and links hold without power (M3); soldered battery "
         "tabs (M4).",
-        "**Environmental tests:** the rods take the 30 G drop test; nyloc nuts for the sander vibration; PETG keeps its "
-        "shape at 60 °C; no sealed volumes for the vacuum test.",
+        "**Environmental tests:** rods for the 30 G shock (S5) and nyloc nuts for the 15 G vibration (S4); PETG keeps "
+        "its shape at 60 °C; no sealed volumes for the vacuum test; servos operated after each test; GNSS and LoRa "
+        "checked with the rods and spars installed.",
     ], sz=11, spc=280)
 
 
@@ -346,15 +352,16 @@ def L55_electrica(sl):
     tabla(sl, x, Y0, X1 - x, [1.7, 0.7, 2.6], ["Component", "Bay", "Mounting"], [
         ["Battery 2 × 18650, soldered tabs (E2, M4)", "2", "U cradle printed with M2; walls hold the cells"],
         ["Main PCB: ESP32, BMI160, BMP390, INA219, RTC", "3", "Lower rails hanging from M3"],
-        ["GNSS u-blox NEO-7M + patch antenna", "3", "Upper board, antenna facing zenith"],
+        ["GNSS u-blox NEO-7M + patch antenna", "3", "Upper board, patch facing the dorsal side"],
         ["LoRa radio RFM95W, 920 MHz", "3", "Upper board, λ/4 monopole"],
         ["2× ESP32-CAM, nadir and zenith (C6, C7)", "1, 4", "On M1 (Ø14 window) and under M4 (flank window)"],
         ["Beacon with CR2032 cell and switch (C8, E8, E9)", "1", "Switch through a hole ≤ 10 mm"],
         ["Main switch and power LED (E4–E6)", "3", "Through a hole ≤ 10 mm in the fairing"],
         ["Lid and parachute servos (SG90)", "4", "On a bracket under M4"],
         ["Wing servo (SG90)", "1", "On M1, between the spar pivots"],
-        ["Solar panel (E3)", "Flank", "Recessed in the fairing"],
-    ], sz=10, sz_cab=10.5, alto=I(0.41), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
+        ["Solar panel 45 × 25 mm (E3)", "Flank", "Recessed in the −y flank of the fairing"],
+        ["External SHT31 (secondary mission)", "3", "Behind a Ø6 vent in the +y flank"],
+    ], sz=10, sz_cab=10.5, alto=I(0.38), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
 
 def L56_mecanismos(sl):
@@ -363,28 +370,29 @@ def L56_mecanismos(sl):
     x = X0 + I(6.4) + GAP
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
         ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 60°"],
-        ["Spar tip hinges (2)", "199", "Tips of 165 mm (right) and 125 mm (left) fold under the spar; the sail tension opens them"],
-        ["Wing servo and links", "5–17", "Swing both spars to 60° and lock over centre at the stop"],
-        ["Parachute servo", "183–223", "Pulls the release pin at 80 % of apogee"],
-        ["Lid servo and latch", "183–234", "Releases the lid after the separation; the lid pulls the parachute out"],
+        ["Spar tip hinges (2)", "199", "Tips of 165 / 125 mm fold under the spar; the airflow unfolds them, a snap latch holds them"],
+        ["Wing servo and links", "5–17", "Over centre at both ends: no load on the gears stowed or open"],
+        ["Parachute servo", "183–223", "PTFE-sleeved pin of a two-ring release: about 3 N of pull at the 30 G drop load (servo: 18 N)"],
+        ["Lid servo and latch", "183–234", "Releases the lid at the separation; the lid pulls the parachute out"],
+        ["Dorsal cover", "14–206", "Held by the stowed spars; freed when the wing opens; tethered"],
         ["Threaded stations", "M2, M3", "Move the battery and avionics modules (0.5 mm per turn)"],
-    ], sz=10, sz_cab=10.5, alto=I(0.56), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
+    ], sz=10, sz_cab=10.5, alto=I(0.52), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
 
 def L57_seleccion_mec(sl):
     tabla(sl, X0, Y0, WU, [1.7, 2.2, 2.2, 2.4], ["Decision", "Selected", "Alternative", "Reason"], [
         ["Structure", "B: rod skeleton + fairing", "A: printed monocoque", "Rods carry the loads; access; CG adjustment"],
         ["Lid opening", "Micro servo + latch", "Compression spring", "Opens after the separation; no stored energy"],
-        ["Parachute release", "Micro servo pulls the pin", "Nichrome wire", "No heat (M2), testable on the bench, reusable"],
-        ["Wing opening", "One servo, two links, 60° stop", "Torsion springs + ratchet", "Same sweep on both sides; no springs"],
+        ["Parachute release", "Servo pulls a pin on a two-ring release", "Nichrome wire; pin under full load", "No heat (M2); the pin carries about 1/25 of the riser load"],
+        ["Wing opening", "One servo, links over centre, under the parachute", "Torsion springs + ratchet", "No springs; low load; gears unloaded at rest"],
         ["Turn", "Smaller left lobe", "Servo steering", "No actuators in phase 2"],
         ["Station fixing", "Nyloc nuts on both sides", "Bonded bulkheads", "CG set after weighing the real parts"],
-        ["Parachute anchor", "Four-leg bridle to the rod ends", "Bridle to the lid", "The load goes straight into the rods"],
+        ["Parachute anchor", "Short bridle to the rod ends", "Bridle to the lid", "The load goes straight into the rods"],
     ], sz=11, sz_cab=11.5, alto=I(0.49), alto_cab=I(0.38), col_sel=1, ml=70000)
     y = Y0 + I(0.38) + 7 * I(0.49) + I(0.17)
     tarjeta(sl, X0, y, WU, Y1 - y, None, [
-        "The servos only open and release; they do not steer the flight. If the phase 2 release fails, the CanSat lands "
-        "under the parachute.",
+        "The servos only open and release; they do not steer the flight. The parachute is released only after the wing "
+        "is confirmed open; otherwise the CanSat lands under the parachute.",
     ], sz=11, spc=200)
 
 
@@ -446,8 +454,11 @@ def L61_total(sl):
         f"**Total: {n1(MTOT)} ± {n1(UTOT)} g** (S1: 500 ± 10 g).",
         f"**CG:** {n1(CAS['nominal']['x_cg'])} mm from the nadir end with the nominal stations; moving M2 and M3 "
         f"sets it anywhere between {rango_cg()}.",
-        f"The static margin of the sail stays positive over the whole range ({me_rango()}).",
-    ], sz=12, spc=380)
+        f"**Neutral point:** x = {CG.XPN[0]:.0f}–{CG.XPN[1]:.0f} mm (centre of pressure of a vortex delta at 55 % of "
+        "the keel, or area centroid of the sail plus the body crossflow).",
+        f"**Static margin:** {me_rango()} over the CG range, positive in every case; the stations move the CG "
+        "forward if the glide drops ask for more.",
+    ], sz=11.5, spc=330)
 
 
 def L62_margen(sl):

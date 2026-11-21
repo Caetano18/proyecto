@@ -15,7 +15,7 @@ import idioma  # noqa: F401
 NOM2, NOM3 = 83.0, 173.0
 RANGO2 = (66.0, 90.0)          # limites por la baliza / la cuna (abajo) y los rieles de la avionica (arriba)
 RANGO3 = (156.0, 177.0)        # limites por los rieles (abajo) y la capsula de nicrom (arriba)
-XPN = (14 + 0.55 * 190, 14 + 0.67 * 190)
+XPN = (14 + 0.55 * 190, 126.6)   # NP: CP de delta con vortice (55 % de la quilla) / centroide de la vela + cuerpo (calculado)
 CR = 190.0
 
 # Masas del documento v2 con la carena recalculada, y los cambios para quedar debajo de 500 g (PESO_V2 guarda el valor
@@ -26,9 +26,9 @@ FIJOS = [  # (item, masa g, x mm)
     ("M5 tapa de la copa (2 mm con nervios)", 7.0, 238.0),
     ("Varillas roscadas M3 Al 6061 (4)", 13.6, 113.0), ("Tuercas de los extremos (8, Al 7075)", 1.6, 111.5),
     ("Tuercas de M1 y M4 (8, Al 7075)", 1.6, 110.0),
-    ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Horquilla y pasador de liberación", 2.0, 225.0),
+    ("Paracaídas Ø226 ripstop + líneas", 8.0, 229.0), ("Horquilla, pasador con PTFE y 2 anillos", 2.6, 226.0),
     ("Servo de la tapa SG90 + traba", 9.5, 199.0),
-    ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF Ø4/3 + punteras plegables + bisagras", 10.8, 112.0),
+    ("Vela Rogallo plegada", 11.5, 110.0), ("Largueros CF Ø4/3 + punteras plegables + bisagras", 11.2, 112.0),
     ("Pivotes: ejes M4 de Al 7075, manivelas y bloques", 5.0, 14.0),
     ("Servo de liberación del paracaídas SG90 + varilla", 9.5, 200.0),
     ("Servo del ala SG90 + bocina y 2 bielas", 10.5, 11.0),
