@@ -192,8 +192,9 @@ v = \sqrt{2\,g\,h} = \sqrt{2\cdot 9{,}81\cdot 0{,}61} = 3{,}46~\mathrm{m/s},\qqu
 T = \frac{\pi\,v}{a_\mathrm{máx}} = \frac{\pi\cdot 3{,}46}{30\cdot 9{,}81} = """ + f1(rBR["T_pulso_ms"], 0) + r"""~\mathrm{ms}
 \end{equation}
 \end{ecu}
-Se supone que la cuerda frena y devuelve al CanSat como un resorte (semiseno con rebote). Con el primer modo axial en
-""" + f"{rBR['f_axial']:.0f}" + r"""\,Hz el pulso es mucho más largo que el período propio y el factor dinámico queda en
+Se supone que la cuerda frena y devuelve al CanSat como un resorte (semiseno con rebote). Con el primer modo axial
+""" + (f"por encima de {rBR['f_axial']:.0f}\\,Hz (ninguno de los ocho primeros modos es axial)" if rBR.get("f_axial_cota")
+       else f"en {rBR['f_axial']:.0f}\\,Hz") + r""", el pulso es mucho más largo que el período propio y el factor dinámico queda en
 """ + f1(rBR["DAF"], 2) + r""": el choque es casi estático. Para un pulso corto, el peor caso de cualquier duración, el factor
 sube a """ + f1(rBR["DAF_peor"], 2) + r""".
 

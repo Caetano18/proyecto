@@ -357,5 +357,6 @@
  "Amplificación según la duración (espectro de choque, ζ = 2 %)": "Amplification vs. duration (shock spectrum, ζ = 2 %)",
  "re:A: modo axial (\\d+) Hz": "A: axial mode \\1 Hz",
  "re:B: modo axial (\\d+) Hz": "B: axial mode \\1 Hz",
- "re:B regulable: modo axial (\\d+) Hz": "Adjustable B: axial mode \\1 Hz"
+ "re:B regulable: modo axial (\\d+) Hz": "Adjustable B: axial mode \\1 Hz",
+ "re:B regulable: modo axial > (\\d+) Hz": "Adjustable B: axial mode > \\1 Hz"
 }

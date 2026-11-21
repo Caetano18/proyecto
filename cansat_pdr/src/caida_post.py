@@ -63,8 +63,12 @@ def analizar(wd, var, m_real):
     modos = R["modos"]
     ax = max(modos, key=lambda m: m["meff"][0])
     f_ax = ax["f"]
+    ax_cota = ax["meff"][0] / mt < 0.2         # ningun modo axial entre los calculados: queda por encima del ultimo
+    if ax_cota:
+        f_ax = max(m["f"] for m in modos)
     d_est, d_max = daf(f_ax, T_PULSO), max(daf(f_ax, T) for T in np.geomspace(0.5e-3, 0.05, 60))
-    out = dict(var=var, masa_modelo=m_mod, masa_real=m_real, f_axial=f_ax, meff_axial=ax["meff"][0] / mt,
+    out = dict(var=var, masa_modelo=m_mod, masa_real=m_real, f_axial=f_ax, f_axial_cota=bool(ax_cota),
+               meff_axial=ax["meff"][0] / mt,
                T_pulso_ms=1e3 * T_PULSO, DAF=d_est, DAF_peor=d_max, piezas={})
     u = np.full(len(ever), np.nan)
     for pi, p in enumerate(partes):

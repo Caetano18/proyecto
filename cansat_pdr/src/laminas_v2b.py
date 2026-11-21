@@ -121,7 +121,8 @@ def L_fem_modelo(sl):
         f"**Load:** inertia toward nadir, {r['masa_real']:.0f} g (CanSat without the parachute); the 92 g pack sits in the "
         "M2 cradle, the avionics on M3.",
         f"**Pulse:** half-sine of 30 G, {r['T_pulso_ms']:.0f} ms (cord as a spring, with rebound). First axial mode "
-        f"{r['f_axial']:.0f} Hz, so the dynamic factor is {r['DAF']:.2f} (worst duration {r['DAF_peor']:.2f}).",
+        f"{'above ' if r.get('f_axial_cota') else ''}{r['f_axial']:.0f} Hz, so the dynamic factor is {r['DAF']:.2f} "
+        f"(worst duration {r['DAF_peor']:.2f}).",
         "**Failure criterion:** no safety factor; printed PETG checked in plane and across layers "
         "(PETG 45/25 MPa, 40 % infill 20/11 MPa, Al 6061 310 MPa).",
     ], sz=10.5, spc=280)
