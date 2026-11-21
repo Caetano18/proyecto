@@ -361,9 +361,9 @@ def L56_mecanismos(sl):
     tabla(sl, x, Y0, X1 - x, [1.5, 0.8, 2.2], ["Mechanism", "x [mm]", "What it does"], [
         ["Spar pivots (2)", "14", "Al 7075 M4 shaft with a crank; fixed stop at 52°"],
         ["Right spar tip hinge", "199", "The 40 mm tip folds to fit the 192 mm slot; the sail tension opens it"],
-        ["Servo 3: wing, links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
-        ["Servo 2: parachute", "183–223", "Pulls the release pin at 80 % of apogee"],
-        ["Servo 1: lid latch", "183–234", "Releases the lid after the separation; the lid pulls the parachute out"],
+        ["Wing servo and links", "5–17", "Swing both spars to 52° and lock over centre at the stop"],
+        ["Parachute servo", "183–223", "Pulls the release pin at 80 % of apogee"],
+        ["Lid servo and latch", "183–234", "Releases the lid after the separation; the lid pulls the parachute out"],
         ["Threaded stations", "M2, M3", "Move the battery and avionics modules (0.5 mm per turn)"],
     ], sz=10, sz_cab=10.5, alto=I(0.56), alto_cab=I(0.34), alin=["l", "c", "l"], ml=60000)
 
@@ -535,8 +535,8 @@ def _celda(tabla_sh, i, j, viejo, nuevo):
 
 
 def ajustes_equipo(prs):
-    """Lamina 30: largo real del CanSat (240 mm con el paracaidas adentro).  Lamina 83: el servo de la tapa actua en
-    la separacion; al 80 % actuan el del paracaidas y el del ala.  Si el texto original cambio, no se toca nada."""
+    """Lamina 30: largo real del CanSat (240 mm con el paracaidas adentro).  Las laminas de electronica (sensores,
+    C&DH, EPS, FSW, GCS) no se tocan.  Si el texto original cambio, no se toca nada."""
     sl = prs.slides[29]
     sh = {x.shape_id: x for x in sl.shapes}
     if sh[357].text_frame.text != "CanSat" or sh[362].text_frame.text != "200 mm":
@@ -569,14 +569,6 @@ def ajustes_equipo(prs):
         _texto(sh[362].text_frame.paragraphs[0], "240 mm")
         _celda(sh[367], 2, 1, "CanSat: 200 mm, plus 50 mm of parachute space",
                "CanSat: 240 mm with the parachute inside (top cup); 30 mm clearance to the nose cone")
-    sl = prs.slides[82]
-    tb = [x for x in sl.shapes if x.has_table][0]
-    if tb.table.cell(4, 3).text != "15 ± 3 m/s (C3); NVS checkpoint":
-        print("AVISO: la lamina 83 cambio; no se ajusta")
-    else:
-        _celda(tb, 4, 3, "15 ± 3 m/s (C3); NVS checkpoint", "On entry servo 1 opens the lid; 15 ± 3 m/s (C3); NVS checkpoint")
-        _celda(tb, 5, 3, "PWM to 3 servos (1.5 A peak @ 5 V)",
-               "Servo 2 (parachute), then servo 3 (wing); 1.5 A peak @ 5 V")
 
 
 def main(entrada, salida, neutro=False):
