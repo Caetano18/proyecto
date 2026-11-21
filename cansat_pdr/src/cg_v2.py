@@ -15,7 +15,7 @@ import idioma  # noqa: F401
 NOM2, NOM3 = 83.0, 173.0
 RANGO2 = (66.0, 90.0)          # limites por la baliza / la cuna (abajo) y los rieles de la avionica (arriba)
 RANGO3 = (156.0, 177.0)        # limites por los rieles (abajo) y la capsula de nicrom (arriba)
-XPN = (14 + 0.55 * 190, 126.6)   # NP: CP de delta con vortice (55 % de la quilla) / centroide de la vela + cuerpo (calculado)
+XPN = (126.6 - 8.1, 126.6)       # NP: centroide de la vela + flujo cruzado del cuerpo; 8 mm de tolerancia hacia adelante
 CR = 190.0
 
 # Masas del documento v2 con la carena recalculada, y los cambios para quedar debajo de 500 g (PESO_V2 guarda el valor

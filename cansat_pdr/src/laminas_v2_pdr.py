@@ -99,7 +99,7 @@ def me_rango():
 
 
 VZ = DES["vz"]
-T2 = 0.8 * APOGEO / VZ["0.5"]
+T2 = 0.8 * APOGEO / VZ["nom"]
 T1 = 0.2 * APOGEO / V1
 
 
@@ -222,7 +222,7 @@ def L48_descenso(sl):
     x = X0 + I(7.0) + GAP
     tabla(sl, x, Y0, X1 - x, [0.8, 1.7, 1.3], ["Phase", "Device", "Descent rate"], [
         ["1 (C3)", "Flat ripstop parachute, Ø226 with Ø40 vent", f"{V1:.1f} m/s"],
-        ["2 (C4)", f"Rogallo sail, left spiral of {DES['R']:.0f} m", f"about {VZ['0.5']:.1f} m/s"],
+        ["2 (C4)", f"Rogallo sail, left spiral of {DES['R']:.0f} m", f"about {VZ['nom']:.1f} m/s"],
     ], sz=10.5, sz_cab=11, alto=I(0.55), alto_cab=I(0.36), alin=["l", "l", "l"], ml=60000)
     y = Y0 + I(0.36) + 2 * I(0.55) + I(0.17)
     tarjeta(sl, x, y, X1 - x, Y1 - y, "How it works", [
@@ -296,13 +296,14 @@ def L52_sel_estrategia(sl):
         f"**How it works:** the left lobe has {100 * (1 - DES['lob_izq'] / DES['lob_der']):.0f} % less area than the "
         f"right one. The lift difference banks the glider about {DES['phi_deg']:.0f}° and it flies a steady left "
         f"spiral of about {DES['R']:.0f} m radius ({DES['vueltas_s']:.0f} s per turn).",
-        f"**Descent rate:** about {VZ['0.5']:.1f} m/s ({VZ['1.0']:.1f}–{VZ['0.3']:.1f}) with vortex lift; "
-        f"{DES['vz_placa']:.1f} m/s for a flat plate without it (conservative bound). Inside C4 (≤ 8 m/s) in both cases.",
+        f"**Descent rate:** about {VZ['nom']:.1f} m/s ({VZ['min']:.1f}–{VZ['max']:.1f}) with the measured lift-drag ratio "
+        f"of rigid-leading-edge parawings (about {DES['LD_nom']:.1f} for tubes of {DES['d_rel']:.1f} % of the keel); "
+        f"{DES['vz_placa']:.1f} m/s for a flat plate (conservative bound). Inside C4 in both cases.",
         f"**Wing loading** {DES['carga_alar']:.1f} kg/m², similar to a hang glider; aspect ratio {DES['AR']:.1f}.",
         "**Verification:** glide drops at flight mass measure rate and radius; the CG station sets the trim and the "
         "left tip length the radius.",
-        "**Theory:** vortex lift in the Polhamus form (leading-edge sweep 30°, outside its validated range: upper "
-        "estimate); flat-plate normal force (Hoerner, lower bound); ripstop skin friction; crossflow drag; coordinated turn.",
+        "**Theory:** NASA wind-tunnel data for parawings with rigid leading edges and keel (TN D-1957); flat-plate "
+        "normal force (Hoerner); ripstop skin friction; body Cd (Hoerner); coordinated turn.",
     ], sz=10, spc=220)
 
 
@@ -454,8 +455,8 @@ def L61_total(sl):
         f"**Total: {n1(MTOT)} ± {n1(UTOT)} g** (S1: 500 ± 10 g).",
         f"**CG:** {n1(CAS['nominal']['x_cg'])} mm from the nadir end with the nominal stations; moving M2 and M3 "
         f"sets it anywhere between {rango_cg()}.",
-        f"**Neutral point:** x = {CG.XPN[0]:.0f}–{CG.XPN[1]:.0f} mm (centre of pressure of a vortex delta at 55 % of "
-        "the keel, or area centroid of the sail plus the body crossflow).",
+        f"**Neutral point:** x = {CG.XPN[1]:.0f} mm (area centroid of the sail plus the body crossflow); the margin "
+        f"below uses {CG.XPN[1] - CG.XPN[0]:.0f} mm of allowance forward.",
         f"**Static margin:** {me_rango()} over the CG range, positive in every case; the stations move the CG "
         "forward if the glide drops ask for more.",
     ], sz=11.5, spc=330)

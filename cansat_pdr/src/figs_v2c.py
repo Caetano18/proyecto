@@ -57,7 +57,7 @@ def main(out):
     plt.rcParams["font.family"] = "Inter"
     ims = [plt.imread(f"{out}/{n}.png") for n in ("v2BR_exterior", "v2BR_fase1", "v2BR_desplegado")]
     tit = ["1. Lanzamiento: Ø90 × 240,\nala y paracaídas guardados", "2. Fase 1: paracaídas,\n15 m/s",
-           "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈5,5 m/s"]
+           "3. Fase 2 (80 % del apogeo): vela\nRogallo en espiral, ≈5 m/s"]
     fig = plt.figure(figsize=(11.0, 5.4))
     pos = [[0.0, 0.0, 0.2, 0.86], [0.2, 0.0, 0.22, 0.86], [0.43, 0.08, 0.57, 0.70]]
     for k in range(3):

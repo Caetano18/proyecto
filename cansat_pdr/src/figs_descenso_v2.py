@@ -46,16 +46,6 @@ def area_vela(L, ang=ANG, keel=190.0, ypiv=35.0, x0=14.0):
 R_ESPIRAL = 50.0          # radio de la espiral estimado por el equipo [m]
 
 
-def vz(f, rho, S, R=R_ESPIRAL, solo_v=False):
-    """Descenso en una espiral de radio R: el alabeo sale de R = (V cos g)^2 / (g tan phi)."""
-    phi = math.radians(6.0)
-    for _ in range(30):
-        v_, g_ = _vz_phi(f, rho, S, phi)
-        phi = math.atan((v_ * math.cos(g_)) ** 2 / (9.80665 * R))
-    v_, g_ = _vz_phi(f, rho, S, phi)
-    return (v_ * math.sin(g_), math.degrees(phi), v_) if solo_v else v_ * math.sin(g_)
-
-
 NU = 1.6e-5            # viscosidad cinematica del aire en el sitio [m2/s]
 K_TELA = 1.15          # area de tela / area en planta (embolsamiento de la vela)
 CD_MEMB = 0.030        # tolerancia de forma de la membrana (embolsamiento y flameo del borde de fuga)
@@ -77,21 +67,41 @@ def cd_parasito(V, S):
     return cd_f, cd_l, CD_MEMB, re
 
 
-def _vz_phi(f, rho, S, phi, detalle=False):
-    """Analogia de succion del borde de ataque (Polhamus): CL = Kp sen a cos2 a + Kv cos a sen2 a; sin succion en el
-    borde de ataque, el arrastre debido a la sustentacion es CL tan a."""
-    a, Kp, Kv = math.radians(28), 2.2, math.pi
-    CL = Kp * math.sin(a) * math.cos(a) ** 2 + f * Kv * math.cos(a) * math.sin(a) ** 2
-    V = 10.0
-    for _ in range(40):                                   # el rozamiento depende de V (Reynolds)
-        cd_f, cd_l, cd_m, re = cd_parasito(V, S)
-        CD = cd_f + cd_l + cd_m + CDA_CIL / S + CL * math.tan(a)
+# Ala Rogallo con borde de ataque y quilla rigidos: ensayos de tunel de NASA TN D-1957 (Naeseth y Gainer).  L/D maximo
+# del ala de 5,3 con tubos del 1,5 % de la quilla y de 3,7 con tubos del 7 %; los largueros de O4 sobre la quilla de
+# 190 mm son el 2,1 %.  El CL sale de la fuerza normal de placa plana (Hoerner) entre 20 y 28 grados de incidencia.
+LD_ENSAYO = (3.7, 5.3)
+D_REL = 4.0 / 190.0 * 100.0
+LD_NOM = LD_ENSAYO[1] - (LD_ENSAYO[1] - LD_ENSAYO[0]) * (D_REL - 1.5) / (7.0 - 1.5)
+ALFAS = (20.0, 24.0, 28.0)
+
+
+def placa(a_deg, S=None):
+    """Placa plana con fuerza normal (Hoerner; ajuste de alargamiento finito): devuelve CL y el arrastre normal."""
+    S = S or area_asim()
+    AR = (envergadura() / 1000.0) ** 2 / S
+    a = math.radians(a_deg)
+    cd90 = 1.98 - 0.81 * (1 - math.exp(-20 / AR))
+    CN = cd90 * math.sin(a) / (0.56 + 0.44 * math.sin(a))
+    return CN * math.cos(a), CN * math.sin(a)
+
+
+def espiral(CL, cd_de_v, S, rho=RHO_SITIO, R=R_ESPIRAL):
+    """Vuelo en espiral de radio R (viraje coordinado): R = (V cos g)^2 / (g tan phi).  Devuelve vz, phi y V."""
+    phi, V = math.radians(6.0), 10.0
+    for _ in range(60):
+        CD = cd_de_v(V)
         g = math.atan(CD / (CL * math.cos(phi)))
         V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL * math.cos(phi)))
-    if detalle:
-        return dict(CL=CL, cd_roz=cd_f, cd_largueros=cd_l, cd_membrana=cd_m, cd_cuerpo=CDA_CIL / S,
-                    cd_sustentacion=CL * math.tan(a), CD=CD, Re=re, V=V)
-    return V, g
+        phi = math.atan((V * math.cos(g)) ** 2 / (9.80665 * R))
+    return V * math.sin(g), math.degrees(phi), V, g
+
+
+def vz_ala(ld, a_deg, S=None):
+    """Descenso con el L/D del ala medido en el tunel (incluye tela, largueros y quilla) mas el arrastre del cuerpo."""
+    S = S or area_asim()
+    CL, _ = placa(a_deg, S)
+    return espiral(CL, lambda V: CL / ld + CDA_CIL / S, S)
 
 
 def estilo(ax):
@@ -216,52 +226,49 @@ def paracaidas(out):
     plt.close(fig)
 
 
-def vz_placa(S, a_deg=28.0, rho=RHO_SITIO):
-    """Cota conservadora: placa plana con fuerza normal (Hoerner; ajuste de alargamiento finito), sin sustentacion de
-    vortice.  Mismo rozamiento, largueros, membrana y cuerpo que el modelo principal."""
-    AR = (envergadura() / 1000.0) ** 2 / S
-    a = math.radians(a_deg)
-    cd90 = 1.98 - 0.81 * (1 - math.exp(-20 / AR))
-    CN = cd90 * math.sin(a) / (0.56 + 0.44 * math.sin(a))
-    CL, CDn = CN * math.cos(a), CN * math.sin(a)
-    V = 10.0
-    for _ in range(40):
-        cd_f, cd_l, cd_m, _ = cd_parasito(V, S)
-        CD = CDn + cd_f + cd_l + cd_m + CDA_CIL / S
-        g = math.atan(CD / CL)
-        V = math.sqrt(2 * W * math.cos(g) / (rho * S * CL))
-    return V * math.sin(g)
+def vz_placa(S, a_deg=28.0):
+    """Cota conservadora: placa plana (Hoerner) con rozamiento del ripstop, largueros, membrana y cuerpo."""
+    CL, CDn = placa(a_deg, S)
+    return espiral(CL, lambda V: CDn + sum(cd_parasito(V, S)[:3]) + CDA_CIL / S, S)[0]
 
 
 def planeo(out):
     S = area_asim()
-    f = np.linspace(0.2, 1.0, 100)
+    ld = np.linspace(3.0, 5.6, 100)
     fig, ax = plt.subplots(figsize=(6.4, 4.4))
     ax.axhspan(2, 8, color="#e8f1fb", lw=0)
-    ax.text(0.205, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom")
-    ax.plot(f, [vz(x, RHO_SITIO, S) for x in f], color=NA, lw=2.2, label=f"vortex-lift model (Polhamus form), sail {S:.3f} m², spiral {R_ESPIRAL:.0f} m")
-    for fr in (1.0, 0.5, 0.3):
-        v = vz(fr, RHO_SITIO, S)
-        ax.plot(fr, v, "o", ms=7, color=NA, mec="white", mew=1.5, zorder=5)
-        ax.annotate(f"{v:.1f} m/s", (fr, v), xytext=(4, 7), textcoords="offset points", fontsize=8.8)
-    ax.set_xlim(0.2, 1.02)
-    ax.set_ylim(0, 10)
-    ax.set_xlabel("Fraction of the vortex lift developed by the sail, f")
-    ax.set_ylabel("Glide descent rate at the site [m/s]")
+    ax.axvspan(*LD_ENSAYO, color="#fde3d3", alpha=0.55, lw=0)
+    ax.text(5.57, 2.15, "C4: 5 ± 3 m/s", fontsize=8.8, color=TX2, va="bottom", ha="right")
+    ax.text(sum(LD_ENSAYO) / 2, 9.55, "measured range, NASA TN D-1957\n(rigid leading edges and keel)", ha="center",
+            va="top", fontsize=8.6, color=TX2)
+    for a_, ls_, lw_ in ((ALFAS[0], "--", 1.3), (ALFAS[1], "-", 2.2), (ALFAS[2], "-.", 1.3)):
+        CL, _ = placa(a_, S)
+        ax.plot(ld, [vz_ala(x, a_, S)[0] for x in ld], color=NA, lw=lw_, ls=ls_,
+                label=f"{a_:.0f}° incidence, CL {CL:.2f}")
+    v0 = vz_ala(LD_NOM, ALFAS[1], S)[0]
+    ax.plot(LD_NOM, v0, "o", ms=8, color=NA, mec="white", mew=1.5, zorder=5)
+    ax.annotate(f"{v0:.1f} m/s\n(Ø4 tubes: {D_REL:.1f} % of keel)", (LD_NOM, v0), xytext=(LD_NOM - 0.35, 2.9),
+                textcoords="data", fontsize=8.6, ha="center", arrowprops=dict(arrowstyle="-", color=TX, lw=0.8))
     vp = vz_placa(S)
-    ax.axhline(vp, color=TX2, lw=1.4, ls="--", label="flat plate, no vortex lift (conservative bound)")
-    ax.annotate(f"{vp:.1f} m/s", (0.205, vp), xytext=(0, 5), textcoords="offset points", fontsize=8.8, color=TX2)
-    ax.legend(loc="lower left", fontsize=8.8, frameon=False)
+    ax.axhline(vp, color=TX2, lw=1.4, ls=":", label="flat plate (conservative bound)")
+    ax.annotate(f"{vp:.1f} m/s", (3.03, vp), xytext=(0, 4), textcoords="offset points", fontsize=8.8, color=TX2)
+    ax.set_xlim(3.0, 5.6)
+    ax.set_ylim(0, 10)
+    ax.set_xlabel("Lift-drag ratio of the wing alone (wind-tunnel data)")
+    ax.set_ylabel("Glide descent rate at the site [m/s]")
+    ax.legend(loc="lower left", fontsize=8.4, frameon=False)
     estilo(ax)
     fig.tight_layout()
     fig.savefig(f"{out}/v2_planeo_en.png", dpi=220)
     plt.close(fig)
-    vz5, phi5, v5 = vz(0.5, RHO_SITIO, S, solo_v=True)
-    det = _vz_phi(0.5, RHO_SITIO, S, math.radians(phi5), detalle=True)
-    return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=phi5, V=v5, arrastre=det,
-                vz_placa=vz_placa(S), AR=(envergadura() / 1000.0) ** 2 / S, carga_alar=W / 9.80665 / S,
-                vz={str(fr): vz(fr, RHO_SITIO, S) for fr in (1.0, 0.5, 0.3)},
-                vueltas_s=2 * math.pi * R_ESPIRAL / (v5 * math.cos(math.atan(vz5 / v5))))
+    nom = vz_ala(LD_NOM, ALFAS[1], S)
+    vmin = vz_ala(LD_ENSAYO[1], ALFAS[2], S)[0]
+    vmax = vz_ala(LD_NOM - 0.5, ALFAS[0], S)[0]          # 0,5 de L/D por debajo de lo interpolado
+    return dict(S=S, lob_der=lobulo(L_DER), lob_izq=lobulo(L_IZQ), R=R_ESPIRAL, phi_deg=nom[1], V=nom[2],
+                vz=dict(min=vmin, nom=nom[0], max=vmax), LD_nom=LD_NOM, LD_ensayo=LD_ENSAYO, d_rel=D_REL,
+                CL=[placa(a_, S)[0] for a_ in ALFAS], alfas=ALFAS,
+                vz_placa=vp, AR=(envergadura() / 1000.0) ** 2 / S, carga_alar=W / 9.80665 / S,
+                vueltas_s=2 * math.pi * R_ESPIRAL / (nom[2] * math.cos(nom[3])))
 
 
 if __name__ == "__main__":
